@@ -44,7 +44,7 @@ internal class HtmlProducer
     public void ProduceTableEnd() => sb.AppendLine("</table>");
 
     private void ProduceTableHeaderFirstCellContent() =>
-        sb.AppendLine($"<th>{(Options.Orientation == MatrixOrientation.ActionRows ? "Action \\ Domain" : "Domain \\ Action")}</th>");
+        sb.AppendLine($"<th><a href=\"\">{(Options.Orientation == MatrixOrientation.ActionRows ? "Action \\ Domain" : "Domain \\ Action")}</a></th>");
 
     private void ProduceTableFirstRowCellSummary()
     {
