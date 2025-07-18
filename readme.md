@@ -1,7 +1,5 @@
-echo "# ContextBrowser" >> README.md
-git init
-git add README.md
-git commit -m "initial comit"
-git branch -M main
-git remote add origin https://github.com/paulyeshchyk/ContextBrowser.git
-git push -u origin main
+В папке output найти index.html
+Пути к исходникам прописываются в коде
+Формат контекста 
+  //context: loader, load, create
+  //context: extra
