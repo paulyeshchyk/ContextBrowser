@@ -1,31 +1,21 @@
 ﻿using ContextBrowser.Parser;
 
-namespace CB.Generator.Matrix;
+namespace ContextBrowser.Generator.Matrix;
 
 public static class UiMatrixGenerator
 {
-    public static UiMatrix Generate(Dictionary<(string Action, string Domain), List<string>> matrix, MatrixOrientation matrixOrientation = MatrixOrientation.DomainRows, UnclassifiedPriority priority = UnclassifiedPriority.None)
+    public static UiMatrix Generate(Dictionary<ContextContainer, List<string>> matrix, MatrixOrientation matrixOrientation = MatrixOrientation.DomainRows, UnclassifiedPriority priority = UnclassifiedPriority.None)
     {
         var actions = matrix.Keys.Select(k => k.Action).Distinct().ToList();
         var domains = matrix.Keys.Select(k => k.Domain).Distinct().ToList();
 
-        // Обработка приоритета
-        static string highest(string v)
-        {
-            return v == ContextClassifier.EmptyAction || v == ContextClassifier.EmptyDomain ? string.Empty : v;
-        }
 
-        static string lowest(string v)
-        {
-            return v == ContextClassifier.EmptyAction || v == ContextClassifier.EmptyDomain ? ContextClassifier.LowestName : v;
-        }
-
-        if (priority == UnclassifiedPriority.Highest)
+        if(priority == UnclassifiedPriority.Highest)
         {
             actions = actions.OrderBy(highest).ToList();
             domains = domains.OrderBy(highest).ToList();
         }
-        else if (priority == UnclassifiedPriority.Lowest)
+        else if(priority == UnclassifiedPriority.Lowest)
         {
             actions = actions.OrderBy(lowest).ToList();
             domains = domains.OrderBy(lowest).ToList();
@@ -43,6 +33,16 @@ public static class UiMatrixGenerator
             _ => throw new NotImplementedException()
         };
     }
+
+    private static string highest(string v)
+    {
+        return v == ContextClassifier.EmptyAction || v == ContextClassifier.EmptyDomain ? string.Empty : v;
+    }
+
+    private static string lowest(string v)
+    {
+        return v == ContextClassifier.EmptyAction || v == ContextClassifier.EmptyDomain ? ContextClassifier.LowestName : v;
+    }
 }
 
 public record UiMatrix
@@ -59,7 +59,7 @@ public enum MatrixOrientation
 
 public static class UiMatrixExtensions
 {
-    public static Dictionary<string, int>? RowsSummary(this UiMatrix uiMatrix, Dictionary<(string Action, string Domain), List<string>> matrix, MatrixOrientation orientation)
+    public static Dictionary<string, int>? RowsSummary(this UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix, MatrixOrientation orientation)
     {
         return uiMatrix.rows.ToDictionary(row => row, row => uiMatrix.cols.Sum(col =>
         {
@@ -68,7 +68,7 @@ public static class UiMatrixExtensions
         }));
     }
 
-    public static Dictionary<string, int>? ColsSummary(this UiMatrix uiMatrix, Dictionary<(string Action, string Domain), List<string>> matrix, MatrixOrientation orientation)
+    public static Dictionary<string, int>? ColsSummary(this UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix, MatrixOrientation orientation)
     {
         return uiMatrix.cols.ToDictionary(col => col, col => uiMatrix.rows.Sum(row =>
         {

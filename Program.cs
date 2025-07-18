@@ -1,9 +1,9 @@
-﻿using CB.Generator.Html;
-using ContextBrowser.exporter;
+﻿using ContextBrowser.exporter;
 using ContextBrowser.Extensions;
+using ContextBrowser.Generator.Html;
 using ContextBrowser.Parser;
 
-namespace CB.ContextCommentsParser;
+namespace ContextBrowser.ContextCommentsParser;
 
 public static class Program
 {

@@ -1,10 +1,11 @@
-﻿using CB.ContextCommentsParser;
+﻿using ContextBrowser.ContextCommentsParser;
 
 namespace ContextBrowser.Parser;
 
+// context: model, csharp
 internal class ContextClassifier : IContextClassifier
 {
-    public readonly string[] StandardActions = new[] { "create", "read", "update", "delete", "validate", "share", "build" };
+    public readonly string[] StandardActions = new[] { "create", "read", "update", "delete", "validate", "share", "build", "model" };
 
     public static string EmptyDomain => "NoDomain";
 
@@ -19,7 +20,8 @@ internal class ContextClassifier : IContextClassifier
     public bool IsVerb(string theWord) => StandardActions.Contains(theWord);
 }
 
-internal static class ReservedWards
+// context: model, csharp
+internal static class ReservedWords
 {
     public static readonly HashSet<string> CSharp = new HashSet<string> { "if", "for", "foreach", "while", "switch", "return", "await", "var", "let", "new", "typeof", "default", "nameof", "base", "this", "catch", "throw", "using", "true", "false", "null" };
 }

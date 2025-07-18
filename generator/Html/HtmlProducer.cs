@@ -1,20 +1,21 @@
-﻿using CB.Generator.Matrix;
-using ContextBrowser;
+﻿using ContextBrowser.Generator.Matrix;
+using ContextBrowser.Parser;
 using System.Text;
-using static CB.Generator.Html.IndexGenerator;
+using static ContextBrowser.Generator.Html.IndexGenerator;
 
-namespace CB.Generator.Html;
+namespace ContextBrowser.Generator.Html;
 
 internal class HtmlProducer
 {
-    private readonly StringBuilder sb;
+    private readonly StringBuilder sb = new StringBuilder();
     public readonly HtmlTableOptions Options;
 
-    public HtmlProducer(StringBuilder sb1, HtmlTableOptions options)
+    public HtmlProducer(HtmlTableOptions options)
     {
-        sb = sb1;
         Options = options;
     }
+
+    public string GetResult() => sb.ToString();
 
     public void ProduceHtmlStart() => sb.AppendLine("<!DOCTYPE html><html>");
 
@@ -91,7 +92,7 @@ internal class HtmlProducer
         }
     }
 
-    private void ProduceRowSummaryCell(string row, UiMatrix uiMatrix, Dictionary<(string, string), List<string>> matrix)
+    private void ProduceRowSummaryCell(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         var hRef = Options.Orientation == MatrixOrientation.ActionRows
             ? $"action_{row}.html"
@@ -111,7 +112,7 @@ internal class HtmlProducer
         sb.AppendLine("</tr>");
     }
 
-    public void ProduceColumnSummaryRow(UiMatrix uiMatrix, Dictionary<(string, string), List<string>> matrix)
+    public void ProduceColumnSummaryRow(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         var colSums = uiMatrix.ColsSummary(matrix, Options.Orientation);
         var totalSum = colSums?.Values.Sum() ?? 0;
@@ -131,7 +132,7 @@ internal class HtmlProducer
     }
 
 
-    private void ProduceDataCells(string row, UiMatrix uiMatrix, Dictionary<(string, string), List<string>> matrix)
+    private void ProduceDataCells(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         foreach(var col in uiMatrix.cols)
         {
@@ -151,7 +152,7 @@ internal class HtmlProducer
         }
     }
 
-    private void ProduceRowSummaryCellLast(string row, UiMatrix uiMatrix, Dictionary<(string, string), List<string>> matrix)
+    private void ProduceRowSummaryCellLast(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         if(Options.SummaryPlacement != SummaryPlacement.AfterLast)
             return;
@@ -164,7 +165,7 @@ internal class HtmlProducer
         sb.Append($"<td><a href=\"{rowFile}\">{rowSum}</a></td>");
     }
 
-    public void ProduceDataRow(string row, UiMatrix uiMatrix, Dictionary<(string, string), List<string>> matrix)
+    public void ProduceDataRow(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         sb.Append("<tr>");
         ProduceRowHeaderCell(row);
@@ -179,7 +180,7 @@ internal class HtmlProducer
         sb.AppendLine("</tr>");
     }
 
-    public void ProduceMatrix(UiMatrix uiMatrix, Dictionary<(string, string), List<string>> matrix)
+    public void ProduceMatrix(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         ProduceTableHeaderRow(uiMatrix);
 

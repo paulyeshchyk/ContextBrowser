@@ -7,7 +7,7 @@ namespace ContextBrowser.exporter;
 public static class HeatmapExporter
 {
     //context: build, csv, file
-    public static void GenerateHeatmapCsv(Dictionary<(string Action, string Domain), List<string>> matrix, string outputPath, bool includeUnclassified = false)
+    public static void GenerateHeatmapCsv(Dictionary<ContextContainer, List<string>> matrix, string outputPath, bool includeUnclassified = false)
     {
         var lines = new List<string>();
 
@@ -59,7 +59,7 @@ public static class HeatmapExporter
     }
 
     //context: build, html, file
-    public static void GenerateHeatmapUml(Dictionary<(string Action, string Domain), List<string>> matrix, string outputPath)
+    public static void GenerateHeatmapUml(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
     {
         var sb = new StringBuilder();
         sb.AppendLine("@startuml");
@@ -82,7 +82,7 @@ public static class HeatmapExporter
     }
 
     //context: build, html, links, file
-    public static void GenerateHeatmapUmlWithLinks(Dictionary<(string Action, string Domain), List<string>> matrix, Func<string, string, string> linkGenerator, string outputPath)
+    public static void GenerateHeatmapUmlWithLinks(Dictionary<ContextContainer, List<string>> matrix, Func<string, string, string> linkGenerator, string outputPath)
     {
         var sb = new StringBuilder();
         sb.AppendLine("@startuml");
@@ -106,7 +106,7 @@ public static class HeatmapExporter
     }
 
     //context: build, html, uml, folder
-    public static void GeneratePerCellDiagrams(Dictionary<(string Action, string Domain), List<string>> matrix, string targetFolder)
+    public static void GeneratePerCellDiagrams(Dictionary<ContextContainer, List<string>> matrix, string targetFolder)
     {
         foreach (var cell in matrix)
         {
@@ -129,7 +129,7 @@ public static class HeatmapExporter
     }
 
     //context: build, html, page, folder
-    public static void GenerateContextHtmlPages(Dictionary<(string Action, string Domain), List<string>> matrix, string outputFolder)
+    public static void GenerateContextHtmlPages(Dictionary<ContextContainer, List<string>> matrix, string outputFolder)
     {
         foreach (var cell in matrix)
         {
@@ -163,7 +163,7 @@ public static class HeatmapExporter
 
 
     //context: build, html, page, folder
-    public static void GenerateContextDimensionHtmlPages(Dictionary<(string Action, string Domain), List<string>> matrix, string outputFolder)
+    public static void GenerateContextDimensionHtmlPages(Dictionary<ContextContainer, List<string>> matrix, string outputFolder)
     {
         var allActions = matrix.Keys.Select(k => k.Action).Distinct();
         var allDomains = matrix.Keys.Select(k => k.Domain).Distinct();

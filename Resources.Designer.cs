@@ -61,43 +61,29 @@ namespace ContextBrowser {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to a {
-        ///  text-decoration: none;
-        ///  color: #0077cc;
+        ///   Looks up a localized string similar to :root {
+        ///  --link-color: #0077cc;
+        ///  --table-border-color: #a0a0a0;
+        ///  --cell-border-color: #ccc;
+        ///  --hover-background-light: #f0f0f0;
+        ///  --hover-background-dark: #e0e0e0;
+        ///  --cell-padding: 6px 10px;
+        ///  --link-text-decoration: none;
+        ///  --link-text-align: inherit;
+        ///  --link-color-inherit: inherit;
+        ///  --link-white-space: nowrap;
+        ///  --link-overflow: hidden;
+        ///  --link-text-overflow: ellipsis;
         ///}
-        ///a:hover {
-        ///  text-decoration: underline;
-        ///}
-        ///a:visited {
-        ///  color: #0077cc;
+        ///a:link,
+        ///a:visited,
+        ///a:hover,
+        ///a:active {
+        ///  color: var(--link-color);
+        ///  text-decoration: var(--link-text-decoration);
         ///}
         ///table {
-        ///  border-spacing: 0;
-        ///  border-collapse: collapse;
-        ///  padding: 5px;
-        ///  border: 1px solid #a0a0a0;
-        ///}
-        ///table,
-        ///th,
-        ///td {
-        ///  user-select: none;
-        ///}
-        ///table {
-        ///  border-collapse: collapse;
-        ///  width: auto;
-        ///  font-family: sans-serif;
-        ///}
-        ///th.hover-col {
-        ///  background-color: #f0f0f0;
-        ///}
-        ///th,
-        ///td {
-        ///  border: 1px solid #ccc;
-        ///  padding: 6px 10px;
-        ///  text-align: center;
-        ///}
-        ///tr:hover td {
-        ///  background-color: #f0f [rest of string was truncated]&quot;;.
+        ///  b [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HtmlProducerContentStyle {
             get {

@@ -1,4 +1,4 @@
-﻿namespace CB.ContextCommentsParser;
+﻿namespace ContextBrowser.ContextCommentsParser;
 
 public interface IContextClassifier
 {

@@ -1,7 +1,9 @@
 ﻿namespace ContextBrowser.Parser;
 
+// context: Parser
 public static class ReferenceParser
 {
+    // context: read, csharp
     public static void EnrichWithReferences(List<ContextInfo> elements, string filePath)
     {
         var lines = File.ReadAllLines(filePath);
@@ -34,7 +36,7 @@ public static class ReferenceParser
             }
 
             var called = callMatch.Groups[1].Value;
-            if (!ReservedWards.CSharp.Contains(called) && currentMethod != null)
+            if (!ReservedWords.CSharp.Contains(called) && currentMethod != null)
             {
                 currentMethod.References.Add(called);
             }

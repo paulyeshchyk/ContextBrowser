@@ -1,4 +1,4 @@
-﻿using CB.ContextCommentsParser;
+﻿using ContextBrowser.ContextCommentsParser;
 using ContextBrowser.Parser;
 using System.Text;
 
@@ -6,9 +6,9 @@ namespace ContextBrowser.exporter;
 
 public static class ContextMatrixUmlExporter
 {
-    public static Dictionary<(string Action, string Domain), List<string>> GenerateMatrix(List<ContextInfo> elements, IContextClassifier contextClassifier, bool includeUnclassified = false, bool includeAllStandardActions = false)
+    public static Dictionary<ContextContainer, List<string>> GenerateMatrix(List<ContextInfo> elements, IContextClassifier contextClassifier, bool includeUnclassified = false, bool includeAllStandardActions = false)
     {
-        var matrix = new Dictionary<(string Action, string Domain), List<string>>();
+        var matrix = new Dictionary<ContextContainer, List<string>>();
 
         var allVerbs = elements
             .SelectMany(e => e.Contexts)
@@ -201,7 +201,7 @@ public static class ContextMatrixUmlExporter
         File.WriteAllText(outputPath, sb.ToString());
     }
 
-    public static void GenerateMethodsUml(Dictionary<(string Action, string Domain), List<string>> matrix, string outputPath)
+    public static void GenerateMethodsUml(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
     {
         var sb = new StringBuilder();
         sb.AppendLine("@startuml");
@@ -226,7 +226,7 @@ public static class ContextMatrixUmlExporter
         File.WriteAllText(outputPath, sb.ToString());
     }
 
-    public static void GenerateCsv(Dictionary<(string Action, string Domain), List<string>> matrix, string outputPath)
+    public static void GenerateCsv(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
     {
         var lines = new List<string>();
         lines.AddRange(ContextClassifier.MetaItems);

@@ -1,7 +1,7 @@
 ﻿using ContextBrowser.Parser;
 using System.Text;
 
-namespace CB.ContextCommentsParser;
+namespace ContextBrowser.ContextCommentsParser;
 
 // context: reference
 public static class ReferenceUmlExporter
