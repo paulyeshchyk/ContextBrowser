@@ -1,5 +1,6 @@
 ﻿namespace ContextBrowser.Extensions;
 
+// context: filesystem
 public class PathAnalyzer
 {
     public enum PathType
@@ -11,6 +12,7 @@ public class PathAnalyzer
         PlainText // Не является путем в файловой системе или не существует
     }
 
+    // context: read
     public static PathType GetPathType(string path)
     {
         if(string.IsNullOrWhiteSpace(path))
@@ -23,7 +25,7 @@ public class PathAnalyzer
             // Проверяем, является ли это существующим файлом
             if(File.Exists(path))
             {
-                // Дополнительная проверка на символическую ссылку (файл)
+                // Дополнительная проверка на символическую ссылку1 (файл)
                 FileAttributes attributes = File.GetAttributes(path);
                 if((attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
                 {
@@ -35,7 +37,7 @@ public class PathAnalyzer
             // Проверяем, является ли это существующей папкой
             if(Directory.Exists(path))
             {
-                // Дополнительная проверка на символическую ссылку (папка)
+                // Дополнительная проверка на символическую ссылку2 (папка)
                 FileAttributes attributes = File.GetAttributes(path);
                 if((attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
                 {

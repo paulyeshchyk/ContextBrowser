@@ -9,7 +9,7 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        string theSourcePath = "..\\..\\..\\";
+        string theSourcePath = "..\\..\\..\\extensions\\PathAnalyzer.cs";
         string theOutputPath = ".\\output\\";
 
         bool includeUnclassified = true;
@@ -17,6 +17,17 @@ public static class Program
         var result = ContextParser.Parse(theSourcePath);
         var cc = new ContextClassifier();
         var matrix = ContextMatrixUmlExporter.GenerateMatrix(result, cc, includeUnclassified, includeAllStandardActions);
+
+        Console.WriteLine($"Parsed elements: {result.Count}");
+        foreach(var ctx in result)
+            Console.WriteLine($"[{ctx.ElementType}] {ctx.ClassOwner}.{ctx.Name} — coverage: {ctx.Dimensions.GetValueOrDefault("coverage", "none")}");
+
+        var contextLookup = result
+            .Where(c => !string.IsNullOrWhiteSpace(c.Name))
+            .GroupBy(c => c.ElementType == "method" && !string.IsNullOrWhiteSpace(c.ClassOwner)
+                ? $"{c.ClassOwner}.{c.Name}"
+                : c.Name!)
+            .ToDictionary(g => g.Key, g => g.First());
 
         //var result = ContextCommentsParser.ContextParser.ParseFile(thePath);
         //ReferenceParser.EnrichWithReferences(result, thePath);
@@ -36,6 +47,7 @@ public static class Program
 
         IndexGenerator.GenerateContextIndexHtml(
             matrix,
+            contextLookup,
             outputFile: $"{theOutputPath}index.html",
             priority: UnclassifiedPriority.Highest,
             orientation: Generator.Matrix.MatrixOrientation.DomainRows,

@@ -18,4 +18,6 @@ public static class CSharpParsingExpressions
     public static Match? MatchMethod(this string line) => Regex.Match(line, @"(?:public\s+)?(?:async\s+)?(?:[\w<>\?\[\]]+\s+)+(?<name>\w+)\s*\(");
 
     public static Match? MatchCall(this string line) => Regex.Match(line, @"\b(\w+)\s*\(");
+
+    public static Match? MatchDimension(this string line) => Regex.Match(line.Trim(), @"^//\s*(\w+)\s*:\s*(.+)", RegexOptions.IgnoreCase);
 }

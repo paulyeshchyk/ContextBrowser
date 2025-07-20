@@ -1,5 +1,7 @@
 ﻿namespace ContextBrowser.Parser;
 
+// coverage: 10
+// context: ContextInfo, model
 public class ContextInfo
 {
     public string? ElementType { get; set; } // class, method, etc.
@@ -13,4 +15,24 @@ public class ContextInfo
     public string? ClassOwner { get; set; }
 
     public HashSet<string> References { get; set; } = new();
+
+    public Dictionary<string, string> Dimensions { get; set; } = new();
+}
+
+// context: ContextInfo
+public static class ContextInfoExtensions
+{
+    // context: read, dimension
+    public static int GetDimensionIntValue(this ContextInfo contextInfo, string dimensionName)
+    {
+        if(contextInfo.Dimensions.TryGetValue(dimensionName, out var raw))
+        {
+            if(int.TryParse(raw, out var v))
+            {
+                return v;
+            }
+            return 0;
+        }
+        return 0;
+    }
 }

@@ -19,6 +19,7 @@ internal static class FileUtils
     private const string SFolderWipeAccessErrorTemplate = "Отказано в доступе при удалении папки '{0}': {1}";
     private const string SFolderWipeUnknownErrorTemplate = "Произошла непредвиденная ошибка при удалении папки '{0}': {1}";
 
+    //context: directory, create
     public static void CreateDirectoryIfNotExists(string path)
     {
         if(Directory.Exists(path))
@@ -46,6 +47,7 @@ internal static class FileUtils
         }
     }
 
+    //context: directory, delete, single
     public static void WipeDirectory(string path, bool shouldClearContentOnly = true)
     {
         if(shouldClearContentOnly)
@@ -58,6 +60,7 @@ internal static class FileUtils
         }
     }
 
+    //context: file, delete, multi
     public static void ClearDirectoryContents(string path)
     {
         if(!Directory.Exists(path))
@@ -88,6 +91,7 @@ internal static class FileUtils
         }
     }
 
+    //context: file, delete, single
     private static void DeleteFile(string file)
     {
         if(!File.Exists(file))
@@ -99,7 +103,6 @@ internal static class FileUtils
         try
         {
             File.Delete(file);
-            Console.WriteLine(string.Format(SFileDeletedTemplate, file));
         }
         catch(IOException ex)
         {
@@ -111,6 +114,7 @@ internal static class FileUtils
         }
     }
 
+    //context: directory, delete, single
     public static void DeleteDirectory(string path, bool recursive = true)
     {
         if(!Directory.Exists(path))

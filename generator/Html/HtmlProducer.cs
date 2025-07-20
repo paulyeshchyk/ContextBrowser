@@ -5,20 +5,24 @@ using static ContextBrowser.Generator.Html.IndexGenerator;
 
 namespace ContextBrowser.Generator.Html;
 
+// context: ContextBrowser
 internal class HtmlProducer
 {
     private readonly StringBuilder sb = new StringBuilder();
     public readonly HtmlTableOptions Options;
+    private readonly Dictionary<string, ContextInfo> contextLookup;
 
-    public HtmlProducer(HtmlTableOptions options)
+    public HtmlProducer(HtmlTableOptions options, Dictionary<string, ContextInfo> contextLookup)
     {
         Options = options;
+        this.contextLookup = contextLookup;
     }
 
     public string GetResult() => sb.ToString();
 
     public void ProduceHtmlStart() => sb.AppendLine("<!DOCTYPE html><html>");
 
+    // context: build, header
     public void ProduceHead()
     {
         sb.AppendLine("<head><meta charset=\"UTF-8\"><title>📦 Контекстная матрица</title>");
@@ -132,25 +136,70 @@ internal class HtmlProducer
     }
 
 
+    private static int GetCoverageValue(ContextInfo? ctx)
+    {
+        return ctx?.GetDimensionIntValue("coverage") ?? 0;
+    }
+
     private void ProduceDataCells(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         foreach(var col in uiMatrix.cols)
         {
-            var key = Options.Orientation == MatrixOrientation.ActionRows
-                ? (row, col)
-                : (col, row);
+            // определяем cell с учётом ориентации
+            var cell = Options.Orientation == MatrixOrientation.ActionRows
+                ? new ContextContainer(row, col)
+                : new ContextContainer(col, row);
 
-            if(matrix.TryGetValue(key, out var methods) && methods.Any())
+            var hasMethods = matrix.TryGetValue(cell, out var methods) && methods.Any();
+            var hRef = $"composite_{cell.Action}_{cell.Domain}.html";
+
+            string style = string.Empty;
+            var bgColor = GetCoverageColorForCell(cell, hasMethods ? methods : null, contextLookup, GetCoverageValue);
+            if(bgColor != null)
             {
-                var hRef = $"composite_{key.Item1}_{key.Item2}.html";
-                sb.Append($"<td><a href=\"{hRef}\">{methods.Count}</a></td>");
+                style = $" style=\"inherited;background-color:{bgColor}; color:black\"";
             }
-            else
-            {
-                sb.Append("<td>&nbsp;</td>");
-            }
+
+            sb.Append("<td")
+              .Append(style)
+              .Append($"><a href=\"{hRef}\">{(hasMethods ? methods?.Count ?? 0 : "&nbsp;")}</a>")
+              .AppendLine("</td>");
         }
     }
+
+    public static string? GetCoverageColorForCell(ContextContainer cell, List<string>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
+    {
+        // 1) Если в ячейке есть методы — усредняем их coverage
+        if(methods != null && methods.Count > 0)
+        {
+            var covs = methods
+                .Select(name => contextLookup.TryGetValue(name, out var ctx)
+                    ? DimensionValueExtractor(ctx)
+                    : 0
+                    )
+                .ToList();
+
+            if(covs.Any())
+                return HeatmapColorBuilder.ToHeatmapColor(covs.Average());
+        }
+
+        // 2) Нет методов или у методов нет coverage — пробуем action
+        if(contextLookup.TryGetValue(cell.Action, out var actionCtx))
+        {
+            var aVal = DimensionValueExtractor(actionCtx);
+            return HeatmapColorBuilder.ToHeatmapColor(aVal);
+        }
+
+        // 3) Пробуем domain
+        if(contextLookup.TryGetValue(cell.Domain, out var domainCtx))
+        {
+            var aVal = DimensionValueExtractor(domainCtx);
+            return HeatmapColorBuilder.ToHeatmapColor(aVal);
+        }
+
+        return null;
+    }
+
 
     private void ProduceRowSummaryCellLast(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
@@ -194,7 +243,6 @@ internal class HtmlProducer
             ProduceColumnSummaryRow(uiMatrix, matrix);
     }
 }
-
 
 internal class HtmlTableOptions
 {

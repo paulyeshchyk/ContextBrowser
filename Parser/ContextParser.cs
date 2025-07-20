@@ -1,4 +1,5 @@
 ﻿using ContextBrowser.Extensions;
+using ContextBrowser.Parser.csharp;
 
 namespace ContextBrowser.Parser;
 
@@ -8,6 +9,7 @@ public class ContextParser
     private const string TargetExtension = ".cs";
 
     // context: read
+    // layer: 900
     public static List<ContextInfo> Parse(string rootPath)
     {
         var pathType = PathAnalyzer.GetPathType(rootPath);
@@ -36,83 +38,27 @@ public class ContextParser
         return results;
     }
 
-    // context: read, file
     private static List<ContextInfo> ParseFile(string filePath)
     {
-        var result = new List<ContextInfo>();
-        var lines = File.ReadAllLines(filePath);
-
-        ContextInfo? currentClass = null;
-        ContextInfo? currentMethod = null;
-        string? currentNamespace = null;
-        List<string> pendingContexts = new();
-
-        foreach(var line in lines)
+        var ctx = new ParseContext();
+        var parsers = new ILineParser[]
         {
-            var nsMatch = line.MatchNamespace();
-            if(nsMatch?.Success ?? false)
-            {
-                currentNamespace = nsMatch.Groups[1].Value.Trim().TrimEnd(';');
-                continue;
-            }
+    new NamespaceParser(),
+    new ContextCommentParser(),
+    new DimensionParser(),  // теперь откладывает всё в PendingDimensions
+    new ClassParser(),      // здесь применяются pendingDimensions к классу
+    new MethodParser(),     // здесь — к методу
+    new EndMethodParser()
+        };
 
-            var contextMatch = line.MatchContext();
-            if(contextMatch?.Success ?? false)
-            {
-                var tags = contextMatch.Groups[1].Value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim().ToLower());
-
-                foreach(var tag in tags)
-                {
-                    if(currentMethod != null)
-                        currentMethod.Contexts.Add(tag);
-                    else if(currentClass != null)
-                        currentClass.Contexts.Add(tag);
-                }
-                pendingContexts.AddRange(tags);
-                continue;
-            }
-
-            var classMatch = line.MatchClass();
-            if(classMatch?.Success ?? false)
-            {
-                var theName = classMatch.Groups[1].Value.Trim();
-                currentClass = new ContextInfo
-                {
-                    ElementType = "class",
-                    Name = theName,//.Escaped()
-                    Namespace = currentNamespace
-                };
-
-                foreach(var tag in pendingContexts.Distinct())
-                    currentClass.Contexts.Add(tag);
-                pendingContexts.Clear();
-
-                result.Add(currentClass);
-                currentMethod = null;
-                continue;
-            }
-
-            var methodMatch = line?.MatchMethod();
-            if(methodMatch?.Success ?? false)
-            {
-                var theName = methodMatch.Groups[1].Value.Trim();
-                currentMethod = new ContextInfo
-                {
-                    ElementType = "method",
-                    Name = theName,//.Escaped()
-                    Namespace = currentNamespace,
-                    ClassOwner = currentClass?.Name
-                };
-
-                foreach(var tag in pendingContexts.Distinct())
-                    currentMethod.Contexts.Add(tag);
-                pendingContexts.Clear();
-
-                result.Add(currentMethod);
-                continue;
-            }
+        foreach(var line in File.ReadAllLines(filePath))
+        {
+            foreach(var parser in parsers)
+                if(parser.TryParse(line, ctx))
+                    break;
         }
 
-        return result;
+        return ctx.Result;
     }
 }
+

@@ -2,8 +2,10 @@
 
 namespace ContextBrowser.Generator.Matrix;
 
+// context: ContextBrowser
 public static class UiMatrixGenerator
 {
+    // context: build
     public static UiMatrix Generate(Dictionary<ContextContainer, List<string>> matrix, MatrixOrientation matrixOrientation = MatrixOrientation.DomainRows, UnclassifiedPriority priority = UnclassifiedPriority.None)
     {
         var actions = matrix.Keys.Select(k => k.Action).Distinct().ToList();
@@ -34,11 +36,13 @@ public static class UiMatrixGenerator
         };
     }
 
+    // context: build
     private static string highest(string v)
     {
         return v == ContextClassifier.EmptyAction || v == ContextClassifier.EmptyDomain ? string.Empty : v;
     }
 
+    // context: build
     private static string lowest(string v)
     {
         return v == ContextClassifier.EmptyAction || v == ContextClassifier.EmptyDomain ? ContextClassifier.LowestName : v;

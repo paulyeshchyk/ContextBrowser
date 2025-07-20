@@ -13,11 +13,11 @@ public static class IndexGenerator
     }
 
     //context: build, html, page, index, file, matrix
-    public static void GenerateContextIndexHtml(Dictionary<ContextContainer, List<string>> matrix, string outputFile, UnclassifiedPriority priority = UnclassifiedPriority.None, MatrixOrientation orientation = MatrixOrientation.DomainRows, SummaryPlacement summaryPlacement = SummaryPlacement.AfterFirst)
+    public static void GenerateContextIndexHtml(Dictionary<ContextContainer, List<string>> matrix, Dictionary<string, ContextInfo> allContextInfo, string outputFile, UnclassifiedPriority priority = UnclassifiedPriority.None, MatrixOrientation orientation = MatrixOrientation.DomainRows, SummaryPlacement summaryPlacement = SummaryPlacement.AfterFirst)
     {
         var uiMatrix = UiMatrixGenerator.Generate(matrix, orientation, priority);
 
-        var producer = new HtmlProducer(new HtmlTableOptions { SummaryPlacement = summaryPlacement, Orientation = orientation });
+        var producer = new HtmlProducer(new HtmlTableOptions { SummaryPlacement = summaryPlacement, Orientation = orientation }, allContextInfo);
 
         producer.ProduceHtmlStart();
         producer.ProduceHead();
