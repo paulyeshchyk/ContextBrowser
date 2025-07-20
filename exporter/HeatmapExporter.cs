@@ -1,5 +1,4 @@
-﻿using ContextBrowser.Parser;
-using System.Text;
+﻿using System.Text;
 
 namespace ContextBrowser.exporter;
 
@@ -23,10 +22,10 @@ public static class HeatmapExporter
         lines.Add("Action;" + string.Join(";", domains));
 
         // Основная матрица
-        foreach (var action in actions)
+        foreach(var action in actions)
         {
             var row = new List<string> { action };
-            foreach (var domain in domains)
+            foreach(var domain in domains)
             {
                 var key = (action, domain);
                 var count = matrix.TryGetValue(key, out var methods) ? methods.Count : 0;
@@ -36,20 +35,20 @@ public static class HeatmapExporter
         }
 
         // Добавим строку для нераспознанных, если нужно
-        if (includeUnclassified && matrix.ContainsKey((ContextClassifier.EmptyAction, ContextClassifier.EmptyDomain)))
+        if(includeUnclassified && matrix.ContainsKey((ContextClassifier.EmptyAction, ContextClassifier.EmptyDomain)))
         {
             var unclassifiedCount = matrix[(ContextClassifier.EmptyAction, ContextClassifier.EmptyDomain)].Count;
             var row = new List<string> { ContextClassifier.EmptyAction };
 
             // Заполняем пустыми значениями для всех доменов
-            foreach (var _ in domains)
+            foreach(var _ in domains)
                 row.Add("0");
 
             // Добавим колонку "NoDomain" в конец, если она не была в списке
             row.Add(unclassifiedCount.ToString());
 
             // Обновим заголовок, добавив "NoDomain" в конец
-            if (!domains.Contains(ContextClassifier.EmptyDomain))
+            if(!domains.Contains(ContextClassifier.EmptyDomain))
                 lines[0] += $";{ContextClassifier.EmptyDomain}";
 
             lines.Add(string.Join(";", row));
@@ -65,7 +64,7 @@ public static class HeatmapExporter
         sb.AppendLine("@startuml");
         sb.AppendLine("skinparam componentStyle rectangle");
 
-        foreach (var cell in matrix)
+        foreach(var cell in matrix)
         {
             var (action, domain) = cell.Key;
             var count = cell.Value.Count;
@@ -88,7 +87,7 @@ public static class HeatmapExporter
         sb.AppendLine("@startuml");
         sb.AppendLine("skinparam componentStyle rectangle");
 
-        foreach (var cell in matrix)
+        foreach(var cell in matrix)
         {
             var (action, domain) = cell.Key;
             var count = cell.Value.Count;
@@ -108,7 +107,7 @@ public static class HeatmapExporter
     //context: build, heatmap, uml, directory
     public static void GeneratePerCellDiagrams(Dictionary<ContextContainer, List<string>> matrix, string targetDirectory)
     {
-        foreach (var cell in matrix)
+        foreach(var cell in matrix)
         {
             var (action, domain) = cell.Key;
             var methods = cell.Value.Distinct();
@@ -119,7 +118,7 @@ public static class HeatmapExporter
             sb.AppendLine("skinparam componentStyle rectangle");
             sb.AppendLine($"title {action.ToUpper()} → {domain}");
 
-            foreach (var m in methods)
+            foreach(var m in methods)
                 sb.AppendLine($"component \"{m}\"");
 
             sb.AppendLine("@enduml");
@@ -131,7 +130,7 @@ public static class HeatmapExporter
     //context: build, html, page, directory, uml
     public static void GenerateContextHtmlPages(Dictionary<ContextContainer, List<string>> matrix, string outputDirectory)
     {
-        foreach (var cell in matrix)
+        foreach(var cell in matrix)
         {
             var (action, domain) = cell.Key;
             var compositeFileName = $"composite_{action}_{domain}.html";
@@ -146,7 +145,7 @@ public static class HeatmapExporter
             sb.AppendLine($"<p>Methods: {cell.Value.Count}</p>");
             sb.AppendLine("<ul>");
 
-            foreach (var method in cell.Value.Distinct())
+            foreach(var method in cell.Value.Distinct())
             {
                 sb.AppendLine($"  <li>{method}</li>");
             }
@@ -168,7 +167,7 @@ public static class HeatmapExporter
         var allActions = matrix.Keys.Select(k => k.Action).Distinct();
         var allDomains = matrix.Keys.Select(k => k.Domain).Distinct();
 
-        foreach (var action in allActions)
+        foreach(var action in allActions)
         {
             var methods = matrix
                 .Where(kvp => kvp.Key.Action == action)
@@ -182,14 +181,14 @@ public static class HeatmapExporter
             sb.AppendLine($"<h1>Action: {action}</h1>");
             sb.AppendLine($"<p>Methods: {methods.Count()}</p><ul>");
 
-            foreach (var method in methods)
+            foreach(var method in methods)
                 sb.AppendLine($"<li>{method}</li>");
 
             sb.AppendLine("</ul></body></html>");
             File.WriteAllText(path, sb.ToString());
         }
 
-        foreach (var domain in allDomains)
+        foreach(var domain in allDomains)
         {
             var methods = matrix
                 .Where(kvp => kvp.Key.Domain == domain)
@@ -204,7 +203,7 @@ public static class HeatmapExporter
             sb.AppendLine($"<h1>Domain: {domain}</h1>");
             sb.AppendLine($"<p>Methods: {methods.Count()}</p><ul>");
 
-            foreach (var method in methods)
+            foreach(var method in methods)
                 sb.AppendLine($"<li>{method}</li>");
 
             sb.AppendLine("</ul></body></html>");

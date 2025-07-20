@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.Parser;
+﻿namespace ContextBrowser.model;
 
 // coverage: 255
 // context: ContextInfo, model

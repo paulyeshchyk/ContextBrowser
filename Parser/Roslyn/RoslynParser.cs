@@ -1,21 +1,30 @@
-﻿using Microsoft.CodeAnalysis;
+using ContextBrowser.model;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ContextBrowser.Parser.Roslyn;
 
-internal static class RoslynParser
+internal class RoslynParser<TContext>
 {
-    // context: roslyn, csharp, build, file
-    public static List<ContextInfo> ParseFile(string filePath, RoslynParserOptions? options = null)
+    private readonly IContextCollector<TContext> _collector;
+    private readonly IContextFactory<TContext> _factory;
+    private readonly IContextInfoCommentProcessor<TContext> _commentProcessor;
+
+    public RoslynParser(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IContextInfoCommentProcessor<TContext> commentProcessor)
+    {
+        _collector = collector;
+        _factory = factory;
+        _commentProcessor = commentProcessor;
+    }
+
+    public void ParseFile(string filePath, RoslynParserOptions? options = null)
     {
         options ??= RoslynParserOptions.Default;
 
         var code = File.ReadAllText(filePath);
         var tree = CSharpSyntaxTree.ParseText(code);
         var root = tree.GetCompilationUnitRoot();
-
-        var result = new List<ContextInfo>();
 
         IEnumerable<MemberDeclarationSyntax> typeNodes = Enumerable.Empty<MemberDeclarationSyntax>();
         if(options.MemberTypes.Contains(RoslynMemberType.@class))
@@ -27,58 +36,68 @@ internal static class RoslynParser
         if(options.MemberTypes.Contains(RoslynMemberType.@enum))
             typeNodes = typeNodes.Concat(FilterByModifier<EnumDeclarationSyntax>(root, options));
 
-        foreach(var cls in typeNodes)
+        foreach(var node in typeNodes)
         {
-            // Получаем namespace, если есть
-            var nsNode = cls.Ancestors().OfType<BaseNamespaceDeclarationSyntax>().FirstOrDefault();
+            var nsNode = node
+                .Ancestors()
+                .OfType<BaseNamespaceDeclarationSyntax>()
+                .FirstOrDefault();
+
             var nsName = nsNode?.Name.ToString() ?? "Global";
 
-            ProcessClassNode(cls, nsName, result, options);
-        }
-
-        return result;
-    }
-
-    private static string GetDeclarationName(MemberDeclarationSyntax cls)
-    {
-        if(cls is ClassDeclarationSyntax syntaxClass)
-            return syntaxClass.Identifier.Text;
-        if(cls is TypeDeclarationSyntax syntaxStruct)
-            return syntaxStruct.Identifier.Text;
-        if(cls is EnumDeclarationSyntax syntaxEnum)
-            return syntaxEnum.Identifier.Text;
-        if(cls is RecordDeclarationSyntax syntaxRecord)
-            return syntaxRecord.Identifier.Text;
-        return "?????";
-    }
-
-    private static void ProcessClassNode(MemberDeclarationSyntax cls, string nsName, List<ContextInfo> result, RoslynParserOptions options)
-    {
-        var className = GetDeclarationName(cls);
-
-        var classInfo = BuildContextInfo(cls, "class", nsName, className);
-        result.Add(classInfo);
-
-        var methodNodes = cls
-            .DescendantNodes()
-            .OfType<MethodDeclarationSyntax>()
-            .Where(method =>
+            string kind = node switch
             {
-                var modifier = GetModifierType(method);
-                return modifier.HasValue && options.MethodModifierTypes.Contains(modifier.Value);
-            });
+                ClassDeclarationSyntax => "class",
+                StructDeclarationSyntax => "struct",
+                RecordDeclarationSyntax => "record",
+                EnumDeclarationSyntax => "enum",
+                _ => "unknown"
+            };
 
-        foreach(var method in methodNodes)
+            var typeName = GetDeclarationName(node);
+            var typeContext = _factory.Create(default, kind, nsName, typeName);
+
+            ParseComments(_commentProcessor, node, typeContext);
+            _collector.Add(typeContext);
+
+            if(node is TypeDeclarationSyntax typeSyntax)
+            {
+                var methods = typeSyntax
+                    .DescendantNodes()
+                    .OfType<MethodDeclarationSyntax>()
+                    .Where(m =>
+                    {
+                        var mod = GetModifierType(m);
+                        return mod.HasValue && options.MethodModifierTypes.Contains(mod.Value);
+                    });
+
+                foreach(var method in methods)
+                {
+                    var methodName = method.Identifier.Text;
+                    var fullName = $"{typeName}.{methodName}";
+                    var methodContext = _factory.Create(typeContext, "method", nsName, typeName, fullName);
+
+                    ParseComments(_commentProcessor, method, methodContext);
+                    _collector.Add(methodContext);
+                }
+            }
+        }
+    }
+
+    private static void ParseComments(IContextInfoCommentProcessor<TContext> commentProcessor, MemberDeclarationSyntax node, TContext context)
+    {
+        foreach(var trivia in node.GetLeadingTrivia()
+                                   .Where(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia)))
         {
-            var methodName = method.Identifier.Text;
-            var fullName = $"{className}.{methodName}";
-            var methodInfo = BuildContextInfo(method, "method", nsName, className, fullName);
-            result.Add(methodInfo);
+            var comment = trivia.ToString()
+                                .TrimStart('/')
+                                .Trim();
+            commentProcessor.Process(comment, context);
         }
     }
 
     private static IEnumerable<T> FilterByModifier<T>(SyntaxNode root, RoslynParserOptions options)
-    where T : MemberDeclarationSyntax
+        where T : MemberDeclarationSyntax
     {
         return root
             .DescendantNodes()
@@ -101,7 +120,6 @@ internal static class RoslynParser
         if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
             return RoslynAccessorModifierType.@internal;
 
-        // Если нет модификаторов, можно трактовать как internal по умолчанию (или private — зависит от контекста)
         return null;
     }
 
@@ -117,73 +135,32 @@ internal static class RoslynParser
         if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
             return RoslynAccessorModifierType.@internal;
 
-        // По умолчанию, если нет модификаторов — internal для namespace-level классов
         return null;
     }
 
-
-    private static ContextInfo BuildContextInfo(MemberDeclarationSyntax node, string type, string? ns, string? owner, string? fullName = null)
-    {
-        var info = new ContextInfo
+    private static string GetDeclarationName(MemberDeclarationSyntax member) =>
+        member switch
         {
-            ElementType = type,
-            Name = fullName ?? owner,
-            Namespace = ns,
-            ClassOwner = type == "method" ? owner : null
+            ClassDeclarationSyntax c => c.Identifier.Text,
+            StructDeclarationSyntax s => s.Identifier.Text,
+            RecordDeclarationSyntax r => r.Identifier.Text,
+            EnumDeclarationSyntax e => e.Identifier.Text,
+            _ => "???"
         };
-
-        var trivia = node.GetLeadingTrivia();
-
-        foreach(var t in trivia.Where(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia)))
-        {
-            var comment = t.ToString().TrimStart('/').Trim();
-
-            ParseComment(info, comment);
-        }
-
-        return info;
-    }
-
-    private static void ParseComment(ContextInfo info, string comment)
-    {
-        if(comment.StartsWith("context:", StringComparison.OrdinalIgnoreCase))
-        {
-            var tags = comment.Substring("context:".Length)
-                              .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                              .Select(t => t.Trim().ToLowerInvariant());
-
-            foreach(var tag in tags)
-                info.Contexts.Add(tag);
-        }
-
-        if(comment.StartsWith("coverage:", StringComparison.OrdinalIgnoreCase))
-        {
-            var val = comment.Substring("coverage:".Length).Trim();
-            info.Dimensions["coverage"] = val;
-        }
-    }
 }
 
-internal record RoslynParserOptions(HashSet<RoslynAccessorModifierType> MethodModifierTypes, HashSet<RoslynAccessorModifierType> ClassModifierTypes, HashSet<RoslynMemberType> MemberTypes)
+internal record RoslynParserOptions(
+    HashSet<RoslynAccessorModifierType> MethodModifierTypes,
+    HashSet<RoslynAccessorModifierType> ClassModifierTypes,
+    HashSet<RoslynMemberType> MemberTypes)
 {
     public static RoslynParserOptions Default => new(
-        new HashSet<RoslynAccessorModifierType>
-        {
-            RoslynAccessorModifierType.@public,
-            RoslynAccessorModifierType.@protected
-        },
-        new HashSet<RoslynAccessorModifierType>
-        {
-            RoslynAccessorModifierType.@public,
-            RoslynAccessorModifierType.@protected
-        },
-        new HashSet<RoslynMemberType>
-        {
-            RoslynMemberType.@enum,
-            RoslynMemberType.@class,
-            RoslynMemberType.@record,
-            RoslynMemberType.@struct
-        }
+        new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected },
+        new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected },
+        new() { RoslynMemberType.@enum,
+                RoslynMemberType.@class,
+                RoslynMemberType.@record,
+                RoslynMemberType.@struct }
     );
 }
 

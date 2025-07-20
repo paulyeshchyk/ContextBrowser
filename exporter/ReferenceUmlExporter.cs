@@ -1,4 +1,4 @@
-﻿using ContextBrowser.Parser;
+﻿using ContextBrowser.model;
 using System.Text;
 
 namespace ContextBrowser.ContextCommentsParser;

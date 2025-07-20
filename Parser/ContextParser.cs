@@ -1,4 +1,5 @@
 ﻿using ContextBrowser.Extensions;
+using ContextBrowser.model;
 using ContextBrowser.Parser.Roslyn;
 
 namespace ContextBrowser.Parser;
@@ -30,7 +31,7 @@ public class ContextParser
         var results = new List<ContextInfo>();
         var files = Directory.GetFiles(rootPath, $"*{TargetExtension}", SearchOption.AllDirectories);
 
-        foreach(var file in files)
+        foreach (var file in files)
         {
             results.AddRange(ParseFile(file));
         }
@@ -40,7 +41,13 @@ public class ContextParser
 
     private static List<ContextInfo> ParseFile(string filePath)
     {
-        return RoslynParser.ParseFile(filePath);
+        var collector = new ContextInfoCollector<ContextInfo>();
+        var processor = new ContextInfoCommentProcessor<ContextInfo>();
+        var factory = new ContextInfoFactory<ContextInfo>();
+
+        var parser = new RoslynParser<ContextInfo>(collector, factory, processor);
+        parser.ParseFile(filePath);
+
+        return collector.Collection;
     }
 }
-

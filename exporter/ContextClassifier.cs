@@ -1,6 +1,6 @@
 ﻿using ContextBrowser.ContextCommentsParser;
 
-namespace ContextBrowser.Parser;
+namespace ContextBrowser.exporter;
 
 // context: model, csharp
 internal class ContextClassifier : IContextClassifier
@@ -20,11 +20,6 @@ internal class ContextClassifier : IContextClassifier
     public bool IsVerb(string theWord) => StandardActions.Contains(theWord);
 }
 
-// context: model, csharp
-internal static class ReservedWords
-{
-    public static readonly HashSet<string> CSharp = new HashSet<string> { "if", "for", "foreach", "while", "switch", "return", "await", "var", "let", "new", "typeof", "default", "nameof", "base", "this", "catch", "throw", "using", "true", "false", "null" };
-}
 
 public enum UnclassifiedPriority
 {

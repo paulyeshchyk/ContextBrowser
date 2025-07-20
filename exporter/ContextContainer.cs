@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.Parser;
+﻿namespace ContextBrowser.exporter;
 
 public record struct ContextContainer(string Action, string Domain)
 {
