@@ -1,5 +1,5 @@
 ﻿using ContextBrowser.Extensions;
-using ContextBrowser.Parser.csharp;
+using ContextBrowser.Parser.Roslyn;
 
 namespace ContextBrowser.Parser;
 
@@ -40,25 +40,7 @@ public class ContextParser
 
     private static List<ContextInfo> ParseFile(string filePath)
     {
-        var ctx = new ParseContext();
-        var parsers = new ILineParser[]
-        {
-    new NamespaceParser(),
-    new ContextCommentParser(),
-    new DimensionParser(),  // теперь откладывает всё в PendingDimensions
-    new ClassParser(),      // здесь применяются pendingDimensions к классу
-    new MethodParser(),     // здесь — к методу
-    new EndMethodParser()
-        };
-
-        foreach(var line in File.ReadAllLines(filePath))
-        {
-            foreach(var parser in parsers)
-                if(parser.TryParse(line, ctx))
-                    break;
-        }
-
-        return ctx.Result;
+        return RoslynParser.ParseFile(filePath);
     }
 }
 
