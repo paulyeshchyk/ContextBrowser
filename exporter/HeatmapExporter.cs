@@ -3,10 +3,10 @@ using System.Text;
 
 namespace ContextBrowser.exporter;
 
-// context: heatmap, builder
+// context: heatmap, build
 public static class HeatmapExporter
 {
-    //context: build, csv, file
+    //context: build, csv, file, heatmap
     public static void GenerateHeatmapCsv(Dictionary<ContextContainer, List<string>> matrix, string outputPath, bool includeUnclassified = false)
     {
         var lines = new List<string>();
@@ -58,7 +58,7 @@ public static class HeatmapExporter
         File.WriteAllLines(outputPath, lines);
     }
 
-    //context: build, html, file
+    //context: build, uml, file, heatmap
     public static void GenerateHeatmapUml(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
     {
         var sb = new StringBuilder();
@@ -81,7 +81,7 @@ public static class HeatmapExporter
         File.WriteAllText(outputPath, sb.ToString());
     }
 
-    //context: build, html, links, file
+    //context: build, uml, links, file, heatmap
     public static void GenerateHeatmapUmlWithLinks(Dictionary<ContextContainer, List<string>> matrix, Func<string, string, string> linkGenerator, string outputPath)
     {
         var sb = new StringBuilder();
@@ -105,14 +105,14 @@ public static class HeatmapExporter
         File.WriteAllText(outputPath, sb.ToString());
     }
 
-    //context: build, html, uml, folder
-    public static void GeneratePerCellDiagrams(Dictionary<ContextContainer, List<string>> matrix, string targetFolder)
+    //context: build, heatmap, uml, directory
+    public static void GeneratePerCellDiagrams(Dictionary<ContextContainer, List<string>> matrix, string targetDirectory)
     {
         foreach (var cell in matrix)
         {
             var (action, domain) = cell.Key;
             var methods = cell.Value.Distinct();
-            var fileName = Path.Combine(targetFolder, $"composite_{action}_{domain}.puml");
+            var fileName = Path.Combine(targetDirectory, $"composite_{action}_{domain}.puml");
 
             var sb = new StringBuilder();
             sb.AppendLine("@startuml");
@@ -128,14 +128,14 @@ public static class HeatmapExporter
         }
     }
 
-    //context: build, html, page, folder
-    public static void GenerateContextHtmlPages(Dictionary<ContextContainer, List<string>> matrix, string outputFolder)
+    //context: build, html, page, directory, uml
+    public static void GenerateContextHtmlPages(Dictionary<ContextContainer, List<string>> matrix, string outputDirectory)
     {
         foreach (var cell in matrix)
         {
             var (action, domain) = cell.Key;
             var compositeFileName = $"composite_{action}_{domain}.html";
-            var filePath = Path.Combine(outputFolder, compositeFileName);
+            var filePath = Path.Combine(outputDirectory, compositeFileName);
 
             var sb = new StringBuilder();
             sb.AppendLine("<!DOCTYPE html>");
@@ -162,8 +162,8 @@ public static class HeatmapExporter
     }
 
 
-    //context: build, html, page, folder
-    public static void GenerateContextDimensionHtmlPages(Dictionary<ContextContainer, List<string>> matrix, string outputFolder)
+    //context: build, html, page, directory, uml
+    public static void GenerateContextDimensionHtmlPages(Dictionary<ContextContainer, List<string>> matrix, string outputDirectory)
     {
         var allActions = matrix.Keys.Select(k => k.Action).Distinct();
         var allDomains = matrix.Keys.Select(k => k.Domain).Distinct();
@@ -175,7 +175,7 @@ public static class HeatmapExporter
                 .SelectMany(kvp => kvp.Value)
                 .Distinct();
             var actionFileName = $"action_{action}.html";
-            var path = Path.Combine(outputFolder, actionFileName);
+            var path = Path.Combine(outputDirectory, actionFileName);
 
             var sb = new StringBuilder();
             sb.AppendLine($"<html><head><meta charset=\"UTF-8\"><title>Action: {action}</title></head><body>");
@@ -197,7 +197,7 @@ public static class HeatmapExporter
                 .Distinct();
 
             var domainFileName = $"domain_{domain}.html";
-            var path = Path.Combine(outputFolder, domainFileName);
+            var path = Path.Combine(outputDirectory, domainFileName);
 
             var sb = new StringBuilder();
             sb.AppendLine("<html><head><meta charset=\"UTF-8\"><title>Domain: " + domain + "</title></head><body>");

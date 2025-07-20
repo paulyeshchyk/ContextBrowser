@@ -12,7 +12,7 @@ public static class IndexGenerator
         AfterLast       // внизу таблицы / справа от последней колонки
     }
 
-    //context: build, html, page, index, file, matrix
+    //context: build, html, page, index, file
     public static void GenerateContextIndexHtml(Dictionary<ContextContainer, List<string>> matrix, Dictionary<string, ContextInfo> allContextInfo, string outputFile, UnclassifiedPriority priority = UnclassifiedPriority.None, MatrixOrientation orientation = MatrixOrientation.DomainRows, SummaryPlacement summaryPlacement = SummaryPlacement.AfterFirst)
     {
         var uiMatrix = UiMatrixGenerator.Generate(matrix, orientation, priority);

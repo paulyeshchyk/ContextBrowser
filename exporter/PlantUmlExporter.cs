@@ -4,10 +4,10 @@ using System.Text.RegularExpressions;
 
 namespace ContextBrowser.exporter;
 
-// context: puml
+// context: uml, build
 public static class PlantUmlExporter
 {
-    // context: build
+    // context: build, uml
     public static void GenerateUml(List<ContextInfo> elements, string outputPath)
     {
         var classes = elements.Where(e => e.ElementType == "class").ToList();
@@ -50,7 +50,8 @@ public static class PlantUmlExporter
         File.WriteAllText(outputPath, sb.ToString());
     }
 
-    public static string? CleanName(string? rawName)
+    // context: uml, build
+    private static string? CleanName(string? rawName)
     {
         if(string.IsNullOrEmpty(rawName))
             return rawName;

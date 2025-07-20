@@ -1,10 +1,12 @@
 ﻿namespace ContextBrowser.Generator.Html;
 
+// context: color, build
 internal static class HeatmapColorBuilder
 {
+    // context: build, color
     public static string? ToHeatmapColor(double avgCoverage)
     {
-        if (avgCoverage == 0)
+        if(avgCoverage == 0)
         {
             return null;
         }
@@ -15,5 +17,4 @@ internal static class HeatmapColorBuilder
         // G = 255
         return $"#{channel:X2}FF{channel:X2}";
     }
-
 }

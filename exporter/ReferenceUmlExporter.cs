@@ -3,9 +3,9 @@ using System.Text;
 
 namespace ContextBrowser.ContextCommentsParser;
 
-// context: reference
 public static class ReferenceUmlExporter
 {
+    // context: build, uml, links
     public static void GenerateMethodLinks(List<ContextInfo> elements, string outputPath)
     {
         var methods = elements.Where(e => e.ElementType == "method").ToList();

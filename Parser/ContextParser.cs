@@ -3,12 +3,12 @@ using ContextBrowser.Parser.Roslyn;
 
 namespace ContextBrowser.Parser;
 
-// context: parser, file, folder, csharp
+// context: parser, file, directory, csharp, build
 public class ContextParser
 {
     private const string TargetExtension = ".cs";
 
-    // context: read
+    // context: read, file, directory
     // layer: 900
     public static List<ContextInfo> Parse(string rootPath)
     {
@@ -24,7 +24,7 @@ public class ContextParser
         };
     }
 
-    // context: read, folder
+    // context: read, directory
     private static List<ContextInfo> ParseDirectory(string rootPath)
     {
         var results = new List<ContextInfo>();

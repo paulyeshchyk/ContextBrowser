@@ -5,7 +5,7 @@ using ContextBrowser.Parser;
 
 namespace ContextBrowser.ContextCommentsParser;
 
-public static class Program
+static class Program
 {
     public static void Main(string[] args)
     {
@@ -56,7 +56,7 @@ public static class Program
 
         HeatmapExporter.GenerateContextDimensionHtmlPages(matrix, $"{theOutputPath}");
 
-        //var links = ContextMatrixUmlExporter.GenerateMethodLinks(result);
-        //ContextMatrixUmlExporter.GenerateLinksUml(links, $"{theOutputPath}uml.4.links.puml");
+        var links = ContextMatrixUmlExporter.GenerateMethodLinks(result, cc);
+        ContextMatrixUmlExporter.GenerateLinksUml(links, $"{theOutputPath}uml.4.links.puml");
     }
 }

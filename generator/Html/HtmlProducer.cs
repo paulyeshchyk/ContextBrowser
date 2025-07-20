@@ -5,7 +5,6 @@ using static ContextBrowser.Generator.Html.IndexGenerator;
 
 namespace ContextBrowser.Generator.Html;
 
-// context: ContextBrowser
 internal class HtmlProducer
 {
     private readonly StringBuilder sb = new StringBuilder();
@@ -18,11 +17,13 @@ internal class HtmlProducer
         this.contextLookup = contextLookup;
     }
 
+    // context: html, read
     public string GetResult() => sb.ToString();
 
+    // context: html, build, doctype
     public void ProduceHtmlStart() => sb.AppendLine("<!DOCTYPE html><html>");
 
-    // context: build, header
+    // context: html, build, header
     public void ProduceHead()
     {
         sb.AppendLine("<head><meta charset=\"UTF-8\"><title>📦 Контекстная матрица</title>");
@@ -35,20 +36,121 @@ internal class HtmlProducer
         sb.AppendLine("</head>");
     }
 
+    // context: html, build
     public void ProduceHtmlEnd() => sb.AppendLine("</html>");
 
+    // context: html, build
     public void ProduceHtmlBodyStart() => sb.AppendLine("<body>");
 
+    // context: html, build
     public void ProduceHtmlBodyEnd() => sb.AppendLine("</body>");
 
+    // context: html, build
     public void ProduceTitle() => sb.AppendLine("<h1>📦 Навигация по архитектурным зонам</h1>");
 
+    // context: html, build
     public void ProduceTableStart() => sb.AppendLine("<table>");
 
+    // context: html, build
     public void ProduceTableEnd() => sb.AppendLine("</table>");
 
-    private void ProduceTableHeaderFirstCellContent() =>
-        sb.AppendLine($"<th><a href=\"\">{(Options.Orientation == MatrixOrientation.ActionRows ? "Action \\ Domain" : "Domain \\ Action")}</a></th>");
+    // context: html, build
+    public void ProduceTableHeaderRow(UiMatrix uiMatrix)
+    {
+        sb.Append("<tr>");
+        ProduceTableHeaderFirstCellContent();
+        ProduceTableFirstRowCellSummary();
+        ProduceTableHeaderRowCells(uiMatrix);
+        ProduceTableLastRowCellSummary();
+        sb.AppendLine("</tr>");
+    }
+
+    // context: html, build
+    public void ProduceColumnSummaryRow(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        var colSums = uiMatrix.ColsSummary(matrix, Options.Orientation);
+        var totalSum = colSums?.Values.Sum() ?? 0;
+
+        sb.Append("<tr>");
+        sb.Append("<td><b>Σ</b></td>");
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
+            sb.Append($"<td><a href=\"index.html\">{totalSum}</a></td>");
+
+        ProduceColumnSummaryCells(uiMatrix, colSums);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
+            sb.Append($"<td><a href=\"index.html\">{totalSum}</a></td>");
+
+        sb.AppendLine("</tr>");
+    }
+
+    // context: html, read
+    public static string? GetCoverageColorForCell(ContextContainer cell, List<string>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
+    {
+        // 1) Если в ячейке есть методы — усредняем их coverage
+        if(methods != null && methods.Count > 0)
+        {
+            var covs = methods
+                .Select(name => contextLookup.TryGetValue(name, out var ctx)
+                    ? DimensionValueExtractor(ctx)
+                    : 0
+                    )
+                .ToList();
+
+            if(covs.Any())
+                return HeatmapColorBuilder.ToHeatmapColor(covs.Average());
+        }
+
+        // 2) Нет методов или у методов нет coverage — пробуем action
+        if(contextLookup.TryGetValue(cell.Action, out var actionCtx))
+        {
+            var aVal = DimensionValueExtractor(actionCtx);
+            return HeatmapColorBuilder.ToHeatmapColor(aVal);
+        }
+
+        // 3) Пробуем domain
+        if(contextLookup.TryGetValue(cell.Domain, out var domainCtx))
+        {
+            var aVal = DimensionValueExtractor(domainCtx);
+            return HeatmapColorBuilder.ToHeatmapColor(aVal);
+        }
+
+        return null;
+    }
+
+    // context: html, build
+    public void ProduceDataRow(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        sb.Append("<tr>");
+        ProduceRowHeaderCell(row);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
+            ProduceRowSummaryCell(row, uiMatrix, matrix);
+
+        ProduceDataCells(row, uiMatrix, matrix);
+
+        ProduceRowSummaryCellLast(row, uiMatrix, matrix);
+
+        sb.AppendLine("</tr>");
+    }
+
+    // context: html, build, matrix
+    public void ProduceMatrix(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        ProduceTableHeaderRow(uiMatrix);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
+            ProduceColumnSummaryRow(uiMatrix, matrix);
+
+        foreach(var row in uiMatrix.rows)
+            ProduceDataRow(row, uiMatrix, matrix);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
+            ProduceColumnSummaryRow(uiMatrix, matrix);
+    }
+
+    private void ProduceTableHeaderFirstCellContent() => sb.AppendLine($"<th><a href=\"\">{(Options.Orientation == MatrixOrientation.ActionRows ? "Action \\ Domain" : "Domain \\ Action")}</a></th>");
 
     private void ProduceTableFirstRowCellSummary()
     {
@@ -106,36 +208,6 @@ internal class HtmlProducer
         sb.Append($"<td><a href=\"{hRef}\">{rowSum}</a></td>");
     }
 
-    public void ProduceTableHeaderRow(UiMatrix uiMatrix)
-    {
-        sb.Append("<tr>");
-        ProduceTableHeaderFirstCellContent();
-        ProduceTableFirstRowCellSummary();
-        ProduceTableHeaderRowCells(uiMatrix);
-        ProduceTableLastRowCellSummary();
-        sb.AppendLine("</tr>");
-    }
-
-    public void ProduceColumnSummaryRow(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
-    {
-        var colSums = uiMatrix.ColsSummary(matrix, Options.Orientation);
-        var totalSum = colSums?.Values.Sum() ?? 0;
-
-        sb.Append("<tr>");
-        sb.Append("<td><b>Σ</b></td>");
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            sb.Append($"<td><a href=\"index.html\">{totalSum}</a></td>");
-
-        ProduceColumnSummaryCells(uiMatrix, colSums);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            sb.Append($"<td><a href=\"index.html\">{totalSum}</a></td>");
-
-        sb.AppendLine("</tr>");
-    }
-
-
     private static int GetCoverageValue(ContextInfo? ctx)
     {
         return ctx?.GetDimensionIntValue("coverage") ?? 0;
@@ -167,40 +239,6 @@ internal class HtmlProducer
         }
     }
 
-    public static string? GetCoverageColorForCell(ContextContainer cell, List<string>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
-    {
-        // 1) Если в ячейке есть методы — усредняем их coverage
-        if(methods != null && methods.Count > 0)
-        {
-            var covs = methods
-                .Select(name => contextLookup.TryGetValue(name, out var ctx)
-                    ? DimensionValueExtractor(ctx)
-                    : 0
-                    )
-                .ToList();
-
-            if(covs.Any())
-                return HeatmapColorBuilder.ToHeatmapColor(covs.Average());
-        }
-
-        // 2) Нет методов или у методов нет coverage — пробуем action
-        if(contextLookup.TryGetValue(cell.Action, out var actionCtx))
-        {
-            var aVal = DimensionValueExtractor(actionCtx);
-            return HeatmapColorBuilder.ToHeatmapColor(aVal);
-        }
-
-        // 3) Пробуем domain
-        if(contextLookup.TryGetValue(cell.Domain, out var domainCtx))
-        {
-            var aVal = DimensionValueExtractor(domainCtx);
-            return HeatmapColorBuilder.ToHeatmapColor(aVal);
-        }
-
-        return null;
-    }
-
-
     private void ProduceRowSummaryCellLast(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         if(Options.SummaryPlacement != SummaryPlacement.AfterLast)
@@ -212,35 +250,6 @@ internal class HtmlProducer
 
         var rowSum = uiMatrix.RowsSummary(matrix, Options.Orientation)?[row];
         sb.Append($"<td><a href=\"{rowFile}\">{rowSum}</a></td>");
-    }
-
-    public void ProduceDataRow(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
-    {
-        sb.Append("<tr>");
-        ProduceRowHeaderCell(row);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            ProduceRowSummaryCell(row, uiMatrix, matrix);
-
-        ProduceDataCells(row, uiMatrix, matrix);
-
-        ProduceRowSummaryCellLast(row, uiMatrix, matrix);
-
-        sb.AppendLine("</tr>");
-    }
-
-    public void ProduceMatrix(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
-    {
-        ProduceTableHeaderRow(uiMatrix);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            ProduceColumnSummaryRow(uiMatrix, matrix);
-
-        foreach(var row in uiMatrix.rows)
-            ProduceDataRow(row, uiMatrix, matrix);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            ProduceColumnSummaryRow(uiMatrix, matrix);
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿namespace ContextBrowser.Parser.csharp;
 
 // Хранит состояние разбора одного файла
+// context: model, file, csharp
 public class ParseContext
 {
     public string? Namespace;

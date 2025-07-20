@@ -1,6 +1,6 @@
 ﻿namespace ContextBrowser.Extensions;
 
-// context: filesystem
+// context: file, directory, read
 // coverage: 12
 public class PathAnalyzer
 {
@@ -13,7 +13,7 @@ public class PathAnalyzer
         PlainText // Не является путем в файловой системе или не существует
     }
 
-    // context: read, filesystem
+    // context: read, file
     // coverage: 3
     public static PathType GetPathType(string path)
     {

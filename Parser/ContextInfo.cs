@@ -19,10 +19,9 @@ public class ContextInfo
     public Dictionary<string, string> Dimensions { get; set; } = new();
 }
 
-// context: ContextInfo
 public static class ContextInfoExtensions
 {
-    // context: read, dimension
+    // context: read, dimension, ContextInfo
     public static int GetDimensionIntValue(this ContextInfo contextInfo, string dimensionName)
     {
         if(contextInfo.Dimensions.TryGetValue(dimensionName, out var raw))
