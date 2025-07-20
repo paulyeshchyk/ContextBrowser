@@ -14,28 +14,38 @@ internal static class RoslynParser
 
         var result = new List<ContextInfo>();
 
-        foreach(var ns in root.DescendantNodes().OfType<NamespaceDeclarationSyntax>())
+        var classNodes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
+
+        foreach(var cls in classNodes)
         {
-            var nsName = ns.Name.ToString();
+            // Получаем namespace, если есть
+            var nsNode = cls.Ancestors().OfType<BaseNamespaceDeclarationSyntax>().FirstOrDefault();
+            var nsName = nsNode?.Name.ToString() ?? "Global";
 
-            foreach(var cls in ns.DescendantNodes().OfType<ClassDeclarationSyntax>())
-            {
-                var className = cls.Identifier.Text;
-                var classInfo = BuildContextInfo(cls, "class", nsName, className);
-                result.Add(classInfo);
-
-                foreach(var method in cls.DescendantNodes().OfType<MethodDeclarationSyntax>())
-                {
-                    var methodName = method.Identifier.Text;
-                    var fullName = $"{className}.{methodName}";
-                    var methodInfo = BuildContextInfo(method, "method", nsName, className, fullName);
-                    result.Add(methodInfo);
-                }
-            }
+            ProcessClassNode(cls, nsName, result);
         }
 
         return result;
     }
+
+    private static void ProcessClassNode(ClassDeclarationSyntax cls, string nsName, List<ContextInfo> result)
+    {
+        var className = cls.Identifier.Text;
+
+        var classInfo = BuildContextInfo(cls, "class", nsName, className);
+        result.Add(classInfo);
+
+        var methodNodes = cls.DescendantNodes().OfType<MethodDeclarationSyntax>();
+
+        foreach(var method in methodNodes)
+        {
+            var methodName = method.Identifier.Text;
+            var fullName = $"{className}.{methodName}";
+            var methodInfo = BuildContextInfo(method, "method", nsName, className, fullName);
+            result.Add(methodInfo);
+        }
+    }
+
 
     private static ContextInfo BuildContextInfo(MemberDeclarationSyntax node, string type, string? ns, string? owner, string? fullName = null)
     {

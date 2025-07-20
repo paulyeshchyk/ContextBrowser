@@ -9,7 +9,7 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        string theSourcePath = "..\\..\\..\\extensions\\PathAnalyzer.cs";
+        string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser";
         string theOutputPath = ".\\output\\";
 
         bool includeUnclassified = true;
