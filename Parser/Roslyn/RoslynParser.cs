@@ -7,9 +7,9 @@ namespace ContextBrowser.Parser.Roslyn;
 internal static class RoslynParser
 {
     // context: roslyn, csharp, build, file
-    public static List<ContextInfo> ParseFile(string filePath, ParserOptions? options = null)
+    public static List<ContextInfo> ParseFile(string filePath, RoslynParserOptions? options = null)
     {
-        options ??= ParserOptions.Default;
+        options ??= RoslynParserOptions.Default;
 
         var code = File.ReadAllText(filePath);
         var tree = CSharpSyntaxTree.ParseText(code);
@@ -17,16 +17,17 @@ internal static class RoslynParser
 
         var result = new List<ContextInfo>();
 
-        var classNodes = root
-            .DescendantNodes()
-            .OfType<ClassDeclarationSyntax>()
-            .Where(cls =>
-            {
-                var modifier = GetClassModifierType(cls);
-                return modifier.HasValue && options.ClassModifierTypes.Contains(modifier.Value);
-            });
+        IEnumerable<MemberDeclarationSyntax> typeNodes = Enumerable.Empty<MemberDeclarationSyntax>();
+        if(options.MemberTypes.Contains(RoslynMemberType.@class))
+            typeNodes = typeNodes.Concat(FilterByModifier<ClassDeclarationSyntax>(root, options));
+        if(options.MemberTypes.Contains(RoslynMemberType.@record))
+            typeNodes = typeNodes.Concat(FilterByModifier<RecordDeclarationSyntax>(root, options));
+        if(options.MemberTypes.Contains(RoslynMemberType.@struct))
+            typeNodes = typeNodes.Concat(FilterByModifier<StructDeclarationSyntax>(root, options));
+        if(options.MemberTypes.Contains(RoslynMemberType.@enum))
+            typeNodes = typeNodes.Concat(FilterByModifier<EnumDeclarationSyntax>(root, options));
 
-        foreach(var cls in classNodes)
+        foreach(var cls in typeNodes)
         {
             // Получаем namespace, если есть
             var nsNode = cls.Ancestors().OfType<BaseNamespaceDeclarationSyntax>().FirstOrDefault();
@@ -38,9 +39,22 @@ internal static class RoslynParser
         return result;
     }
 
-    private static void ProcessClassNode(ClassDeclarationSyntax cls, string nsName, List<ContextInfo> result, ParserOptions options)
+    private static string GetDeclarationName(MemberDeclarationSyntax cls)
     {
-        var className = cls.Identifier.Text;
+        if(cls is ClassDeclarationSyntax syntaxClass)
+            return syntaxClass.Identifier.Text;
+        if(cls is TypeDeclarationSyntax syntaxStruct)
+            return syntaxStruct.Identifier.Text;
+        if(cls is EnumDeclarationSyntax syntaxEnum)
+            return syntaxEnum.Identifier.Text;
+        if(cls is RecordDeclarationSyntax syntaxRecord)
+            return syntaxRecord.Identifier.Text;
+        return "?????";
+    }
+
+    private static void ProcessClassNode(MemberDeclarationSyntax cls, string nsName, List<ContextInfo> result, RoslynParserOptions options)
+    {
+        var className = GetDeclarationName(cls);
 
         var classInfo = BuildContextInfo(cls, "class", nsName, className);
         result.Add(classInfo);
@@ -63,31 +77,45 @@ internal static class RoslynParser
         }
     }
 
-    private static AccessorModifierType? GetModifierType(MethodDeclarationSyntax method)
+    private static IEnumerable<T> FilterByModifier<T>(SyntaxNode root, RoslynParserOptions options)
+    where T : MemberDeclarationSyntax
+    {
+        return root
+            .DescendantNodes()
+            .OfType<T>()
+            .Where(node =>
+            {
+                var modifier = GetClassModifierType(node);
+                return modifier.HasValue && options.ClassModifierTypes.Contains(modifier.Value);
+            });
+    }
+
+    private static RoslynAccessorModifierType? GetModifierType(MethodDeclarationSyntax method)
     {
         if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
-            return AccessorModifierType.@public;
+            return RoslynAccessorModifierType.@public;
         if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
-            return AccessorModifierType.@protected;
+            return RoslynAccessorModifierType.@protected;
         if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
-            return AccessorModifierType.@private;
+            return RoslynAccessorModifierType.@private;
         if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
-            return AccessorModifierType.@internal;
+            return RoslynAccessorModifierType.@internal;
 
         // Если нет модификаторов, можно трактовать как internal по умолчанию (или private — зависит от контекста)
         return null;
     }
 
-    private static AccessorModifierType? GetClassModifierType(ClassDeclarationSyntax cls)
+    private static RoslynAccessorModifierType? GetClassModifierType<T>(T member)
+        where T : MemberDeclarationSyntax
     {
-        if(cls.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
-            return AccessorModifierType.@public;
-        if(cls.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
-            return AccessorModifierType.@protected;
-        if(cls.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
-            return AccessorModifierType.@private;
-        if(cls.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
-            return AccessorModifierType.@internal;
+        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
+            return RoslynAccessorModifierType.@public;
+        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
+            return RoslynAccessorModifierType.@protected;
+        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
+            return RoslynAccessorModifierType.@private;
+        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
+            return RoslynAccessorModifierType.@internal;
 
         // По умолчанию, если нет модификаторов — internal для namespace-level классов
         return null;
@@ -110,43 +138,64 @@ internal static class RoslynParser
         {
             var comment = t.ToString().TrimStart('/').Trim();
 
-            if(comment.StartsWith("context:", StringComparison.OrdinalIgnoreCase))
-            {
-                var tags = comment.Substring("context:".Length)
-                                  .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                                  .Select(t => t.Trim().ToLowerInvariant());
-
-                foreach(var tag in tags)
-                    info.Contexts.Add(tag);
-            }
-
-            if(comment.StartsWith("coverage:", StringComparison.OrdinalIgnoreCase))
-            {
-                var val = comment.Substring("coverage:".Length).Trim();
-                info.Dimensions["coverage"] = val;
-            }
+            ParseComment(info, comment);
         }
 
         return info;
     }
+
+    private static void ParseComment(ContextInfo info, string comment)
+    {
+        if(comment.StartsWith("context:", StringComparison.OrdinalIgnoreCase))
+        {
+            var tags = comment.Substring("context:".Length)
+                              .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                              .Select(t => t.Trim().ToLowerInvariant());
+
+            foreach(var tag in tags)
+                info.Contexts.Add(tag);
+        }
+
+        if(comment.StartsWith("coverage:", StringComparison.OrdinalIgnoreCase))
+        {
+            var val = comment.Substring("coverage:".Length).Trim();
+            info.Dimensions["coverage"] = val;
+        }
+    }
 }
 
-public record ParserOptions(HashSet<AccessorModifierType> MethodModifierTypes, HashSet<AccessorModifierType> ClassModifierTypes)
+internal record RoslynParserOptions(HashSet<RoslynAccessorModifierType> MethodModifierTypes, HashSet<RoslynAccessorModifierType> ClassModifierTypes, HashSet<RoslynMemberType> MemberTypes)
 {
-    public static ParserOptions Default => new(
-        new HashSet<AccessorModifierType>
+    public static RoslynParserOptions Default => new(
+        new HashSet<RoslynAccessorModifierType>
         {
-            AccessorModifierType.@public,
-            AccessorModifierType.@protected
+            RoslynAccessorModifierType.@public,
+            RoslynAccessorModifierType.@protected
         },
-        new HashSet<AccessorModifierType>
+        new HashSet<RoslynAccessorModifierType>
         {
-            AccessorModifierType.@public,
-            AccessorModifierType.@protected
-        });
+            RoslynAccessorModifierType.@public,
+            RoslynAccessorModifierType.@protected
+        },
+        new HashSet<RoslynMemberType>
+        {
+            RoslynMemberType.@enum,
+            RoslynMemberType.@class,
+            RoslynMemberType.@record,
+            RoslynMemberType.@struct
+        }
+    );
 }
 
-public enum AccessorModifierType
+public enum RoslynMemberType
+{
+    @class,
+    @record,
+    @enum,
+    @struct
+}
+
+public enum RoslynAccessorModifierType
 {
     @public,
     @protected,

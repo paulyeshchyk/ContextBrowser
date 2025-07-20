@@ -49,6 +49,7 @@ public static class UiMatrixGenerator
     }
 }
 
+// context: model, matrix
 public record UiMatrix
 {
     public List<string> rows = null!;
