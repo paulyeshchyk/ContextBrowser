@@ -3,6 +3,7 @@ using System.Text;
 
 namespace ContextBrowser.ContextCommentsParser;
 
+// context: uml, links, build
 public static class ReferenceUmlExporter
 {
     // context: build, uml, links

@@ -125,6 +125,7 @@ public static class ContextMatrixUmlExporter
         return matrix;
     }
 
+    //context: build, uml, links
     public static HashSet<(string From, string To)> GenerateMethodLinks(List<ContextInfo> elements, IContextClassifier contextClassifier)
     {
         var methodToCell = new Dictionary<string, string>();
@@ -188,6 +189,7 @@ public static class ContextMatrixUmlExporter
         return links;
     }
 
+    //context: build, uml, links
     public static void GenerateLinksUml(HashSet<(string From, string To)> links, string outputPath)
     {
         var sb = new StringBuilder();

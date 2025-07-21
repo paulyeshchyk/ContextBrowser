@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ContextBrowser.Parser.Roslyn;
 
+// context: csharp, build
 internal class RoslynParser<TContext>
 {
     private readonly IContextCollector<TContext> _collector;
@@ -18,6 +19,7 @@ internal class RoslynParser<TContext>
         _commentProcessor = commentProcessor;
     }
 
+    // context: csharp, build, file
     public void ParseFile(string filePath, RoslynParserOptions? options = null)
     {
         options ??= RoslynParserOptions.Default;
@@ -45,6 +47,11 @@ internal class RoslynParser<TContext>
 
             var nsName = nsNode?.Name.ToString() ?? "Global";
 
+            //adds namespace with context
+            //var nodeContext = AddNode(nsNode, "namespace", nsName);
+            //ParseComments(_commentProcessor, nsNode, nodeContext);
+            //_collector.Add(nodeContext);
+
             string kind = node switch
             {
                 ClassDeclarationSyntax => "class",
@@ -56,7 +63,6 @@ internal class RoslynParser<TContext>
 
             var typeName = GetDeclarationName(node);
             var typeContext = _factory.Create(default, kind, nsName, typeName);
-
             ParseComments(_commentProcessor, node, typeContext);
             _collector.Add(typeContext);
 
@@ -84,6 +90,21 @@ internal class RoslynParser<TContext>
         }
     }
 
+    // context: csharp, build, node
+    private TContext? AddNode(MemberDeclarationSyntax? node, string kind, string nsName)
+    {
+        if(node == null)
+        {
+            return default;
+        }
+        var typeName = GetDeclarationName(node);
+        var typeContext = _factory.Create(default, kind, nsName, typeName);
+        ParseComments(_commentProcessor, node, typeContext);
+        _collector.Add(typeContext);
+        return typeContext;
+    }
+
+    // context: csharp, build, comment
     private static void ParseComments(IContextInfoCommentProcessor<TContext> commentProcessor, MemberDeclarationSyntax node, TContext context)
     {
         foreach(var trivia in node.GetLeadingTrivia()
@@ -96,6 +117,7 @@ internal class RoslynParser<TContext>
         }
     }
 
+    // context: csharp, read, node
     private static IEnumerable<T> FilterByModifier<T>(SyntaxNode root, RoslynParserOptions options)
         where T : MemberDeclarationSyntax
     {
@@ -109,6 +131,7 @@ internal class RoslynParser<TContext>
             });
     }
 
+    // context: csharp, read, modifier
     private static RoslynAccessorModifierType? GetModifierType(MethodDeclarationSyntax method)
     {
         if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
@@ -123,6 +146,7 @@ internal class RoslynParser<TContext>
         return null;
     }
 
+    // context: csharp, read, modifier
     private static RoslynAccessorModifierType? GetClassModifierType<T>(T member)
         where T : MemberDeclarationSyntax
     {
@@ -138,6 +162,7 @@ internal class RoslynParser<TContext>
         return null;
     }
 
+    // context: csharp, read, declaration
     private static string GetDeclarationName(MemberDeclarationSyntax member) =>
         member switch
         {
@@ -145,10 +170,12 @@ internal class RoslynParser<TContext>
             StructDeclarationSyntax s => s.Identifier.Text,
             RecordDeclarationSyntax r => r.Identifier.Text,
             EnumDeclarationSyntax e => e.Identifier.Text,
+            BaseNamespaceDeclarationSyntax nn => nn.Name.ToFullString(),
             _ => "???"
         };
 }
 
+// context: csharp, model
 internal record RoslynParserOptions(
     HashSet<RoslynAccessorModifierType> MethodModifierTypes,
     HashSet<RoslynAccessorModifierType> ClassModifierTypes,
@@ -164,6 +191,7 @@ internal record RoslynParserOptions(
     );
 }
 
+// context: csharp, model
 public enum RoslynMemberType
 {
     @class,
@@ -172,6 +200,7 @@ public enum RoslynMemberType
     @struct
 }
 
+// context: csharp, model
 public enum RoslynAccessorModifierType
 {
     @public,

@@ -4,6 +4,7 @@
 // coverage: 12
 public class PathAnalyzer
 {
+    // context: file, directory, model
     public enum PathType
     {
         File,

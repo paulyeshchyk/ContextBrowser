@@ -56,14 +56,17 @@ public record UiMatrix
     public List<string> cols = null!;
 }
 
+// context: model, matrix
 public enum MatrixOrientation
 {
     ActionRows,   // строки = действия, колонки = домены
     DomainRows    // строки = домены, колонки = действия
 }
 
+// context: matrix, build
 public static class UiMatrixExtensions
 {
+    // context: matrix, build
     public static Dictionary<string, int>? RowsSummary(this UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix, MatrixOrientation orientation)
     {
         return uiMatrix.rows.ToDictionary(row => row, row => uiMatrix.cols.Sum(col =>
@@ -73,6 +76,7 @@ public static class UiMatrixExtensions
         }));
     }
 
+    // context: matrix, build
     public static Dictionary<string, int>? ColsSummary(this UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix, MatrixOrientation orientation)
     {
         return uiMatrix.cols.ToDictionary(col => col, col => uiMatrix.rows.Sum(row =>

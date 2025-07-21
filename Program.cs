@@ -12,8 +12,12 @@ static class Program
         string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser";
         string theOutputPath = ".\\output\\";
 
-        bool includeUnclassified = true;
         bool includeAllStandardActions = true;
+        var summaryPlacement = IndexGenerator.SummaryPlacement.AfterLast;
+        var matrixOrientation = Generator.Matrix.MatrixOrientation.DomainRows;
+        bool includeUnclassified = true;
+        var unclassifiedPriority = UnclassifiedPriority.Highest;
+
         var result = ContextParser.Parse(theSourcePath);
         var cc = new ContextClassifier();
         var matrix = ContextMatrixUmlExporter.GenerateMatrix(result, cc, includeUnclassified, includeAllStandardActions);
@@ -49,9 +53,9 @@ static class Program
             matrix,
             contextLookup,
             outputFile: $"{theOutputPath}index.html",
-            priority: UnclassifiedPriority.Highest,
-            orientation: Generator.Matrix.MatrixOrientation.DomainRows,
-            summaryPlacement: IndexGenerator.SummaryPlacement.AfterFirst
+            priority: unclassifiedPriority,
+            orientation: matrixOrientation,
+            summaryPlacement: summaryPlacement
             );
 
         HeatmapExporter.GenerateContextDimensionHtmlPages(matrix, $"{theOutputPath}");

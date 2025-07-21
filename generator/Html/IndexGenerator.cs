@@ -4,8 +4,10 @@ using ContextBrowser.model;
 
 namespace ContextBrowser.Generator.Html;
 
+//context: build, html
 public static class IndexGenerator
 {
+    //context: model, html
     public enum SummaryPlacement
     {
         None,           // не показывать

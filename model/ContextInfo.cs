@@ -19,6 +19,7 @@ public class ContextInfo
     public Dictionary<string, string> Dimensions { get; set; } = new();
 }
 
+// context: read, dimension, ContextInfo
 public static class ContextInfoExtensions
 {
     // context: read, dimension, ContextInfo

@@ -21,6 +21,7 @@ internal class ContextClassifier : IContextClassifier
 }
 
 
+// context: model, csharp
 public enum UnclassifiedPriority
 {
     None,     // как сейчас
