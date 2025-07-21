@@ -1,8 +1,16 @@
 ﻿namespace ContextBrowser.model;
 
+public interface IContextWithReferences<T>
+        where T : IContextWithReferences<T>
+{
+    public string? Name { get; set; }
+
+    HashSet<T> References { get; }
+}
+
 // coverage: 255
 // context: ContextInfo, model
-public class ContextInfo
+public class ContextInfo : IContextWithReferences<ContextInfo>
 {
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
 
@@ -14,7 +22,7 @@ public class ContextInfo
 
     public string? ClassOwner { get; set; }
 
-    public HashSet<string> References { get; set; } = new();
+    public HashSet<ContextInfo> References { get; set; } = new();
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 }
@@ -37,9 +45,9 @@ public static class ContextInfoExtensions
     // context: read, dimension, ContextInfo
     public static int GetDimensionIntValue(this ContextInfo contextInfo, string dimensionName)
     {
-        if (contextInfo.Dimensions.TryGetValue(dimensionName, out var raw))
+        if(contextInfo.Dimensions.TryGetValue(dimensionName, out var raw))
         {
-            if (int.TryParse(raw, out var v))
+            if(int.TryParse(raw, out var v))
             {
                 return v;
             }

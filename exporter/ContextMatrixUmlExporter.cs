@@ -168,7 +168,7 @@ public static class ContextMatrixUmlExporter
             {
                 // Ищем вызываемый метод среди всех методов
                 var calleeMethod = theMethods.FirstOrDefault(m =>
-                    string.Equals(m.Name, calledName, StringComparison.OrdinalIgnoreCase));
+                    string.Equals(m.Name, calledName.Name, StringComparison.OrdinalIgnoreCase));
 
                 if(calleeMethod == null)
                     continue;

@@ -38,19 +38,19 @@ static class Program
         //HeatmapExporter.GenerateHeatmapCsv(matrix, $"{theOutputPath}heatmap.csv", unclassifiedPriority);
 
 
-        //UmlPackagesDiagram.Build(contextsList, $"{theOutputPath}uml.packages.domains.puml");
-        //UmlMethodsOnlyDiagram.Build(contextsList, $"{theOutputPath}methodlinks.puml");
-        //UmlMethodPerActionDomainDiagram.Build(matrix, $"{theOutputPath}uml.packages.actions.puml");
+        UmlPackagesDiagram.Build(contextsList, $"{theOutputPath}uml.packages.domains.puml");
+        UmlMethodsOnlyDiagram.Build(contextsList, $"{theOutputPath}methodlinks.puml");
+        UmlMethodPerActionDomainDiagram.Build(matrix, $"{theOutputPath}uml.packages.actions.puml");
 
         var links = ContextMatrixUmlExporter.GenerateMethodLinks(contextsList, contextClassifier);
-        //SampleLinkedDomain.GenerateLinksUml(links, $"{theOutputPath}uml.4.links.puml");
+        SampleLinkedDomain.GenerateLinksUml(links, $"{theOutputPath}uml.4.links.puml");
 
 
         // 1.
         UmlComponentDiagram.Build(matrix, theOutputPath);
 
         // 2.
-        UmlActionPerDomainDiagram.Build(matrix, (action, domain) => $"composite_{action}_{domain}.puml", $"{theOutputPath}uml.heatmap.link.puml");
+        UmlActionPerDomainDiagram.Build(matrix,(action, domain) => $"composite_{action}_{domain}.puml", $"{theOutputPath}uml.heatmap.link.puml");
 
         // 3.
         HeatmapExporter.GenerateContextHtmlPages(matrix, theOutputPath);

@@ -7,6 +7,7 @@ namespace ContextBrowser.Parser.Roslyn;
 
 // context: csharp, build
 internal class RoslynParser<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     private readonly IContextCollector<TContext> _collector;
     private readonly IContextFactory<TContext> _factory;
@@ -20,7 +21,7 @@ internal class RoslynParser<TContext>
     }
 
     // context: csharp, build, file
-    public void ParseFile(string filePath, RoslynParserOptions? options = null)
+    public void ParseFile(string filePath, RoslynParserOptions? options = null, bool parseContexts = true, bool parseReferences = true)
     {
         options ??= RoslynParserOptions.Default;
 
@@ -47,11 +48,6 @@ internal class RoslynParser<TContext>
 
             var nsName = nsNode?.Name.ToString() ?? "Global";
 
-            //adds namespace with context
-            //var nodeContext = AddNode(nsNode, "namespace", nsName);
-            //ParseComments(_commentProcessor, nsNode, nodeContext);
-            //_collector.Add(nodeContext);
-
             var kind = node switch
             {
                 ClassDeclarationSyntax => ContextInfoElementType.@class,
@@ -61,10 +57,21 @@ internal class RoslynParser<TContext>
                 _ => ContextInfoElementType.none
             };
 
+            TContext? typeContext = default;
+
             var typeName = GetDeclarationName(node);
-            var typeContext = _factory.Create(default, kind, nsName, typeName);
-            ParseComments(_commentProcessor, node, typeContext);
-            _collector.Add(typeContext);
+            if(parseContexts)
+            {
+                typeContext = _factory.Create(default, kind, nsName, typeName);
+                ParseComments(_commentProcessor, node, typeContext);
+                _collector.Add(typeContext);
+
+                // building references
+                if(parseReferences)
+                {
+                    BuildReferences(node, typeContext, _collector);
+                }
+            }
 
             if(node is TypeDeclarationSyntax typeSyntax)
             {
@@ -82,26 +89,39 @@ internal class RoslynParser<TContext>
                     var methodName = method.Identifier.Text;
                     var fullName = $"{typeName}.{methodName}";
                     var methodContext = _factory.Create(typeContext, ContextInfoElementType.method, nsName, typeName, fullName);
-
                     ParseComments(_commentProcessor, method, methodContext);
                     _collector.Add(methodContext);
+
+                    if(parseReferences)
+                    {
+                        BuildReferences(method, methodContext, _collector);
+                    }
                 }
             }
         }
     }
 
-    // context: csharp, build, node
-    private TContext? AddNode(MemberDeclarationSyntax? node, ContextInfoElementType kind, string nsName)
+    // context: references, build
+    private void BuildReferences(SyntaxNode scope, TContext current, IContextCollector<TContext> collector)
     {
-        if(node == null)
+        var descendantIdList = scope
+            .DescendantNodes()
+            .OfType<IdentifierNameSyntax>()
+            .Select(id => id.Identifier.Text)
+            .ToHashSet();
+        var prefix = (scope is MethodDeclarationSyntax) ? "M" : "T";
+        foreach(var id in descendantIdList)
         {
-            return default;
+            if(collector.ByFullName.TryGetValue(id, out var referenced) &&
+                !ReferenceEquals(current, referenced))
+            {
+                if(referenced != null)
+                {
+                    current.References.Add(referenced);
+                    Console.WriteLine($"[{prefix}]: {current.Name} references {referenced.Name}");
+                }
+            }
         }
-        var typeName = GetDeclarationName(node);
-        var typeContext = _factory.Create(default, kind, nsName, typeName);
-        ParseComments(_commentProcessor, node, typeContext);
-        _collector.Add(typeContext);
-        return typeContext;
     }
 
     // context: csharp, build, comment
