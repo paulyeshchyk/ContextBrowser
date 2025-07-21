@@ -37,9 +37,9 @@ public static class ContextInfoExtensions
     // context: read, dimension, ContextInfo
     public static int GetDimensionIntValue(this ContextInfo contextInfo, string dimensionName)
     {
-        if(contextInfo.Dimensions.TryGetValue(dimensionName, out var raw))
+        if (contextInfo.Dimensions.TryGetValue(dimensionName, out var raw))
         {
-            if(int.TryParse(raw, out var v))
+            if (int.TryParse(raw, out var v))
             {
                 return v;
             }

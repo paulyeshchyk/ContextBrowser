@@ -24,19 +24,12 @@ static class Program
         var cc = new ContextClassifier();
         var matrix = ContextMatrixUmlExporter.GenerateMatrix(result, cc, includeUnclassified, includeAllStandardActions);
 
-        Console.WriteLine($"Parsed elements: {result.Count}");
-        foreach (var ctx in result)
-            Console.WriteLine($"[{ctx.ElementType}] {ctx.ClassOwner}.{ctx.Name} — coverage: {ctx.Dimensions.GetValueOrDefault("coverage", "none")}");
-
         var contextLookup = result
             .Where(c => !string.IsNullOrWhiteSpace(c.Name))
             .GroupBy(c => c.ElementType == ContextInfoElementType.method && !string.IsNullOrWhiteSpace(c.ClassOwner)
                 ? $"{c.ClassOwner}.{c.Name}"
                 : c.Name!)
             .ToDictionary(g => g.Key, g => g.First());
-
-        //var result = ContextCommentsParser.ContextParser.ParseFile(thePath);
-        //ReferenceParser.EnrichWithReferences(result, thePath);
 
         FileUtils.WipeDirectory(theOutputPath);
         FileUtils.CreateDirectoryIfNotExists(theOutputPath);
@@ -48,7 +41,7 @@ static class Program
         HeatmapExporter.GenerateHeatmapCsv(matrix, $"{theOutputPath}heatmap.csv", includeUnclassified);
         UmlHeatmap.GenerateHeatmapUml(matrix, $"{theOutputPath}uml.heatmap.puml");
         UmlSample.GeneratePerCellDiagrams(matrix, $"{theOutputPath}");
-        UmlHeatmap.GenerateHeatmapUmlWithLinks(matrix, (action, domain) => $"composite_{action}_{domain}.puml", $"{theOutputPath}uml.heatmap.link.puml");
+        UmlHeatmap.GenerateHeatmapUmlWithLinks(matrix,(action, domain) => $"composite_{action}_{domain}.puml", $"{theOutputPath}uml.heatmap.link.puml");
         HeatmapExporter.GenerateContextHtmlPages(matrix, $"{theOutputPath}");
 
         IndexGenerator.GenerateContextIndexHtml(

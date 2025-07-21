@@ -63,11 +63,16 @@ namespace ContextBrowser {
         /// <summary>
         ///   Looks up a localized string similar to :root {
         ///  --link-color: #0077cc;
-        ///  --table-border-color: #a0a0a0;
-        ///  --cell-border-color: #ccc;
+        ///  --cell-border-color: #cccccc;
+        ///  --cell-border-color-dark: #c0c0c0;
+        ///  --border-summary: #f3f3f3;
+        ///  --border-metadata: #f3f3f3;
+        ///
         ///  --hover-background-light: #f0f0f0;
         ///  --hover-background-dark: #e0e0e0;
+        ///
         ///  --cell-padding: 6px 10px;
+        ///
         ///  --link-text-decoration: none;
         ///  --link-text-align: inherit;
         ///  --link-color-inherit: inherit;
@@ -75,15 +80,11 @@ namespace ContextBrowser {
         ///  --link-overflow: hidden;
         ///  --link-text-overflow: ellipsis;
         ///}
+        ///
         ///a:link,
         ///a:visited,
         ///a:hover,
-        ///a:active {
-        ///  color: var(--link-color);
-        ///  text-decoration: var(--link-text-decoration);
-        ///}
-        ///table {
-        ///  b [rest of string was truncated]&quot;;.
+        ///a:activ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HtmlProducerContentStyle {
             get {

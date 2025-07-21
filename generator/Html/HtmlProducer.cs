@@ -6,27 +6,6 @@ using static ContextBrowser.Generator.Html.IndexGenerator;
 
 namespace ContextBrowser.Generator.Html;
 
-internal static class HtmlClasses
-{
-    public static class Row
-    {
-        public const string Meta = "row.meta";
-        public const string Summary = "row.summary";
-        public const string Data = "row.data";
-    }
-
-    public static class Cell
-    {
-        public const string SummaryCaption = "cell.summary.caption";
-        public const string TotalSummary = "cell.total.summary";
-        public const string ColSummary = "cell.colsummary";
-        public const string RowSummary = "cell.rowsummary";
-        public const string ColMeta = "cell.col.meta";
-        public const string RowMeta = "cell.row.meta";
-        public const string Data = "cell.data";
-    }
-}
-
 internal class HtmlProducer
 {
     private readonly StringBuilder sb = new StringBuilder();
@@ -69,12 +48,12 @@ internal class HtmlProducer
 
     public void ProduceTableHeaderRow(UiMatrix uiMatrix)
     {
-        sb.Append($"<tr class=\"{HtmlClasses.Row.Meta}\">");
+        HtmlRowBuilder.Meta.Start(sb);
         ProduceTableHeaderFirstCellContent();
         ProduceTableFirstRowCellSummary();
         ProduceTableHeaderRowCells(uiMatrix);
         ProduceTableLastRowCellSummary();
-        sb.AppendLine("</tr>");
+        HtmlRowBuilder.Meta.End(sb);
     }
 
     public void ProduceColumnSummaryRow(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
@@ -82,145 +61,18 @@ internal class HtmlProducer
         var colSums = uiMatrix.ColsSummary(matrix, Options.Orientation);
         var totalSum = colSums?.Values.Sum() ?? 0;
 
-        sb.Append($"<tr class=\"{HtmlClasses.Row.Summary}\">");
-        sb.Append($"<td class=\"{HtmlClasses.Cell.SummaryCaption}\"><b>Σ</b></td>");
+        HtmlRowBuilder.Summary.Start(sb);
+        HtmlCellBuilder.SummaryCaption.Cell(sb, "<b>Σ</b>");
 
         if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            sb.Append($"<td class =\"{HtmlClasses.Cell.TotalSummary}\"><a href=\"index.html\">{totalSum}</a></td>");
+            HtmlCellBuilder.TotalSummary.Cell(sb, totalSum.ToString(), "index.html");
 
         ProduceColumnSummaryCells(uiMatrix, colSums);
 
         if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            sb.Append($"<td class =\"{HtmlClasses.Cell.TotalSummary}\"><a href=\"index.html\">{totalSum}</a></td>");
+            HtmlCellBuilder.TotalSummary.Cell(sb, totalSum.ToString(), "index.html");
 
-        sb.AppendLine("</tr>");
-    }
-
-    public void ProduceDataRow(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
-    {
-        sb.Append($"<tr class=\"{HtmlClasses.Row.Data}\">");
-        ProduceRowHeaderCell(row);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            ProduceRowSummaryCell(row, uiMatrix, matrix);
-
-        ProduceDataCells(row, uiMatrix, matrix);
-
-        ProduceRowSummaryCellLast(row, uiMatrix, matrix);
-
-        sb.AppendLine("</tr>");
-    }
-
-    public void ProduceMatrix(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
-    {
-        ProduceTableHeaderRow(uiMatrix);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            ProduceColumnSummaryRow(uiMatrix, matrix);
-
-        foreach(var row in uiMatrix.rows)
-            ProduceDataRow(row, uiMatrix, matrix);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            ProduceColumnSummaryRow(uiMatrix, matrix);
-    }
-
-    private void ProduceTableHeaderFirstCellContent() => sb.AppendLine($"<th><a href=\"\">{(Options.Orientation == MatrixOrientation.ActionRows ? "Action \\ Domain" : "Domain \\ Action")}</a></th>");
-
-    private void ProduceTableFirstRowCellSummary()
-    {
-        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            sb.Append($"<th class=\"{HtmlClasses.Cell.SummaryCaption}\"><b>Σ</b></th>");
-    }
-
-    private void ProduceTableLastRowCellSummary()
-    {
-        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            sb.Append($"<th class=\"{HtmlClasses.Cell.SummaryCaption}\"><b>Σ</b></th>");
-    }
-
-    private void ProduceTableHeaderRowCells(UiMatrix uiMatrix)
-    {
-        foreach(var metaName in uiMatrix.cols)
-        {
-            var hRef = Options.Orientation == MatrixOrientation.ActionRows
-                ? $"domain_{metaName}.html"
-                : $"action_{metaName}.html";
-
-            sb.Append($"<th class=\"{HtmlClasses.Cell.ColMeta}\"><a href=\"{hRef}\">{metaName}</a></th>");
-        }
-    }
-
-    private void ProduceRowHeaderCell(string metaName)
-    {
-        var hRef = Options.Orientation == MatrixOrientation.ActionRows
-            ? $"action_{metaName}.html"
-            : $"domain_{metaName}.html";
-
-        sb.Append($"<td class=\"{HtmlClasses.Cell.RowMeta}\"><a href=\"{hRef}\">{metaName}</a></td>");
-    }
-
-    private void ProduceColumnSummaryCells(UiMatrix uiMatrix, Dictionary<string, int>? colSums)
-    {
-        foreach(var metaName in uiMatrix.cols)
-        {
-            var sum = colSums?[metaName];
-            var href = Options.Orientation == MatrixOrientation.ActionRows
-                ? $"domain_{metaName}.html"
-                : $"action_{metaName}.html";
-
-            sb.Append($"<td class=\"{HtmlClasses.Cell.ColSummary}\"><a href=\"{href}\">{sum}</a></td>");
-        }
-    }
-
-    private void ProduceRowSummaryCell(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
-    {
-        var hRef = Options.Orientation == MatrixOrientation.ActionRows
-            ? $"action_{row}.html"
-            : $"domain_{row}.html";
-
-        var rowSum = uiMatrix.RowsSummary(matrix, Options.Orientation)?[row];
-        sb.Append($"<td class=\"{HtmlClasses.Cell.RowSummary}\"><a href=\"{hRef}\">{rowSum}</a></td>");
-    }
-
-    private void ProduceDataCells(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
-    {
-        foreach(var col in uiMatrix.cols)
-        {
-            var cell = Options.Orientation == MatrixOrientation.ActionRows
-                ? new ContextContainer(row, col)
-                : new ContextContainer(col, row);
-
-            var hasMethods = matrix.TryGetValue(cell, out var methods) && methods.Any();
-            var hRef = $"composite_{cell.Action}_{cell.Domain}.html";
-
-            string style = string.Empty;
-            var bgColor = HtmlProducer.GetCoverageColorForCell(cell, hasMethods ? methods : null, contextLookup, GetCoverageValue);
-            if(bgColor != null)
-            {
-                style = $" style=\"inherited;background-color:{bgColor}; color:black\"";
-            }
-
-            sb.Append($"<td class=\"{HtmlClasses.Cell.Data}\"{style}><a href=\"{hRef}\">{(hasMethods ? methods?.Count ?? 0 : "&nbsp;")}</a></td>");
-        }
-    }
-
-    private void ProduceRowSummaryCellLast(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
-    {
-        if(Options.SummaryPlacement != SummaryPlacement.AfterLast)
-            return;
-
-        var rowFile = Options.Orientation == MatrixOrientation.ActionRows
-            ? $"action_{row}.html"
-            : $"domain_{row}.html";
-
-        var rowSum = uiMatrix.RowsSummary(matrix, Options.Orientation)?[row];
-        sb.Append($"<td class=\"{HtmlClasses.Cell.RowSummary}\"><a href=\"{rowFile}\">{rowSum}</a></td>");
-    }
-
-    private static int GetCoverageValue(ContextInfo? ctx)
-    {
-        return ctx?.GetDimensionIntValue("coverage") ?? 0;
+        HtmlRowBuilder.Summary.End(sb);
     }
 
     public static string? GetCoverageColorForCell(ContextContainer cell, List<string>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
@@ -250,6 +102,137 @@ internal class HtmlProducer
         }
 
         return null;
+    }
+
+    public void ProduceDataRow(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        HtmlRowBuilder.Data.Start(sb);
+        ProduceRowHeaderCell(row);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
+            ProduceRowSummaryCell(row, uiMatrix, matrix);
+
+        ProduceDataCells(row, uiMatrix, matrix);
+        ProduceRowSummaryCellLast(row, uiMatrix, matrix);
+
+        HtmlRowBuilder.Data.End(sb);
+    }
+
+    public void ProduceMatrix(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        ProduceTableHeaderRow(uiMatrix);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
+            ProduceColumnSummaryRow(uiMatrix, matrix);
+
+        foreach(var row in uiMatrix.rows)
+            ProduceDataRow(row, uiMatrix, matrix);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
+            ProduceColumnSummaryRow(uiMatrix, matrix);
+    }
+
+    private void ProduceTableHeaderFirstCellContent()
+    {
+        var theText = Options.Orientation == MatrixOrientation.ActionRows
+            ? "Action \\ Domain"
+            : "Domain \\ Action";
+        HtmlCellBuilder.ActionDomain.Cell(sb, theText);
+    }
+
+    private void ProduceTableFirstRowCellSummary()
+    {
+        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
+            HtmlCellBuilder.SummaryCaption.Start(sb);
+    }
+
+    private void ProduceTableLastRowCellSummary()
+    {
+        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
+            HtmlCellBuilder.SummaryCaption.Start(sb);
+    }
+
+    private void ProduceTableHeaderRowCells(UiMatrix uiMatrix)
+    {
+        foreach(var metaName in uiMatrix.cols)
+        {
+            var hRef = Options.Orientation == MatrixOrientation.ActionRows
+                ? $"domain_{metaName}.html"
+                : $"action_{metaName}.html";
+
+            HtmlCellBuilder.ColMeta.Cell(sb, metaName, hRef);
+        }
+    }
+
+    private void ProduceRowHeaderCell(string metaName)
+    {
+        var hRef = Options.Orientation == MatrixOrientation.ActionRows
+            ? $"action_{metaName}.html"
+            : $"domain_{metaName}.html";
+
+        HtmlCellBuilder.RowMeta.Cell(sb, metaName, hRef);
+    }
+
+    private void ProduceColumnSummaryCells(UiMatrix uiMatrix, Dictionary<string, int>? colSums)
+    {
+        foreach(var metaName in uiMatrix.cols)
+        {
+            var sum = colSums?[metaName];
+            var href = Options.Orientation == MatrixOrientation.ActionRows
+                ? $"domain_{metaName}.html"
+                : $"action_{metaName}.html";
+
+            HtmlCellBuilder.ColSummary.Cell(sb, sum?.ToString() ?? string.Empty, href);
+        }
+    }
+
+    private void ProduceRowSummaryCell(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        var hRef = Options.Orientation == MatrixOrientation.ActionRows
+            ? $"action_{row}.html"
+            : $"domain_{row}.html";
+
+        var rowSum = uiMatrix.RowsSummary(matrix, Options.Orientation)?[row];
+        HtmlCellBuilder.RowSummary.Cell(sb, rowSum?.ToString() ?? string.Empty, hRef);
+    }
+
+    private static int GetCoverageValue(ContextInfo? ctx)
+    {
+        return ctx?.GetDimensionIntValue("coverage") ?? 0;
+    }
+
+    private void ProduceDataCells(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        foreach(var col in uiMatrix.cols)
+        {
+            var cell = Options.Orientation == MatrixOrientation.ActionRows
+                ? new ContextContainer(row, col)
+                : new ContextContainer(col, row);
+
+            var hasMethods = matrix.TryGetValue(cell, out var methods) && methods.Any();
+            var hRef = $"composite_{cell.Action}_{cell.Domain}.html";
+
+            string style = string.Empty;
+            var bgColor = GetCoverageColorForCell(cell, hasMethods ? methods : null, contextLookup, GetCoverageValue);
+            if(bgColor != null)
+            {
+                style = $" style=\"inherited;background-color:{bgColor}; color:black\"";
+            }
+            HtmlCellBuilder.Data.Cell(sb, $"{(hasMethods ? methods?.Count ?? 0 : "&nbsp;")}", hRef, style);
+        }
+    }
+
+    private void ProduceRowSummaryCellLast(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        if(Options.SummaryPlacement != SummaryPlacement.AfterLast)
+            return;
+
+        var rowFile = Options.Orientation == MatrixOrientation.ActionRows
+            ? $"action_{row}.html"
+            : $"domain_{row}.html";
+
+        var rowSum = uiMatrix.RowsSummary(matrix, Options.Orientation)?[row];
+        HtmlCellBuilder.RowSummary.Cell(sb, rowSum?.ToString() ?? string.Empty, rowFile);
     }
 }
 

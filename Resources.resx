@@ -120,11 +120,16 @@
   <data name="HtmlProducerContentStyle" xml:space="preserve">
     <value>:root {
   --link-color: #0077cc;
-  --table-border-color: #a0a0a0;
-  --cell-border-color: #ccc;
+  --cell-border-color: #cccccc;
+  --cell-border-color-dark: #c0c0c0;
+  --border-summary: #f3f3f3;
+  --border-metadata: #f3f3f3;
+
   --hover-background-light: #f0f0f0;
   --hover-background-dark: #e0e0e0;
+
   --cell-padding: 6px 10px;
+
   --link-text-decoration: none;
   --link-text-align: inherit;
   --link-color-inherit: inherit;
@@ -132,6 +137,7 @@
   --link-overflow: hidden;
   --link-text-overflow: ellipsis;
 }
+
 a:link,
 a:visited,
 a:hover,
@@ -139,18 +145,26 @@ a:active {
   color: var(--link-color);
   text-decoration: var(--link-text-decoration);
 }
+
 table {
-  border-spacing: 0;
   border-collapse: collapse;
-  border: 1px solid var(--table-border-color);
+  border-spacing: 0;
+  border: 1px solid var(--cell-border-color);
   width: auto;
   font-family: sans-serif;
 }
+
+th,
+td {
+  border: 1px solid var(--cell-border-color);
+}
+
 table,
 th,
 td {
   user-select: none;
 }
+
 th {
   font-weight: normal;
   border: 1px solid var(--cell-border-color);
@@ -158,15 +172,18 @@ th {
   text-align: center;
   position: relative;
 }
+
 th.hover-col {
   background-color: var(--hover-background-light);
 }
+
 td {
   border: 1px solid var(--cell-border-color);
   padding: 0;
   text-align: center;
   position: relative;
 }
+
 th a,
 td a {
   display: block;
@@ -180,24 +197,112 @@ td a {
   overflow: var(--link-overflow);
   text-overflow: var(--link-text-overflow);
 }
+
 th:hover,
 td:hover {
   background-color: var(--hover-background-light);
   cursor: pointer;
 }
+
 tr:hover td {
   background-color: var(--hover-background-light);
 }
+
 tr:hover th {
   background-color: var(--hover-background-light);
 }
+
 td.hover-col {
   background-color: var(--hover-background-light);
 }
+
 td.hover-col.hover-cell {
   background-color: var(--hover-background-dark);
 }
-</value>
+
+.row_meta {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+  background-color: var(--border-metadata);
+}
+
+.cell_summary_caption {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  background-color: var(--border-summary);
+}
+
+.cell_col_meta {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+}
+
+.cell_row_meta {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  background-color: var(--border-metadata);
+}
+
+.row_summary {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+}
+
+.cell_total_summary {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  background-color: var(--border-summary);
+}
+
+.cell_data {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+}
+
+.row_data {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+}
+
+.cell_colsummary {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+  background-color: var(--border-summary);
+}
+
+.cell_rowsummary {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);       /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);      /* Право */
+  background-color: var(--border-summary);
+}
+
+.cell_actiondomain {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  background-color: var(--border-summary);
+}</value>
   </data>
   <data name="HtmlProducerContentStyleScript" xml:space="preserve">
     <value>document.addEventListener('DOMContentLoaded', () =&gt; {
