@@ -6,7 +6,7 @@ namespace ContextBrowser.exporter;
 public static class HeatmapExporter
 {
     //context: build, csv, file, heatmap
-    public static void GenerateHeatmapCsv(Dictionary<ContextContainer, List<string>> matrix, string outputPath, bool includeUnclassified = false)
+    public static void GenerateHeatmapCsv(Dictionary<ContextContainer, List<string>> matrix, string outputPath, UnclassifiedPriority unclassifiedPriority = UnclassifiedPriority.None)
     {
         var lines = new List<string>();
 
@@ -34,6 +34,7 @@ public static class HeatmapExporter
             lines.Add(string.Join(";", row));
         }
 
+        var includeUnclassified = (unclassifiedPriority != UnclassifiedPriority.None);
         // Добавим строку для нераспознанных, если нужно
         if(includeUnclassified && matrix.ContainsKey((ContextClassifier.EmptyAction, ContextClassifier.EmptyDomain)))
         {
@@ -67,10 +68,19 @@ public static class HeatmapExporter
             var compositeFileName = $"composite_{action}_{domain}.html";
             var filePath = Path.Combine(outputDirectory, compositeFileName);
 
+            string documentTitle = $" {action}  →  {domain} ";
+            var pumlFileName = $"composite_{action}_{domain}.puml";
+            var pumlFilePath = Path.Combine(outputDirectory, pumlFileName);
+            var pumlFileContent = ReadPumlContent(pumlFilePath);
+            var pumlEmbeddedScript = "<script type=\"module\">import enableElement from \"https://cdn.pika.dev/render-plantuml\";enableElement();</script>";
+            var pumlEmbeddedRenderer = $"<render-plantuml renderMode=\"txt\">{pumlFileContent}</render-plantuml>";
+
             var sb = new StringBuilder();
             sb.AppendLine("<!DOCTYPE html>");
             sb.AppendLine("<html lang=\"en\">");
-            sb.AppendLine("<head><meta charset=\"UTF-8\"><title>" + action + " → " + domain + "</title></head>");
+            sb.AppendLine($"<head><meta charset=\"UTF-8\"><title>{documentTitle}</title>");
+            sb.AppendLine(pumlEmbeddedScript);
+            sb.AppendLine("</head>");
             sb.AppendLine("<body>");
             sb.AppendLine($"<h1>{action.ToUpper()} → {domain}</h1>");
             sb.AppendLine($"<p>Methods: {cell.Value.Count}</p>");
@@ -83,14 +93,23 @@ public static class HeatmapExporter
 
             sb.AppendLine("</ul>");
 
-            var pumlFile = $"composite_{action}_{domain}.puml";
-            sb.AppendLine($"<p><a href=\"{pumlFile}\">📈 View UML diagram</a></p>");
+            sb.AppendLine(pumlEmbeddedRenderer);
+
             sb.AppendLine("</body></html>");
 
             File.WriteAllText(filePath, sb.ToString());
         }
     }
 
+
+    public static string ReadPumlContent(string pumlFilePath)
+    {
+        if(!File.Exists(pumlFilePath))
+            throw new FileNotFoundException("Файл не найден", pumlFilePath);
+
+        // Чтение всего файла в строку
+        return File.ReadAllText(pumlFilePath);
+    }
 
     //context: build, html, page, directory, uml
     public static void GenerateContextDimensionHtmlPages(Dictionary<ContextContainer, List<string>> matrix, string outputDirectory)

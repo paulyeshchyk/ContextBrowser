@@ -7,7 +7,7 @@ namespace ContextBrowser.exporter;
 public static class ContextMatrixUmlExporter
 {
     //context: build, uml, matrix
-    public static Dictionary<ContextContainer, List<string>> GenerateMatrix(List<ContextInfo> elements, IContextClassifier contextClassifier, bool includeUnclassified = false, bool includeAllStandardActions = false)
+    public static Dictionary<ContextContainer, List<string>> GenerateMatrix(List<ContextInfo> elements, IContextClassifier contextClassifier, UnclassifiedPriority unclassifiedPriority = UnclassifiedPriority.None, bool includeAllStandardActions = false)
     {
         var matrix = new Dictionary<ContextContainer, List<string>>();
 
@@ -32,6 +32,8 @@ public static class ContextMatrixUmlExporter
                     allVerbs.Add(verb);
             }
         }
+
+        bool includeUnclassified = (unclassifiedPriority != UnclassifiedPriority.None);
 
         foreach(var item in elements)
         {

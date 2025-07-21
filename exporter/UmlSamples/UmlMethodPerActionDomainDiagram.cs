@@ -3,10 +3,10 @@
 namespace ContextBrowser.exporter.UmlSamples;
 
 // context: uml, build
-internal static class SampleContextMap
+internal static class UmlMethodPerActionDomainDiagram
 {
     //context: build, uml
-    public static void GenerateMethodsUml(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
+    public static void Build(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
     {
         var diagram = new UmlDiagram();
         diagram.SetSkinParam("componentStyle", "rectangle");
@@ -15,9 +15,15 @@ internal static class SampleContextMap
         {
             var (action, domain) = cell.Key;
             var blockLabel = $"{action}_{domain}";
+            var listOfClasses = cell.Value.Distinct();
+            if (!(listOfClasses.Any()))
+            {
+                continue;
+            }
+
             var package = new UmlPackage(blockLabel);
 
-            foreach (var methodName in cell.Value.Distinct())
+            foreach (var methodName in listOfClasses)
             {
                 package.Add(new UmlComponent(methodName));
             }

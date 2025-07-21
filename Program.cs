@@ -17,33 +17,45 @@ static class Program
         bool includeAllStandardActions = true;
         var summaryPlacement = IndexGenerator.SummaryPlacement.AfterLast;
         var matrixOrientation = Generator.Matrix.MatrixOrientation.DomainRows;
-        bool includeUnclassified = true;
         var unclassifiedPriority = UnclassifiedPriority.Highest;
 
-        var result = ContextParser.Parse(theSourcePath);
-        var cc = new ContextClassifier();
-        var matrix = ContextMatrixUmlExporter.GenerateMatrix(result, cc, includeUnclassified, includeAllStandardActions);
+        var contextsList = ContextParser.Parse(theSourcePath);
+        var contextClassifier = new ContextClassifier();
+        var matrix = ContextMatrixUmlExporter.GenerateMatrix(contextsList, contextClassifier, unclassifiedPriority, includeAllStandardActions);
 
-        var contextLookup = result
+        var contextLookup = contextsList
             .Where(c => !string.IsNullOrWhiteSpace(c.Name))
             .GroupBy(c => c.ElementType == ContextInfoElementType.method && !string.IsNullOrWhiteSpace(c.ClassOwner)
                 ? $"{c.ClassOwner}.{c.Name}"
-                : c.Name!)
+                : $"{c.Name}")
             .ToDictionary(g => g.Key, g => g.First());
 
         FileUtils.WipeDirectory(theOutputPath);
         FileUtils.CreateDirectoryIfNotExists(theOutputPath);
 
-        SampleLinkedDomains2.GenerateUml(result, $"{theOutputPath}uml.packages.domains.puml");
-        UmlMethodLinks.GenerateMethodLinks(result, $"{theOutputPath}methodlinks.puml");
-        SampleContextMap.GenerateMethodsUml(matrix, $"{theOutputPath}uml.packages.actions.puml");
-        ContextMatrixUmlExporter.GenerateCsv(matrix, $"{theOutputPath}matrix.csv");
-        HeatmapExporter.GenerateHeatmapCsv(matrix, $"{theOutputPath}heatmap.csv", includeUnclassified);
-        UmlHeatmap.GenerateHeatmapUml(matrix, $"{theOutputPath}uml.heatmap.puml");
-        UmlSample.GeneratePerCellDiagrams(matrix, $"{theOutputPath}");
-        UmlHeatmap.GenerateHeatmapUmlWithLinks(matrix,(action, domain) => $"composite_{action}_{domain}.puml", $"{theOutputPath}uml.heatmap.link.puml");
-        HeatmapExporter.GenerateContextHtmlPages(matrix, $"{theOutputPath}");
 
+        //ContextMatrixUmlExporter.GenerateCsv(matrix, $"{theOutputPath}matrix.csv");
+        //HeatmapExporter.GenerateHeatmapCsv(matrix, $"{theOutputPath}heatmap.csv", unclassifiedPriority);
+
+
+        //UmlPackagesDiagram.Build(contextsList, $"{theOutputPath}uml.packages.domains.puml");
+        //UmlMethodsOnlyDiagram.Build(contextsList, $"{theOutputPath}methodlinks.puml");
+        //UmlMethodPerActionDomainDiagram.Build(matrix, $"{theOutputPath}uml.packages.actions.puml");
+
+        var links = ContextMatrixUmlExporter.GenerateMethodLinks(contextsList, contextClassifier);
+        //SampleLinkedDomain.GenerateLinksUml(links, $"{theOutputPath}uml.4.links.puml");
+
+
+        // 1.
+        UmlComponentDiagram.Build(matrix, theOutputPath);
+
+        // 2.
+        UmlActionPerDomainDiagram.Build(matrix, (action, domain) => $"composite_{action}_{domain}.puml", $"{theOutputPath}uml.heatmap.link.puml");
+
+        // 3.
+        HeatmapExporter.GenerateContextHtmlPages(matrix, theOutputPath);
+
+        // 4.
         IndexGenerator.GenerateContextIndexHtml(
             matrix,
             contextLookup,
@@ -53,9 +65,6 @@ static class Program
             summaryPlacement: summaryPlacement
             );
 
-        HeatmapExporter.GenerateContextDimensionHtmlPages(matrix, $"{theOutputPath}");
-
-        var links = ContextMatrixUmlExporter.GenerateMethodLinks(result, cc);
-        SampleLinkedDomain.GenerateLinksUml(links, $"{theOutputPath}uml.4.links.puml");
+        HeatmapExporter.GenerateContextDimensionHtmlPages(matrix, theOutputPath);
     }
 }

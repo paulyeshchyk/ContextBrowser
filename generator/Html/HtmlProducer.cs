@@ -143,13 +143,17 @@ internal class HtmlProducer
     private void ProduceTableFirstRowCellSummary()
     {
         if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            HtmlCellBuilder.SummaryCaption.Start(sb);
+        {
+            HtmlCellBuilder.SummaryCaption.Cell(sb, "<b>Σ</b>");
+        }
     }
 
     private void ProduceTableLastRowCellSummary()
     {
         if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            HtmlCellBuilder.SummaryCaption.Start(sb);
+        {
+            HtmlCellBuilder.SummaryCaption.Cell(sb, "<b>Σ</b>");
+        }
     }
 
     private void ProduceTableHeaderRowCells(UiMatrix uiMatrix)

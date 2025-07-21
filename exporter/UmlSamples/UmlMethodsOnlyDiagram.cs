@@ -3,10 +3,10 @@
 namespace ContextBrowser.exporter.UmlSamples;
 
 // context: uml, links, build
-public static class UmlMethodLinks
+public static class UmlMethodsOnlyDiagram
 {
     // context: build, uml, links
-    public static void GenerateMethodLinks(List<ContextInfo> elements, string outputPath)
+    public static void Build(List<ContextInfo> elements, string outputPath)
     {
         var methods = elements
                 .Where(e => e.ElementType == ContextInfoElementType.method)
@@ -14,14 +14,14 @@ public static class UmlMethodLinks
 
         var diagram = new UmlDiagram();
 
-        foreach (var method in methods)
+        foreach(var method in methods)
             diagram.Add(new UmlComponent(method.Name));
 
-        foreach (var method in methods)
+        foreach(var method in methods)
         {
-            foreach (var callee in method.References)
+            foreach(var callee in method.References)
             {
-                if (methods.Any(m => m.Name == callee))
+                if(methods.Any(m => m.Name == callee))
                     diagram.Add(new UmlRelation(method.Name, callee));
             }
         }
