@@ -52,13 +52,13 @@ internal class RoslynParser<TContext>
             //ParseComments(_commentProcessor, nsNode, nodeContext);
             //_collector.Add(nodeContext);
 
-            string kind = node switch
+            var kind = node switch
             {
-                ClassDeclarationSyntax => "class",
-                StructDeclarationSyntax => "struct",
-                RecordDeclarationSyntax => "record",
-                EnumDeclarationSyntax => "enum",
-                _ => "unknown"
+                ClassDeclarationSyntax => ContextInfoElementType.@class,
+                StructDeclarationSyntax => ContextInfoElementType.@struct,
+                RecordDeclarationSyntax => ContextInfoElementType.@record,
+                EnumDeclarationSyntax => ContextInfoElementType.@enum,
+                _ => ContextInfoElementType.none
             };
 
             var typeName = GetDeclarationName(node);
@@ -81,7 +81,7 @@ internal class RoslynParser<TContext>
                 {
                     var methodName = method.Identifier.Text;
                     var fullName = $"{typeName}.{methodName}";
-                    var methodContext = _factory.Create(typeContext, "method", nsName, typeName, fullName);
+                    var methodContext = _factory.Create(typeContext, ContextInfoElementType.method, nsName, typeName, fullName);
 
                     ParseComments(_commentProcessor, method, methodContext);
                     _collector.Add(methodContext);
@@ -91,7 +91,7 @@ internal class RoslynParser<TContext>
     }
 
     // context: csharp, build, node
-    private TContext? AddNode(MemberDeclarationSyntax? node, string kind, string nsName)
+    private TContext? AddNode(MemberDeclarationSyntax? node, ContextInfoElementType kind, string nsName)
     {
         if(node == null)
         {

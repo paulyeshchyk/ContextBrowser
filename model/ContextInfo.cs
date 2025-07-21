@@ -4,7 +4,7 @@
 // context: ContextInfo, model
 public class ContextInfo
 {
-    public string? ElementType { get; set; } // class, method, etc.
+    public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
 
     public string? Name { get; set; }
 
@@ -17,6 +17,18 @@ public class ContextInfo
     public HashSet<string> References { get; set; } = new();
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
+}
+
+// context: ContextInfo, model
+public enum ContextInfoElementType
+{
+    @none,
+    @method,
+    @class,
+    @struct,
+    @record,
+    @enum,
+    @namespace
 }
 
 // context: read, dimension, ContextInfo

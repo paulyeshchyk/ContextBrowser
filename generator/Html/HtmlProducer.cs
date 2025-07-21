@@ -58,7 +58,7 @@ internal class HtmlProducer
     // context: html, build
     public void ProduceTableHeaderRow(UiMatrix uiMatrix)
     {
-        sb.Append("<tr>");
+        sb.Append("<tr class=\"row.meta\">");
         ProduceTableHeaderFirstCellContent();
         ProduceTableFirstRowCellSummary();
         ProduceTableHeaderRowCells(uiMatrix);
@@ -72,16 +72,16 @@ internal class HtmlProducer
         var colSums = uiMatrix.ColsSummary(matrix, Options.Orientation);
         var totalSum = colSums?.Values.Sum() ?? 0;
 
-        sb.Append("<tr>");
-        sb.Append("<td><b>Σ</b></td>");
+        sb.Append("<tr class=\"row.summary\">");
+        sb.Append("<td class=\"cell.summary.caption\"><b>Σ</b></td>");
 
         if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            sb.Append($"<td><a href=\"index.html\">{totalSum}</a></td>");
+            sb.Append($"<td class =\"cell.total.summary\"><a href=\"index.html\">{totalSum}</a></td>");
 
         ProduceColumnSummaryCells(uiMatrix, colSums);
 
         if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            sb.Append($"<td><a href=\"index.html\">{totalSum}</a></td>");
+            sb.Append($"<td class =\"cell.total.summary\"><a href=\"index.html\">{totalSum}</a></td>");
 
         sb.AppendLine("</tr>");
     }
@@ -123,7 +123,7 @@ internal class HtmlProducer
     // context: html, build
     public void ProduceDataRow(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
-        sb.Append("<tr>");
+        sb.Append("<tr class=\"row.data\">");
         ProduceRowHeaderCell(row);
 
         if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
@@ -156,13 +156,13 @@ internal class HtmlProducer
     private void ProduceTableFirstRowCellSummary()
     {
         if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            sb.Append("<th><b>Σ</b></th>");
+            sb.Append("<th class=\"cell.summary.caption\"><b>Σ</b></th>");
     }
 
     private void ProduceTableLastRowCellSummary()
     {
         if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            sb.Append("<th><b>Σ</b></th>");
+            sb.Append("<th class=\"cell.summary.caption\"><b>Σ</b></th>");
     }
 
     private void ProduceTableHeaderRowCells(UiMatrix uiMatrix)
@@ -173,7 +173,7 @@ internal class HtmlProducer
                 ? $"domain_{metaName}.html"
                 : $"action_{metaName}.html";
 
-            sb.Append($"<th><a href=\"{hRef}\">{metaName}</a></th>");
+            sb.Append($"<th class=\"cell.col.meta\"><a href=\"{hRef}\">{metaName}</a></th>");
         }
     }
 
@@ -183,7 +183,7 @@ internal class HtmlProducer
             ? $"action_{metaName}.html"
             : $"domain_{metaName}.html";
 
-        sb.Append($"<td><a href=\"{hRef}\">{metaName}</a></td>");
+        sb.Append($"<td class=\"cell.row.meta\"><a href=\"{hRef}\">{metaName}</a></td>");
     }
 
     private void ProduceColumnSummaryCells(UiMatrix uiMatrix, Dictionary<string, int>? colSums)
@@ -195,7 +195,7 @@ internal class HtmlProducer
                 ? $"domain_{metaName}.html"
                 : $"action_{metaName}.html";
 
-            sb.Append($"<td><a href=\"{href}\">{sum}</a></td>");
+            sb.Append($"<td class=\"cell.colsummary\"><a href=\"{href}\">{sum}</a></td>");
         }
     }
 
@@ -206,7 +206,7 @@ internal class HtmlProducer
             : $"domain_{row}.html";
 
         var rowSum = uiMatrix.RowsSummary(matrix, Options.Orientation)?[row];
-        sb.Append($"<td><a href=\"{hRef}\">{rowSum}</a></td>");
+        sb.Append($"<td class=\"cell.rowsummary\"><a href=\"{hRef}\">{rowSum}</a></td>");
     }
 
     private static int GetCoverageValue(ContextInfo? ctx)
@@ -233,7 +233,7 @@ internal class HtmlProducer
                 style = $" style=\"inherited;background-color:{bgColor}; color:black\"";
             }
 
-            sb.Append("<td")
+            sb.Append("<td class=\"cell.data\"")
               .Append(style)
               .Append($"><a href=\"{hRef}\">{(hasMethods ? methods?.Count ?? 0 : "&nbsp;")}</a>")
               .AppendLine("</td>");
@@ -250,7 +250,7 @@ internal class HtmlProducer
             : $"domain_{row}.html";
 
         var rowSum = uiMatrix.RowsSummary(matrix, Options.Orientation)?[row];
-        sb.Append($"<td><a href=\"{rowFile}\">{rowSum}</a></td>");
+        sb.Append($"<td class=\"cell.rowsummary\"><a href=\"{rowFile}\">{rowSum}</a></td>");
     }
 }
 

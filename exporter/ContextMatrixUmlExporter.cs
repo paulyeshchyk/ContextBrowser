@@ -1,6 +1,5 @@
 ﻿using ContextBrowser.ContextCommentsParser;
 using ContextBrowser.model;
-using System.Text;
 
 namespace ContextBrowser.exporter;
 
@@ -39,7 +38,7 @@ public static class ContextMatrixUmlExporter
             var verbs = item.Contexts.Where(contextClassifier.IsVerb).Distinct().ToList();
             var nouns = item.Contexts.Where(contextClassifier.IsNoun).Distinct().ToList();
 
-            var label = item.ElementType == "method" && item.ClassOwner != null
+            var label = item.ElementType == ContextInfoElementType.method && item.ClassOwner != null
                 ? $"{item.ClassOwner}.{item.Name}"
                 : item.Name;
 
@@ -130,7 +129,7 @@ public static class ContextMatrixUmlExporter
     {
         var methodToCell = new Dictionary<string, string>();
 
-        foreach(var item in elements.Where(e => e.ElementType == "method"))
+        foreach(var item in elements.Where(e => e.ElementType == ContextInfoElementType.method))
         {
             string? a = item.Contexts.FirstOrDefault(c => contextClassifier.IsVerb(c));
             string? d = item.Contexts.FirstOrDefault(c => contextClassifier.IsNoun(c));
@@ -146,7 +145,7 @@ public static class ContextMatrixUmlExporter
             }
         }
 
-        var theMethods = elements.Where(e => e.ElementType == "method");
+        var theMethods = elements.Where(e => e.ElementType == ContextInfoElementType.method);
         var links = new HashSet<(string From, string To)>();
 
         foreach(var callerMethod in theMethods)
@@ -189,47 +188,6 @@ public static class ContextMatrixUmlExporter
         return links;
     }
 
-    //context: build, uml, links
-    public static void GenerateLinksUml(HashSet<(string From, string To)> links, string outputPath)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine("@startuml");
-        sb.AppendLine("skinparam componentStyle rectangle");
-
-        foreach (var (From, To) in links)
-        {
-            sb.AppendLine($"{From} --> {To}");
-        }
-
-        sb.AppendLine("@enduml");
-        File.WriteAllText(outputPath, sb.ToString());
-    }
-
-    //context: build, uml
-    public static void GenerateMethodsUml(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine("@startuml");
-        sb.AppendLine("skinparam componentStyle rectangle");
-
-        foreach(var cell in matrix)
-        {
-            var (action, domain) = cell.Key;
-            var blockLabel = $"{action}_{domain}";
-            sb.AppendLine($"package \"{blockLabel}\" {{");
-
-            foreach(var methodName in cell.Value.Distinct())
-            {
-                sb.AppendLine($"  component \"{methodName}\" {{");
-                sb.AppendLine($"  }}");
-            }
-
-            sb.AppendLine("}");
-        }
-
-        sb.AppendLine("@enduml");
-        File.WriteAllText(outputPath, sb.ToString());
-    }
 
     //context: build, csv, matrix
     public static void GenerateCsv(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
