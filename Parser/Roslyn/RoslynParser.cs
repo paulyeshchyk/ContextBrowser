@@ -202,12 +202,12 @@ internal record RoslynParserOptions(
     HashSet<RoslynMemberType> MemberTypes)
 {
     public static RoslynParserOptions Default => new(
-        new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected },
-        new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected },
-        new() { RoslynMemberType.@enum,
-                RoslynMemberType.@class,
-                RoslynMemberType.@record,
-                RoslynMemberType.@struct }
+        MethodModifierTypes: new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected, RoslynAccessorModifierType.@internal, RoslynAccessorModifierType.@private },
+        ClassModifierTypes: new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected, RoslynAccessorModifierType.@internal, RoslynAccessorModifierType.@private },
+        MemberTypes: new() { RoslynMemberType.@enum,
+                             RoslynMemberType.@class,
+                             RoslynMemberType.@record,
+                             RoslynMemberType.@struct }
     );
 }
 
