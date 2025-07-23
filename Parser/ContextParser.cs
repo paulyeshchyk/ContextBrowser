@@ -1,4 +1,5 @@
-﻿using ContextBrowser.Extensions;
+﻿using ContextBrowser.exporter;
+using ContextBrowser.Extensions;
 using ContextBrowser.model;
 using ContextBrowser.Parser.Roslyn;
 
@@ -31,7 +32,7 @@ public class ContextParser
         var files = Directory.GetFiles(rootPath, $"*{TargetExtension}", SearchOption.AllDirectories);
 
         var collector = new ContextInfoCollector<ContextInfo>();
-        var processor = new ContextInfoCommentProcessor<ContextInfo>();
+        var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
         var factory = new ContextInfoFactory<ContextInfo>();
         var parser = new RoslynParser<ContextInfo>(collector, factory, processor);
 
@@ -50,10 +51,11 @@ public class ContextParser
         return collector.Collection;
     }
 
+    // context: read, directory
     private static List<ContextInfo> ParseFile(string filePath)
     {
         var collector = new ContextInfoCollector<ContextInfo>();
-        var processor = new ContextInfoCommentProcessor<ContextInfo>();
+        var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
         var factory = new ContextInfoFactory<ContextInfo>();
 
         var parser = new RoslynParser<ContextInfo>(collector, factory, processor);
@@ -66,7 +68,7 @@ public class ContextParser
     private static List<ContextInfo> FirstPass(string[] files)
     {
         var collector = new ContextInfoCollector<ContextInfo>();
-        var processor = new ContextInfoCommentProcessor<ContextInfo>();
+        var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
         var factory = new ContextInfoFactory<ContextInfo>();
 
         var parser = new RoslynParser<ContextInfo>(collector, factory, processor);
@@ -81,7 +83,7 @@ public class ContextParser
 
     private static void SecondPass(string[] files, ContextInfoCollector<ContextInfo> collector)
     {
-        var processor = new ContextInfoCommentProcessor<ContextInfo>();
+        var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
         var factory = new ContextInfoFactory<ContextInfo>();
         var parser = new RoslynParser<ContextInfo>(collector, factory, processor);
 

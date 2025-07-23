@@ -2,7 +2,7 @@
 
 namespace ContextBrowser.Generator.Matrix;
 
-// context: ContextBrowser, build
+// context: matrix, build
 public static class UiMatrixGenerator
 {
     // context: build, matrix

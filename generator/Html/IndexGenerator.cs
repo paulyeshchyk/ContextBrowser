@@ -15,23 +15,14 @@ public static class IndexGenerator
         AfterLast       // внизу таблицы / справа от последней колонки
     }
 
-    //context: build, html, page, index, file
+    //context: build, html, index
     public static void GenerateContextIndexHtml(Dictionary<ContextContainer, List<string>> matrix, Dictionary<string, ContextInfo> allContextInfo, string outputFile, UnclassifiedPriority priority = UnclassifiedPriority.None, MatrixOrientation orientation = MatrixOrientation.DomainRows, SummaryPlacement summaryPlacement = SummaryPlacement.AfterFirst)
     {
         var uiMatrix = UiMatrixGenerator.Generate(matrix, orientation, priority);
 
         var producer = new HtmlProducer(new HtmlTableOptions { SummaryPlacement = summaryPlacement, Orientation = orientation }, allContextInfo);
-
-        producer.ProduceHtmlStart();
-        producer.ProduceHead();
-        producer.ProduceHtmlBodyStart();
-        producer.ProduceTitle();
-        producer.ProduceTableStart();
-        producer.ProduceMatrix(uiMatrix, matrix);
-        producer.ProduceTableEnd();
-        producer.ProduceHtmlBodyEnd();
-        producer.ProduceHtmlEnd();
-        var result = producer.GetResult();
+        producer.Title = "Контекстная матрица";
+        var result = producer.ToHtmlString(uiMatrix, matrix);
 
         File.WriteAllText(outputFile, result);
     }

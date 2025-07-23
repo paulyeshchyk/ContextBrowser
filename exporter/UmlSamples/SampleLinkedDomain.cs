@@ -1,4 +1,4 @@
-﻿using ContextBrowser.model;
+﻿using ContextBrowser.uml;
 
 namespace ContextBrowser.exporter.UmlSamples;
 

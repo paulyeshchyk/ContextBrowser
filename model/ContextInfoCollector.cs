@@ -7,6 +7,7 @@ public interface IContextCollector<T>
     public Dictionary<string, T> ByFullName { get; }
 }
 
+// context: ContextInfo, build
 internal class ContextInfoCollector<T> : IContextCollector<T>
     where T : IContextWithReferences<T>
 {
@@ -20,6 +21,7 @@ internal class ContextInfoCollector<T> : IContextCollector<T>
         ByFullName = new Dictionary<string, T>(StringComparer.Ordinal);
     }
 
+    // context: ContextInfo, build
     public void Add(T info)
     {
         Collection.Add(info);

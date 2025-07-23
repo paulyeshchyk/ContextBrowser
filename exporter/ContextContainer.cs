@@ -1,6 +1,5 @@
 ﻿namespace ContextBrowser.exporter;
 
-// context: model, context
 public record struct ContextContainer(string Action, string Domain)
 {
     public static implicit operator (string Action, string Domain)(ContextContainer value)

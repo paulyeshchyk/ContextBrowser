@@ -1,4 +1,4 @@
-﻿using ContextBrowser.model;
+﻿using ContextBrowser.uml;
 
 namespace ContextBrowser.exporter.UmlSamples;
 
@@ -11,19 +11,19 @@ internal static class UmlMethodPerActionDomainDiagram
         var diagram = new UmlDiagram();
         diagram.SetSkinParam("componentStyle", "rectangle");
 
-        foreach (var cell in matrix)
+        foreach(var cell in matrix)
         {
             var (action, domain) = cell.Key;
             var blockLabel = $"{action}_{domain}";
             var listOfClasses = cell.Value.Distinct();
-            if (!(listOfClasses.Any()))
+            if(!(listOfClasses.Any()))
             {
                 continue;
             }
 
             var package = new UmlPackage(blockLabel);
 
-            foreach (var methodName in listOfClasses)
+            foreach(var methodName in listOfClasses)
             {
                 package.Add(new UmlComponent(methodName));
             }

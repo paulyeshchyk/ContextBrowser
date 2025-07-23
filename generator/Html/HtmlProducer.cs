@@ -1,16 +1,17 @@
 ﻿using ContextBrowser.exporter;
 using ContextBrowser.Generator.Matrix;
 using ContextBrowser.model;
-using System.Text;
 using static ContextBrowser.Generator.Html.IndexGenerator;
 
 namespace ContextBrowser.Generator.Html;
 
+// context: html, build
 internal class HtmlProducer
 {
-    private readonly StringBuilder sb = new StringBuilder();
     public readonly HtmlTableOptions Options;
     private readonly Dictionary<string, ContextInfo> contextLookup;
+
+    public string Title { get; set; } = string.Empty;
 
     public HtmlProducer(HtmlTableOptions options, Dictionary<string, ContextInfo> contextLookup)
     {
@@ -18,63 +19,7 @@ internal class HtmlProducer
         this.contextLookup = contextLookup;
     }
 
-    public string GetResult() => sb.ToString();
-
-    public void ProduceHtmlStart() => sb.AppendLine("<!DOCTYPE html><html>");
-
-    public void ProduceHead()
-    {
-        sb.AppendLine("<head><meta charset=\"UTF-8\"><title>📦 Контекстная матрица</title>");
-        sb.AppendLine("<style>");
-        sb.AppendLine(Resources.HtmlProducerContentStyle);
-        sb.AppendLine("</style>");
-        sb.AppendLine("<script>");
-        sb.AppendLine(Resources.HtmlProducerContentStyleScript);
-        sb.AppendLine("</script>");
-        sb.AppendLine("</head>");
-    }
-
-    public void ProduceHtmlEnd() => sb.AppendLine("</html>");
-
-    public void ProduceHtmlBodyStart() => sb.AppendLine("<body>");
-
-    public void ProduceHtmlBodyEnd() => sb.AppendLine("</body>");
-
-    public void ProduceTitle() => sb.AppendLine("<h1>📦 Навигация по архитектурным зонам</h1>");
-
-    public void ProduceTableStart() => sb.AppendLine("<table>");
-
-    public void ProduceTableEnd() => sb.AppendLine("</table>");
-
-    public void ProduceTableHeaderRow(UiMatrix uiMatrix)
-    {
-        HtmlRowBuilder.Meta.Start(sb);
-        ProduceTableHeaderFirstCellContent();
-        ProduceTableFirstRowCellSummary();
-        ProduceTableHeaderRowCells(uiMatrix);
-        ProduceTableLastRowCellSummary();
-        HtmlRowBuilder.Meta.End(sb);
-    }
-
-    public void ProduceColumnSummaryRow(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
-    {
-        var colSums = uiMatrix.ColsSummary(matrix, Options.Orientation);
-        var totalSum = colSums?.Values.Sum() ?? 0;
-
-        HtmlRowBuilder.Summary.Start(sb);
-        HtmlCellBuilder.SummaryCaption.Cell(sb, "<b>Σ</b>");
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            HtmlCellBuilder.TotalSummary.Cell(sb, totalSum.ToString(), "index.html");
-
-        ProduceColumnSummaryCells(uiMatrix, colSums);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            HtmlCellBuilder.TotalSummary.Cell(sb, totalSum.ToString(), "index.html");
-
-        HtmlRowBuilder.Summary.End(sb);
-    }
-
+    //context: color, ContextInfo, build
     public static string? GetCoverageColorForCell(ContextContainer cell, List<string>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
     {
         if(methods != null && methods.Count > 0)
@@ -104,35 +49,146 @@ internal class HtmlProducer
         return null;
     }
 
-    public void ProduceDataRow(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+
+    //context: html, build
+    protected void WriteHtmlStart(TextWriter sb) => sb.WriteLine("<!DOCTYPE html><html>");
+
+    //context: html, build
+    protected void WriteHead(TextWriter sb)
     {
-        HtmlRowBuilder.Data.Start(sb);
-        ProduceRowHeaderCell(row);
+        sb.WriteLine("<head>");
+        WriteMeta(sb);
+        WriteMetaTitle(sb);
+        WriteStyle(sb);
+        WriteScript(sb);
+        sb.WriteLine("</head>");
+    }
+
+    protected virtual void WriteMeta(TextWriter sb)
+    {
+        sb.WriteLine("<meta charset =\"UTF-8\">");
+    }
+
+    protected virtual void WriteScript(TextWriter sb)
+    {
+        sb.WriteLine("<script>");
+        sb.WriteLine(Resources.HtmlProducerContentStyleScript);
+        sb.WriteLine("</script>");
+    }
+
+    protected virtual void WriteMetaTitle(TextWriter sb)
+    {
+        sb.WriteLine($"<title>{Title}</title>");
+    }
+
+    protected virtual void WriteStyle(TextWriter sb)
+    {
+        sb.WriteLine("<style>");
+        sb.WriteLine(Resources.HtmlProducerContentStyle);
+        sb.WriteLine("</style>");
+    }
+
+    //context: html, build
+    protected void WriteHtmlEnd(TextWriter sb) => sb.WriteLine("</html>");
+
+    //context: html, build
+    protected void WriteHtmlBodyStart(TextWriter sb) => sb.WriteLine("<body>");
+
+    //context: html, build
+    protected void WriteHtmlBodyEnd(TextWriter sb) => sb.WriteLine("</body>");
+
+    //context: html, build
+    protected void WritePageTitle(TextWriter sb) => sb.WriteLine($"<h1>{Title}</h1>");
+
+    //context: html, build
+    protected void WriteTableStart(TextWriter sb) => sb.WriteLine("<table>");
+
+    //context: html, build
+    protected void WriteTableEnd(TextWriter sb) => sb.WriteLine("</table>");
+
+    //context: html, build
+    protected void WriteTableHeaderRow(TextWriter sb, UiMatrix uiMatrix)
+    {
+        HtmlRowBuilder.Meta.Start(sb);
+        ProduceTableHeaderFirstCellContent(sb);
+        ProduceTableFirstRowCellSummary(sb);
+        ProduceTableHeaderRowCells(sb, uiMatrix);
+        ProduceTableLastRowCellSummary(sb);
+        HtmlRowBuilder.Meta.End(sb);
+    }
+
+    //context: html, build
+    protected void WriteColumnSummaryRow(TextWriter sb, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        var colSums = uiMatrix.ColsSummary(matrix, Options.Orientation);
+        var totalSum = colSums?.Values.Sum() ?? 0;
+
+        HtmlRowBuilder.Summary.Start(sb);
+        HtmlCellBuilder.SummaryCaption.Cell(sb, "<b>Σ</b>");
 
         if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            ProduceRowSummaryCell(row, uiMatrix, matrix);
+            HtmlCellBuilder.TotalSummary.Cell(sb, totalSum.ToString(), "index.html");
 
-        ProduceDataCells(row, uiMatrix, matrix);
-        ProduceRowSummaryCellLast(row, uiMatrix, matrix);
+        ProduceColumnSummaryCells(sb, uiMatrix, colSums);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
+            HtmlCellBuilder.TotalSummary.Cell(sb, totalSum.ToString(), "index.html");
+
+        HtmlRowBuilder.Summary.End(sb);
+    }
+
+    //context: html, build
+    protected void ProduceDataRow(TextWriter sb, string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        HtmlRowBuilder.Data.Start(sb);
+        ProduceRowHeaderCell(sb, row);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
+            ProduceRowSummaryCell(sb, row, uiMatrix, matrix);
+
+        ProduceDataCells(sb, row, uiMatrix, matrix);
+        ProduceRowSummaryCellLast(sb, row, uiMatrix, matrix);
 
         HtmlRowBuilder.Data.End(sb);
     }
 
-    public void ProduceMatrix(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    protected void Produce(TextWriter sb, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
-        ProduceTableHeaderRow(uiMatrix);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            ProduceColumnSummaryRow(uiMatrix, matrix);
-
-        foreach(var row in uiMatrix.rows)
-            ProduceDataRow(row, uiMatrix, matrix);
-
-        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            ProduceColumnSummaryRow(uiMatrix, matrix);
+        WriteHtmlStart(sb);
+        WriteHead(sb);
+        WriteHtmlBodyStart(sb);
+        WritePageTitle(sb);
+        WriteTableStart(sb);
+        WriteMatrix(sb, uiMatrix, matrix);
+        WriteTableEnd(sb);
+        WriteHtmlBodyEnd(sb);
+        WriteHtmlEnd(sb);
     }
 
-    private void ProduceTableHeaderFirstCellContent()
+    public string ToHtmlString(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        using var sw = new StringWriter();
+        Produce(sw, uiMatrix, matrix);
+        return sw.ToString();
+    }
+
+
+    //context: html, build
+    protected void WriteMatrix(TextWriter sb, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    {
+        WriteTableHeaderRow(sb, uiMatrix);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
+            WriteColumnSummaryRow(sb, uiMatrix, matrix);
+
+        foreach(var row in uiMatrix.rows)
+            ProduceDataRow(sb, row, uiMatrix, matrix);
+
+        if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
+            WriteColumnSummaryRow(sb, uiMatrix, matrix);
+    }
+
+    private void ProduceTableHeaderFirstCellContent(TextWriter sb)
     {
         var theText = Options.Orientation == MatrixOrientation.ActionRows
             ? "Action \\ Domain"
@@ -140,7 +196,7 @@ internal class HtmlProducer
         HtmlCellBuilder.ActionDomain.Cell(sb, theText);
     }
 
-    private void ProduceTableFirstRowCellSummary()
+    private void ProduceTableFirstRowCellSummary(TextWriter sb)
     {
         if(Options.SummaryPlacement == SummaryPlacement.AfterFirst)
         {
@@ -148,7 +204,7 @@ internal class HtmlProducer
         }
     }
 
-    private void ProduceTableLastRowCellSummary()
+    private void ProduceTableLastRowCellSummary(TextWriter sb)
     {
         if(Options.SummaryPlacement == SummaryPlacement.AfterLast)
         {
@@ -156,7 +212,7 @@ internal class HtmlProducer
         }
     }
 
-    private void ProduceTableHeaderRowCells(UiMatrix uiMatrix)
+    private void ProduceTableHeaderRowCells(TextWriter sb, UiMatrix uiMatrix)
     {
         foreach(var metaName in uiMatrix.cols)
         {
@@ -168,7 +224,7 @@ internal class HtmlProducer
         }
     }
 
-    private void ProduceRowHeaderCell(string metaName)
+    private void ProduceRowHeaderCell(TextWriter sb, string metaName)
     {
         var hRef = Options.Orientation == MatrixOrientation.ActionRows
             ? $"action_{metaName}.html"
@@ -177,7 +233,7 @@ internal class HtmlProducer
         HtmlCellBuilder.RowMeta.Cell(sb, metaName, hRef);
     }
 
-    private void ProduceColumnSummaryCells(UiMatrix uiMatrix, Dictionary<string, int>? colSums)
+    private void ProduceColumnSummaryCells(TextWriter sb, UiMatrix uiMatrix, Dictionary<string, int>? colSums)
     {
         foreach(var metaName in uiMatrix.cols)
         {
@@ -190,7 +246,7 @@ internal class HtmlProducer
         }
     }
 
-    private void ProduceRowSummaryCell(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    private void ProduceRowSummaryCell(TextWriter sb, string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         var hRef = Options.Orientation == MatrixOrientation.ActionRows
             ? $"action_{row}.html"
@@ -205,7 +261,7 @@ internal class HtmlProducer
         return ctx?.GetDimensionIntValue("coverage") ?? 0;
     }
 
-    private void ProduceDataCells(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    private void ProduceDataCells(TextWriter sb, string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         foreach(var col in uiMatrix.cols)
         {
@@ -226,7 +282,7 @@ internal class HtmlProducer
         }
     }
 
-    private void ProduceRowSummaryCellLast(string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
+    private void ProduceRowSummaryCellLast(TextWriter sb, string row, UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix)
     {
         if(Options.SummaryPlacement != SummaryPlacement.AfterLast)
             return;

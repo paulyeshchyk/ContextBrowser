@@ -1,4 +1,5 @@
 ﻿using ContextBrowser.model;
+using ContextBrowser.uml;
 using System.Text.RegularExpressions;
 
 namespace ContextBrowser.exporter.UmlSamples;
@@ -28,7 +29,7 @@ public static class UmlPackagesDiagram
 
                 var compGroup = new UmlComponentGroup(CleanName(cls.Name), stereotype);
 
-                var methodsInClass = methods.Where(m => m.ClassOwner == cls.Name);
+                var methodsInClass = methods.Where(m => m.ClassOwner?.Name == cls.Name);
                 foreach(var method in methodsInClass)
                 {
                     var methodStereotype = string.Join(", ", method.Contexts.Distinct().OrderBy(x => x));

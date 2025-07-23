@@ -1,14 +1,12 @@
-﻿using System.Text;
-
-namespace ContextBrowser.model;
+﻿namespace ContextBrowser.model;
 
 public interface IHtmlBuilder
 {
-    void Start(StringBuilder sb);
+    void Start(TextWriter sb);
 
-    void End(StringBuilder sb);
+    void End(TextWriter sb);
 
-    void Cell(StringBuilder sb, string innerHtml, string? href = null, string? style = null);
+    void Cell(TextWriter sb, string innerHtml, string? href = null, string? style = null);
 }
 
 public abstract class HtmlBuilderBase : IHtmlBuilder
@@ -22,17 +20,17 @@ public abstract class HtmlBuilderBase : IHtmlBuilder
         ClassName = className;
     }
 
-    public virtual void Start(StringBuilder sb) => sb.Append($"<{Tag} class=\"{ClassName}\">");
+    public virtual void Start(TextWriter sb) => sb.WriteLine($"<{Tag} class=\"{ClassName}\">");
 
-    public virtual void End(StringBuilder sb) => sb.Append($"</{Tag}>");
+    public virtual void End(TextWriter sb) => sb.WriteLine($"</{Tag}>");
 
-    public virtual void Cell(StringBuilder sb, string innerHtml, string? href = null, string? style = null)
+    public virtual void Cell(TextWriter sb, string innerHtml, string? href = null, string? style = null)
     {
         var content = string.IsNullOrWhiteSpace(href)
             ? innerHtml
             : $"<a href=\"{href}\">{innerHtml}</a>";
 
-        sb.Append($"<{Tag} class=\"{ClassName}\" {style}>{content}</{Tag}>");
+        sb.WriteLine($"<{Tag} class=\"{ClassName}\" {style}>{content}</{Tag}>");
     }
 }
 

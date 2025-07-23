@@ -1,4 +1,6 @@
-﻿namespace ContextBrowser.model;
+﻿using ContextBrowser.ContextCommentsParser;
+
+namespace ContextBrowser.model;
 
 public interface IContextInfoCommentProcessor<T>
 {
@@ -8,6 +10,13 @@ public interface IContextInfoCommentProcessor<T>
 internal class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
     where T : ContextInfo
 {
+    private IContextClassifier _contextClassifier { get; }
+
+    public ContextInfoCommentProcessor(IContextClassifier contextClassifier)
+    {
+        _contextClassifier = contextClassifier;
+    }
+
     public void Process(string comment, T target)
     {
         if(comment.StartsWith("context:", StringComparison.OrdinalIgnoreCase))
@@ -16,6 +25,14 @@ internal class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
                               .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
                               .Select(t => t.Trim().ToLowerInvariant());
 
+            var actions = tags.Where(t => _contextClassifier.IsVerb(t)).ToList();
+            target.Action = string.Join(";", actions);
+
+            var domains = tags.Where(t => _contextClassifier.IsNoun(t)).ToList();
+            foreach(var domain in domains)
+            {
+                target.Domains.Add(domain);
+            }
             foreach(var tag in tags)
                 target.Contexts.Add(tag);
         }

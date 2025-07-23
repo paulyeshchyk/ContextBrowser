@@ -20,7 +20,7 @@ internal class RoslynParser<TContext>
         _commentProcessor = commentProcessor;
     }
 
-    // context: csharp, build, file
+    // context: csharp, build
     public void ParseFile(string filePath, RoslynParserOptions? options = null, bool parseContexts = true, bool parseReferences = true)
     {
         options ??= RoslynParserOptions.Default;
@@ -62,7 +62,7 @@ internal class RoslynParser<TContext>
             var typeName = GetDeclarationName(node);
             if(parseContexts)
             {
-                typeContext = _factory.Create(default, kind, nsName, typeName);
+                typeContext = _factory.Create(default, kind, nsName, default, typeName);
                 ParseComments(_commentProcessor, node, typeContext);
                 _collector.Add(typeContext);
 
@@ -88,7 +88,7 @@ internal class RoslynParser<TContext>
                 {
                     var methodName = method.Identifier.Text;
                     var fullName = $"{typeName}.{methodName}";
-                    var methodContext = _factory.Create(typeContext, ContextInfoElementType.method, nsName, typeName, fullName);
+                    var methodContext = _factory.Create(typeContext, ContextInfoElementType.method, nsName, typeContext, fullName);
                     ParseComments(_commentProcessor, method, methodContext);
                     _collector.Add(methodContext);
 
@@ -202,8 +202,8 @@ internal record RoslynParserOptions(
     HashSet<RoslynMemberType> MemberTypes)
 {
     public static RoslynParserOptions Default => new(
-        MethodModifierTypes: new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected, RoslynAccessorModifierType.@internal, RoslynAccessorModifierType.@private },
-        ClassModifierTypes: new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected, RoslynAccessorModifierType.@internal, RoslynAccessorModifierType.@private },
+        MethodModifierTypes: new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected, RoslynAccessorModifierType.@internal },
+        ClassModifierTypes: new() { RoslynAccessorModifierType.@public, RoslynAccessorModifierType.@protected, RoslynAccessorModifierType.@internal },
         MemberTypes: new() { RoslynMemberType.@enum,
                              RoslynMemberType.@class,
                              RoslynMemberType.@record,
