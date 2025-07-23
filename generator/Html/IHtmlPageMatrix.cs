@@ -1,3 +1,0 @@
-﻿namespace ContextBrowser.Generator.Html
-{
-}

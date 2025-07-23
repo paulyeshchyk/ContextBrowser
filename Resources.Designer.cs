@@ -72,6 +72,7 @@ namespace ContextBrowser {
         ///  --hover-background-dark: #e0e0e0;
         ///
         ///  --cell-padding: 6px 10px;
+        ///  --alt-cell-padding: 1px 1px; 
         ///
         ///  --link-text-decoration: none;
         ///  --link-text-align: inherit;
@@ -81,10 +82,7 @@ namespace ContextBrowser {
         ///  --link-text-overflow: ellipsis;
         ///}
         ///
-        ///a:link,
-        ///a:visited,
-        ///a:hover,
-        ///a:activ [rest of string was truncated]&quot;;.
+        ////* Вс [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HtmlProducerContentStyle {
             get {
@@ -109,11 +107,58 @@ namespace ContextBrowser {
         ///
         ///   cell.addEventListener(&apos;mouseleave&apos;, () =&gt; {
         ///    rows.forEach(r =&gt; {
-        ///     if (r.cells[c [rest of string was truncated]&quot;;.
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HtmlProducerContentStyleScript {
             get {
                 return ResourceManager.GetString("HtmlProducerContentStyleScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (function shrinkEmbeddedFonts() {
+        ///    const tables = document.querySelectorAll(&quot;.embedded-table&quot;);
+        ///    tables.forEach(table =&gt; {
+        ///        const cells = table.querySelectorAll(&quot;td&quot;);
+        ///        let fontSize = 0.65;
+        ///
+        ///        const testFits = () =&gt; {
+        ///            return [...cells].every(cell =&gt; {
+        ///                const clone = cell.cloneNode(true);
+        ///                clone.style.position = &quot;absolute&quot;;
+        ///                clone.style.visibility = &quot;hidden&quot;;
+        ///                clone.style.whiteSpace = &quot;nowrap&quot;;
+        ///      [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ScriptAutoFontShrink {
+            get {
+                return ResourceManager.GetString("ScriptAutoFontShrink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to function autoResizeEmbeddedTables() {
+        ///    const tables = document.querySelectorAll(&quot;.embedded-table&quot;);
+        ///    tables.forEach(table =&gt; {
+        ///        let size = 0.7;
+        ///        const min = 0.4;
+        ///
+        ///        while (size &gt;= min) {
+        ///            table.style.fontSize = `${size}em`;
+        ///            const fits = [...table.querySelectorAll(&quot;td&quot;)].every(cell =&gt;
+        ///                cell.scrollWidth &lt;= cell.offsetWidth
+        ///            );
+        ///            if (fits) break;
+        ///            size -= 0.05;
+        ///        }
+        ///    });
+        ///}
+        ///
+        ///document.addEvent [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ScriptAutoShrinkEmbeddedTable {
+            get {
+                return ResourceManager.GetString("ScriptAutoShrinkEmbeddedTable", resourceCulture);
             }
         }
     }

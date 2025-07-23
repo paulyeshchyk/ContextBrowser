@@ -43,6 +43,13 @@ internal class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
         ContextsLookup = contextLookup;
     }
 
+    protected override IEnumerable<string> GetScripts()
+    {
+        yield return Resources.HtmlProducerContentStyleScript; // базовый скрипт, если нужен
+        yield return Resources.ScriptAutoShrinkEmbeddedTable;  // специфичный скрипт для подтаблицы
+        yield return Resources.ScriptAutoFontShrink;
+    }
+
     protected override void WriteContent(TextWriter tw)
     {
         HtmlBuilderFactory.Table.With(tw,() =>
@@ -59,9 +66,36 @@ internal class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
     {
         ContextsMatrix.TryGetValue(container, out var methods);
         var cnt = methods?.Count ?? 0;
-        return (cnt == 0)
-            ? string.Empty
-            : cnt.ToString();
+        var builderResult = CellWithCoverageBuilder.Build(container, cnt);
+        return builderResult;
+    }
+}
+
+internal class CellWithCoverageBuilder
+{
+    public static string Build(ContextContainer container, int cnt)
+    {
+        if(cnt == 0)
+        {
+            return string.Empty;
+        }
+
+        using var sw = new StringWriter();
+
+        HtmlBuilderFactory.Table.With(sw,() =>
+        {
+            WriteRow(sw, cnt.ToString());
+        }, className: "embedded-table");
+
+        return sw.ToString();
+    }
+
+    private static void WriteRow(TextWriter writer, string label)
+    {
+        HtmlBuilderRow.Data.With(writer,() =>
+        {
+            HtmlBuilderCell.Data.Cell(writer, label);
+        });
     }
 }
 
@@ -168,9 +202,7 @@ internal class HtmlMatrixWriter
 
 
                 var data = _htmlPageMatrix.ProduceData(cell);
-
                 var hrefCell = HrefManager.GetHrefCell(cell, _htmlPageMatrix.Options);
-
                 _htmlPageMatrix.ContextsMatrix.TryGetValue(cell, out var methods);
                 var style = _htmlPageMatrix.CoverageManager.BuildCellStyle(cell, methods, _htmlPageMatrix.ContextsLookup);
 

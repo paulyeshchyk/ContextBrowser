@@ -6,6 +6,8 @@ public interface IHtmlTagBuilder
 {
     void Start(TextWriter sb);
 
+    void Start(TextWriter writer, string? className);
+
     void End(TextWriter sb);
 }
 
@@ -33,6 +35,13 @@ public static class IHtmlBuilderExtensions
         body();
         builder.End(sb);
     }
+
+    public static void With(this IHtmlBuilder builder, TextWriter writer, Action body, string? className)
+    {
+        builder.Start(writer, className);
+        body();
+        builder.End(writer);
+    }
 }
 
 public abstract class HtmlBuilder : IHtmlBuilder
@@ -49,6 +58,12 @@ public abstract class HtmlBuilder : IHtmlBuilder
     public virtual void Start(TextWriter sb)
     {
         string classAttr = HtmlBuilderTagAttribute.BuildClassAttribute(ClassName);
+        sb.WriteLine($"<{Tag}{classAttr}>");
+    }
+
+    public void Start(TextWriter sb, string? className)
+    {
+        string classAttr = HtmlBuilderTagAttribute.BuildClassAttribute(className);
         sb.WriteLine($"<{Tag}{classAttr}>");
     }
 
@@ -119,6 +134,11 @@ public static class HtmlBuilderCell
         public virtual void End(TextWriter sb)
         {
             sb.WriteLine($"</{Tag}>");
+        }
+
+        public void Start(TextWriter writer, string? className)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -221,12 +241,12 @@ public static class HtmlBuilderTagAttribute
     }
 }
 
-public class HtmlBuilderLink
+public class HtmlBuilderEncodedLink
 {
     private readonly string _href;
     private readonly string _text;
 
-    public HtmlBuilderLink(string href, string? text = "")
+    public HtmlBuilderEncodedLink(string href, string? text = "")
     {
         _href = WebUtility.HtmlEncode(href);
         _text = WebUtility.HtmlEncode(text ?? string.Empty);
@@ -236,5 +256,23 @@ public class HtmlBuilderLink
     {
         var Tag = "a";
         return $"<{Tag} href=\"{_href}\">{_text}</{Tag}>";
+    }
+}
+
+public class HtmlBuilderLink
+{
+    private readonly string _href;
+    private readonly string _text;
+
+    public HtmlBuilderLink(string href, string? text = "")
+    {
+        _href = href;
+        _text = (text ?? string.Empty);
+    }
+
+    public override string ToString()
+    {
+        var Tag = "a";
+        return $"<{Tag} href=\"{_href}\" style=\"some_special_cell_class\">{_text}</{Tag}>";
     }
 }

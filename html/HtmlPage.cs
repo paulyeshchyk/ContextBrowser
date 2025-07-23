@@ -1,6 +1,6 @@
 ﻿namespace ContextBrowser.html;
 
-// context: html, build
+// context: html, model
 internal abstract class HtmlPage
 {
     public string Title { get; set; } = string.Empty;
@@ -18,7 +18,10 @@ internal abstract class HtmlPage
                 HtmlBuilderFactory.Meta.Cell(sb, style: "charset =\"UTF-8\"");
                 HtmlBuilderFactory.Title.Cell(sb, Title);
                 HtmlBuilderFactory.Style.Cell(sb, Resources.HtmlProducerContentStyle);
-                HtmlBuilderFactory.Script.Cell(sb, Resources.HtmlProducerContentStyleScript);
+
+                foreach(var script in GetScripts())
+                    HtmlBuilderFactory.Script.Cell(sb, script);
+
                 HtmlBuilderFactory.Body.With(sb,() =>
                 {
                     HtmlBuilderFactory.H1.Cell(sb, Title);
@@ -26,6 +29,12 @@ internal abstract class HtmlPage
                 });
             });
         });
+    }
+
+    protected virtual IEnumerable<string> GetScripts()
+    {
+        // По умолчанию только один скрипт
+        yield return Resources.HtmlProducerContentStyleScript;
     }
 
     protected abstract void WriteContent(TextWriter sb);
