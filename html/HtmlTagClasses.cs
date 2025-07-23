@@ -1,6 +1,6 @@
-﻿namespace ContextBrowser.model;
+﻿namespace ContextBrowser.html;
 
-internal static class HtmlClasses
+internal static class HtmlTagClasses
 {
     public static class Row
     {
@@ -19,5 +19,15 @@ internal static class HtmlClasses
         public const string RowMeta = "cell_row_meta";
         public const string Data = "cell_data";
         public const string ActionDomain = "cell_actiondomain";
+    }
+
+    public static class Page
+    {
+        public static string Html = string.Empty;
+        public static string Head = string.Empty;
+        public static string Body = string.Empty;
+        public static string Title = string.Empty;
+        public static string H1 = string.Empty;
+        public static string Table = "data-table";
     }
 }

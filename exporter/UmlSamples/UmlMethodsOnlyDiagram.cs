@@ -23,7 +23,7 @@ public static class UmlMethodsOnlyDiagram
             foreach(var callee in method.References)
             {
                 if(methods.Any(m => m.Name == callee.Name))
-                    diagram.Add(new UmlRelation(method.Name, callee.Name));
+                    diagram.Add(new UmlRelation(method.Name, callee?.Name ?? "<unknown>"));
             }
         }
 

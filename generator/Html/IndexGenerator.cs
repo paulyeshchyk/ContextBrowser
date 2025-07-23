@@ -19,10 +19,10 @@ public static class IndexGenerator
     public static void GenerateContextIndexHtml(Dictionary<ContextContainer, List<string>> matrix, Dictionary<string, ContextInfo> allContextInfo, string outputFile, UnclassifiedPriority priority = UnclassifiedPriority.None, MatrixOrientation orientation = MatrixOrientation.DomainRows, SummaryPlacement summaryPlacement = SummaryPlacement.AfterFirst)
     {
         var uiMatrix = UiMatrixGenerator.Generate(matrix, orientation, priority);
-
-        var producer = new HtmlProducer(new HtmlTableOptions { SummaryPlacement = summaryPlacement, Orientation = orientation }, allContextInfo);
+        var options = new HtmlTableOptions { SummaryPlacement = summaryPlacement, Orientation = orientation };
+        var producer = new HtmlPageMatrix(uiMatrix, matrix, options, allContextInfo);
         producer.Title = "Контекстная матрица";
-        var result = producer.ToHtmlString(uiMatrix, matrix);
+        var result = producer.ToHtmlString();
 
         File.WriteAllText(outputFile, result);
     }
