@@ -1,75 +1,100 @@
 ﻿using ContextBrowser.ContextKit.Model;
 using ContextBrowser.exporter.Puml;
+using ContextBrowser.HtmlKit.Builders.Core;
+using ContextBrowser.HtmlKit.Page;
 using System.Text;
 
 namespace ContextBrowser.exporter.HtmlPageSamples;
 
 public static class HtmlDimensionPage
 {
-    //context: build, html, page, directory, uml
     public static void GenerateContextDimensionHtmlPages(Dictionary<ContextContainer, List<string>> matrix, string outputDirectory, Func<string, bool> domainCallback)
     {
         var allActions = matrix.Keys.Select(k => k.Action).Distinct();
         var allDomains = matrix.Keys.Select(k => k.Domain).Distinct();
 
+        // ---------- ACTION ----------
         foreach(var action in allActions)
         {
-            var methods = matrix
-                .Where(kvp => kvp.Key.Action == action)
-                .SelectMany(kvp => kvp.Value)
-                .Distinct();
-            var actionFileName = $"action_{action}.html";
-            var path = Path.Combine(outputDirectory, actionFileName);
+            var methods = matrix.Where(kvp => kvp.Key.Action == action)
+                                .SelectMany(kvp => kvp.Value)
+                                .Distinct()
+                                .ToList();
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"<html><head><meta charset=\"UTF-8\"><title>Action: {action}</title></head><body>");
-            sb.AppendLine($"<h1>Action: {action}</h1>");
-            sb.AppendLine($"<p>Methods: {methods.Count()}</p><ul>");
+            var path = Path.Combine(outputDirectory, $"action_{action}.html");
 
-            foreach(var method in methods)
-                sb.AppendLine($"<li>{method}</li>");
+            using var writer = new StreamWriter(path, false, Encoding.UTF8);
 
-            sb.AppendLine("</ul></body></html>");
-            File.WriteAllText(path, sb.ToString());
+            HtmlBuilderFactory.Html.With(writer,() =>
+            {
+                HtmlBuilderFactory.Head.With(writer,() =>
+                {
+                    HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
+                    HtmlBuilderFactory.Title.Cell(writer, $"Action: {action}");
+                });
+
+                HtmlBuilderFactory.Body.With(writer,() =>
+                {
+                    HtmlBuilderFactory.H1.Cell(writer, $"Action: {action}");
+                    HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methods.Count}");
+
+                    HtmlBuilderFactory.Ul.With(writer,() =>
+                    {
+                        foreach(var method in methods)
+                            HtmlBuilderFactory.Li.Cell(writer, method);
+                    });
+                });
+            });
         }
 
+        // ---------- DOMAIN ----------
         foreach(var domain in allDomains)
         {
-            var methods = matrix
-                .Where(kvp => kvp.Key.Domain == domain)
-                .SelectMany(kvp => kvp.Value)
-                .Distinct();
+            var methods = matrix.Where(kvp => kvp.Key.Domain == domain)
+                                .SelectMany(kvp => kvp.Value)
+                                .Distinct()
+                                .ToList();
 
-            var domainFileName = $"domain_{domain}.html";
-            var path = Path.Combine(outputDirectory, domainFileName);
+            string embeddedScript = string.Empty;
+            string embeddedContent = string.Empty;
 
-            var embeddedScript = string.Empty;
-            var embeddedContent = string.Empty;
             if(domainCallback(domain))
             {
-                var pumlInjection = PumlInjector.InjectDomainEmbeddedHtml(domain, outputDirectory);
-                embeddedScript = pumlInjection.EmbeddedScript;
-                embeddedContent = pumlInjection.EmbeddedContent;
+                var puml = PumlInjector.InjectDomainEmbeddedHtml(domain, outputDirectory);
+                embeddedScript = puml.EmbeddedScript;
+                embeddedContent = puml.EmbeddedContent;
             }
-            else
+
+            var path = Path.Combine(outputDirectory, $"domain_{domain}.html");
+
+            using var writer = new StreamWriter(path, false, Encoding.UTF8);
+
+            HtmlBuilderFactory.Html.With(writer,() =>
             {
-            }
-            var sb = new StringBuilder();
-            sb.AppendLine("<html><head><meta charset=\"UTF-8\">");
-            sb.AppendLine($"<title>Domain: " + domain + "</title>");
-            sb.AppendLine(embeddedScript);
-            sb.AppendLine("</head><body>");
-            sb.AppendLine($"<h1>Domain: {domain}</h1>");
-            sb.AppendLine($"<p>Methods: {methods.Count()}</p><ul>");
+                HtmlBuilderFactory.Head.With(writer,() =>
+                {
+                    HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
+                    HtmlBuilderFactory.Title.Cell(writer, $"Domain: {domain}");
 
-            foreach(var method in methods)
-                sb.AppendLine($"<li>{method}</li>");
+                    if(!string.IsNullOrWhiteSpace(embeddedScript))
+                        HtmlBuilderFactory.Raw.Cell(writer, embeddedScript);
+                });
 
-            sb.AppendLine("</ul>");
+                HtmlBuilderFactory.Body.With(writer,() =>
+                {
+                    HtmlBuilderFactory.H1.Cell(writer, $"Domain: {domain}");
+                    HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methods.Count}");
 
-            sb.AppendLine(embeddedContent);
-            sb.AppendLine("</body></html>");
-            File.WriteAllText(path, sb.ToString());
+                    HtmlBuilderFactory.Ul.With(writer,() =>
+                    {
+                        foreach(var method in methods)
+                            HtmlBuilderFactory.Li.Cell(writer, method);
+                    });
+
+                    if(!string.IsNullOrWhiteSpace(embeddedContent))
+                        HtmlBuilderFactory.Raw.Cell(writer, embeddedContent);
+                });
+            });
         }
     }
 }

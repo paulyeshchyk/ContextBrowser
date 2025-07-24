@@ -1,5 +1,7 @@
 ﻿using ContextBrowser.ContextKit.Model;
 using ContextBrowser.exporter.Puml;
+using ContextBrowser.HtmlKit.Builders.Core;
+using ContextBrowser.HtmlKit.Page;
 using System.Text;
 
 namespace ContextBrowser.exporter.HtmlPageSamples;
@@ -12,35 +14,44 @@ public static class HtmlIndexPage
         foreach(var cell in matrix)
         {
             var (action, domain) = cell.Key;
-            var compositeFileName = $"composite_{action}_{domain}.html";
-            var filePath = Path.Combine(outputDirectory, compositeFileName);
+            var fileName = $"composite_{action}_{domain}.html";
+            var filePath = Path.Combine(outputDirectory, fileName);
 
-            string documentTitle = $" {action}  →  {domain} ";
-            var pumlInjection = PumlInjector.InjectActionPerDomainEmbeddedHtml(action, domain, outputDirectory);
+            var title = $" {action}  →  {domain} ";
+            var methodCount = cell.Value.Count;
+            var distinctMethods = cell.Value.Distinct();
 
-            var sb = new StringBuilder();
-            sb.AppendLine("<!DOCTYPE html>");
-            sb.AppendLine("<html lang=\"en\">");
-            sb.AppendLine($"<head><meta charset=\"UTF-8\"><title>{documentTitle}</title>");
-            sb.AppendLine(pumlInjection.EmbeddedScript);
-            sb.AppendLine("</head>");
-            sb.AppendLine("<body>");
-            sb.AppendLine($"<h1>{action.ToUpper()} → {domain}</h1>");
-            sb.AppendLine($"<p>Methods: {cell.Value.Count}</p>");
-            sb.AppendLine("<ul>");
+            var injection = PumlInjector.InjectActionPerDomainEmbeddedHtml(action, domain, outputDirectory);
 
-            foreach(var method in cell.Value.Distinct())
+            using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
+
+            HtmlBuilderFactory.Raw.Cell(writer, "<!DOCTYPE html>");
+            HtmlBuilderFactory.Html.With(writer,() =>
             {
-                sb.AppendLine($"  <li>{method}</li>");
-            }
+                HtmlBuilderFactory.Head.With(writer,() =>
+                {
+                    HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
+                    HtmlBuilderFactory.Title.Cell(writer, title);
 
-            sb.AppendLine("</ul>");
+                    if(!string.IsNullOrWhiteSpace(injection.EmbeddedScript))
+                        HtmlBuilderFactory.Raw.Cell(writer, injection.EmbeddedScript);
+                });
 
-            sb.AppendLine(pumlInjection.EmbeddedContent);
+                HtmlBuilderFactory.Body.With(writer,() =>
+                {
+                    HtmlBuilderFactory.H1.Cell(writer, $"{action.ToUpper()} → {domain}");
+                    HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methodCount}");
 
-            sb.AppendLine("</body></html>");
+                    HtmlBuilderFactory.Ul.With(writer,() =>
+                    {
+                        foreach(var method in distinctMethods)
+                            HtmlBuilderFactory.Li.Cell(writer, method);
+                    });
 
-            File.WriteAllText(filePath, sb.ToString());
+                    if(!string.IsNullOrWhiteSpace(injection.EmbeddedContent))
+                        HtmlBuilderFactory.Raw.Cell(writer, injection.EmbeddedContent);
+                });
+            });
         }
     }
 }
