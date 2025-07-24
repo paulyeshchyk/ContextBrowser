@@ -4,7 +4,7 @@ namespace ContextBrowser.ContextKit.Parser;
 
 // context: model, csharp
 // pattern: Strategy
-internal class ContextClassifier : IContextClassifier
+public class ContextClassifier : IContextClassifier
 {
     public readonly string[] StandardActions = new[] { "create", "read", "update", "delete", "validate", "share", "build", "model" };
 

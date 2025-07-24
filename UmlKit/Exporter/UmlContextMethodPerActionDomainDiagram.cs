@@ -11,7 +11,7 @@ internal static class UmlContextMethodPerActionDomainDiagram
     //context: build, uml
     public static void Build(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
     {
-        var diagram = new UmlDiagram();
+        var diagram = new UmlDiagramClasses();
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach(var cell in matrix)

@@ -8,13 +8,14 @@ public class UmlDiagramSequence : UmlDiagram
     private readonly List<string> _states = new();
     private readonly List<(string From, string To, string? Label)> _transitions = new();
 
-    public UmlDiagramSequence AddState(string name)
+    public override UmlDiagram AddState(string name)
     {
         _states.Add(name);
         return this;
     }
 
-    public UmlDiagramSequence AddTransition(string from, string to, string? label = null)
+    // context: uml, create
+    public override UmlDiagram AddTransition(string from, string to, string? label = null)
     {
         _transitions.Add((from, to, label));
         return this;

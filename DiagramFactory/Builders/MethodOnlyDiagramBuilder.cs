@@ -1,0 +1,13 @@
+﻿using ContextBrowser.ContextKit.Model;
+using ContextBrowser.ContextKit.Parser;
+using ContextBrowser.UmlKit.Diagrams;
+
+namespace ContextBrowser.DiagramFactory.Builders;
+
+public class MethodOnlyDiagramBuilder : IContextDiagramBuilder
+{
+    public string Name => "MethodOnly";
+
+    public bool Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier, UmlDiagram target)
+        => throw new NotImplementedException();
+}

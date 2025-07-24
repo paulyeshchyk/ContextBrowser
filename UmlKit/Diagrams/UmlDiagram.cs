@@ -4,8 +4,12 @@ namespace ContextBrowser.UmlKit.Diagrams;
 
 // context: model, uml
 // pattern: Template method
-public class UmlDiagram
+public abstract class UmlDiagram
 {
+    public abstract UmlDiagram AddState(string name);
+
+    public abstract UmlDiagram AddTransition(string from, string to, string? label = null);
+
     protected virtual string SUmlStartTag { get => "@startuml"; }
 
     protected virtual string SUmlEndTag { get => "@enduml"; }

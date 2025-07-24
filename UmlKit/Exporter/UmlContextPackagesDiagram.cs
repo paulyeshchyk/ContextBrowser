@@ -12,7 +12,7 @@ public static class UmlContextPackagesDiagram
     // context: build, uml
     public static void Build(List<ContextInfo> elements, string outputPath)
     {
-        var diagram = new UmlDiagram();
+        var diagram = new UmlDiagramClasses();
 
         var classes = elements.Where(e => e.ElementType == ContextInfoElementType.@class).ToList();
         var methods = elements.Where(e => e.ElementType == ContextInfoElementType.method).ToList();

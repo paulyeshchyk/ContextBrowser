@@ -15,7 +15,7 @@ public static class UmlContextMethodsOnlyDiagram
                 .Where(e => e.ElementType == ContextInfoElementType.method)
                 .ToList();
 
-        var diagram = new UmlDiagram();
+        var diagram = new UmlDiagramClasses();
 
         foreach(var method in methods)
             diagram.Add(new UmlComponent(method.Name));

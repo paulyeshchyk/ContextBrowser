@@ -10,7 +10,7 @@ internal static class UmlContextRelationDiagram
     //context: build, uml, links
     public static void GenerateLinksUml(HashSet<(string From, string To)> links, string outputPath)
     {
-        var diagram = new UmlDiagram();
+        var diagram = new UmlDiagramClasses();
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach (var (from, to) in links)

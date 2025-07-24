@@ -11,7 +11,7 @@ internal static class UmlContextActionPerDomainDiagram
     //context: build, uml, links, heatmap
     public static void Build(Dictionary<ContextContainer, List<string>> matrix, Func<string, string, string> linkGenerator, string outputPath)
     {
-        var diagram = new UmlDiagram();
+        var diagram = new UmlDiagramClasses();
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach(var cell in matrix)

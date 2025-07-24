@@ -1,9 +1,6 @@
 ﻿namespace ContextBrowser.UmlKit.Diagrams;
 
-// context: model, uml
-// pattern: Template method
-// pattern note: subclassing
-public class UmlDiagramState : UmlDiagram
+public class UmlDiagramClasses : UmlDiagram
 {
     private readonly List<string> _states = new();
     private readonly List<(string From, string To, string? Label)> _transitions = new();
@@ -20,27 +17,17 @@ public class UmlDiagramState : UmlDiagram
         return this;
     }
 
-
     public override void WriteBody(TextWriter writer)
     {
-        if(!_states.Any() || !_transitions.Any())
-        {
-            Console.WriteLine($"Состояния и переходы должны быть определены для {this._title}");
-            return;
-        }
-
         foreach(var state in _states.Distinct())
             writer.WriteLine($"state \"{state}\"");
 
         writer.WriteLine();
 
-        writer.WriteLine($"[*] --> {_transitions.FirstOrDefault().From.Replace(".", "_")}");
         foreach (var (from, to, label) in _transitions)
         {
             var arrow = label is not null ? $" : {label}" : string.Empty;
-            writer.WriteLine($"{from.Replace(".", "_")} --> {to.Replace(".", "_")}{arrow}");
+            writer.WriteLine($"\"{from}\" --> \"{to}\"{arrow}");
         }
-
-        writer.WriteLine($"{_transitions.LastOrDefault().To.Replace(".", "_")} --> [*]");
     }
 }

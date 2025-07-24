@@ -22,6 +22,17 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 
+    public string FullName
+    {
+        get
+        {
+            var theName = (Name ?? string.Empty);
+            if(string.IsNullOrWhiteSpace(Namespace))
+                return theName;
+            return $"{Namespace}.{theName}";
+        }
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Name, Namespace, ElementType);
