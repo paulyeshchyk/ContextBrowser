@@ -1,7 +1,6 @@
 ﻿using ContextBrowser.ContextKit.Model;
 using ContextBrowser.HtmlKit.Builders.Core;
-using ContextBrowser.HtmlKit.Builders.Rows;
-using ContextBrowser.HtmlKit.Builders.Tag;
+using ContextBrowser.HtmlKit.Page;
 
 namespace ContextBrowser.HtmlKit.Writer;
 
@@ -10,14 +9,14 @@ internal class CellWithCoverageBuilder
 {
     public static string Build(ContextContainer container, int cnt)
     {
-        if(cnt == 0)
+        if (cnt == 0)
         {
             return string.Empty;
         }
 
         using var sw = new StringWriter();
 
-        Page.HtmlBuilderFactory.Table.With(sw,() =>
+        Page.HtmlBuilderFactory.Table.With(sw, () =>
         {
             WriteRow(sw, cnt.ToString());
         }, className: "embedded-table");
@@ -27,9 +26,9 @@ internal class CellWithCoverageBuilder
 
     private static void WriteRow(TextWriter writer, string label)
     {
-        HtmlBuilderRow.Data.With(writer,() =>
+        HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(writer, () =>
         {
-            HtmlTagBuilderFactory.Data.Cell(writer, label);
+            HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(writer, label);
         });
     }
 }

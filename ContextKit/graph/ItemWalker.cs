@@ -23,6 +23,7 @@ public sealed class ItemWalker : Walker<ContextInfo>
         OnExportItem = onExportItem;
     }
 
+    // context: build, ContextInfo
     public void Walk(IEnumerable<ContextInfo> items, bool skipDescendants = false)
     {
         foreach(var item in items)

@@ -3,6 +3,8 @@ using ContextBrowser.HtmlKit.Classes;
 
 namespace ContextBrowser.HtmlKit.Page;
 
+// pattern: Builder
+// pattern note: weak
 public static class HtmlBuilderFactory
 {
     // Общие теги, поведение которых не сильно отличается от базового HtmlBuilderBase
@@ -16,7 +18,34 @@ public static class HtmlBuilderFactory
     public static readonly IHtmlBuilder Meta = new HtmlBuilderMeta("meta");
     public static readonly IHtmlBuilder Script = new HtmlBuilderScript("script");
     public static readonly IHtmlBuilder Style = new HtmlBuilderStyle("style");
-    public static readonly IHtmlBuilder H1 = new HtmlBuilderH1("h1", HtmlTagClasses.Page.H1);
+    public static readonly IHtmlBuilder H1 = new HtmlBuilderH1("h1");
+    public static readonly IHtmlBuilder Paragraph = new HtmlBuilderP("p");
+    public static readonly IHtmlBuilder Ul = new HtmlBuilderUl("ul");
+    public static readonly IHtmlBuilder Li = new HtmlBuilderLi("li");
+    public static readonly IHtmlCellBuilder Raw = new RawBuilder();
+
+    // pattern: Abstract Factory
+    // pattern note: weak
+    public static class HtmlBuilderTableCell
+    {
+        public static readonly IHtmlBuilder SummaryCaption = new CellBuilder(HtmlTagClasses.Cell.SummaryCaption);
+        public static readonly IHtmlBuilder TotalSummary = new CellBuilder(HtmlTagClasses.Cell.TotalSummary);
+        public static readonly IHtmlBuilder ColSummary = new CellBuilder(HtmlTagClasses.Cell.ColSummary);
+        public static readonly IHtmlBuilder ColMeta = new CellBuilder(HtmlTagClasses.Cell.ColMeta);
+        public static readonly IHtmlBuilder RowMeta = new CellBuilder(HtmlTagClasses.Cell.RowMeta);
+        public static readonly IHtmlBuilder RowSummary = new CellBuilder(HtmlTagClasses.Cell.RowSummary);
+        public static readonly IHtmlBuilder Data = new CellBuilder(HtmlTagClasses.Cell.Data);
+        public static readonly IHtmlBuilder ActionDomain = new CellBuilder(HtmlTagClasses.Cell.ActionDomain);
+    }
+
+    // pattern: Abstract Factory
+    // pattern note: weak
+    public static class HtmlBuilderTableRow
+    {
+        public static readonly IHtmlBuilder Summary = new RowBuilder(HtmlTagClasses.Row.Summary);
+        public static readonly IHtmlBuilder Data = new RowBuilder(HtmlTagClasses.Row.Data);
+        public static readonly IHtmlBuilder Meta = new RowBuilder(HtmlTagClasses.Row.Meta);
+    }
 
     private class HtmlBuilderStandard : HtmlBuilder
     {
@@ -74,8 +103,57 @@ public static class HtmlBuilderFactory
     // Специализированный билдер для <h1>
     private class HtmlBuilderH1 : HtmlBuilder
     {
-        public HtmlBuilderH1(string tag, string className) : base(tag, className)
+        public HtmlBuilderH1(string tag) : base(tag, string.Empty)
         {
+        }
+    }
+
+    private class HtmlBuilderP : HtmlBuilder
+    {
+        public HtmlBuilderP(string tag) : base(tag, string.Empty)
+        {
+        }
+    }
+
+    private class HtmlBuilderUl : HtmlBuilder
+    {
+        public HtmlBuilderUl(string tag) : base(tag, string.Empty)
+        {
+        }
+    }
+
+    private class HtmlBuilderLi : HtmlBuilder
+    {
+        public HtmlBuilderLi(string tag) : base(tag, string.Empty)
+        {
+        }
+    }
+
+    private class CellBuilder : HtmlBuilder
+    {
+        public CellBuilder(string className) : base("td", className)
+        {
+        }
+    }
+
+    private class RowBuilder : HtmlBuilder
+    {
+        public RowBuilder(string className) : base("tr", className)
+        {
+        }
+    }
+
+    public readonly struct RawBuilder : IHtmlCellBuilder
+    {
+        public void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
+        {
+            if (!string.IsNullOrWhiteSpace(innerHtml))
+                sb.WriteLine(innerHtml);
+        }
+
+        public void With(TextWriter writer, Action block)
+        {
+            block?.Invoke();
         }
     }
 }

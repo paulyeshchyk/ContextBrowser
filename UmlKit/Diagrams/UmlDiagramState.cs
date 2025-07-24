@@ -23,6 +23,12 @@ public class UmlDiagramState : UmlDiagram
 
     public override void WriteBody(TextWriter writer)
     {
+        if(!_states.Any() || !_transitions.Any())
+        {
+            Console.WriteLine($"Состояния и переходы должны быть определены для {this._title}");
+            return;
+        }
+
         foreach(var state in _states.Distinct())
             writer.WriteLine($"state \"{state}\"");
 

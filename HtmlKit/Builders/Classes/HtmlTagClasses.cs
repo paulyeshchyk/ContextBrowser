@@ -27,7 +27,6 @@ internal static class HtmlTagClasses
         public static string Head = string.Empty;
         public static string Body = string.Empty;
         public static string Title = string.Empty;
-        public static string H1 = string.Empty;
         public static string Table = "data-table";
     }
 }

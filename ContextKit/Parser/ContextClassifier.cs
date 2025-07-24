@@ -19,6 +19,17 @@ internal class ContextClassifier : IContextClassifier
     public bool IsNoun(string theWord) => !StandardActions.Contains(theWord);
 
     public bool IsVerb(string theWord) => StandardActions.Contains(theWord);
+
+    public bool HasActionAndDomain(ContextInfo info)
+    {
+        if(info.Contexts == null)
+            return false;
+
+        var hasVerb = info.Contexts.Any(IsVerb);
+        var hasNoun = info.Contexts.Any(IsNoun);
+
+        return hasVerb && hasNoun;
+    }
 }
 
 
