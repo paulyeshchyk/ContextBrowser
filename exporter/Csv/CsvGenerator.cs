@@ -1,6 +1,10 @@
-﻿namespace ContextBrowser.exporter.Csv;
+﻿using ContextBrowser.ContextKit.Model;
+using ContextBrowser.ContextKit.Parser;
+
+namespace ContextBrowser.exporter.Csv;
 
 // context: heatmap, build
+// pattern: Builder
 public static class CsvGenerator
 {
     //context: build, csv, heatmap

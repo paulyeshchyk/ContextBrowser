@@ -1,12 +1,14 @@
-﻿using ContextBrowser.exporter;
+﻿using ContextBrowser.ContextKit.graph;
+using ContextBrowser.ContextKit.Matrix;
+using ContextBrowser.ContextKit.Model;
+using ContextBrowser.ContextKit.Parser;
+using ContextBrowser.exporter;
 using ContextBrowser.exporter.HtmlPageSamples;
-using ContextBrowser.exporter.UmlSamples;
 using ContextBrowser.Extensions;
-using ContextBrowser.Generator.Html;
-using ContextBrowser.graph;
-using ContextBrowser.model;
-using ContextBrowser.Parser;
-using ContextBrowser.uml;
+using ContextBrowser.HtmlKit.Exporter;
+using ContextBrowser.HtmlKit.Model;
+using ContextBrowser.UmlKit.Diagrams;
+using ContextBrowser.UmlKit.Exporter;
 
 namespace ContextBrowser.ContextCommentsParser;
 
@@ -18,8 +20,8 @@ static class Program
         string theOutputPath = ".\\output\\";
 
         bool includeAllStandardActions = true;
-        var summaryPlacement = IndexGenerator.SummaryPlacement.AfterLast;
-        var matrixOrientation = Generator.Matrix.MatrixOrientation.DomainRows;
+        var summaryPlacement = SummaryPlacement.AfterLast;
+        var matrixOrientation = MatrixOrientation.DomainRows;
         var unclassifiedPriority = UnclassifiedPriority.Highest;
 
         var contextsList = ContextParser.Parse(theSourcePath);
@@ -41,19 +43,19 @@ static class Program
         //HeatmapExporter.GenerateHeatmapCsv(matrix, $"{theOutputPath}heatmap.csv", unclassifiedPriority);
 
 
-        UmlPackagesDiagram.Build(contextsList, $"{theOutputPath}uml.packages.domains.puml");
-        UmlMethodsOnlyDiagram.Build(contextsList, $"{theOutputPath}methodlinks.puml");
-        UmlMethodPerActionDomainDiagram.Build(matrix, $"{theOutputPath}uml.packages.actions.puml");
+        UmlContextPackagesDiagram.Build(contextsList, $"{theOutputPath}uml.packages.domains.puml");
+        UmlContextMethodsOnlyDiagram.Build(contextsList, $"{theOutputPath}methodlinks.puml");
+        UmlContextMethodPerActionDomainDiagram.Build(matrix, $"{theOutputPath}uml.packages.actions.puml");
 
         var links = ContextMatrixUmlExporter.GenerateMethodLinks(contextsList, contextClassifier);
-        SampleLinkedDomain.GenerateLinksUml(links, $"{theOutputPath}uml.4.links.puml");
+        UmlContextRelationDiagram.GenerateLinksUml(links, $"{theOutputPath}uml.4.links.puml");
 
 
         // 1.
-        UmlComponentDiagram.Build(matrix, theOutputPath);
+        UmlContextComponentDiagram.Build(matrix, theOutputPath);
 
         // 2.
-        UmlActionPerDomainDiagram.Build(matrix,(action, domain) => $"composite_{action}_{domain}.puml", $"{theOutputPath}uml.heatmap.link.puml");
+        UmlContextActionPerDomainDiagram.Build(matrix,(action, domain) => $"composite_{action}_{domain}.puml", $"{theOutputPath}uml.heatmap.link.puml");
 
         // 3.
         HtmlIndexPage.GenerateContextHtmlPages(matrix, theOutputPath);
@@ -97,13 +99,12 @@ static class Program
                     return;
                 }
 
-                var theContext = string.IsNullOrWhiteSpace(domain) ? "unknown context" : domain;
-                var theOName = descendantDomain?.Name ?? "u1";
+                var subjectName = descendantDomain?.Name ?? "u1";
 
-                var linkName = $"{descendant?.Name ?? "UNKNOWN"} <<{theOName}>>";
+                var linkName = $"{descendant?.Name ?? "UNKNOWN"} [{subjectName.Replace(".", "_")}]";
                 var iname = item.Name ?? "<empty2>";
 
-                ud.AddTransition(iname, domain, linkName);
+                ud.AddTransition(domain, iname, linkName);
             },
             visitCallback:(s) => Console.WriteLine($"[VISITED] {s.Name}"));
 

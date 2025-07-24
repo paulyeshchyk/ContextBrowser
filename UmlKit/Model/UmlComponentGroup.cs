@@ -1,0 +1,30 @@
+﻿namespace ContextBrowser.UmlKit.Model;
+
+// context: model, uml
+// pattern: Composite leaf
+public class UmlComponentGroup : IUmlElement
+{
+    public string Name { get; }
+
+    public string Stereotype { get; }
+
+    public List<IUmlElement> Members { get; } = new();
+
+    public UmlComponentGroup(string? name, string stereotype)
+    {
+        Name = name ?? "???";
+        Stereotype = stereotype;
+    }
+
+    // context: uml, create
+    public void Add(IUmlElement e) => Members.Add(e);
+
+    // context: uml, share
+    public void WriteTo(TextWriter writer)
+    {
+        writer.WriteLine($"  component \"{Name}\" <<{Stereotype}>> {{");
+        foreach(var member in Members)
+            member.WriteTo(writer);
+        writer.WriteLine("  }");
+    }
+}
