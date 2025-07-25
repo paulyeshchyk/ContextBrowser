@@ -1,37 +1,38 @@
-﻿namespace ContextBrowser.UmlKit.Diagrams;
+﻿using ContextBrowser.UmlKit.Model;
+
+namespace ContextBrowser.UmlKit.Diagrams;
 
 // context: model, uml
 // pattern: Template method
 // pattern note: subclassing
 public class UmlDiagramSequence : UmlDiagram
 {
-    private readonly List<string> _states = new();
-    private readonly List<(string From, string To, string? Label)> _transitions = new();
+    private readonly HashSet<UmlParticipant> _participants = new();
+    private readonly List<UmlSequence> _transitions = new();
 
-    public override UmlDiagram AddState(string name)
+    public override UmlDiagram AddParticipant(string name)
     {
-        _states.Add(name);
+        _participants.Add(new UmlParticipant(name));
         return this;
     }
 
     // context: uml, create
     public override UmlDiagram AddTransition(string from, string to, string? label = null)
     {
-        _transitions.Add((from, to, label));
+        _transitions.Add(new UmlSequence(new UmlParticipant(from), new UmlParticipant(to), label));
         return this;
     }
 
     public override void WriteBody(TextWriter writer)
     {
-        foreach(var state in _states.Distinct())
-            writer.WriteLine($"state \"{state}\"");
+        foreach(var participant in _participants.Distinct())
+            writer.WriteLine(participant.Declaration);
 
         writer.WriteLine();
 
-        foreach (var (from, to, label) in _transitions)
+        foreach(var transition in _transitions)
         {
-            var arrow = label is not null ? $" : {label}" : string.Empty;
-            writer.WriteLine($"\"{from}\" --> \"{to}\"{arrow}");
+            transition.WriteTo(writer);
         }
     }
 }

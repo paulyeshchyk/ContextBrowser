@@ -6,7 +6,7 @@ namespace ContextBrowser.UmlKit.Diagrams;
 // pattern: Template method
 public abstract class UmlDiagram
 {
-    public abstract UmlDiagram AddState(string name);
+    public abstract UmlDiagram AddParticipant(string name);
 
     public abstract UmlDiagram AddTransition(string from, string to, string? label = null);
 

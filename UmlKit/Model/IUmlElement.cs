@@ -6,3 +6,8 @@ public interface IUmlElement
 {
     void WriteTo(TextWriter writer);
 }
+
+public interface IUmlDeclarable
+{
+    string Declaration { get; }
+}

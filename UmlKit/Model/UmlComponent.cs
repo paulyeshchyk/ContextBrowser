@@ -2,11 +2,13 @@
 
 // context: model, uml
 // pattern: Composite leaf
-public class UmlComponent : IUmlElement
+public class UmlComponent : IUmlElement, IUmlDeclarable
 {
     public string Name { get; }
 
     public string? Url { get; }
+
+    public string Declaration => $"component \"{Name}\"";
 
     public UmlComponent(string? name, string? url = null)
     {
@@ -20,6 +22,6 @@ public class UmlComponent : IUmlElement
         if(!string.IsNullOrWhiteSpace(Url))
             writer.WriteLine($"component \"{Name}\" [[{Url}]]");
         else
-            writer.WriteLine($"component \"{Name}\"");
+            writer.WriteLine(Declaration);
     }
 }
