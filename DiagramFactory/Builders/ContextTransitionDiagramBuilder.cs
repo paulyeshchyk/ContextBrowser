@@ -17,7 +17,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
                 classifier.HasActionAndDomain(ctx))
             .ToList();
 
-        if(!filtered.Any())
+        if (!filtered.Any())
             return false;
 
         //onGetDescendants: method =>
@@ -41,15 +41,15 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
             {
                 return allContexts.Where(c => c.Contexts.Contains(d) && classifier.HasActionAndDomain(c));
             },
-            onExportItem:(caller, callee, calleeDomainItem, domain) =>
+            onExportItem: (caller, callee, calleeDomainItem, domain) =>
             {
-                var callerLabel = $"{caller.ClassOwner?.Name}.{caller.Name}".Replace(".", "_");
-                var calleeLabel = $"{callee.ClassOwner?.Name}.{callee.Name}".Replace(".", "_");
-                var domainLabel = domain.Replace(".", "_");
+                var callerLabel = $"{caller.ClassOwner?.Name}.{caller.Name}";//.Replace(".", "_");
+                var calleeLabel = $"{callee.ClassOwner?.Name}.{callee.Name}";//.Replace(".", "_");
+                var domainLabel = domain;//.Replace(".", "_");
 
-                target.AddState(domainLabel);
-                target.AddState(callerLabel);
-                target.AddState(calleeLabel);
+                target.AddParticipant(domainLabel);
+                target.AddParticipant(callerLabel);
+                target.AddParticipant(calleeLabel);
 
                 target.AddTransition(domainLabel, callerLabel, "entry");
                 target.AddTransition(callerLabel, calleeLabel, "calls");

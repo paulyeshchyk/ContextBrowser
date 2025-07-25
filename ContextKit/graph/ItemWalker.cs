@@ -35,35 +35,36 @@ public sealed class ItemWalker : Walker<ContextInfo>
     // context: ContextInfo, read
     public void Walk(ContextInfo item, bool skipDescendants = false)
     {
+        // Добавляем item и все его References в Visited
         if(!AddToVisited(item, Visited))
             return;
 
-
-        var descendantMethodList = OnGetDescendants.Invoke(item).ToList();
-        foreach(var descendantMethod in descendantMethodList)
+        var descendants = OnGetDescendants.Invoke(item);
+        foreach(var descendant in descendants)
         {
-            AddToVisited(descendantMethod, Visited);
+            // специально не проверяем Visited здесь
+            AddToVisited(descendant, Visited);
 
-            if(skipDescendants)
-                continue;
-
-            TryExport(item, descendantMethod);
+            if(!skipDescendants)
+                TryExport(item, descendant);
         }
     }
 
-    private void TryExport(ContextInfo item, ContextInfo descendantMethod, bool continueWalking = true)
+    private void TryExport(ContextInfo caller, ContextInfo callee)
     {
-        var descendantContexts = new HashSet<string>();
-        descendantContexts.UnionWith(descendantMethod.Contexts);
-        descendantContexts.UnionWith(item.Contexts);
+        var contexts = new HashSet<string>();
+        contexts.UnionWith(caller.Contexts);
+        contexts.UnionWith(callee.Contexts);
 
-        foreach(var descendantContext in descendantContexts)
+        foreach(var domain in contexts)
         {
-            var itemsForDomain = OnGetDomainItems.Invoke(descendantContext).ToList();
-            foreach(var itemForDomain in itemsForDomain)
+            var domainItems = OnGetDomainItems.Invoke(domain);
+            foreach(var itemForDomain in domainItems)
             {
-                OnExportItem(item, descendantMethod, itemForDomain, descendantContext);
-                Walk(itemForDomain, true);
+                OnExportItem(caller, callee, itemForDomain, domain);
+
+                if(!Visited.Contains(itemForDomain))
+                    Walk(itemForDomain, true);
             }
         }
     }

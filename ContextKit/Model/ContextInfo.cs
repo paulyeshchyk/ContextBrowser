@@ -24,25 +24,6 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 
-    public string FfullName
-    {
-        get
-        {
-            var lst = new List<string>();
-            var ns = Namespace?.Trim() ?? "Global";
-            if(!string.IsNullOrWhiteSpace(ns))
-                lst.Add(ns);
-            var owner = ClassOwner?.Name?.Trim() ?? string.Empty;
-            if(!string.IsNullOrWhiteSpace(owner))
-                lst.Add(owner);
-            var name = Name?.Trim() ?? string.Empty;
-            if(!string.IsNullOrWhiteSpace(name))
-                lst.Add(name);
-            var result = string.Join(".", lst);
-            return result;
-        }
-    }
-
     public override int GetHashCode()
     {
         return HashCode.Combine(Name, Namespace, ElementType);
@@ -60,10 +41,9 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
             return false;
         }
 
-        // 3. Приведение к нужному типу и сравнение по значениям ключевых полей
         ContextInfo other = (ContextInfo)obj;
-        return Name == other.Name && // Сравнение строк
-               Namespace == other.Namespace && // Сравнение строк
-               ElementType == other.ElementType; // Сравнение перечислений
+        return Name == other.Name &&
+               Namespace == other.Namespace &&
+               ElementType == other.ElementType;
     }
 }

@@ -36,7 +36,7 @@ internal class RoslynParser<TContext>
             .AddReferences(
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Console).Assembly.Location) // можно и другие
+                MetadataReference.CreateFromFile(typeof(Console).Assembly.Location) // РјРѕР¶РЅРѕ Рё РґСЂСѓРіРёРµ
             );
 
         var model = compilation.GetSemanticModel(tree);
@@ -119,41 +119,32 @@ internal class RoslynParser<TContext>
     {
         var prefix = scope is MethodDeclarationSyntax ? "M" : "T";
 
-        var invocationNodes = scope.DescendantNodes().OfType<InvocationExpressionSyntax>();
-
-        foreach(var invocation in invocationNodes)
+        foreach(var invocation in scope.DescendantNodes().OfType<InvocationExpressionSyntax>())
         {
             var symbolInfo = model.GetSymbolInfo(invocation);
-            var exprText = invocation.ToString();
 
-            if(symbolInfo.Symbol is IMethodSymbol methodSymbol)
+            if(symbolInfo.Symbol is not IMethodSymbol methodSymbol)
             {
-                var fullName = methodSymbol.ToDisplayString();
-                //Console.WriteLine($"[RESOLVED  ] {exprText} -> {fullName}");
-
-                //Console.WriteLine($"[MATCH TEST] Looking for {fullName}");
-
-                if(collector.ByFullName.TryGetValue(fullName, out var referenced))
-                {
-                    if(collector.ByFullName.TryGetValue(current.DisplayName, out var theCurrent))
-                    {
-                        theCurrent.References.Add(referenced);
-                        Console.WriteLine($"[LINK OK   ] {current.DisplayName} -> {referenced.DisplayName}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
-                    }
-                }
-                else
-                {
-                    //Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
-                }
+                Console.WriteLine($"[UNRESOLVED] {invocation.ToString()}");
+                continue;
             }
-            else
+
+            var fullName = methodSymbol.ToDisplayString();
+
+            if(!collector.ByFullName.TryGetValue(fullName, out var referenced))
             {
-                //Console.WriteLine($"[UNRESOLVED] {exprText}");
+                Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
+                continue;
             }
+
+            if(!collector.ByFullName.TryGetValue(current.DisplayName, out var theCurrent))
+            {
+                Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
+                continue;
+            }
+
+            theCurrent.References.Add(referenced);
+            Console.WriteLine($"[LINK OK   ] {current.DisplayName} -> {referenced.DisplayName}");
         }
     }
 
