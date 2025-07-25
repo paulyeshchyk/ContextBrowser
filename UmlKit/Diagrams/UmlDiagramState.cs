@@ -8,8 +8,8 @@ namespace ContextBrowser.UmlKit.Diagrams;
 // pattern note: subclassing
 public class UmlDiagramState : UmlDiagram
 {
-    private readonly List<UmlState> _states = new();
-    private readonly List<(UmlState From, UmlState To, string? Label)> _transitions = new();
+    private readonly HashSet<UmlState> _states = new();
+    private readonly HashSet<UmlTransition> _transitions = new();
 
     public override UmlDiagram AddParticipant(string name)
     {
@@ -19,31 +19,38 @@ public class UmlDiagramState : UmlDiagram
 
     public override UmlDiagram AddTransition(string from, string to, string? label = null)
     {
-        _transitions.Add((new UmlState(from), new UmlState(to), label));
+        _transitions.Add(new UmlTransition(new UmlState(from), new UmlState(to), label));
         return this;
     }
 
 
     public override void WriteBody(TextWriter writer)
     {
-        if (!_states.Any() || !_transitions.Any())
+        if(!_states.Any() || !_transitions.Any())
         {
             Console.WriteLine($"Состояния и переходы должны быть определены для {this._title}");
             return;
         }
 
-        foreach (var state in _states.Distinct())
-            writer.WriteLine($"state {state.FullName}");
+        foreach(var state in _states.Distinct())
+            writer.WriteLine(state.Declaration);
 
         writer.WriteLine();
 
-        writer.WriteLine($"[*] -> {_transitions.FirstOrDefault().From.ShortName}");
-        foreach (var (from, to, label) in _transitions)
+        if(_transitions.FirstOrDefault() is UmlTransition start)
         {
-            var arrow = label is not null ? $" : {label.StateShortName()}" : string.Empty;
-            writer.WriteLine($"{from.ShortName} -> {to.ShortName}{arrow}");
+            writer.WriteLine($"[*] -> {start.From.ShortName}");
         }
 
-        writer.WriteLine($"{_transitions.LastOrDefault().To.ShortName} -> [*]");
+        foreach(var transition in _transitions)
+        {
+            var arrow = transition.Label is not null ? $" : {transition.Label.StateShortName()}" : string.Empty;
+            writer.WriteLine($"{transition.From.ShortName} -> {transition.To.ShortName}{arrow}");
+        }
+
+        if(_transitions.LastOrDefault() is UmlTransition end)
+        {
+            writer.WriteLine($"{end.To.ShortName} -> [*]");
+        }
     }
 }

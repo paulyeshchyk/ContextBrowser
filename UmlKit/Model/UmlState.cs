@@ -5,7 +5,7 @@ namespace ContextBrowser.UmlKit.Model;
 
 public class UmlState : IUmlElement, IUmlDeclarable
 {
-    private readonly string _raw;
+    protected readonly string _raw;
 
     public string ShortName => _raw.StateShortName();
 
@@ -21,5 +21,26 @@ public class UmlState : IUmlElement, IUmlDeclarable
     public void WriteTo(TextWriter writer)
     {
         writer.WriteLine(Declaration);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_raw);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if(ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if(obj is null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        UmlState other = (UmlState)obj;
+        return _raw.Equals(other._raw);
     }
 }

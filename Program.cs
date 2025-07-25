@@ -89,11 +89,7 @@ static class Program
     }
 
 
-    public static Func<string, bool> AdaptToDomainCallback(
-    List<ContextInfo> contextItems,
-    ContextClassifier classifier,
-    string outputPath,
-    Func<IContextDiagramBuilder> factory)
+    public static Func<string, bool> AdaptToDomainCallback(List<ContextInfo> contextItems, ContextClassifier classifier, string outputPath, Func<IContextDiagramBuilder> factory)
     {
         return domain =>
         {
@@ -106,7 +102,7 @@ static class Program
 
             if(success)
             {
-                var path = Path.Combine(outputPath, $"diagram_{domain}.puml");
+                var path = Path.Combine(outputPath, $"domain_{domain}.puml");
                 diagram.WriteToFile(path);
             }
 

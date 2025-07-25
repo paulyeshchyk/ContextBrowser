@@ -20,7 +20,7 @@ internal class HtmlDimensionPage
             if(!domainCallback(domain))
                 continue;
 
-            var diagram = new UmlDiagramSequence();
+            var diagram = new UmlDiagramState();
             diagram.SetTitle($"Context: {domain}");
             diagram.SetSkinParam("componentStyle", "rectangle");
 
@@ -30,7 +30,7 @@ internal class HtmlDimensionPage
 
             if(success)
             {
-                var path = Path.Combine(outputDirectory, $"diagram_{domain}.puml");
+                var path = Path.Combine(outputDirectory, $"s_domain_{domain}.puml");
                 diagram.WriteToFile(path);
             }
         }
