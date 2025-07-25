@@ -1,5 +1,4 @@
-﻿using ContextBrowser.ContextKit.graph;
-using ContextBrowser.ContextKit.Model;
+﻿using ContextBrowser.ContextKit.Model;
 using ContextBrowser.ContextKit.Parser;
 using ContextBrowser.UmlKit.Diagrams;
 
@@ -11,42 +10,49 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
     public bool Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier, UmlDiagram target)
     {
-        var filtered = allContexts
+        var methodsInDomain = allContexts
             .Where(ctx =>
+                ctx.ElementType == ContextInfoElementType.method &&
                 ctx.Domains.Contains(domainName) &&
                 classifier.HasActionAndDomain(ctx))
             .ToList();
 
-        if(!filtered.Any())
+        if(!methodsInDomain.Any())
             return false;
 
-        var walker = new ItemWalker(
-            onGetDescendants: method =>
-            {
-                return method.References ?? Enumerable.Empty<ContextInfo>();
-            },
-            onGetDomainItems: d =>
-            {
-                return allContexts.Where(c => c.Contexts.Contains(d) && classifier.HasActionAndDomain(c));
-            },
-            onExportItem:(caller, callee, calleeDomainItem, domain) =>
-            {
-                var callerLabel = $"{caller.ClassOwner?.Name}.{caller.Name}";
-                var calleeLabel = $"{callee.ClassOwner?.Name}.{callee.Name}";
-                var domainLabel = domain;
+        var transitions = new HashSet<UmlTransitionDto>();
 
-                target.AddParticipant(domainLabel);
-                target.AddParticipant(callerLabel);
-                target.AddParticipant(calleeLabel);
+        foreach(var caller in methodsInDomain)
+        {
+            foreach(var callee in caller.References)
+            {
+                if(callee.ElementType != ContextInfoElementType.method)
+                    continue;
 
-                target.AddTransition(domainLabel, callerLabel, "entry");
-                target.AddTransition(callerLabel, calleeLabel, "calls");
-                target.AddTransition(calleeLabel, domainLabel, "exit");
+                var calleeDomain = callee.Domains.FirstOrDefault();
+                if(string.IsNullOrWhiteSpace(calleeDomain))
+                    continue;
+
+                transitions.Add(new UmlTransitionDto(caller.DisplayName, callee.DisplayName, calleeDomain));
             }
-        );
+        }
 
-        walker.Walk(filtered);
-        return true;
+        foreach(var t in transitions)
+        {
+            target.AddParticipant(t.domain);
+            target.AddParticipant(t.caller);
+            target.AddParticipant(t.callee);
+
+            target.AddTransition(t.domain, t.caller, "entry");
+            target.AddTransition(t.caller, t.callee, "calls");
+            target.AddTransition(t.callee, t.domain, "exit");
+        }
+
+
+        return transitions.Count > 0;
+    }
+}
+
 public record struct UmlTransitionDto(string caller, string callee, string domain)
 {
     public static implicit operator (string caller, string callee, string domain)(UmlTransitionDto value)
