@@ -2,7 +2,7 @@
 
 public interface IContextFactory<T>
 {
-    T Create(T? parent, ContextInfoElementType type, string? ns, T? owner, string? fullName = null);
+    T Create(T? parent, ContextInfoElementType type, string? ns, T? owner, string? itemName, string? displayName);
 }
 
 // context: contextInfo, builder
@@ -10,14 +10,15 @@ public interface IContextFactory<T>
 internal class ContextInfoFactory<T> : IContextFactory<T>
     where T : ContextInfo
 {
-    public T Create(T? parent, ContextInfoElementType type, string? ns, T? owner, string? fullName = null)
+    public T Create(T? parent, ContextInfoElementType type, string? ns, T? owner, string? itemName, string? displayName)
     {
         var result = new ContextInfo
         {
             ElementType = type,
-            Name = fullName ?? owner?.Name,
+            Name = itemName ?? owner?.Name,
             Namespace = ns,
-            ClassOwner = type == ContextInfoElementType.method ? owner : null
+            ClassOwner = type == ContextInfoElementType.method ? owner : null,
+            DisplayName = displayName ?? string.Empty,
         };
         return (T)result;
     }

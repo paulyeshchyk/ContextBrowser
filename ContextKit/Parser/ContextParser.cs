@@ -18,9 +18,6 @@ public class ContextParser
         {
             PathAnalyzer.PathType.File => ParseFile(rootPath),
             PathAnalyzer.PathType.Directory => ParseDirectory(rootPath),
-            PathAnalyzer.PathType.SymbolicLink => throw new NotImplementedException(),
-            PathAnalyzer.PathType.NonExistentPath => throw new NotImplementedException(),
-            PathAnalyzer.PathType.PlainText => throw new NotImplementedException(),
             _ => throw new NotImplementedException()
         };
     }
@@ -30,27 +27,33 @@ public class ContextParser
     {
         var files = Directory.GetFiles(rootPath, $"*{TargetExtension}", SearchOption.AllDirectories);
 
-        var collector = new ContextInfoCollector<ContextInfo>();
+        // 1. Первый проход: собираем все context'ы (типы и методы), без ссылок
+        var contextCollector = new ContextInfoCollector<ContextInfo>();
         var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
         var factory = new ContextInfoFactory<ContextInfo>();
-        var parser = new RoslynParser<ContextInfo>(collector, factory, processor);
 
-        // Первый проход — сбор всех типов и методов
+        var parser1 = new RoslynParser<ContextInfo>(contextCollector, factory, processor);
+
         foreach(var file in files)
         {
-            parser.ParseFile(file, RoslynParserOptions.Default, parseReferences: false);
+            parser1.ParseFile(file, RoslynParserOptions.Default, parseReferences: false);
         }
 
-        // Второй проход — построение ссылок между сущностями
+        var allContexts = contextCollector.Collection;
+
+        // 2. Второй проход: строим ссылки на основе уже собранных
+        var referenceCollector = new ContextInfoReferenceCollector<ContextInfo>(allContexts);
+        var parser2 = new RoslynParser<ContextInfo>(referenceCollector, factory, processor);
+
         foreach(var file in files)
         {
-            parser.ParseFile(file, RoslynParserOptions.Default, parseContexts: false);
+            parser2.ParseFile(file, RoslynParserOptions.Default, parseContexts: false, parseReferences: true);
         }
 
-        return collector.Collection;
+        return allContexts;
     }
 
-    // context: read, directory
+    // context: read, file
     private static List<ContextInfo> ParseFile(string filePath)
     {
         var collector = new ContextInfoCollector<ContextInfo>();
@@ -61,34 +64,5 @@ public class ContextParser
         parser.ParseFile(filePath);
 
         return collector.Collection;
-    }
-
-
-    private static List<ContextInfo> FirstPass(string[] files)
-    {
-        var collector = new ContextInfoCollector<ContextInfo>();
-        var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
-        var factory = new ContextInfoFactory<ContextInfo>();
-
-        var parser = new RoslynParser<ContextInfo>(collector, factory, processor);
-
-        foreach(var file in files)
-        {
-            parser.ParseFile(file, RoslynParserOptions.Default, parseReferences: false); // только контексты
-        }
-
-        return collector.Collection;
-    }
-
-    private static void SecondPass(string[] files, ContextInfoCollector<ContextInfo> collector)
-    {
-        var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
-        var factory = new ContextInfoFactory<ContextInfo>();
-        var parser = new RoslynParser<ContextInfo>(collector, factory, processor);
-
-        foreach(var file in files)
-        {
-            parser.ParseFile(file, RoslynParserOptions.Default, parseContexts: false); // только ссылки
-        }
     }
 }

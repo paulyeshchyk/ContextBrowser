@@ -27,7 +27,29 @@ internal class ContextInfoCollector<T> : IContextCollector<T>
     public void Add(T info)
     {
         Collection.Add(info);
-        if(!string.IsNullOrWhiteSpace(info.Name))
-            ByFullName[info.Name] = info;
+        if(!string.IsNullOrWhiteSpace(info.DisplayName))
+            ByFullName[info.DisplayName] = info;
+    }
+}
+
+public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContext>
+    where TContext : IContextWithReferences<TContext>
+{
+    public Dictionary<string, TContext> ByFullName { get; }
+
+    public ContextInfoReferenceCollector(IEnumerable<TContext> existing)
+    {
+        // Строим индекс по полному имени (например: Namespace.Class.Method)
+        ByFullName = existing
+                    .Where(x => !string.IsNullOrWhiteSpace(x.DisplayName))// FullName
+                    .GroupBy(x => x.DisplayName)//FullName
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.First(),
+                        StringComparer.OrdinalIgnoreCase);
+    }
+
+    public void Add(TContext item)
+    {
     }
 }

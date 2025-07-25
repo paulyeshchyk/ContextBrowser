@@ -30,6 +30,17 @@ internal class RoslynParser<TContext>
         var tree = CSharpSyntaxTree.ParseText(code);
         var root = tree.GetCompilationUnitRoot();
 
+
+        var compilation = CSharpCompilation.Create("Parser")
+            .AddSyntaxTrees(tree)
+            .AddReferences(
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Console).Assembly.Location) // можно и другие
+            );
+
+        var model = compilation.GetSemanticModel(tree);
+
         IEnumerable<MemberDeclarationSyntax> typeNodes = Enumerable.Empty<MemberDeclarationSyntax>();
         if(options.MemberTypes.Contains(RoslynMemberType.@class))
             typeNodes = typeNodes.Concat(FilterByModifier<ClassDeclarationSyntax>(root, options));
@@ -63,14 +74,13 @@ internal class RoslynParser<TContext>
             var typeName = GetDeclarationName(node);
             if(parseContexts)
             {
-                typeContext = _factory.Create(default, kind, nsName, default, typeName);
+                typeContext = _factory.Create(default, kind, nsName, default, typeName, null);
                 ParseComments(_commentProcessor, node, typeContext);
                 _collector.Add(typeContext);
 
-                // building references
                 if(parseReferences)
                 {
-                    BuildReferences(node, typeContext, _collector);
+                    BuildReferences(model, node, typeContext, _collector);
                 }
             }
 
@@ -88,14 +98,16 @@ internal class RoslynParser<TContext>
                 foreach(var method in methods)
                 {
                     var methodName = method.Identifier.Text;
-                    var fullName = $"{typeName}.{methodName}";
-                    var methodContext = _factory.Create(typeContext, ContextInfoElementType.method, nsName, typeContext, fullName);
+                    var symbol = RoslynMethodSymbolExtractor.ExtractMethodSymbol(tree, methodName);
+                    var displayname = symbol?.ToDisplayString();
+
+                    var methodContext = _factory.Create(typeContext, ContextInfoElementType.method, nsName, typeContext, methodName, displayname);
                     ParseComments(_commentProcessor, method, methodContext);
                     _collector.Add(methodContext);
 
                     if(parseReferences)
                     {
-                        BuildReferences(method, methodContext, _collector);
+                        BuildReferences(model, method, methodContext, _collector);
                     }
                 }
             }
@@ -103,24 +115,44 @@ internal class RoslynParser<TContext>
     }
 
     // context: references, build
-    private void BuildReferences(SyntaxNode scope, TContext current, IContextCollector<TContext> collector)
+    private void BuildReferences(SemanticModel model, SyntaxNode scope, TContext current, IContextCollector<TContext> collector)
     {
-        var descendantIdList = scope
-            .DescendantNodes()
-            .OfType<IdentifierNameSyntax>()
-            .Select(id => id.Identifier.Text)
-            .ToHashSet();
         var prefix = scope is MethodDeclarationSyntax ? "M" : "T";
-        foreach(var id in descendantIdList)
+
+        var invocationNodes = scope.DescendantNodes().OfType<InvocationExpressionSyntax>();
+
+        foreach(var invocation in invocationNodes)
         {
-            if(collector.ByFullName.TryGetValue(id, out var referenced) &&
-                !ReferenceEquals(current, referenced))
+            var symbolInfo = model.GetSymbolInfo(invocation);
+            var exprText = invocation.ToString();
+
+            if(symbolInfo.Symbol is IMethodSymbol methodSymbol)
             {
-                if(referenced != null)
+                var fullName = methodSymbol.ToDisplayString();
+                //Console.WriteLine($"[RESOLVED  ] {exprText} -> {fullName}");
+
+                //Console.WriteLine($"[MATCH TEST] Looking for {fullName}");
+
+                if(collector.ByFullName.TryGetValue(fullName, out var referenced))
                 {
-                    current.References.Add(referenced);
-                    Console.WriteLine($"[{prefix}]: {current.Name} references {referenced.Name}");
+                    if(collector.ByFullName.TryGetValue(current.DisplayName, out var theCurrent))
+                    {
+                        theCurrent.References.Add(referenced);
+                        Console.WriteLine($"[LINK OK   ] {current.DisplayName} -> {referenced.DisplayName}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
+                    }
                 }
+                else
+                {
+                    //Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
+                }
+            }
+            else
+            {
+                //Console.WriteLine($"[UNRESOLVED] {exprText}");
             }
         }
     }

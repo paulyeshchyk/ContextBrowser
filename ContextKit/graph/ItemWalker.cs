@@ -42,25 +42,28 @@ public sealed class ItemWalker : Walker<ContextInfo>
         var descendantMethodList = OnGetDescendants.Invoke(item).ToList();
         foreach(var descendantMethod in descendantMethodList)
         {
-            if(!AddToVisited(descendantMethod, Visited))
-                continue;
+            AddToVisited(descendantMethod, Visited);
 
             if(skipDescendants)
                 continue;
-            //OnExportItem(descendantMethod, item, string.Empty);
 
-            var descendantContexts = new HashSet<string>();
-            descendantContexts.UnionWith(descendantMethod.Contexts);
-            descendantContexts.UnionWith(item.Contexts);
+            TryExport(item, descendantMethod);
+        }
+    }
 
-            foreach(var descendantContext in descendantContexts)
+    private void TryExport(ContextInfo item, ContextInfo descendantMethod, bool continueWalking = true)
+    {
+        var descendantContexts = new HashSet<string>();
+        descendantContexts.UnionWith(descendantMethod.Contexts);
+        descendantContexts.UnionWith(item.Contexts);
+
+        foreach(var descendantContext in descendantContexts)
+        {
+            var itemsForDomain = OnGetDomainItems.Invoke(descendantContext).ToList();
+            foreach(var itemForDomain in itemsForDomain)
             {
-                var itemsForDomain = OnGetDomainItems.Invoke(descendantContext).ToList();
-                foreach(var itemForDomain in itemsForDomain)
-                {
-                    OnExportItem(item, descendantMethod, itemForDomain, descendantContext);
-                    Walk(itemForDomain, true);
-                }
+                OnExportItem(item, descendantMethod, itemForDomain, descendantContext);
+                Walk(itemForDomain, true);
             }
         }
     }

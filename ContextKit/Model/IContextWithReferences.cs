@@ -7,6 +7,10 @@ public interface IContextWithReferences<T>
 
     public string? Action { get; set; }
 
+    public string FfullName { get; }
+
+    public string DisplayName { get; set; }
+
     public HashSet<string> Domains { get; }
 
     HashSet<T> References { get; }

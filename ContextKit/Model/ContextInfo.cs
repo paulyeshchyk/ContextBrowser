@@ -8,6 +8,8 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public string? Name { get; set; }
 
+    public string DisplayName { get; set; } = string.Empty;
+
     public HashSet<string> Contexts { get; set; } = new();
 
     public string? Namespace { get; set; }
@@ -22,14 +24,22 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 
-    public string FullName
+    public string FfullName
     {
         get
         {
-            var theName = (Name ?? string.Empty);
-            if(string.IsNullOrWhiteSpace(Namespace))
-                return theName;
-            return $"{Namespace}.{theName}";
+            var lst = new List<string>();
+            var ns = Namespace?.Trim() ?? "Global";
+            if(!string.IsNullOrWhiteSpace(ns))
+                lst.Add(ns);
+            var owner = ClassOwner?.Name?.Trim() ?? string.Empty;
+            if(!string.IsNullOrWhiteSpace(owner))
+                lst.Add(owner);
+            var name = Name?.Trim() ?? string.Empty;
+            if(!string.IsNullOrWhiteSpace(name))
+                lst.Add(name);
+            var result = string.Join(".", lst);
+            return result;
         }
     }
 
