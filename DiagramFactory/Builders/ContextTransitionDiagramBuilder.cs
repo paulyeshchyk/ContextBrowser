@@ -47,5 +47,19 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         walker.Walk(filtered);
         return true;
+public record struct UmlTransitionDto(string caller, string callee, string domain)
+{
+    public static implicit operator (string caller, string callee, string domain)(UmlTransitionDto value)
+    {
+        return (value.caller, value.callee, value.domain);
+    }
+
+    public static implicit operator UmlTransitionDto((string caller, string callee, string domain) value)
+    {
+        return new UmlTransitionDto(value.caller, value.callee, value.domain);
+    }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(caller, callee, domain);
     }
 }
