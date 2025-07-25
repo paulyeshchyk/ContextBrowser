@@ -8,18 +8,24 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 {
     public string Name => "context-transition";
 
+    private const string STransitionDataMismatchErrorTemplate = "[Ошибка] Недостаточно информации для построения связей для {0}";
+    private readonly ContextTransitionDiagramBuilderOptions _options;
+    public ContextTransitionDiagramBuilder(ContextTransitionDiagramBuilderOptions? options = default)
+    {
+        _options = options ?? new ContextTransitionDiagramBuilderOptions();
+    }
+
     public bool Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier, UmlDiagram target)
     {
+        // 1. Фильтрация методов текущего домена с валидным контекстом
         var methodsInDomain = allContexts
-            .Where(ctx =>
-                ctx.ElementType == ContextInfoElementType.method &&
-                ctx.Domains.Contains(domainName) &&
-                classifier.HasActionAndDomain(ctx))
+            .Where(ctx => ctx.ElementType == ContextInfoElementType.method && ctx.Domains.Contains(domainName) && classifier.HasActionAndDomain(ctx))
             .ToList();
 
         if(!methodsInDomain.Any())
             return false;
 
+        // 2. Уникальные переходы
         var transitions = new HashSet<UmlTransitionDto>();
 
         foreach(var caller in methodsInDomain)
@@ -33,39 +39,78 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
                 if(string.IsNullOrWhiteSpace(calleeDomain))
                     continue;
 
-                transitions.Add(new UmlTransitionDto(caller.DisplayName, callee.DisplayName, calleeDomain));
+                var transition = new UmlTransitionDto(
+                    caller: caller.DisplayNameAlphaNumericOnly,
+                    callee: callee.DisplayNameAlphaNumericOnly,
+                    domain: calleeDomain)
+                {
+                    CallerName = caller.ClassOwner?.Name ?? "???",
+                    CalleeName = callee.ClassOwner?.Name ?? "???",
+                    MethodName = callee.Name
+                };
+
+                transitions.Add(transition);
             }
         }
 
+        if(!transitions.Any())
+            return false;
+
         foreach(var t in transitions)
         {
-            target.AddParticipant(t.domain);
-            target.AddParticipant(t.caller);
-            target.AddParticipant(t.callee);
+            var callerParticipant = _options.UseClassAsParticipant ? t.CallerName : t.caller;
+            var calleeParticipant = _options.UseClassAsParticipant ? t.CalleeName : t.callee;
 
-            target.AddTransition(t.domain, t.caller, "entry");
-            target.AddTransition(t.caller, t.callee, "calls");
-            target.AddTransition(t.callee, t.domain, "exit");
+            if(string.IsNullOrWhiteSpace(callerParticipant) || string.IsNullOrWhiteSpace(calleeParticipant))
+            {
+                Console.WriteLine(string.Format(STransitionDataMismatchErrorTemplate, t));
+                continue;
+            }
+
+            target.AddParticipant(t.domain);
+            target.AddParticipant(callerParticipant);
+            target.AddParticipant(calleeParticipant);
+
+            target.AddTransition(t.domain, callerParticipant, "entry");
+
+            var arrowLabel = _options.UseMethodAsLabel
+                ? (t.MethodName ?? "calls")
+                : "calls";
+
+            target.AddTransition(callerParticipant, calleeParticipant, arrowLabel);
+            target.AddTransition(calleeParticipant, t.domain, "exit");
         }
 
-
-        return transitions.Count > 0;
+        return true;
     }
 }
 
-public record struct UmlTransitionDto(string caller, string callee, string domain)
+public record ContextTransitionDiagramBuilderOptions
 {
-    public static implicit operator (string caller, string callee, string domain)(UmlTransitionDto value)
-    {
-        return (value.caller, value.callee, value.domain);
-    }
+    public bool UseClassAsParticipant { get; init; } = true;
 
-    public static implicit operator UmlTransitionDto((string caller, string callee, string domain) value)
-    {
-        return new UmlTransitionDto(value.caller, value.callee, value.domain);
-    }
+    public bool UseMethodAsLabel { get; init; } = true;
+}
+
+public readonly record struct UmlTransitionDto(string caller, string callee, string domain)
+{
+    public string? CallerName { get; init; } = null;
+
+    public string? CalleeName { get; init; } = null;
+
+    public string? MethodName { get; init; } = null;
+
+    public static implicit operator (string Caller, string Callee, string Domain)(UmlTransitionDto value)
+        => (value.caller, value.callee, value.domain);
+
+    public static implicit operator UmlTransitionDto((string Caller, string Callee, string Domain) value)
+        => new(value.Caller, value.Callee, value.Domain);
+
     public override int GetHashCode()
-    {
-        return HashCode.Combine(caller, callee, domain);
-    }
+        => HashCode.Combine(caller, callee, domain);
+
+    public bool Equals(UmlTransitionDto other)
+        => string.Equals(caller, other.caller, StringComparison.OrdinalIgnoreCase)
+        && string.Equals(callee, other.callee, StringComparison.OrdinalIgnoreCase)
+        && string.Equals(domain, other.domain, StringComparison.OrdinalIgnoreCase);
 }

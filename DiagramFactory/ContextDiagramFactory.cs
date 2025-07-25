@@ -13,7 +13,7 @@ public static class ContextDiagramFactory
     private static readonly Dictionary<string, IContextDiagramBuilder> _builders =
        new(StringComparer.OrdinalIgnoreCase)
        {
-           ["context-transition"] = new ContextTransitionDiagramBuilder(),
+           ["context-transition"] = new ContextTransitionDiagramBuilder(new ContextTransitionDiagramBuilderOptions() { UseClassAsParticipant = true, UseMethodAsLabel = true }),
            ["method-flow"] = new MethodFlowDiagramBuilder(),
            ["dependencies"] = new DependencyDiagramBuilder()
        };

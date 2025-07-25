@@ -24,6 +24,16 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 
+    public string DisplayNameAlphaNumericOnly
+    {
+        get
+        {
+            var nsName = string.IsNullOrWhiteSpace(Namespace) ? string.Empty : Namespace;
+            var thename = string.IsNullOrWhiteSpace(Name) ? string.Empty : Name;
+            return string.Join(".", new[] { nsName, thename });
+        }
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Name, Namespace, ElementType);
@@ -31,12 +41,12 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public override bool Equals(object? obj)
     {
-        if(ReferenceEquals(this, obj))
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if(obj is null || GetType() != obj.GetType())
+        if (obj is null || GetType() != obj.GetType())
         {
             return false;
         }
