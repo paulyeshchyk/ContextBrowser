@@ -3,7 +3,7 @@ using ContextBrowser.ContextKit.Parser;
 
 namespace ContextBrowser.exporter;
 
-// context: uml, build
+// context: uml, build, csv
 // pattern: Builder
 // pattern note: strategic tool
 public static class ContextMatrixUmlExporter

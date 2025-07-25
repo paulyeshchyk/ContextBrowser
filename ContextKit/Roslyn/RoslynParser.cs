@@ -117,15 +117,13 @@ internal class RoslynParser<TContext>
     // context: references, build
     private void BuildReferences(SemanticModel model, SyntaxNode scope, TContext current, IContextCollector<TContext> collector)
     {
-        var prefix = scope is MethodDeclarationSyntax ? "M" : "T";
-
         foreach(var invocation in scope.DescendantNodes().OfType<InvocationExpressionSyntax>())
         {
             var symbolInfo = model.GetSymbolInfo(invocation);
 
             if(symbolInfo.Symbol is not IMethodSymbol methodSymbol)
             {
-                Console.WriteLine($"[UNRESOLVED] {invocation.ToString()}");
+                //Console.WriteLine($"[UNRESOLVED] {invocation.ToString()}");
                 continue;
             }
 
@@ -133,18 +131,18 @@ internal class RoslynParser<TContext>
 
             if(!collector.ByFullName.TryGetValue(fullName, out var referenced))
             {
-                Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
+                //Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
                 continue;
             }
 
             if(!collector.ByFullName.TryGetValue(current.DisplayName, out var theCurrent))
             {
-                Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
+                //Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
                 continue;
             }
 
             theCurrent.References.Add(referenced);
-            Console.WriteLine($"[LINK OK   ] {current.DisplayName} -> {referenced.DisplayName}");
+            //Console.WriteLine($"[LINK OK   ] {current.DisplayName} -> {referenced.DisplayName}");
         }
     }
 

@@ -44,3 +44,8 @@ public class UmlState : IUmlElement, IUmlDeclarable
         return _raw.Equals(other._raw);
     }
 }
+
+public static class UmlStateFactory
+{
+    public static UmlState AsterixState = new UmlState("[*]");
+}

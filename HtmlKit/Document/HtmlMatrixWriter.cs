@@ -44,13 +44,13 @@ internal class HtmlMatrixWriter
 
     private void WriteHeaderLeftCorner(TextWriter textWriter)
     {
-        HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.Cell(textWriter, FixedDataManager.TopLeftCell(_htmlPageMatrix.Options));
+        HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.Cell(textWriter, FixedDataManager.TopLeftCell(_htmlPageMatrix.Options), HrefManager.GetHrefSummary(_htmlPageMatrix.Options));
     }
 
     private void WriteHeaderSummaryStart(TextWriter textWriter)
     {
         if (_htmlPageMatrix.Options.SummaryPlacement == SummaryPlacement.AfterFirst)
-            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, FixedDataManager.FirstSummaryRow(_htmlPageMatrix.Options));
+            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, FixedDataManager.FirstSummaryRow(_htmlPageMatrix.Options), HrefManager.GetHrefColHeaderSummary(_htmlPageMatrix.Options));
     }
 
     private void WriteHeaderCols(TextWriter textWriter)
@@ -65,7 +65,7 @@ internal class HtmlMatrixWriter
     private void WriteHeaderSummaryEnd(TextWriter textWriter)
     {
         if (_htmlPageMatrix.Options.SummaryPlacement == SummaryPlacement.AfterLast)
-            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, FixedDataManager.LastSummaryRow(_htmlPageMatrix.Options));
+            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, FixedDataManager.LastSummaryRow(_htmlPageMatrix.Options), HrefManager.GetHrefRowHeaderSummary(_htmlPageMatrix.Options));
     }
 
     private void WriteSummaryRow(TextWriter textWriter)
@@ -75,7 +75,7 @@ internal class HtmlMatrixWriter
 
         HtmlBuilderFactory.HtmlBuilderTableRow.Summary.With(textWriter, () =>
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, FixedDataManager.SummaryRow(_htmlPageMatrix.Options));
+            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, FixedDataManager.SummaryRow(_htmlPageMatrix.Options), HrefManager.GetHrefRowHeaderSummaryAfterFirst(_htmlPageMatrix.Options));
 
             if (_htmlPageMatrix.Options.SummaryPlacement == SummaryPlacement.AfterFirst)
                 HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.Cell(textWriter, total.ToString(), HrefManager.GetHrefSummary(_htmlPageMatrix.Options));

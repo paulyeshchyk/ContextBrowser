@@ -26,7 +26,7 @@ public class UmlDiagramSequence : UmlDiagram
     public override void WriteBody(TextWriter writer)
     {
         foreach(var participant in _participants.Distinct())
-            writer.WriteLine(participant.Declaration);
+            participant.WriteTo(writer);
 
         writer.WriteLine();
 

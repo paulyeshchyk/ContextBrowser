@@ -1,5 +1,4 @@
-﻿using ContextBrowser.UmlKit.Extensions;
-using ContextBrowser.UmlKit.Model;
+﻿using ContextBrowser.UmlKit.Model;
 
 namespace ContextBrowser.UmlKit.Diagrams;
 
@@ -19,7 +18,7 @@ public class UmlDiagramState : UmlDiagram
 
     public override UmlDiagram AddTransition(string from, string to, string? label = null)
     {
-        _transitions.Add(new UmlTransition(new UmlState(from), new UmlState(to), label));
+        _transitions.Add(new UmlTransition(new UmlState(from), new UmlState(to), new UmlArrow(), label));
         return this;
     }
 
@@ -38,10 +37,7 @@ public class UmlDiagramState : UmlDiagram
 
         writer.WriteLine();
 
-        // 2. Находим старты и финиши
-        var fromSet = _transitions.Select(t => t.From.ShortName).ToHashSet();
-        var toSet = _transitions.Select(t => t.To.ShortName).ToHashSet();
-
+        // 2. Собираем состояния начальные и конечные
         var entryTransitions = _transitions
             .Where(t => string.Equals(t.Label, "entry", StringComparison.OrdinalIgnoreCase))
             .ToList();
@@ -62,17 +58,22 @@ public class UmlDiagramState : UmlDiagram
 
         // 3. Старт: от [*] ко всем начальным
         foreach(var start in possibleStarts)
-            writer.WriteLine($"[*] -> {start}");
+        {
+            var startTransition = new UmlTransitionStart(new UmlArrow(), new UmlState(start));
+            startTransition.WriteTo(writer);
+        }
 
         // 4. Основные переходы
         foreach(var transition in _transitions)
         {
-            var arrow = transition.Label is not null ? $" : {transition.Label.StateShortName()}" : string.Empty;
-            writer.WriteLine($"{transition.From.ShortName} -> {transition.To.ShortName}{arrow}");
+            transition.WriteTo(writer);
         }
 
         // 5. Финиш: от конечных к [*]
         foreach(var end in possibleEnds)
-            writer.WriteLine($"{end} -> [*]");
+        {
+            var startTransition = new UmlTransitionEnd(new UmlState(end), new UmlArrow());
+            startTransition.WriteTo(writer);
+        }
     }
 }

@@ -13,15 +13,17 @@ using ContextBrowser.UmlKit.Exporter;
 
 namespace ContextBrowser.ContextCommentsParser;
 
-static class Program
+// context: uml, file, csv, html, build
+public static class Program
 {
+    // context: uml, file, csv, html build
     public static void Main(string[] args)
     {
         string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser";
         string outputDirectory = ".\\output\\";
 
         bool includeAllStandardActions = true;
-        var summaryPlacement = SummaryPlacement.AfterLast;
+        var summaryPlacement = SummaryPlacement.AfterFirst;
         var matrixOrientation = MatrixOrientation.DomainRows;
         var unclassifiedPriority = UnclassifiedPriority.Highest;
 
@@ -79,13 +81,14 @@ static class Program
             factory:() => ContextDiagramFactory.Get("context-transition")!
         );
 
-        HtmlDimensionPage.GenerateContextDimensionHtmlPages(
+        HtmlContextDimensionBuilder builder = new(
             matrix,
             contextsList,
             outputDirectory,
             callback,
-            () => ContextDiagramFactory.Transition
-        );
+            () => ContextDiagramFactory.Transition);
+
+        builder.Build();
     }
 
 
@@ -102,7 +105,7 @@ static class Program
 
             if(success)
             {
-                var path = Path.Combine(outputPath, $"domain_{domain}.puml");
+                var path = Path.Combine(outputPath, $"sequence_domain_{domain}.puml");
                 diagram.WriteToFile(path);
             }
 

@@ -1,5 +1,6 @@
 ﻿namespace ContextBrowser.Extensions;
 
+// context: file, model
 internal static class FileUtils
 {
     private const string SFolderCreatedTemplate = "Папка '{0}' успешно создана.";

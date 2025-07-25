@@ -23,12 +23,21 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
             .ToList();
 
         if(!methodsInDomain.Any())
+        {
+            Console.WriteLine($"[MISS]: не найдено методов для домена {domainName}");
             return false;
+        }
 
         // 2. Уникальные переходы
         var transitions = new HashSet<UmlTransitionDto>();
 
-        foreach(var caller in methodsInDomain)
+        //выведем в консоль бракованные caller
+        foreach(var caller in methodsInDomain.Where(m => !m.References.Any()))
+        {
+            Console.WriteLine($"[MISS]: не найдено методов для домена {domainName} и caller {caller.Name}");
+        }
+
+        foreach(var caller in methodsInDomain.Where(m => m.References.Any()))
         {
             foreach(var callee in caller.References)
             {

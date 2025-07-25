@@ -6,6 +6,7 @@ using System.Text;
 
 namespace ContextBrowser.exporter.HtmlPageSamples;
 
+//context: build, html
 public static class HtmlIndexPage
 {
     //context: build, html, page, directory

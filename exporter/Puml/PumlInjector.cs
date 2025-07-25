@@ -29,7 +29,8 @@ public static class PumlInjector
 
     public static HtmlInjection InjectDomainEmbeddedHtml(string domain, string outputDirectory)
     {
-        var pumlFileName = $"links_domain_{domain}.puml";
+        //return new HtmlInjection();
+        var pumlFileName = $"sequence_domain_{domain}.puml";
         var pumlFilePath = Path.Combine(outputDirectory, pumlFileName);
         var pumlFileContent = ReadPumlContent(pumlFilePath);
         var pumlEmbeddedScript = "<script type=\"module\">import enableElement from \"https://cdn.pika.dev/render-plantuml\";enableElement();</script>";

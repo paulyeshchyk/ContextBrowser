@@ -14,7 +14,7 @@ public abstract class UmlDiagram
 
     protected virtual string SUmlEndTag { get => "@enduml"; }
 
-    private readonly List<IUmlElement> _elements = new();
+    protected readonly List<IUmlElement> _elements = new();
     protected readonly Dictionary<string, string> _skinParams = new();
     protected string? _title;
 
@@ -38,11 +38,7 @@ public abstract class UmlDiagram
     }
 
     // context: uml, update
-    public virtual void WriteBody(TextWriter writer)
-    {
-        foreach(var element in _elements)
-            element.WriteTo(writer);
-    }
+    public abstract void WriteBody(TextWriter writer);
 
     // context: uml, update
     protected virtual void WriteSkinElements(TextWriter writer)
