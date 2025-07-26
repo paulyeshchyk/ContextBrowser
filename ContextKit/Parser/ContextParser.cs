@@ -4,12 +4,12 @@ using ContextBrowser.Extensions;
 
 namespace ContextBrowser.ContextKit.Parser;
 
-// context: parser, file, directory, csharp, build
+// context: parser, directory, csharp, build
 public class ContextParser
 {
     private const string TargetExtension = ".cs";
 
-    // context: read, file, directory
+    // context: read, directory
     // layer: 900
     public static List<ContextInfo> Parse(string rootPath)
     {
@@ -53,7 +53,6 @@ public class ContextParser
         return allContexts;
     }
 
-    // context: read, file
     private static List<ContextInfo> ParseFile(string filePath)
     {
         var collector = new ContextInfoCollector<ContextInfo>();

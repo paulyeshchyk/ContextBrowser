@@ -12,4 +12,14 @@ public interface IContextWithReferences<T>
     public HashSet<string> Domains { get; }
 
     HashSet<T> References { get; }
+
+    HashSet<T>? InvokedBy { get; set; }
+
+    /// <summary>
+    /// Ссылка на метод, который инициализирует взаимодействие.
+    /// Обычно это главный public-метод в классе, например: Run(), Execute(), Process(), и т.д
+    /// </summary>
+    T? MethodOwner { get; set; }
+
+    ContextInfoElementType ElementType { get; set; }
 }

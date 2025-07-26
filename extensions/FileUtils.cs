@@ -1,6 +1,6 @@
 ﻿namespace ContextBrowser.Extensions;
 
-// context: file, model
+// context: read, file
 internal static class FileUtils
 {
     private const string SFolderCreatedTemplate = "Папка '{0}' успешно создана.";
@@ -20,7 +20,7 @@ internal static class FileUtils
     private const string SFolderWipeAccessErrorTemplate = "Отказано в доступе при удалении папки '{0}': {1}";
     private const string SFolderWipeUnknownErrorTemplate = "Произошла непредвиденная ошибка при удалении папки '{0}': {1}";
 
-    //context: directory, create
+    //context: file, create
     public static void CreateDirectoryIfNotExists(string path)
     {
         if(Directory.Exists(path))
@@ -48,7 +48,7 @@ internal static class FileUtils
         }
     }
 
-    //context: directory, delete, single
+    //context: file, delete, single
     public static void WipeDirectory(string path, bool shouldClearContentOnly = true)
     {
         if(shouldClearContentOnly)
@@ -61,7 +61,7 @@ internal static class FileUtils
         }
     }
 
-    //context: file, delete, multi
+    //context: delete, file
     public static void ClearDirectoryContents(string path)
     {
         if(!Directory.Exists(path))
@@ -92,7 +92,7 @@ internal static class FileUtils
         }
     }
 
-    //context: file, delete, single
+    //context: delete, file
     private static void DeleteFile(string file)
     {
         if(!File.Exists(file))
@@ -115,7 +115,7 @@ internal static class FileUtils
         }
     }
 
-    //context: directory, delete, single
+    //context: file, delete, single
     public static void DeleteDirectory(string path, bool recursive = true)
     {
         if(!Directory.Exists(path))

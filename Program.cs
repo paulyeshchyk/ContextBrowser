@@ -13,10 +13,10 @@ using ContextBrowser.UmlKit.Exporter;
 
 namespace ContextBrowser.ContextCommentsParser;
 
-// context: uml, file, csv, html, build
+// context: app, model
 public static class Program
 {
-    // context: uml, file, csv, html, build
+    // context: app, file, delete
     public static void Main(string[] args)
     {
         string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser";

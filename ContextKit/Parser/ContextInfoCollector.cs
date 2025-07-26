@@ -6,6 +6,8 @@ public interface IContextCollector<T>
 {
     void Add(T item);
 
+    IEnumerable<T> GetAll();
+
     public Dictionary<string, T> ByFullName { get; }
 }
 
@@ -17,11 +19,12 @@ internal class ContextInfoCollector<T> : IContextCollector<T>
 
     public Dictionary<string, T> ByFullName { get; }
 
-
     public ContextInfoCollector()
     {
         ByFullName = new Dictionary<string, T>(StringComparer.Ordinal);
     }
+
+    public IEnumerable<T> GetAll() => Collection;
 
     // context: ContextInfo, build
     public void Add(T info)
@@ -52,4 +55,5 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     public void Add(TContext item)
     {
     }
+    public IEnumerable<TContext> GetAll() => Enumerable.Empty<TContext>();
 }

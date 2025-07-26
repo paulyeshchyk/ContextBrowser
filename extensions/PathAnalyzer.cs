@@ -1,10 +1,10 @@
 ﻿namespace ContextBrowser.Extensions;
 
-// context: file, directory, read
+// context: directory, read
 // coverage: 12
 public class PathAnalyzer
 {
-    // context: file, directory, model
+    // context: directory, model
     public enum PathType
     {
         File,
@@ -14,8 +14,6 @@ public class PathAnalyzer
         PlainText // Не является путем в файловой системе или не существует
     }
 
-    // context: read, file
-    // coverage: 3
     public static PathType GetPathType(string path)
     {
         if(string.IsNullOrWhiteSpace(path))

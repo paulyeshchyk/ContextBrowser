@@ -16,11 +16,15 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public ContextInfo? ClassOwner { get; set; }
 
+    public ContextInfo? MethodOwner { get; set; }
+
     public string? Action { get; set; }
 
     public HashSet<string> Domains { get; } = new();
 
     public HashSet<ContextInfo> References { get; set; } = new();
+
+    public HashSet<ContextInfo>? InvokedBy { get; set; } = null;
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 
@@ -41,15 +45,10 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(this, obj))
-        {
+        if(ReferenceEquals(this, obj))
             return true;
-        }
-
-        if (obj is null || GetType() != obj.GetType())
-        {
+        if(obj is null || GetType() != obj.GetType())
             return false;
-        }
 
         ContextInfo other = (ContextInfo)obj;
         return Name == other.Name &&

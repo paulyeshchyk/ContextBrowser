@@ -9,6 +9,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 {
     public string Name => "context-transition";
 
+
     private const string STransitionDataMismatchErrorTemplate = "[Ошибка] Недостаточно информации для построения связей для {0}";
     private readonly ContextTransitionDiagramBuilderOptions _options;
     public ContextTransitionDiagramBuilder(ContextTransitionDiagramBuilderOptions? options = default)
@@ -16,7 +17,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
         _options = options ?? new ContextTransitionDiagramBuilderOptions();
     }
 
-    public bool Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier, UmlDiagram target)
+    public bool Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier, UmlDiagram diagram)
     {
         // 1. Фильтрация методов текущего домена с валидным контекстом
         var methodsInDomain = allContexts
@@ -55,10 +56,11 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
                     CalleeId = callee.DisplayNameAlphaNumericOnly,
                     Domain = calleeDomain,
 
-                    CallerName = caller.ClassOwner?.Name ?? "???",
-                    CalleeName = callee.ClassOwner?.Name ?? "???",
+                    CallerName = caller.ClassOwner?.Name,
+                    CalleeName = callee.ClassOwner?.Name,
                     CallerMethod = caller.Name,
                     CalleeMethod = callee.Name,
+                    RunContext = caller.MethodOwner?.Name == caller.ClassOwner?.Name ? caller.Name : null,
                 };
 
                 transitions.Add(transition);
@@ -67,6 +69,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         if(!transitions.Any())
             return false;
+
 
         foreach(var t in transitions)
         {
@@ -79,18 +82,40 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
                 continue;
             }
 
-            target.AddParticipant(t.Domain);
-            target.AddParticipant(callerParticipant, UmlParticipantKeyword.Actor);
-            target.AddParticipant(calleeParticipant, UmlParticipantKeyword.Actor);
+            diagram.AddParticipant(t.Domain);
+            diagram.AddParticipant(callerParticipant, UmlParticipantKeyword.Actor);
+            diagram.AddParticipant(calleeParticipant, UmlParticipantKeyword.Actor);
 
-            target.AddTransition(t.Domain, callerParticipant, "entry");
+            switch(_options.DetailLevel)
+            {
+                case DiagramDetailLevel.Summary:
+                    diagram.AddTransition(t.Domain, t.CallerName, "entry");
+                    diagram.AddTransition(t.CallerName, t.CalleeName, "calls");
+                    diagram.AddTransition(t.CalleeName, t.Domain, "exit");
+                    break;
 
-            var arrowLabel = _options.UseMethodAsLabel
-                ? (t.CalleeMethod ?? "calls")
-                : "calls";
+                case DiagramDetailLevel.Method:
+                    diagram.AddTransition(t.Domain, t.CallerName, t.CallerMethod);
+                    diagram.AddTransition(t.CallerName, t.CalleeName, t.CalleeMethod);
+                    diagram.AddTransition(t.CalleeName, t.Domain, "done");
+                    break;
 
-            target.AddTransition(callerParticipant, calleeParticipant, arrowLabel);
-            target.AddTransition(calleeParticipant, t.Domain, "exit");
+                case DiagramDetailLevel.Full:
+                    if(!string.IsNullOrWhiteSpace(t.RunContext))
+                    {
+                        diagram.AddParticipant(t.RunContext, keyword: UmlParticipantKeyword.Control);
+                        diagram.AddTransition(t.CallerName, t.RunContext, t.CallerMethod);
+                        diagram.AddTransition(t.RunContext, t.CalleeName, t.CalleeMethod);
+                        diagram.AddTransition(t.CalleeName, t.RunContext, "return");
+                        diagram.AddTransition(t.RunContext, t.CallerName, "done");
+                    }
+                    else
+                    {
+                        diagram.AddTransition(t.CallerName, t.CalleeName, t.CalleeMethod);
+                        diagram.AddTransition(t.CalleeName, t.CallerName, "done");
+                    }
+                    break;
+            }
         }
 
         return true;
@@ -102,4 +127,13 @@ public record ContextTransitionDiagramBuilderOptions
     public bool UseClassAsParticipant { get; init; } = true;
 
     public bool UseMethodAsLabel { get; init; } = true;
+
+    public DiagramDetailLevel DetailLevel { get; init; } = DiagramDetailLevel.Summary;
+}
+
+public enum DiagramDetailLevel
+{
+    Summary,    // Показываем только взаимодействия между контекстами
+    Method,     // Показываем имена вызываемых методов
+    Full        // Показываем "Run()", возвраты, возможно параметры
 }

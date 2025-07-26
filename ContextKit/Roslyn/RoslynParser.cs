@@ -112,11 +112,25 @@ internal class RoslynParser<TContext>
                 }
             }
         }
+
+        foreach(var method in _collector.GetAll()
+                     .Where(x => x.ElementType == ContextInfoElementType.method &&
+                                 x.InvokedBy?.Count == 0 &&
+                                 x.References.Count > 0))
+        {
+            method.MethodOwner = method;
+        }
     }
 
     // context: references, build
     private void BuildReferences(SemanticModel model, SyntaxNode scope, TContext current, IContextCollector<TContext> collector)
     {
+        if(!collector.ByFullName.TryGetValue(current.DisplayName, out var caller))
+        {
+            Console.WriteLine($"[MISS      ] {current.DisplayName} not found in collector.ByFullName");
+            return;
+        }
+
         foreach(var invocation in scope.DescendantNodes().OfType<InvocationExpressionSyntax>())
         {
             var symbolInfo = model.GetSymbolInfo(invocation);
@@ -127,22 +141,17 @@ internal class RoslynParser<TContext>
                 continue;
             }
 
-            var fullName = methodSymbol.ToDisplayString();
-
-            if(!collector.ByFullName.TryGetValue(fullName, out var referenced))
+            var calleeFullName = methodSymbol.ToDisplayString();
+            if(!collector.ByFullName.TryGetValue(calleeFullName, out var callee))
             {
                 //Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
                 continue;
             }
 
-            if(!collector.ByFullName.TryGetValue(current.DisplayName, out var theCurrent))
-            {
-                //Console.WriteLine($"[MISS      ] {fullName} not found in collector.ByFullName");
-                continue;
-            }
+            caller.References.Add(callee);
 
-            theCurrent.References.Add(referenced);
-            //Console.WriteLine($"[LINK OK   ] {current.DisplayName} -> {referenced.DisplayName}");
+            callee.InvokedBy ??= new HashSet<TContext>();
+            callee.InvokedBy.Add(caller);
         }
     }
 
