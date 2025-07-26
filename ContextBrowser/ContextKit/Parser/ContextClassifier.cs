@@ -2,7 +2,7 @@
 
 namespace ContextBrowser.ContextKit.Parser;
 
-// context: model, csharp
+// context: model, ContextInfo
 // pattern: Strategy
 public class ContextClassifier : IContextClassifier
 {
@@ -31,13 +31,13 @@ public class ContextClassifier : IContextClassifier
     /// <br/>
     /// Пример: Результат будет true, потому что, есть домен(csharp) и есть действие (model)
     /// <code>
-    /// // context: model, csharp
+    /// // context: model, contextInfo
     /// public class ContextClassifier : IContextClassifier {}
     /// </code>
     /// <br/>
     /// Пример: Результат будет false, потому что, есть домен(csharp) и второй домен(dotnet), но нет действия
     /// <code>
-    /// // context: dotnet, csharp
+    /// // context: dotnet, contextInfo
     /// public class ContextClassifier : IContextClassifier {}
     /// </code>
     /// <br/>
@@ -58,7 +58,7 @@ public class ContextClassifier : IContextClassifier
 }
 
 
-// context: model, csharp
+// context: model, contextInfo
 public enum UnclassifiedPriority
 {
     None,     // как сейчас

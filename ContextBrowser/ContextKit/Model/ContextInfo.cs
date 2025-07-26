@@ -24,7 +24,7 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public HashSet<ContextInfo> References { get; set; } = new();
 
-    public HashSet<ContextInfo>? InvokedBy { get; set; } = null;
+    public HashSet<ContextInfo> InvokedBy { get; set; } = new HashSet<ContextInfo>();
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 

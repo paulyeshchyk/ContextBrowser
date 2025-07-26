@@ -8,6 +8,7 @@ using ContextBrowser.exporter.HtmlPageSamples;
 using ContextBrowser.Extensions;
 using ContextBrowser.HtmlKit.Exporter;
 using ContextBrowser.HtmlKit.Model;
+using ContextBrowser.SourceKit.Roslyn;
 using ContextBrowser.UmlKit.Diagrams;
 using ContextBrowser.UmlKit.Exporter;
 
@@ -19,6 +20,7 @@ public static class Program
     // context: app, file, delete
     public static void Main(string[] args)
     {
+#warning revert path \\Samples\\Test
         string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser";
         string outputDirectory = ".\\output\\";
 
@@ -27,7 +29,8 @@ public static class Program
         var matrixOrientation = MatrixOrientation.DomainRows;
         var unclassifiedPriority = UnclassifiedPriority.Highest;
 
-        var contextsList = ContextParser.Parse(theSourcePath);
+        var contextsList = RoslynContextParser.Parse(theSourcePath);
+
         var contextClassifier = new ContextClassifier();
         var matrix = ContextMatrixUmlExporter.GenerateMatrix(contextsList, contextClassifier, unclassifiedPriority, includeAllStandardActions);
 

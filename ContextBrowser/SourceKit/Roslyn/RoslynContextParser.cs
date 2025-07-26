@@ -1,15 +1,15 @@
 ﻿using ContextBrowser.ContextKit.Model;
-using ContextBrowser.ContextKit.Roslyn;
+using ContextBrowser.ContextKit.Parser;
 using ContextBrowser.Extensions;
 
-namespace ContextBrowser.ContextKit.Parser;
+namespace ContextBrowser.SourceKit.Roslyn;
 
-// context: parser, directory, csharp, build
-public class ContextParser
+// context: parser, directory, ContextInfo, build
+public class RoslynContextParser
 {
     private const string TargetExtension = ".cs";
 
-    // context: read, directory
+    // context: read, directory, ContextInfo
     // layer: 900
     public static List<ContextInfo> Parse(string rootPath)
     {
@@ -32,22 +32,22 @@ public class ContextParser
         var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
         var factory = new ContextInfoFactory<ContextInfo>();
 
-        var parser1 = new RoslynParser<ContextInfo>(contextCollector, factory, processor);
+        var parser1 = new RoslynCodeParser<ContextInfo>(contextCollector, factory, processor);
 
         foreach(var file in files)
         {
-            parser1.ParseFile(file, RoslynParserOptions.Default, parseReferences: false);
+            parser1.ParseFile(file, RoslynCodeParserOptions.Default, RoslynContextParserOptions.ContextsOptions);
         }
 
         var allContexts = contextCollector.Collection;
 
         // 2. Второй проход: строим ссылки на основе уже собранных
         var referenceCollector = new ContextInfoReferenceCollector<ContextInfo>(allContexts);
-        var parser2 = new RoslynParser<ContextInfo>(referenceCollector, factory, processor);
+        var parser2 = new RoslynCodeParser<ContextInfo>(referenceCollector, factory, processor);
 
         foreach(var file in files)
         {
-            parser2.ParseFile(file, RoslynParserOptions.Default, parseContexts: false, parseReferences: true);
+            parser2.ParseFile(file, RoslynCodeParserOptions.Default, RoslynContextParserOptions.ReferencesOptions);
         }
 
         return allContexts;
@@ -59,9 +59,23 @@ public class ContextParser
         var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
         var factory = new ContextInfoFactory<ContextInfo>();
 
-        var parser = new RoslynParser<ContextInfo>(collector, factory, processor);
-        parser.ParseFile(filePath);
+        var parser = new RoslynCodeParser<ContextInfo>(collector, factory, processor);
+        parser.ParseFile(filePath, RoslynCodeParserOptions.Default, RoslynContextParserOptions.ContextsOptions);
 
         return collector.Collection;
     }
+}
+
+public record struct RoslynContextParserOptions
+{
+    public RoslynContextParserOptions()
+    {
+    }
+
+    public bool ParseContexts { get; set; } = true;
+
+    public bool ParseReferences { get; set; } = true;
+
+    public static RoslynContextParserOptions ContextsOptions = new RoslynContextParserOptions() { ParseContexts = true, ParseReferences = false };
+    public static RoslynContextParserOptions ReferencesOptions = new RoslynContextParserOptions() { ParseContexts = false, ParseReferences = true };
 }

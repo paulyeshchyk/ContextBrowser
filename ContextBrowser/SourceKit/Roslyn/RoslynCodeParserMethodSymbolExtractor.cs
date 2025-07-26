@@ -2,16 +2,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ContextBrowser.ContextKit.Roslyn;
+namespace ContextBrowser.SourceKit.Roslyn;
 
-internal static class RoslynMethodSymbolExtractor
+internal static class RoslynCodeParserMethodSymbolExtractor
 {
     public static CSharpCompilation GetCompilation(SyntaxTree tree)
     {
         var compilation = CSharpCompilation.Create("MyAssembly")
             .AddReferences(
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location))
+                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location))
             .AddSyntaxTrees(tree);
         return compilation;
     }
@@ -29,7 +29,7 @@ internal static class RoslynMethodSymbolExtractor
                                     .OfType<MethodDeclarationSyntax>()
                                     .FirstOrDefault(m => m.Identifier.ValueText.Equals(methodName));
 
-        if (methodDeclaration == null)
+        if(methodDeclaration == null)
             return null;
         SemanticModel model = GetSemanticModel(tree);
         return model.GetDeclaredSymbol(methodDeclaration);

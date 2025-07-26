@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.ContextKit.Roslyn;
+﻿namespace ContextBrowser.SourceKit.Roslyn;
 
 // context: validate, test
 public class A

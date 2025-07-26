@@ -20,13 +20,14 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     public bool Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier, UmlDiagram diagram)
     {
         // 1. Фильтрация методов текущего домена с валидным контекстом
+#warning revert back filter
         var methodsInDomain = allContexts
             .Where(ctx => ctx.ElementType == ContextInfoElementType.method && ctx.Domains.Contains(domainName) && classifier.HasActionAndDomain(ctx))
             .ToList();
 
         if(!methodsInDomain.Any())
         {
-            Console.WriteLine($"[MISS]: не найдено методов для домена {domainName}");
+            Console.WriteLine($"[MISS]: не найдено методов для контекста {domainName}");
             return false;
         }
 
@@ -128,7 +129,7 @@ public record ContextTransitionDiagramBuilderOptions
 
     public bool UseMethodAsLabel { get; init; } = true;
 
-    public DiagramDetailLevel DetailLevel { get; init; } = DiagramDetailLevel.Summary;
+    public DiagramDetailLevel DetailLevel { get; init; } = DiagramDetailLevel.Method;
 }
 
 public enum DiagramDetailLevel

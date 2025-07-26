@@ -13,7 +13,7 @@ public interface IContextWithReferences<T>
 
     HashSet<T> References { get; }
 
-    HashSet<T>? InvokedBy { get; set; }
+    HashSet<T> InvokedBy { get; set; }
 
     /// <summary>
     /// Ссылка на метод, который инициализирует взаимодействие.
