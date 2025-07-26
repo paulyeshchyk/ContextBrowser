@@ -6,20 +6,50 @@ namespace ContextBrowser.UmlKit.Diagrams;
 public class UmlDiagramClasses : UmlDiagram
 {
     private readonly HashSet<UmlState> _states = new();
-    private readonly List<(string From, string To, string? Label)> _transitions = new();
+    private readonly List<UmlTransition> _transitions = new();
 
     // context: uml, create
-    public override UmlDiagram AddParticipant(string name)
+    public override IUmlElement AddParticipant(string name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
-        _states.Add(new UmlState(name));
-        return this;
+        var result = new UmlState(name);
+        _states.Add(result);
+        return result;
+    }
+
+    public override UmlDiagram AddParticipant(IUmlElement participant)
+    {
+        if(participant is UmlState state)
+        {
+            _states.Add(state);
+            return this;
+        }
+
+        throw new ArgumentException($"UmlState is supported only {nameof(participant)}");
     }
 
     // context: uml, create
-    public override UmlDiagram AddTransition(string from, string to, string? label = null)
+    public override IUmlElement AddTransition(string from, string to, string? label = null)
     {
-        _transitions.Add((from, to, label));
-        return this;
+        var theFrom = new UmlState(from);
+        var theTo = new UmlState(to);
+        return AddTransition(theFrom, theTo, label);
+    }
+
+    public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null)
+    {
+        if(from is not UmlState theFrom)
+        {
+            throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
+        }
+
+        if(to is not UmlState theTo)
+        {
+            throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
+        }
+
+        var result = new UmlTransition(theFrom, theTo, new UmlArrow(), label);
+        _transitions.Add(result);
+        return result;
     }
 
     // context: uml, share

@@ -1,6 +1,7 @@
 ﻿using ContextBrowser.ContextKit.Model;
 using ContextBrowser.ContextKit.Parser;
 using ContextBrowser.UmlKit.Diagrams;
+using ContextBrowser.UmlKit.Model;
 
 namespace ContextBrowser.DiagramFactory.Builders;
 
@@ -77,8 +78,8 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
             }
 
             target.AddParticipant(t.domain);
-            target.AddParticipant(callerParticipant);
-            target.AddParticipant(calleeParticipant);
+            target.AddParticipant(callerParticipant, UmlParticipantKeyword.Actor);
+            target.AddParticipant(calleeParticipant, UmlParticipantKeyword.Actor);
 
             target.AddTransition(t.domain, callerParticipant, "entry");
 

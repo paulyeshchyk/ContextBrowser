@@ -16,7 +16,7 @@ namespace ContextBrowser.ContextCommentsParser;
 // context: uml, file, csv, html, build
 public static class Program
 {
-    // context: uml, file, csv, html build
+    // context: uml, file, csv, html, build
     public static void Main(string[] args)
     {
         string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser";

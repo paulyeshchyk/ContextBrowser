@@ -25,7 +25,7 @@ public static class UmlContextMethodsOnlyDiagram
             foreach(var callee in method.References)
             {
                 if(methods.Any(m => m.Name == callee.Name))
-                    diagram.Add(new UmlRelation(method.Name, callee?.Name ?? "<unknown>"));
+                    diagram.Add(new UmlTransition(new UmlState(method.Name ?? "<unknown method>"), new UmlState(callee?.Name ?? "<unknown callee>"), new UmlArrow()));
             }
         }
 

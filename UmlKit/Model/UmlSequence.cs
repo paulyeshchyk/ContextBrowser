@@ -3,11 +3,11 @@ namespace ContextBrowser.UmlKit.Model;
 
 public class UmlSequence : IUmlElement
 {
-    public readonly UmlParticipant From;
-    public readonly UmlParticipant To;
+    public readonly IUmlDeclarable From;
+    public readonly IUmlDeclarable To;
     public readonly string? Label;
 
-    public UmlSequence(UmlParticipant from, UmlParticipant to, string? label = null)
+    public UmlSequence(IUmlDeclarable from, IUmlDeclarable to, string? label = null)
     {
         From = from;
         To = to;

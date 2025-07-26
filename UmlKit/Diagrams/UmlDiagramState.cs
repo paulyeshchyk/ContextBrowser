@@ -10,18 +10,47 @@ public class UmlDiagramState : UmlDiagram
     private readonly HashSet<UmlState> _states = new();
     private readonly HashSet<UmlTransition> _transitions = new();
 
-    public override UmlDiagram AddParticipant(string name)
+    public override IUmlElement AddParticipant(string name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
-        _states.Add(new UmlState(name));
-        return this;
+        var result = new UmlState(name);
+        _states.Add(result);
+        return result;
     }
 
-    public override UmlDiagram AddTransition(string from, string to, string? label = null)
+    public override UmlDiagram AddParticipant(IUmlElement participant)
     {
-        _transitions.Add(new UmlTransition(new UmlState(from), new UmlState(to), new UmlArrow(), label));
-        return this;
+        if(participant is UmlState theParticipant)
+        {
+            _states.Add(theParticipant);
+            return this;
+        }
+
+        throw new ArgumentException($"UmlState is supported only {nameof(participant)}");
     }
 
+    public override IUmlElement AddTransition(string from, string to, string? label = null)
+    {
+        var theFrom = new UmlState(from);
+        var theTo = new UmlState(to);
+        return AddTransition(theFrom, theTo, label);
+    }
+
+    public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null)
+    {
+        if(from is not UmlState theFrom)
+        {
+            throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
+        }
+
+        if(to is not UmlState theTo)
+        {
+            throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
+        }
+
+        var result = new UmlTransition(theFrom, theTo, new UmlArrow(), label);
+        _transitions.Add(result);
+        return result;
+    }
 
     public override void WriteBody(TextWriter writer)
     {

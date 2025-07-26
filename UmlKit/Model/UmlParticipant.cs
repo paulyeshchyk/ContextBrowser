@@ -9,9 +9,9 @@ public class UmlParticipant : IUmlElement, IUmlDeclarable
 
     public UmlParticipantKeyword Keyword { get; set; }
 
-    public string ShortName => _raw.StateShortName();
+    public string ShortName => _raw.AlphanumericOnly();
 
-    public string FullName => _raw.StateFullName();
+    public string FullName => $"\"{_raw}\" as {_raw.AlphanumericOnly()}";
 
     public string Declaration => $"{Keyword.ConvertToString()} {this.FullName}";
 
@@ -48,6 +48,7 @@ public class UmlParticipant : IUmlElement, IUmlDeclarable
                Keyword == other.Keyword;
     }
 }
+
 
 public enum UmlParticipantKeyword
 {

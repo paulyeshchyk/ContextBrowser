@@ -22,7 +22,7 @@ public class UmlTransition : IUmlElement
 
     public void WriteTo(TextWriter writer)
     {
-        var theLabel = this.Label is not null ? $" : {this.Label.StateShortName()}" : string.Empty;
+        var theLabel = this.Label is not null ? $" : {this.Label.AlphanumericOnly()}" : string.Empty;
         writer.Write($"{From.ShortName} ");
         _arrow.WriteTo(writer);
         writer.Write($" {To.ShortName}");

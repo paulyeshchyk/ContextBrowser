@@ -5,7 +5,7 @@ public interface IContextFactory<T>
     T Create(T? parent, ContextInfoElementType type, string? ns, T? owner, string? itemName, string? displayName);
 }
 
-// context: contextInfo, builder
+// context: ContextInfo, builder
 // pattern: Factory
 internal class ContextInfoFactory<T> : IContextFactory<T>
     where T : ContextInfo

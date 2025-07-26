@@ -7,9 +7,9 @@ public class UmlState : IUmlElement, IUmlDeclarable
 {
     protected readonly string _raw;
 
-    public string ShortName => _raw.StateShortName();
+    public string ShortName => _raw.AlphanumericOnly();
 
-    public string FullName => _raw.StateFullName();
+    public string FullName => $"\"{_raw}\" as {_raw.AlphanumericOnly()}";
 
     public string Declaration => $"state {this.FullName}";
 

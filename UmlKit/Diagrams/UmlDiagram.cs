@@ -6,9 +6,13 @@ namespace ContextBrowser.UmlKit.Diagrams;
 // pattern: Template method
 public abstract class UmlDiagram
 {
-    public abstract UmlDiagram AddParticipant(string name);
+    public abstract IUmlElement AddParticipant(string name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
 
-    public abstract UmlDiagram AddTransition(string from, string to, string? label = null);
+    public abstract UmlDiagram AddParticipant(IUmlElement participant);
+
+    public abstract IUmlElement AddTransition(string from, string to, string? label = null);
+
+    public abstract IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null);
 
     protected virtual string SUmlStartTag { get => "@startuml"; }
 

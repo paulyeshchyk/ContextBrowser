@@ -10,4 +10,6 @@ public interface IUmlElement
 public interface IUmlDeclarable
 {
     string Declaration { get; }
+
+    string ShortName { get; }
 }

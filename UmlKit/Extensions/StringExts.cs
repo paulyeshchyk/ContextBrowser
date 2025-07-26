@@ -1,16 +1,10 @@
-﻿namespace ContextBrowser.UmlKit.Extensions;
+﻿using System.Text.RegularExpressions;
 
-internal static class StateExts
+namespace ContextBrowser.UmlKit.Extensions;
+
+internal static class StringExts
 {
-    public static string StateFullName(this string s)
-    {
-        return $"\"{s}\" as {s.StateShortName()}";
-    }
-
-    public static string StateShortName(this string s)
-    {
-        return s.Replace(".", "_").Replace(" ", "_");
-    }
+    public static string AlphanumericOnly(this string s) => Regex.Replace(s, "[^a-zA-Z0-9]", "_");
 }
 
 internal static class EnumExts
