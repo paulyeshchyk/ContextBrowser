@@ -49,14 +49,16 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
                 if(string.IsNullOrWhiteSpace(calleeDomain))
                     continue;
 
-                var transition = new UmlTransitionDto(
-                    caller: caller.DisplayNameAlphaNumericOnly,
-                    callee: callee.DisplayNameAlphaNumericOnly,
-                    domain: calleeDomain)
+                var transition = new UmlTransitionDto
                 {
+                    CallerId = caller.DisplayNameAlphaNumericOnly,
+                    CalleeId = callee.DisplayNameAlphaNumericOnly,
+                    Domain = calleeDomain,
+
                     CallerName = caller.ClassOwner?.Name ?? "???",
                     CalleeName = callee.ClassOwner?.Name ?? "???",
-                    MethodName = callee.Name
+                    CallerMethod = caller.Name,
+                    CalleeMethod = callee.Name,
                 };
 
                 transitions.Add(transition);
@@ -68,8 +70,8 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         foreach(var t in transitions)
         {
-            var callerParticipant = _options.UseClassAsParticipant ? t.CallerName : t.caller;
-            var calleeParticipant = _options.UseClassAsParticipant ? t.CalleeName : t.callee;
+            var callerParticipant = _options.UseClassAsParticipant ? t.CallerName : t.CallerId;
+            var calleeParticipant = _options.UseClassAsParticipant ? t.CalleeName : t.CalleeId;
 
             if(string.IsNullOrWhiteSpace(callerParticipant) || string.IsNullOrWhiteSpace(calleeParticipant))
             {
@@ -77,18 +79,18 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
                 continue;
             }
 
-            target.AddParticipant(t.domain);
+            target.AddParticipant(t.Domain);
             target.AddParticipant(callerParticipant, UmlParticipantKeyword.Actor);
             target.AddParticipant(calleeParticipant, UmlParticipantKeyword.Actor);
 
-            target.AddTransition(t.domain, callerParticipant, "entry");
+            target.AddTransition(t.Domain, callerParticipant, "entry");
 
             var arrowLabel = _options.UseMethodAsLabel
-                ? (t.MethodName ?? "calls")
+                ? (t.CalleeMethod ?? "calls")
                 : "calls";
 
             target.AddTransition(callerParticipant, calleeParticipant, arrowLabel);
-            target.AddTransition(calleeParticipant, t.domain, "exit");
+            target.AddTransition(calleeParticipant, t.Domain, "exit");
         }
 
         return true;
@@ -100,27 +102,4 @@ public record ContextTransitionDiagramBuilderOptions
     public bool UseClassAsParticipant { get; init; } = true;
 
     public bool UseMethodAsLabel { get; init; } = true;
-}
-
-public readonly record struct UmlTransitionDto(string caller, string callee, string domain)
-{
-    public string? CallerName { get; init; } = null;
-
-    public string? CalleeName { get; init; } = null;
-
-    public string? MethodName { get; init; } = null;
-
-    public static implicit operator (string Caller, string Callee, string Domain)(UmlTransitionDto value)
-        => (value.caller, value.callee, value.domain);
-
-    public static implicit operator UmlTransitionDto((string Caller, string Callee, string Domain) value)
-        => new(value.Caller, value.Callee, value.Domain);
-
-    public override int GetHashCode()
-        => HashCode.Combine(caller, callee, domain);
-
-    public bool Equals(UmlTransitionDto other)
-        => string.Equals(caller, other.caller, StringComparison.OrdinalIgnoreCase)
-        && string.Equals(callee, other.callee, StringComparison.OrdinalIgnoreCase)
-        && string.Equals(domain, other.domain, StringComparison.OrdinalIgnoreCase);
 }
