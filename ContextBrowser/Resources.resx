@@ -1,0 +1,477 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="HtmlProducerContentStyle" xml:space="preserve">
+    <value>:root {
+  --link-color: #0077cc;
+  --cell-border-color: #cccccc;
+  --cell-border-color-dark: #c0c0c0;
+  --border-summary: #f3f3f3;
+  --border-metadata: #f3f3f3;
+
+  --hover-background-light: #f0f0f0;
+  --hover-background-dark: #e0e0e0;
+
+  --cell-padding: 6px 10px;
+  --alt-cell-padding: 1px 1px; 
+
+  --link-text-decoration: none;
+  --link-text-align: inherit;
+  --link-color-inherit: inherit;
+  --link-white-space: nowrap;
+  --link-overflow: hidden;
+  --link-text-overflow: ellipsis;
+}
+
+/* Встраиваемая таблица: полностью занимает контейнер */
+.embedded-table {
+    width: 100%;
+    height: 100%;
+    table-layout: fixed;           /* важен для ограничения размеров */
+    border-collapse: collapse;
+    font-size: 0.65em;             /* масштабируем шрифт */
+    overflow: hidden;
+    border: none;
+    background-color: inherit;
+}
+
+/* Ячейки подтаблицы */
+.embedded-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 1px 2px;
+    font-size: inherit;
+    background-color: inherit;     /* наследовать фон от родителя */
+    border: none;                  /* убираем границы, чтобы визуально не рвали контейнер */
+}
+
+/* Строки */
+.embedded-table tr {
+    background-color: inherit;     /* наследуем фон */
+    border: none;
+}
+
+.cell_data a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+.some_special_cell_class a {
+  padding: var(--alt-cell-padding); /* Используем новую переменную */
+}
+
+.cell_data a:hover {
+  background-color: color-mix(in srgb, var(--original-background-color) 90%, black 10%) !important;
+}
+
+.cell_data .embedded-table tr {
+    pointer-events: none; 
+}
+
+.cell_data .embedded-table td {
+    pointer-events: none;
+}
+
+/* Отключаем hover-подсветку внутри встраиваемой таблицы */
+.cell_data:hover .embedded-table td,
+.cell_data:hover .embedded-table tr {
+    background-color: inherit !important;
+}
+
+tr:hover td .embedded-table th,
+tr:hover td .embedded-table td,
+tr:hover td .embedded-table tr {
+  background-color: inherit !important;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: var(--link-color);
+  text-decoration: var(--link-text-decoration);
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid var(--cell-border-color);
+  width: auto;
+  font-family: sans-serif;
+}
+
+th,
+td {
+  border: 1px solid var(--cell-border-color);
+}
+
+table,
+th,
+td {
+  user-select: none;
+}
+
+th {
+  font-weight: normal;
+  border: 1px solid var(--cell-border-color);
+  padding: 0;
+  text-align: center;
+  position: relative;
+}
+
+th.hover-col {
+  background-color: var(--hover-background-light);
+}
+
+td {
+  border: 1px solid var(--cell-border-color);
+  padding: 0;
+  text-align: center;
+  position: relative;
+}
+
+th a,
+td a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--cell-padding);
+  margin: 0;
+  text-align: var(--link-text-align);
+  white-space: var(--link-white-space);
+  overflow: var(--link-overflow);
+  text-overflow: var(--link-text-overflow);
+}
+
+th:hover,
+td:hover {
+  background-color: var(--hover-background-light);
+  cursor: pointer;
+}
+
+tr:hover td {
+  background-color: var(--hover-background-light);
+}
+
+tr:hover th {
+  background-color: var(--hover-background-light);
+}
+
+td.hover-col {
+  background-color: var(--hover-background-light);
+}
+
+td.hover-col.hover-cell {
+  background-color: var(--hover-background-dark);
+}
+
+.row_meta {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+  background-color: var(--border-metadata);
+}
+
+.cell_summary_caption {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  background-color: var(--border-summary);
+}
+
+.cell_col_meta {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+}
+
+.cell_row_meta {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  background-color: var(--border-metadata);
+}
+
+.row_summary {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+}
+
+.cell_total_summary {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  background-color: var(--border-summary);
+}
+
+.cell_data {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+}
+
+.row_data {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+}
+
+.cell_colsummary {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color);    /* Лево */
+  border-right: 1px solid var(--cell-border-color);   /* Право */
+  background-color: var(--border-summary);
+}
+
+.cell_rowsummary {
+  border-top: 1px solid var(--cell-border-color);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);       /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);      /* Право */
+  background-color: var(--border-summary);
+}
+
+.cell_actiondomain {
+  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  background-color: var(--border-summary);
+}</value>
+  </data>
+  <data name="HtmlProducerContentStyleScript" xml:space="preserve">
+    <value>document.addEventListener('DOMContentLoaded', () =&gt; {
+ const table = document.querySelector('table');
+ const rows = Array.from(table.rows);
+
+ rows.forEach(row =&gt; {
+  Array.from(row.cells).forEach((cell, colIndex) =&gt; {
+   cell.addEventListener('mouseenter', () =&gt; {
+    rows.forEach(r =&gt; {
+     if (r.cells[colIndex])
+      r.cells[colIndex].classList.add('hover-col');
+    });
+    cell.classList.add('hover-cell');
+   });
+
+   cell.addEventListener('mouseleave', () =&gt; {
+    rows.forEach(r =&gt; {
+     if (r.cells[colIndex])
+      r.cells[colIndex].classList.remove('hover-col');
+    });
+    cell.classList.remove('hover-cell');
+   });
+  });
+ });
+
+ const headerRow = rows[0]; // первая строка — заголовки
+
+ cell.addEventListener('mouseenter', () =&gt; {
+  rows.forEach((r, rowIndex) =&gt; {
+   if (r.cells[colIndex])
+    r.cells[colIndex].classList.add('hover-col');
+  });
+  if (headerRow.cells[colIndex])
+   headerRow.cells[colIndex].classList.add('hover-col');
+
+  cell.classList.add('hover-cell');
+ });
+
+ cell.addEventListener('mouseleave', () =&gt; {
+  rows.forEach((r, rowIndex) =&gt; {
+   if (r.cells[colIndex])
+    r.cells[colIndex].classList.remove('hover-col');
+  });
+  if (headerRow.cells[colIndex])
+   headerRow.cells[colIndex].classList.remove('hover-col');
+
+  cell.classList.remove('hover-cell');
+ });
+
+
+});</value>
+  </data>
+  <data name="ScriptAutoShrinkEmbeddedTable" xml:space="preserve">
+    <value>function autoResizeEmbeddedTables() {
+    const tables = document.querySelectorAll(".embedded-table");
+    tables.forEach(table =&gt; {
+        let size = 0.7;
+        const min = 0.4;
+
+        while (size &gt;= min) {
+            table.style.fontSize = `${size}em`;
+            const fits = [...table.querySelectorAll("td")].every(cell =&gt;
+                cell.scrollWidth &lt;= cell.offsetWidth
+            );
+            if (fits) break;
+            size -= 0.05;
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", autoResizeEmbeddedTables);
+</value>
+  </data>
+  <data name="ScriptAutoFontShrink" xml:space="preserve">
+    <value>(function shrinkEmbeddedFonts() {
+    const tables = document.querySelectorAll(".embedded-table");
+    tables.forEach(table =&gt; {
+        const cells = table.querySelectorAll("td");
+        let fontSize = 0.65;
+
+        const testFits = () =&gt; {
+            return [...cells].every(cell =&gt; {
+                const clone = cell.cloneNode(true);
+                clone.style.position = "absolute";
+                clone.style.visibility = "hidden";
+                clone.style.whiteSpace = "nowrap";
+                clone.style.textOverflow = "clip"; // отключаем троеточие
+                clone.style.overflow = "visible";
+                clone.style.fontSize = fontSize + "em";
+                document.body.appendChild(clone);
+                const fits = clone.scrollWidth &lt;= cell.offsetWidth;
+                document.body.removeChild(clone);
+                return fits;
+            });
+        };
+
+        while (!testFits() &amp;&amp; fontSize &gt; 0.4) {
+            fontSize -= 0.01;
+        }
+
+        table.style.fontSize = fontSize + "em";
+    });
+})();
+</value>
+  </data>
+</root>
