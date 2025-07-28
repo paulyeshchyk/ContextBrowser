@@ -9,6 +9,7 @@ public class UmlDiagramSequence : UmlDiagram
 {
     private readonly HashSet<UmlParticipant> _participants = new();
     private readonly List<UmlSequence> _transitions = new();
+    private readonly List<UmlTransitionBlock> transitionBlocks = new();
 
     public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
@@ -40,17 +41,75 @@ public class UmlDiagramSequence : UmlDiagram
     // context: uml, create
     public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null)
     {
-        if(from is not UmlParticipant theFrom)
+        if(from is not UmlParticipant theFrom || to is not UmlParticipant theTo)
+            throw new ArgumentException("Only UmlParticipant is supported for transition");
+
+        // Активируем ТОЛЬКО FROM
+        var block = transitionBlocks.FirstOrDefault(b => b.Subject.ShortName == from.ShortName);
+        if(block == null)
         {
-            throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
+            block = new UmlTransitionBlock(from);
+            transitionBlocks.Add(block);
         }
 
-        if(to is not UmlParticipant theTo)
+        if(!block.IsActivated)
         {
-            throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
+            block.Activate = new UmlActivate(from.ShortName);
+            block.Deactivate = new UmlDeactivate(from.ShortName);
+            block.MarkActivated();
         }
-        var result = new UmlSequence(theFrom, theTo, label);
-        _transitions.Add(result);
+
+        var transition = new UmlSequence(theFrom, theTo, label);
+        _transitions.Add(transition);
+
+        return transition;
+    }
+
+    public override IUmlElement? Activate(string from)
+    {
+        var dto = new UmlDeclarableDto("empty declaration", from);
+        return Activate(dto);
+    }
+
+    public override IUmlElement? Deactivate(string from)
+    {
+        var dto = new UmlDeclarableDto("empty declaration", from);
+        return Deactivate(dto);
+    }
+
+    public override IUmlElement? Activate(IUmlDeclarable from)
+    {
+        var tb = transitionBlocks.FirstOrDefault(tb => tb.Subject.ShortName == from.ShortName);
+        if(tb == null)
+        {
+            tb = new UmlTransitionBlock(from);
+            transitionBlocks.Add(tb);
+        }
+
+        if(tb.IsActivated)
+            return null;
+
+        var result = new UmlActivate(from.ShortName);
+        tb.Activate = result;
+        tb.MarkActivated();
+        return result;
+    }
+
+    public override IUmlElement? Deactivate(IUmlDeclarable from)
+    {
+        var tb = transitionBlocks.FirstOrDefault(tb => tb.Subject.ShortName == from.ShortName);
+        if(tb == null)
+        {
+            tb = new UmlTransitionBlock(from);
+            transitionBlocks.Add(tb);
+        }
+
+        if(!tb.IsActivated)
+            return null;
+
+        var result = new UmlDeactivate(from.ShortName);
+        tb.Deactivate = result;
+        tb.MarkDeactivated();
         return result;
     }
 
@@ -63,7 +122,25 @@ public class UmlDiagramSequence : UmlDiagram
 
         foreach(var transition in _transitions)
         {
+            var block = transitionBlocks
+                .FirstOrDefault(tb => tb.Subject.ShortName == transition.From.ShortName);
+
+            // Важно: сначала activate, потом сам переход
+            if(block?.Activate is UmlActivate activate)
+            {
+                activate.WriteTo(writer);
+            }
+
             transition.WriteTo(writer);
+        }
+
+        // В конце — деактивация всех, кто был активирован
+        foreach(var block in transitionBlocks)
+        {
+            if(block.Deactivate is UmlDeactivate deactivate)
+            {
+                deactivate.WriteTo(writer);
+            }
         }
     }
 }

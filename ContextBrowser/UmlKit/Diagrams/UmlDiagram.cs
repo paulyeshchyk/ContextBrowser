@@ -14,6 +14,14 @@ public abstract class UmlDiagram
 
     public abstract IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null);
 
+    public abstract IUmlElement? Activate(string from);
+
+    public abstract IUmlElement? Deactivate(string from);
+
+    public abstract IUmlElement? Activate(IUmlDeclarable from);
+
+    public abstract IUmlElement? Deactivate(IUmlDeclarable from);
+
     protected virtual string SUmlStartTag { get => "@startuml"; }
 
     protected virtual string SUmlEndTag { get => "@enduml"; }

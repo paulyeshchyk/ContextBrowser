@@ -6,11 +6,15 @@ public readonly record struct UmlTransitionDto
 
     public string? CallerName { get; init; }
 
+    public string? CallerClassName { get; init; }
+
     public string? CallerMethod { get; init; }
 
     public string? CalleeId { get; init; }
 
     public string? CalleeName { get; init; }
+
+    public string? CalleeClassName { get; init; }
 
     public string? CalleeMethod { get; init; }
 

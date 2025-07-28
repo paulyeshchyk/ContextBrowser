@@ -52,6 +52,28 @@ public class UmlDiagramState : UmlDiagram
         return result;
     }
 
+    public override IUmlElement Activate(string from)
+    {
+        var dto = new UmlDeclarableDto("empty declaration", from);
+        return Activate(dto);
+    }
+
+    public override IUmlElement Deactivate(string from)
+    {
+        var dto = new UmlDeclarableDto("empty declaration", from);
+        return Deactivate(dto);
+    }
+
+    public override IUmlElement Activate(IUmlDeclarable from)
+    {
+        return new UmlActivate(from.ShortName);
+    }
+
+    public override IUmlElement Deactivate(IUmlDeclarable from)
+    {
+        return new UmlDeactivate(from.ShortName);
+    }
+
     public override void WriteBody(TextWriter writer)
     {
         if(!_states.Any() || !_transitions.Any())

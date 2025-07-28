@@ -67,16 +67,25 @@ public class FlowOrchestrator
         _storage.Save(transformed);
         _notifier.Notify("default", transformed);
 
-        Svc.DoSomething();
+        Svc.DoSomething(transformed);
+    }
+
+    //context: create, orchestration, share
+    public void CallbackFromAnotherService(TransformedModel model)
+    {
+        _notifier.Notify("callback", model);
     }
 }
 
 // context: share, orchestration
 public class AnotherService
 {
+    private FlowOrchestrator flowOrchestrator = new FlowOrchestrator();
+
     // context: share, orchestration
-    public void DoSomething()
+    public void DoSomething(TransformedModel model)
     {
+        flowOrchestrator.CallbackFromAnotherService(model);
     }
 }
 

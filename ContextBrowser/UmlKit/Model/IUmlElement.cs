@@ -13,3 +13,17 @@ public interface IUmlDeclarable
 
     string ShortName { get; }
 }
+
+
+public class UmlDeclarableDto : IUmlDeclarable
+{
+    public string Declaration { get; }
+
+    public string ShortName { get; }
+
+    public UmlDeclarableDto(string declaration, string shortName)
+    {
+        Declaration = declaration;
+        ShortName = shortName;
+    }
+}
