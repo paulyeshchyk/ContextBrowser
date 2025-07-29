@@ -9,10 +9,9 @@ public static class FileUtils
     private const string SUnknownErrorTemplate = "Произошла непредвиденная ошибка при создании папки '{0}': {1}";
     private const string SFolderExistsTemplate = "Папка '{0}' уже существует.";
     private const string SFolderNotFoundTemplate = "Ошибка: Папка '{0}' не существует.";
-    private const string SFolderWipedTemplate = "\nПапка '{0}' успешно очищена.";
+    private const string SFolderWipedTemplate = "Папка '{0}' успешно очищена.";
     private const string SUnknownErrorWipeTemplate = "Произошла непредвиденная ошибка при очистке папки '{0}': {1}";
     private const string SFileNotFoundTemplate = "Ошибка: Файл '{0}' не существует.";
-    private const string SFileDeletedTemplate = "Удален файл: {0}";
     private const string SFileDeleteErrorTemplate = "Ошибка при удалении файла '{0}': {1}";
     private const string SFileDeleteNoAccessTemplate = "Отказано в доступе при удалении файла '{0}': {1}";
     private const string SFolderWipedSuccessfullyTemplate = "Папка '{0}' и её содержимое успешно удалены.";

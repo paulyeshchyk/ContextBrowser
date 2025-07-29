@@ -155,7 +155,7 @@ public class RoslynCodeParserTests
     private static string? _testAssemblyDirectory;
 
     // 3. Статический публичный метод для доступа к пути.
-    public static string GetTestAssemblyLocation()
+    public static string? GetTestAssemblyLocation()
     {
         // Проверяем, был ли путь уже установлен в AssemblyInitialize
         if(string.IsNullOrEmpty(_testAssemblyDirectory))
@@ -239,7 +239,7 @@ public class RoslynCodeParserTests
     [DataRow(SimpleClassWithContextForReferenceTest, "A", "B")]
     public void ShouldTrackReferencesBetweenMethods(string source, string classA, string classB)
     {
-        var paths = new List<string>() { GetTestAssemblyLocation() };
+        var paths = new List<string?>() { GetTestAssemblyLocation() }.OfType<string>();
 
         var parser = CreateParser(out var collector);
         parser.ParseCode(source, DefaultOptions(paths), ParseAllOptions);

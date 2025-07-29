@@ -5,60 +5,52 @@ namespace ContextBrowser.DiagramFactory.Builders;
 
 internal static class TransitionRenderer
 {
-    public static void RenderTransition(UmlTransitionDto t, UmlDiagram diagram, ContextTransitionDiagramBuilderOptions builderOptions)
+    private static readonly HashSet<string> activated = new();
+
+    public static void RenderFullTransition(UmlDiagram diagram, UmlTransitionDto t, ContextTransitionDiagramBuilderOptions _options)
     {
-        var callerPart = builderOptions.UseMethodAsParticipant ? t.CallerId : t.CallerClassName;
-        var calleePart = builderOptions.UseMethodAsParticipant ? t.CalleeId : t.CalleeClassName;
-
-        diagram.AddParticipant(callerPart, builderOptions.DefaultParticipantKeyword);
-        diagram.AddParticipant(calleePart, builderOptions.DefaultParticipantKeyword);
-
-        switch(builderOptions.DetailLevel)
+        // Активируем вызывающего, если ещё не активирован
+        if(!string.IsNullOrWhiteSpace(t.CallerClassName) && activated.Add(t.CallerClassName))
         {
-            case DiagramDetailLevel.Summary:
-                RenderSummaryTransition(diagram, t);
-                break;
-            case DiagramDetailLevel.Method:
-                RenderMethodTransition(diagram, t);
-                break;
-            case DiagramDetailLevel.Full:
-                RenderFullTransition(diagram, t);
-                break;
+            diagram.Activate(t.CallerClassName);
         }
-    }
 
-    private static void RenderSummaryTransition(UmlDiagram diagram, UmlTransitionDto t)
-    {
-        diagram.AddTransition(t.CallerClassName, t.CalleeClassName, "calls");
-        //diagram.Activate(new UmlDeclarableDto("empty declaration", t.CalleeClassName));
-        //diagram.Deactivate(new UmlDeclarableDto("empty declaration", t.CalleeClassName));
-    }
-
-    private static void RenderMethodTransition(UmlDiagram diagram, UmlTransitionDto t)
-    {
-        diagram.AddTransition(t.CallerClassName, t.CalleeClassName, t.CalleeMethod);
-        //diagram.Activate(new UmlDeclarableDto("empty declaration", t.CalleeClassName));
-        diagram.Deactivate(new UmlDeclarableDto("empty declaration", t.CalleeClassName));
-    }
-
-    private static void RenderFullTransition(UmlDiagram diagram, UmlTransitionDto t)
-    {
+        // Контекст исполнения (если RunContext есть)
         if(!string.IsNullOrWhiteSpace(t.RunContext))
         {
             diagram.AddParticipant(t.RunContext, UmlParticipantKeyword.Control);
+
+            // Активируем контрол, если он ещё не активирован
+            if(activated.Add(t.RunContext))
+            {
+                diagram.Activate(t.RunContext);
+            }
+
             diagram.AddTransition(t.CallerClassName, t.RunContext, t.CallerMethod);
-            //diagram.Activate(new UmlDeclarableDto("empty declaration", t.CalleeClassName));
-            //diagram.Deactivate(new UmlDeclarableDto("empty declaration", t.CalleeClassName));
             diagram.AddTransition(t.RunContext, t.CalleeClassName, t.CalleeMethod);
             diagram.AddTransition(t.CalleeClassName, t.RunContext, "return");
             diagram.AddTransition(t.RunContext, t.CallerClassName, "done");
         }
         else
         {
-            //diagram.Activate(new UmlDeclarableDto("empty declaration", t.CalleeClassName));
+            // Активируем вызываемого, если ещё не активирован
+            if(!string.IsNullOrWhiteSpace(t.CalleeClassName) && activated.Add(t.CalleeClassName))
+            {
+                diagram.Activate(t.CalleeClassName);
+            }
+
             diagram.AddTransition(t.CallerClassName, t.CalleeClassName, t.CalleeMethod);
-            //diagram.Deactivate(new UmlDeclarableDto("empty declaration", t.CalleeClassName));
             diagram.AddTransition(t.CalleeClassName, t.CallerClassName, "done");
         }
+    }
+
+    public static void FinalizeDiagram(UmlDiagram diagram)
+    {
+        foreach(var participant in activated)
+        {
+            diagram.Deactivate(participant);
+        }
+
+        activated.Clear(); // на случай повторных генераций
     }
 }

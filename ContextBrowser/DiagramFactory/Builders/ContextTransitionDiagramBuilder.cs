@@ -7,30 +7,21 @@ namespace ContextBrowser.DiagramFactory.Builders;
 public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 {
     private readonly ContextTransitionDiagramBuilderOptions _options;
-    private readonly List<ITransitionDirectionBuilder> _directionBuilders;
-    private readonly List<string>? _filterDomains;
-    private readonly UmlTransitionDtoBuilder _transitionBuilder;
+    private readonly List<ITransitionBuilder> _transitionBuilders;
 
-    public string Name => "context-transition";
-
-    public ContextTransitionDiagramBuilder(
-        ContextTransitionDiagramBuilderOptions options,
-        IEnumerable<ITransitionDirectionBuilder> directionBuilders,
-        IControlParticipantResolver controlResolver,
-        List<string>? filterDomains = null)
+    public ContextTransitionDiagramBuilder(ContextTransitionDiagramBuilderOptions? options, IEnumerable<ITransitionBuilder> transitionBuilders)
     {
-        _options = options;
-        _directionBuilders = directionBuilders.ToList();
-        _filterDomains = filterDomains;
-        _transitionBuilder = new UmlTransitionDtoBuilder(controlResolver);
+        _options = options ?? new ContextTransitionDiagramBuilderOptions(detailLevel: DiagramDetailLevel.Full, direction: DiagramDirection.BiDirectional, defaultParticipantKeyword: UmlKit.Model.UmlParticipantKeyword.Actor, useMethodAsParticipant: false);
+        _transitionBuilders = transitionBuilders.ToList();
     }
 
     public bool Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier, UmlDiagram diagram)
     {
         var methods = allContexts
-            .Where(ctx => ctx.ElementType == ContextInfoElementType.method &&
-                          ctx.Domains.Contains(domainName) &&
-                          classifier.HasActionAndDomain(ctx))
+            .Where(ctx =>
+                ctx.ElementType == ContextInfoElementType.method &&
+                ctx.Domains.Contains(domainName) &&
+                classifier.HasActionAndDomain(ctx))
             .ToList();
 
         if(!methods.Any())
@@ -41,15 +32,11 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         var allTransitions = new HashSet<UmlTransitionDto>();
 
-        foreach(var builder in _directionBuilders)
+        foreach(var builder in _transitionBuilders)
         {
-            var transitions = builder.BuildTransitions(methods);
-
+            var transitions = builder.BuildTransitions(methods, allContexts);
             foreach(var t in transitions)
-            {
-                if(ShouldInclude(t))
-                    allTransitions.Add(t);
-            }
+                allTransitions.Add(t);
         }
 
         if(!allTransitions.Any())
@@ -57,19 +44,11 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         foreach(var t in allTransitions)
         {
-            TransitionRenderer.RenderTransition(t, diagram, _options);
+            TransitionRenderer.RenderFullTransition(diagram, t, _options);
         }
 
+        TransitionRenderer.FinalizeDiagram(diagram);
+
         return true;
-    }
-
-    private bool ShouldInclude(UmlTransitionDto dto)
-    {
-        if(_filterDomains == null)
-            return true;
-
-        return _filterDomains.Contains(dto.Domain) ||
-               _filterDomains.Contains(dto.CallerName) ||
-               _filterDomains.Contains(dto.CalleeName);
     }
 }

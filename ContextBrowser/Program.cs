@@ -10,6 +10,7 @@ using ContextBrowser.HtmlKit.Model;
 using ContextBrowser.SourceKit.Roslyn;
 using ContextBrowser.UmlKit.Diagrams;
 using ContextBrowser.UmlKit.Exporter;
+using ContextBrowser.UmlKit.Model;
 
 namespace ContextBrowser.ContextCommentsParser;
 
@@ -41,12 +42,17 @@ public static class Program
 
 public class AppOptions
 {
-    public string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser\\Samples\\";
+    public string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser";
     public string outputDirectory = ".\\output\\";
     public UnclassifiedPriority unclassifiedPriority = UnclassifiedPriority.Highest;
     public bool includeAllStandardActions = true;
     public SummaryPlacement summaryPlacement = SummaryPlacement.AfterFirst;
     public MatrixOrientation matrixOrientation = MatrixOrientation.DomainRows;
+    public ContextTransitionDiagramBuilderOptions contextTransitionDiagramBuilderOptions = new ContextTransitionDiagramBuilderOptions(
+        detailLevel: DiagramDetailLevel.Full,
+        direction: DiagramDirection.BiDirectional,
+        defaultParticipantKeyword: UmlParticipantKeyword.Actor,
+        useMethodAsParticipant: false);
 }
 
 public static class DirectorePreparator
@@ -165,7 +171,7 @@ public static class DimensionBuilder
             contextItems: model.contextsList,
             classifier: new ContextClassifier(),
             outputPath: options.outputDirectory,
-            factory:() => ContextDiagramFactory.Get("context-transition")!
+            factory:() => ContextDiagramFactory.Transition(options.contextTransitionDiagramBuilderOptions)!
         );
 
         var builder = new HtmlContextDimensionBuilder(
@@ -173,7 +179,7 @@ public static class DimensionBuilder
             model.contextsList,
             options.outputDirectory,
             callback,
-            () => ContextDiagramFactory.Transition);
+            () => ContextDiagramFactory.Transition(options.contextTransitionDiagramBuilderOptions)!);
 
         builder.Build();
     }

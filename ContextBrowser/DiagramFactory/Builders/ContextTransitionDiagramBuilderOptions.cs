@@ -4,11 +4,19 @@ namespace ContextBrowser.DiagramFactory.Builders;
 
 public record ContextTransitionDiagramBuilderOptions
 {
-    public DiagramDetailLevel DetailLevel = DiagramDetailLevel.Method;
+    public DiagramDetailLevel DetailLevel;
 
-    public DiagramDirection Direction = DiagramDirection.BiDirectional;
+    public DiagramDirection Direction;
 
-    public UmlParticipantKeyword DefaultParticipantKeyword = UmlParticipantKeyword.Actor;
+    public UmlParticipantKeyword DefaultParticipantKeyword;
 
-    public bool UseMethodAsParticipant = false;
+    public bool UseMethodAsParticipant;
+
+    public ContextTransitionDiagramBuilderOptions(DiagramDetailLevel detailLevel, DiagramDirection direction, UmlParticipantKeyword defaultParticipantKeyword, bool useMethodAsParticipant)
+    {
+        DetailLevel = detailLevel;
+        Direction = direction;
+        DefaultParticipantKeyword = defaultParticipantKeyword;
+        UseMethodAsParticipant = useMethodAsParticipant;
+    }
 }

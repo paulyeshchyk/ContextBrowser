@@ -5,31 +5,83 @@ namespace ContextBrowser.DiagramFactory;
 
 public static class ContextDiagramFactory
 {
-    public static IContextDiagramBuilder Transition => _builders["context-transition"];
+    /// <summary>
+    /// Возвращает все зарегистрированные имена билдеров.
+    /// </summary>
+    public static IEnumerable<string> AvailableNames => _builderFactories.Keys;
 
-    public static IContextDiagramBuilder Dependencies => new DependencyDiagramBuilder();
+    public static IContextDiagramBuilder Transition(ContextTransitionDiagramBuilderOptions? options = null) => Get(DiagramBuilderKeys.Transition, options);
 
-    public static IContextDiagramBuilder MethodsOnly => new MethodOnlyDiagramBuilder();
+    public static IContextDiagramBuilder Dependencies(ContextTransitionDiagramBuilderOptions? options = null) => Get(DiagramBuilderKeys.Dependencies, options);
 
-#warning to be used new ContextTransitionDiagramBuilderOptions() { UseClassAsParticipant = true, UseMethodAsLabel = true }
+    public static IContextDiagramBuilder MethodsOnly(ContextTransitionDiagramBuilderOptions? options = null) => Get(DiagramBuilderKeys.MethodFlow, options);
 
-    private static List<ITransitionDirectionBuilder> DefaultDirectionBuilders =>
-        new List<ITransitionDirectionBuilder>() {
-        new OutgoingTransitionBuilder(),
-        new IncomingTransitionBuilder(),
-        new BiDirectionalTransitionBuilder(),
+    private static readonly Dictionary<string, Func<ContextTransitionDiagramBuilderOptions?, IContextDiagramBuilder>> _builderFactories = new(StringComparer.OrdinalIgnoreCase);
+
+    private static List<ITransitionBuilder> DefaultDirectionBuilders => new() {
+            new OutgoingTransitionBuilder(),
+            new IncomingTransitionBuilder(),
+            new BiDirectionalTransitionBuilder(),
         };
 
-    private static readonly Dictionary<string, IContextDiagramBuilder> _builders =
-       new(StringComparer.OrdinalIgnoreCase)
-       {
-           ["context-transition"] = new ContextTransitionDiagramBuilder(new ContextTransitionDiagramBuilderOptions(), DefaultDirectionBuilders, new RunMethodAsControlParticipantResolver()),
-           ["method-flow"] = new MethodFlowDiagramBuilder(),
-           ["dependencies"] = new DependencyDiagramBuilder()
-       };
 
-    public static IContextDiagramBuilder? Get(string name) =>
-        _builders.TryGetValue(name, out var b) ? b : null;
+    // Статический конструктор для инициализации фабрики
+    static ContextDiagramFactory()
+    {
+        // Используем Enum.ToKeyString() для регистрации
+        RegisterBuilder(DiagramBuilderKeys.Transition,(options) => new ContextTransitionDiagramBuilder(options, DefaultDirectionBuilders));
+        RegisterBuilder(DiagramBuilderKeys.MethodFlow,(options) => new MethodFlowDiagramBuilder());
+        RegisterBuilder(DiagramBuilderKeys.Dependencies,(options) => new DependencyDiagramBuilder());
+    }
 
-    public static IEnumerable<string> AvailableNames => _builders.Keys;
+    public static void RegisterBuilder(string name, Func<ContextTransitionDiagramBuilderOptions?, IContextDiagramBuilder> factoryFunc)
+    {
+        if(string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Builder name cannot be null or whitespace.", nameof(name));
+        if(factoryFunc == null)
+            throw new ArgumentNullException(nameof(factoryFunc));
+
+        if(_builderFactories.ContainsKey(name))
+        {
+            Console.WriteLine($"Warning: Builder '{name}' is already registered and will be overwritten.");
+            _builderFactories[name] = factoryFunc;
+        }
+        else
+        {
+            _builderFactories.Add(name, factoryFunc);
+        }
+    }
+
+    private static void RegisterBuilder(DiagramBuilderKeys key, Func<ContextTransitionDiagramBuilderOptions?, IContextDiagramBuilder> factoryFunc)
+    {
+        RegisterBuilder(key.ToKeyString(), factoryFunc);
+    }
+
+    private static IContextDiagramBuilder Get(string name, ContextTransitionDiagramBuilderOptions? options = null)
+    {
+        if(!_builderFactories.TryGetValue(name, out var factoryFunc))
+            throw new ArgumentException($"Builder not found for key '{name}'. Ensure it is registered.");
+
+        return factoryFunc(options);
+    }
+
+    private static IContextDiagramBuilder Get(DiagramBuilderKeys key, ContextTransitionDiagramBuilderOptions? options = null)
+    {
+        return Get(key.ToKeyString(), options);
+    }
+}
+
+public enum DiagramBuilderKeys
+{
+    Transition, // "context-transition"
+    MethodFlow, // "method-flow" (прежнее "MethodsOnly")
+    Dependencies // "dependencies"
+}
+
+public static class DiagramBuilderKeyExtensions
+{
+    public static string ToKeyString(this DiagramBuilderKeys key)
+    {
+        return key.ToString().ToLowerInvariant();
+    }
 }
