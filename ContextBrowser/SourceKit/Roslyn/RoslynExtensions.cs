@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ContextBrowser.SourceKit.Roslyn;
 
+// context: csharp, read
 public static class RoslynExtensions
 {
     /// <summary>
@@ -12,6 +13,7 @@ public static class RoslynExtensions
     /// <param name="memberDeclaration">Объект MemberDeclarationSyntax.</param>
     /// <param name="semanticModel">Семантическая модель, к которой принадлежит синтаксическое дерево.</param>
     /// <returns>Полное имя члена или null, если символ не может быть разрешен.</returns>
+    // context: csharp, read
     public static string? GetFullMemberName(this ISymbol? symbol)
     {
         return symbol?.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
@@ -20,6 +22,7 @@ public static class RoslynExtensions
     /// <summary>
     /// Пример получения полного имени для NamedTypeDeclarationSyntax (Class, Struct, Interface, Record, Enum).
     /// </summary>
+    // context: csharp, read
     public static string? GetFullTypeName(this TypeDeclarationSyntax typeDeclaration, SemanticModel semanticModel)
     {
         if(typeDeclaration == null || semanticModel == null)
@@ -41,6 +44,7 @@ public static class RoslynExtensions
 
     // Вспомогательный метод для получения NamespaceDeclarationSyntax
     // Может быть полезен, если вам нужно только имя пространства имен, а не полное имя символа
+    // context: csharp, read
     public static string GetNamespaceDeclarationName(this MemberDeclarationSyntax memberDeclaration)
     {
         var namespaceDeclaration = memberDeclaration.Ancestors().OfType<BaseNamespaceDeclarationSyntax>().FirstOrDefault();

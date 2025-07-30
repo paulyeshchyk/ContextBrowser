@@ -4,12 +4,12 @@ using ContextBrowser.Extensions;
 
 namespace ContextBrowser.SourceKit.Roslyn;
 
-// context: parser, directory, ContextInfo, build
+// context: csharp, parser, directory, contextInfo, build
 public class RoslynContextParser
 {
     private const string TargetExtension = ".cs";
 
-    // context: read, directory, ContextInfo
+    // context: csharp, read, directory, ContextInfo
     // layer: 900
     public static List<ContextInfo> Parse(string rootPath, IEnumerable<string> assembliesPaths)
     {
@@ -22,28 +22,29 @@ public class RoslynContextParser
         };
     }
 
-    // context: read, directory
-    private static List<ContextInfo> ParseDirectory(string rootPath, IEnumerable<string> assembliesPaths)
+    // context: read, directory, csharp, contextInfo
+    public static List<ContextInfo> ParseDirectory(string rootPath, IEnumerable<string> assembliesPaths)
     {
         var files = Directory.GetFiles(rootPath, $"*{TargetExtension}", SearchOption.AllDirectories);
+
+        var semanticModelStorage = new RoslynCodeSemanticTreeModelStorage();
 
         // 1. Первый проход: собираем все context'ы (типы и методы), без ссылок
         var contextCollector = new ContextInfoCollector<ContextInfo>();
         var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
         var factory = new ContextInfoFactory<ContextInfo>();
+        var modelBuilder = new RoslynCodeSemanticTreeModelBuilder(semanticModelStorage);
+        RoslynPhaseParserContextBuilder<ContextInfo> parser1 = new(contextCollector, factory, processor, modelBuilder);
 
-        var parser1 = new RoslynCodeParser<ContextInfo>(contextCollector, factory, processor);
-
-        foreach(var file in files)
-        {
-            parser1.ParseFile(file, RoslynCodeParserOptions.Default(assembliesPaths), RoslynContextParserOptions.ContextsOptions);
-        }
+        parser1.ParseFiles(files, RoslynCodeParserOptions.Default(assembliesPaths), RoslynContextParserOptions.ContextsOptions);
 
         var allContexts = contextCollector.Collection;
 
         // 2. Второй проход: строим ссылки на основе уже собранных
         var referenceCollector = new ContextInfoReferenceCollector<ContextInfo>(allContexts);
-        var parser2 = new RoslynCodeParser<ContextInfo>(referenceCollector, factory, processor);
+        var semanticInvocationResolver = new RoslynCodeSemanticInvocationResolver(semanticModelStorage);
+
+        var parser2 = new RoslynPhaseParserReferenceResolver<ContextInfo>(referenceCollector, modelBuilder, semanticInvocationResolver);
 
         foreach(var file in files)
         {
@@ -53,19 +54,21 @@ public class RoslynContextParser
         return allContexts;
     }
 
-    private static List<ContextInfo> ParseFile(string filePath)
+    protected static List<ContextInfo> ParseFile(string filePath)
     {
         var collector = new ContextInfoCollector<ContextInfo>();
-        var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
-        var factory = new ContextInfoFactory<ContextInfo>();
-
-        var parser = new RoslynCodeParser<ContextInfo>(collector, factory, processor);
-        parser.ParseFile(filePath, RoslynCodeParserOptions.Default(), RoslynContextParserOptions.ContextsOptions);
+        //var processor = new ContextInfoCommentProcessor<ContextInfo>(new ContextClassifier());
+        //var factory = new ContextInfoFactory<ContextInfo>();
+        //var semanticTreeStorage = new RoslynCodeTreeModelStorage();
+        //var semanticModelBuilder = new RoslynCodeSemanticTreeModelBuilder(semanticTreeStorage);
+        //var parser = new RoslynCodeParser<ContextInfo>();
+        //parser.ParseFile(filePath, RoslynCodeParserOptions.Default(), RoslynContextParserOptions.ContextsOptions);
 
         return collector.Collection;
     }
 }
 
+//context: csharp, model
 public record struct RoslynContextParserOptions
 {
     public RoslynContextParserOptions()
@@ -76,6 +79,6 @@ public record struct RoslynContextParserOptions
 
     public bool ParseReferences { get; set; } = true;
 
-    public static RoslynContextParserOptions ContextsOptions = new RoslynContextParserOptions() { ParseContexts = true, ParseReferences = false };
-    public static RoslynContextParserOptions ReferencesOptions = new RoslynContextParserOptions() { ParseContexts = false, ParseReferences = true };
+    public static RoslynContextParserOptions ContextsOptions = new() { ParseContexts = true, ParseReferences = false };
+    public static RoslynContextParserOptions ReferencesOptions = new() { ParseContexts = false, ParseReferences = true };
 }

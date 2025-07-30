@@ -10,6 +10,8 @@ public static class ContextDiagramFactory
     /// </summary>
     public static IEnumerable<string> AvailableNames => _builderFactories.Keys;
 
+    public static IContextDiagramBuilder Custom(DiagramBuilderKeys key, ContextTransitionDiagramBuilderOptions? options = null) => Get(key, options);
+
     public static IContextDiagramBuilder Transition(ContextTransitionDiagramBuilderOptions? options = null) => Get(DiagramBuilderKeys.Transition, options);
 
     public static IContextDiagramBuilder Dependencies(ContextTransitionDiagramBuilderOptions? options = null) => Get(DiagramBuilderKeys.Dependencies, options);

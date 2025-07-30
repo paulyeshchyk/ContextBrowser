@@ -2,8 +2,10 @@ using Microsoft.CodeAnalysis;
 
 namespace ContextBrowser.SourceKit.Roslyn;
 
+// context: csharp, build
 public static class RoslynCodeParserAssemblyReferencesBuilder
 {
+    // context: csharp, build
     public static IEnumerable<MetadataReference> CSharpCompilationReferences()
     {
         var runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
@@ -34,6 +36,7 @@ public static class RoslynCodeParserAssemblyReferencesBuilder
         return references;
     }
 
+    // context: csharp, build
     public static IEnumerable<MetadataReference> CSharpCompilationReferences(IEnumerable<string> runtimeDirectory)
     {
         var references = new List<MetadataReference>();
@@ -44,6 +47,7 @@ public static class RoslynCodeParserAssemblyReferencesBuilder
         return references;
     }
 
+    // context: csharp, build
     public static IEnumerable<MetadataReference> CSharpCompilationReferences(string runtimeDirectory)
     {
         if(string.IsNullOrWhiteSpace(runtimeDirectory) || !Directory.Exists(runtimeDirectory))

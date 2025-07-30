@@ -204,7 +204,10 @@ public class RoslynCodeParserTests
         var classifier = new ContextClassifier();
         var factory = new ContextInfoFactory<ContextInfo>();
         var processor = new ContextInfoCommentProcessor<ContextInfo>(classifier);
-        return new RoslynCodeParser<ContextInfo>(collector, factory, processor);
+        var semanticTreeStorage = new RoslynCodeTreeModelStorage();
+        var semanticModelBuilder = new SemanticTreeModelBuilder(semanticTreeStorage);
+
+        return new RoslynCodeParser<ContextInfo>(collector, factory, processor, semanticModelBuilder);
     }
 
     [TestMethod]

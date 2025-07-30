@@ -5,8 +5,6 @@ VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContextBrowser", "ContextBrowser\ContextBrowser.csproj", "{7A0E030E-4101-0D13-8633-357F89DC30BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContextBrowserTests", "ContextBrowserTests\ContextBrowserTests.csproj", "{43670CB7-BD77-0999-B7ED-DE3F04A09421}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{7A0E030E-4101-0D13-8633-357F89DC30BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A0E030E-4101-0D13-8633-357F89DC30BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A0E030E-4101-0D13-8633-357F89DC30BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43670CB7-BD77-0999-B7ED-DE3F04A09421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43670CB7-BD77-0999-B7ED-DE3F04A09421}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43670CB7-BD77-0999-B7ED-DE3F04A09421}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43670CB7-BD77-0999-B7ED-DE3F04A09421}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

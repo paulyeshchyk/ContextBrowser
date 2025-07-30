@@ -40,20 +40,25 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
 {
     public Dictionary<string, TContext> ByFullName { get; }
 
+    private readonly List<TContext> _existing;
+
     public ContextInfoReferenceCollector(IEnumerable<TContext> existing)
     {
-        // Строим индекс по полному имени (например: Namespace.Class.Method)
-        ByFullName = existing
-                    .Where(x => !string.IsNullOrWhiteSpace(x.SymbolName))// FullName
-                    .GroupBy(x => x.SymbolName)//FullName
-                    .ToDictionary(
-                        g => g.Key,
-                        g => g.First(),
-                        StringComparer.OrdinalIgnoreCase);
+        _existing = existing.ToList();
+
+        ByFullName = _existing
+            .Where(x => !string.IsNullOrWhiteSpace(x.SymbolName))
+            .GroupBy(x => x.SymbolName!)
+            .ToDictionary(
+                g => g.Key,
+                g => g.First(),
+                StringComparer.OrdinalIgnoreCase);
     }
 
     public void Add(TContext item)
     {
+        // намеренно ничего не делаем — коллектор только читает
     }
-    public IEnumerable<TContext> GetAll() => Enumerable.Empty<TContext>();
+
+    public IEnumerable<TContext> GetAll() => _existing;
 }

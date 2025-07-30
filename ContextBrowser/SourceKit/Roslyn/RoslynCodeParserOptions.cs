@@ -1,6 +1,7 @@
 namespace ContextBrowser.SourceKit.Roslyn;
 
 // pattern: configuration
+//context: csharp, model
 public record RoslynCodeParserOptions(
     HashSet<RoslynCodeParserAccessorModifierType> MethodModifierTypes,
     HashSet<RoslynCodeParserAccessorModifierType> ClassModifierTypes,

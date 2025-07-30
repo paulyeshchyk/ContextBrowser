@@ -46,6 +46,7 @@ public class AppOptions
     public string outputDirectory = ".\\output\\";
     public UnclassifiedPriority unclassifiedPriority = UnclassifiedPriority.Highest;
     public bool includeAllStandardActions = true;
+    public DiagramBuilderKeys diagramType = DiagramBuilderKeys.Transition;
     public SummaryPlacement summaryPlacement = SummaryPlacement.AfterFirst;
     public MatrixOrientation matrixOrientation = MatrixOrientation.DomainRows;
     public ContextTransitionDiagramBuilderOptions contextTransitionDiagramBuilderOptions = new ContextTransitionDiagramBuilderOptions(
@@ -55,8 +56,10 @@ public class AppOptions
         useMethodAsParticipant: false);
 }
 
+// context: file, read, delete, create
 public static class DirectorePreparator
 {
+    // context: file, read, delete, create
     public static void Prepare(AppOptions options)
     {
         FileUtils.CreateDirectoryIfNotExists(options.outputDirectory);
@@ -95,8 +98,10 @@ public static class ExtraDiagramsBuilder
     }
 }
 
+// context: ContextInfo, build
 public static class ContextModelBuildBuilder
 {
+    // context: ContextInfo, build
     public static ContextBuilderModel Build(AppOptions options)
     {
         var contextsList = RoslynContextParser.Parse(options.theSourcePath, new List<string>() { options.outputDirectory });
@@ -161,17 +166,17 @@ public static class ActionPerDomainDiagramBuilder
     }
 }
 
-// context: step5, build
+// context: contextInfo, build
 public static class DimensionBuilder
 {
-    // context: step5, build
+    // context: contextInfo, build
     public static void Build(ContextBuilderModel model, AppOptions options)
     {
         var callback = AdaptToDomainCallback(
             contextItems: model.contextsList,
             classifier: new ContextClassifier(),
             outputPath: options.outputDirectory,
-            factory:() => ContextDiagramFactory.Transition(options.contextTransitionDiagramBuilderOptions)!
+            factory:() => ContextDiagramFactory.Custom(options.diagramType, options.contextTransitionDiagramBuilderOptions)
         );
 
         var builder = new HtmlContextDimensionBuilder(
@@ -179,12 +184,12 @@ public static class DimensionBuilder
             model.contextsList,
             options.outputDirectory,
             callback,
-            () => ContextDiagramFactory.Transition(options.contextTransitionDiagramBuilderOptions)!);
+            () => ContextDiagramFactory.Transition(options.contextTransitionDiagramBuilderOptions));
 
         builder.Build();
     }
 
-    // context: step5, build
+    // context: contextInfo, build
     internal static Func<string, bool> AdaptToDomainCallback(List<ContextInfo> contextItems, ContextClassifier classifier, string outputPath, Func<IContextDiagramBuilder> factory)
     {
         return domain =>
