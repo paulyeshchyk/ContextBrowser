@@ -1,3 +1,4 @@
+using ContextBrowser.LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -7,9 +8,9 @@ namespace ContextBrowser.SourceKit.Roslyn;
 public static class RoslynCodeCompilationBuilder
 {
     // context: csharp, build
-    public static Dictionary<SyntaxTree, SemanticModel> BuildModels(IEnumerable<string> codeFiles, RoslynCodeParserOptions options)
+    public static Dictionary<SyntaxTree, SemanticModel> BuildModels(IEnumerable<string> codeFiles, RoslynCodeParserOptions options, OnWriteLog? onWriteLog = null)
     {
-        // 1. Читаем все файлы и создаём деревья с путями
+        // 1. Р§РёС‚Р°РµРј РІСЃРµ С„Р°Р№Р»С‹ Рё СЃРѕР·РґР°С‘Рј РґРµСЂРµРІСЊСЏ СЃ РїСѓС‚СЏРјРё
         var syntaxTrees = codeFiles
             .Select(filePath =>
                 CSharpSyntaxTree.ParseText(
@@ -18,10 +19,10 @@ public static class RoslynCodeCompilationBuilder
                     cancellationToken: CancellationToken.None))
             .ToList();
 
-        // 2. Создаём единый Compilation
+        // 2. РЎРѕР·РґР°С‘Рј РµРґРёРЅС‹Р№ Compilation
         var compilation = RoslynCodeCompilationBuilder.Build(syntaxTrees, options.CustomAssembliesPaths);
 
-        // 3. Формируем модель для каждого дерева
+        // 3. Р¤РѕСЂРјРёСЂСѓРµРј РјРѕРґРµР»СЊ РґР»СЏ РєР°Р¶РґРѕРіРѕ РґРµСЂРµРІР°
         var result = new Dictionary<SyntaxTree, SemanticModel>();
         foreach(var tree in syntaxTrees)
         {

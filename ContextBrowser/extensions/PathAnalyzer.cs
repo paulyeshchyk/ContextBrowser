@@ -1,4 +1,6 @@
-﻿namespace ContextBrowser.Extensions;
+﻿using ContextBrowser.LoggerKit;
+
+namespace ContextBrowser.Extensions;
 
 // context: directory, read
 // coverage: 12
@@ -14,7 +16,7 @@ public class PathAnalyzer
         PlainText // Не является путем в файловой системе или не существует
     }
 
-    public static PathType GetPathType(string path)
+    public static PathType GetPathType(string path, OnWriteLog? onWriteLog = null)
     {
         if(string.IsNullOrWhiteSpace(path))
         {

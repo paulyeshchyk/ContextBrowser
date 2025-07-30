@@ -1,4 +1,6 @@
-﻿using ContextBrowser.UmlKit.Diagrams;
+﻿using ContextBrowser.extensions;
+using ContextBrowser.LoggerKit;
+using ContextBrowser.UmlKit.Diagrams;
 using ContextBrowser.UmlKit.Model;
 
 namespace ContextBrowser.DiagramFactory.Builders;
@@ -7,12 +9,17 @@ internal static class TransitionRenderer
 {
     private static readonly HashSet<string> activated = new();
 
-    public static void RenderFullTransition(UmlDiagram diagram, UmlTransitionDto t, ContextTransitionDiagramBuilderOptions _options)
+    public static void RenderFullTransition(UmlDiagram diagram, UmlTransitionDto t, ContextTransitionDiagramBuilderOptions _options, OnWriteLog? onWriteLog = null)
     {
         // Активируем вызывающего, если ещё не активирован
         if(!string.IsNullOrWhiteSpace(t.CallerClassName) && activated.Add(t.CallerClassName))
         {
             diagram.Activate(t.CallerClassName);
+            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Info, $"[TRANS] Активируем {t.CallerClassName}");
+        }
+        else
+        {
+            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Info, $"[TRANS] Не активируем {t.CallerClassName}");
         }
 
         // Контекст исполнения (если RunContext есть)

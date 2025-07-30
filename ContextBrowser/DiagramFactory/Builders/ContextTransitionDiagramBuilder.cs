@@ -1,5 +1,7 @@
 ﻿using ContextBrowser.ContextKit.Model;
 using ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
+using ContextBrowser.extensions;
+using ContextBrowser.LoggerKit;
 using ContextBrowser.UmlKit.Diagrams;
 
 namespace ContextBrowser.DiagramFactory.Builders;
@@ -8,11 +10,13 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 {
     private readonly ContextTransitionDiagramBuilderOptions _options;
     private readonly List<ITransitionBuilder> _transitionBuilders;
+    private readonly OnWriteLog? _onWriteLog = null;
 
-    public ContextTransitionDiagramBuilder(ContextTransitionDiagramBuilderOptions? options, IEnumerable<ITransitionBuilder> transitionBuilders)
+    public ContextTransitionDiagramBuilder(ContextTransitionDiagramBuilderOptions? options, IEnumerable<ITransitionBuilder> transitionBuilders, OnWriteLog? onWriteLog = null)
     {
         _options = options ?? new ContextTransitionDiagramBuilderOptions(detailLevel: DiagramDetailLevel.Full, direction: DiagramDirection.BiDirectional, defaultParticipantKeyword: UmlKit.Model.UmlParticipantKeyword.Actor, useMethodAsParticipant: false);
         _transitionBuilders = transitionBuilders.ToList();
+        _onWriteLog = onWriteLog;
     }
 
     public bool Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier, UmlDiagram diagram)
@@ -26,7 +30,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         if(!methods.Any())
         {
-            Console.WriteLine($"[MISS]: No methods for domain '{domainName}'");
+            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Warning, $"[MISS]: No methods for domain '{domainName}'");
             return false;
         }
 
@@ -44,7 +48,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         foreach(var t in allTransitions)
         {
-            TransitionRenderer.RenderFullTransition(diagram, t, _options);
+            TransitionRenderer.RenderFullTransition(diagram, t, _options, _onWriteLog);
         }
 
         TransitionRenderer.FinalizeDiagram(diagram);

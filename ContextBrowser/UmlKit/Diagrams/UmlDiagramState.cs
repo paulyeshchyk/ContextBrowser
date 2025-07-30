@@ -78,7 +78,7 @@ public class UmlDiagramState : UmlDiagram
     {
         if(!_states.Any() || !_transitions.Any())
         {
-            Console.WriteLine($"Состояния и переходы должны быть определены для {this._title}");
+            //рисовать нечего
             return;
         }
 

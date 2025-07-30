@@ -1,5 +1,7 @@
 using ContextBrowser.ContextKit.Model;
 using ContextBrowser.ContextKit.Parser;
+using ContextBrowser.extensions;
+using ContextBrowser.LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,12 +15,14 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
     private ISemanticInvocationResolver _semanticInvocationResolver;
     private ISemanticModelBuilder _semanticModelBuilder;
     protected readonly IContextCollector<TContext> _collector;
+    private OnWriteLog? _onWriteLog = null;
 
-    public RoslynPhaseParserReferenceResolver(IContextCollector<TContext> collector, ISemanticModelBuilder modelBuilder, ISemanticInvocationResolver semanticInvocationResolver) : base()
+    public RoslynPhaseParserReferenceResolver(IContextCollector<TContext> collector, ISemanticModelBuilder modelBuilder, ISemanticInvocationResolver semanticInvocationResolver, OnWriteLog? onWriteLog = null) : base()
     {
         _semanticInvocationResolver = semanticInvocationResolver;
         _semanticModelBuilder = modelBuilder;
         _collector = collector;
+        _onWriteLog = onWriteLog;
     }
 
     // context: csharp, read
@@ -31,7 +35,7 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
         var semanticModel = _semanticModelBuilder.ModelStorage.GetModel(syntaxTree);
         if(semanticModel == null)
         {
-            Console.WriteLine($"[MISS] SemanticModel not found for {filePath}");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] SemanticModel not found for {filePath}");
             return;
         }
 
@@ -57,13 +61,13 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
     {
         if(string.IsNullOrWhiteSpace(callerContext.SymbolName) || !collector.ByFullName.TryGetValue(callerContext.SymbolName, out var callerContextInfo))
         {
-            Console.WriteLine($"[MISS] {callerContext.SymbolName} not found in collector.ByFullName");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] {callerContext.SymbolName} not found in collector.ByFullName");
             return;
         }
         var callerSyntaxNode = callerContext.SyntaxNode;
         if(callerSyntaxNode == null)
         {
-            Console.WriteLine($"[MISS] {callerContext.SymbolName} SyntaxNode is not defined");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] {callerContext.SymbolName} SyntaxNode is not defined");
             return;
         }
 
@@ -76,27 +80,27 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
             }
 
             var calleeSymbolName = methodSymbol.GetFullMemberName();
-            collector.LinkInvocation(callerContextInfo, calleeSymbolName);
+            collector.LinkInvocation(callerContextInfo, calleeSymbolName, _onWriteLog);
         }
     }
 
-    internal static ISymbol? ResolveSymbol(ISemanticInvocationResolver semanticInvocationResolver, InvocationExpressionSyntax byInvocation)
+    internal ISymbol? ResolveSymbol(ISemanticInvocationResolver semanticInvocationResolver, InvocationExpressionSyntax byInvocation)
     {
         var invocationSemanticModel = FindSemanticModel(semanticInvocationResolver, byInvocation, byInvocation.SyntaxTree);
         if(invocationSemanticModel == null)
         {
-            Console.WriteLine($"[ERROR] semantic model was not defined for {byInvocation}");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Error, $"[ERROR] semantic model was not defined for {byInvocation}");
             return null;
         }
 
         return GetMethodSymbol(byInvocation, invocationSemanticModel);
     }
 
-    private static SemanticModel? FindSemanticModel(ISemanticInvocationResolver semanticInvocationResolver, InvocationExpressionSyntax invocation, SyntaxTree? syntaxTree)
+    private SemanticModel? FindSemanticModel(ISemanticInvocationResolver semanticInvocationResolver, InvocationExpressionSyntax invocation, SyntaxTree? syntaxTree)
     {
         if(syntaxTree == null)
         {
-            Console.WriteLine($"[ERROR] tree was not provided for invocation {invocation}");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Error, $"[ERROR] tree was not provided for invocation {invocation}");
 
             return null;
         }
@@ -104,19 +108,19 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
         return semanticInvocationResolver.Resolve(syntaxTree);
     }
 
-    private static IMethodSymbol? GetMethodSymbol(InvocationExpressionSyntax byInvocation, SemanticModel semanticModel)
+    private IMethodSymbol? GetMethodSymbol(InvocationExpressionSyntax byInvocation, SemanticModel semanticModel)
     {
         // 4. Получаем символ
         var symbolInfo = semanticModel.GetSymbolInfo(byInvocation, CancellationToken.None);
         if(symbolInfo.Symbol == null)
         {
-            Console.WriteLine($"[ERROR] no SymbolInfo was found for {byInvocation}");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] no SymbolInfo was found for {byInvocation}");
             return null;
         }
 
         if(symbolInfo.Symbol is not IMethodSymbol result)
         {
-            Console.WriteLine($"[MISS] SymbolInfo was found for {byInvocation}, but it has no MethodSymbol");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Error, $"[ERROR] SymbolInfo was found for {byInvocation}, but it has no MethodSymbol");
             return null;
         }
 
@@ -126,17 +130,17 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
 
 internal static class TContextCollectionExts
 {
-    public static void LinkInvocation<TContext>(this IContextCollector<TContext> collector, TContext callerContextInfo, string? calleeSymbolName)
+    public static void LinkInvocation<TContext>(this IContextCollector<TContext> collector, TContext callerContextInfo, string? calleeSymbolName, OnWriteLog? _onWriteLog = null)
         where TContext : IContextWithReferences<TContext>
     {
         if(string.IsNullOrWhiteSpace(calleeSymbolName))
         {
-            Console.WriteLine($"[MISS] Callee symbol name is empty not found");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] Callee symbol name is empty not found");
             return;
         }
         if(!collector.ByFullName.TryGetValue(calleeSymbolName, out var calleeContextInfo))
         {
-            Console.WriteLine($"[MISS] Callee: {calleeSymbolName} not found");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] Callee: {calleeSymbolName} not found");
             return;
         }
 

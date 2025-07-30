@@ -1,5 +1,7 @@
 using ContextBrowser.ContextKit.Model;
 using ContextBrowser.ContextKit.Parser;
+using ContextBrowser.extensions;
+using ContextBrowser.LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -14,13 +16,15 @@ public class RoslynPhaseParserContextBuilder<TContext> //: RoslynCodeParser<TCon
     protected readonly IContextInfoCommentProcessor<TContext> _commentProcessor;
     protected readonly IContextCollector<TContext> _collector;
     protected readonly IContextFactory<TContext> _factory;
+    private readonly OnWriteLog? _onWriteLog = null;
 
-    public RoslynPhaseParserContextBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IContextInfoCommentProcessor<TContext> commentProcessor, ISemanticModelBuilder modelBuilder) : base()
+    public RoslynPhaseParserContextBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IContextInfoCommentProcessor<TContext> commentProcessor, ISemanticModelBuilder modelBuilder, OnWriteLog? onWriteLog) : base()
     {
         _semanticModelBuilder = modelBuilder;
         _commentProcessor = commentProcessor;
         _collector = collector;
         _factory = factory;
+        _onWriteLog = onWriteLog;
     }
 
     // context: csharp, builder, contextInfo
@@ -67,7 +71,7 @@ public class RoslynPhaseParserContextBuilder<TContext> //: RoslynCodeParser<TCon
         var methodSymbol = model.GetDeclaredSymbol(resultSyntax);
         if(methodSymbol == null)
         {
-            Console.WriteLine($"[UNRESOLVED SYMBOL] {methodName} in {nsName}");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[UNRESOLVED SYMBOL] {methodName} in {nsName}");
             return default;
         }
 

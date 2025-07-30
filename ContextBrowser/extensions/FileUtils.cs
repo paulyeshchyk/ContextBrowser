@@ -1,4 +1,7 @@
-﻿namespace ContextBrowser.Extensions;
+﻿using ContextBrowser.extensions;
+using ContextBrowser.LoggerKit;
+
+namespace ContextBrowser.Extensions;
 
 // context: read, file
 public static class FileUtils
@@ -11,6 +14,7 @@ public static class FileUtils
     private const string SFolderNotFoundTemplate = "Ошибка: Папка '{0}' не существует.";
     private const string SFolderWipedTemplate = "Папка '{0}' успешно очищена.";
     private const string SUnknownErrorWipeTemplate = "Произошла непредвиденная ошибка при очистке папки '{0}': {1}";
+    private const string SFileErasedTemplate = "Файл '{0}' удалён.";
     private const string SFileNotFoundTemplate = "Ошибка: Файл '{0}' не существует.";
     private const string SFileDeleteErrorTemplate = "Ошибка при удалении файла '{0}': {1}";
     private const string SFileDeleteNoAccessTemplate = "Отказано в доступе при удалении файла '{0}': {1}";
@@ -20,52 +24,52 @@ public static class FileUtils
     private const string SFolderWipeUnknownErrorTemplate = "Произошла непредвиденная ошибка при удалении папки '{0}': {1}";
 
     //context: file, create
-    public static void CreateDirectoryIfNotExists(string path)
+    public static void CreateDirectoryIfNotExists(string path, OnWriteLog? onWriteLog = null)
     {
         if(Directory.Exists(path))
         {
-            Console.WriteLine(string.Format(SFolderExistsTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Warning, string.Format(SFolderExistsTemplate, path));
             return;
         }
 
         try
         {
             Directory.CreateDirectory(path);
-            Console.WriteLine(string.Format(SFolderCreatedTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Info, string.Format(SFolderCreatedTemplate, path));
         }
         catch(IOException e)
         {
-            Console.WriteLine(string.Format(SErrorThrowenForDirectoryCreationTemplate, path, e.Message));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Error, string.Format(SErrorThrowenForDirectoryCreationTemplate, path, e.Message));
         }
         catch(UnauthorizedAccessException e)
         {
-            Console.WriteLine(string.Format(SNFolderAccessTemplate, path, e.Message));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Error, string.Format(SNFolderAccessTemplate, path, e.Message));
         }
         catch(Exception e)
         {
-            Console.WriteLine(string.Format(SUnknownErrorTemplate, path, e.Message));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Error, string.Format(SUnknownErrorTemplate, path, e.Message));
         }
     }
 
     //context: file, delete, single
-    public static void WipeDirectory(string path, bool shouldClearContentOnly = true)
+    public static void WipeDirectory(string path, bool shouldClearContentOnly = true, OnWriteLog? onWriteLog = default)
     {
         if(shouldClearContentOnly)
         {
-            ClearDirectoryContents(path);
+            ClearDirectoryContents(path, onWriteLog: onWriteLog);
         }
         else
         {
-            DeleteDirectory(path);
+            DeleteDirectory(path, onWriteLog: onWriteLog);
         }
     }
 
     //context: delete, file
-    public static void ClearDirectoryContents(string path)
+    public static void ClearDirectoryContents(string path, OnWriteLog? onWriteLog = default)
     {
         if(!Directory.Exists(path))
         {
-            Console.WriteLine(string.Format(SFolderNotFoundTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Warning, string.Format(SFolderNotFoundTemplate, path));
             return;
         }
 
@@ -74,48 +78,49 @@ public static class FileUtils
             string[] files = Directory.GetFiles(path);
             foreach(string file in files)
             {
-                DeleteFile(file);
+                DeleteFile(file, onWriteLog: onWriteLog);
             }
 
             string[] directories = Directory.GetDirectories(path);
             foreach(string dir in directories)
             {
-                DeleteDirectory(dir);
+                DeleteDirectory(dir, onWriteLog: onWriteLog);
             }
 
-            Console.WriteLine(string.Format(SFolderWipedTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Info, string.Format(SFolderWipedTemplate, path));
         }
         catch(Exception e)
         {
-            Console.WriteLine(string.Format(SUnknownErrorWipeTemplate, path, e.Message));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Error, string.Format(SUnknownErrorWipeTemplate, path, e.Message));
         }
     }
 
     //context: delete, file
-    private static void DeleteFile(string file)
+    private static void DeleteFile(string file, OnWriteLog? onWriteLog = default)
     {
         if(!File.Exists(file))
         {
-            Console.WriteLine(string.Format(SFileNotFoundTemplate, file));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Warning, string.Format(SFileNotFoundTemplate, file));
             return;
         }
 
         try
         {
             File.Delete(file);
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Warning, string.Format(SFileErasedTemplate, file));
         }
         catch(IOException ex)
         {
-            Console.WriteLine(string.Format(SFileDeleteErrorTemplate, file, ex.Message));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Error, string.Format(SFileDeleteErrorTemplate, file, ex.Message));
         }
         catch(UnauthorizedAccessException ex)
         {
-            Console.WriteLine(string.Format(SFileDeleteNoAccessTemplate, file, ex.Message));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Error, string.Format(SFileDeleteNoAccessTemplate, file, ex.Message));
         }
     }
 
     //context: file, delete, single
-    public static void DeleteDirectory(string path, bool recursive = true)
+    public static void DeleteDirectory(string path, bool recursive = true, OnWriteLog? onWriteLog = default)
     {
         if(!Directory.Exists(path))
         {
@@ -126,19 +131,19 @@ public static class FileUtils
         try
         {
             Directory.Delete(path, recursive);
-            Console.WriteLine(string.Format(SFolderWipedSuccessfullyTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Info, string.Format(SFolderWipedSuccessfullyTemplate, path));
         }
         catch(IOException e)
         {
-            Console.WriteLine(string.Format(SFolderWipeErrorTemplate, path, e.Message));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Error, string.Format(SFolderWipeErrorTemplate, path, e.Message));
         }
         catch(UnauthorizedAccessException e)
         {
-            Console.WriteLine(string.Format(SFolderWipeAccessErrorTemplate, path, e.Message));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Error, string.Format(SFolderWipeAccessErrorTemplate, path, e.Message));
         }
         catch(Exception e)
         {
-            Console.WriteLine(string.Format(SFolderWipeUnknownErrorTemplate, path, e.Message));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Error, string.Format(SFolderWipeUnknownErrorTemplate, path, e.Message));
         }
     }
 }

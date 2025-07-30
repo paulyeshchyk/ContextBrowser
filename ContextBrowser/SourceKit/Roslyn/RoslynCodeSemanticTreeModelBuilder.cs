@@ -1,3 +1,4 @@
+using ContextBrowser.LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,18 +9,20 @@ namespace ContextBrowser.SourceKit.Roslyn;
 public class RoslynCodeSemanticTreeModelBuilder : ISemanticModelBuilder
 {
     private readonly ISemanticModelStorage _modelStorage;
+    private readonly OnWriteLog? _onWriteLog = null;
 
     public ISemanticModelStorage ModelStorage => _modelStorage;
 
-    public RoslynCodeSemanticTreeModelBuilder(ISemanticModelStorage modelStorage)
+    public RoslynCodeSemanticTreeModelBuilder(ISemanticModelStorage modelStorage, OnWriteLog? onWriteLog = null)
     {
         _modelStorage = modelStorage;
+        _onWriteLog = onWriteLog;
     }
 
     // context: csharp, build, contextInfo
     public Dictionary<SyntaxTree, SemanticModel> BuildModels(IEnumerable<string> codeFiles, RoslynCodeParserOptions options)
     {
-        var result = RoslynCodeCompilationBuilder.BuildModels(codeFiles, options);
+        var result = RoslynCodeCompilationBuilder.BuildModels(codeFiles, options, _onWriteLog);
         _modelStorage.AddRange(result);
         return result;
     }
