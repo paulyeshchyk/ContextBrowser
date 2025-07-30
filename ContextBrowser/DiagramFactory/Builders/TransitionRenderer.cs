@@ -15,11 +15,11 @@ internal static class TransitionRenderer
         if(!string.IsNullOrWhiteSpace(t.CallerClassName) && activated.Add(t.CallerClassName))
         {
             diagram.Activate(t.CallerClassName);
-            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Info, $"[TRANS] Активируем {t.CallerClassName}");
+            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, $"Активируем {t.CallerClassName}");
         }
         else
         {
-            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Info, $"[TRANS] Не активируем {t.CallerClassName}");
+            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, $"Не активируем {t.CallerClassName}");
         }
 
         // Контекст исполнения (если RunContext есть)

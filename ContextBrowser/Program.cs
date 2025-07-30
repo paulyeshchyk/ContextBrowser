@@ -25,11 +25,13 @@ public static class Program
         var appLogLevelStorage = new AppLoggerLevelStore<AppLevel>();
         appLogLevelStorage.SetLevel(AppLevel.file, LogLevel.Error);
         appLogLevelStorage.SetLevel(AppLevel.Csharp, LogLevel.Error);
-        appLogLevelStorage.SetLevel(AppLevel.Puml, LogLevel.Error);
-        appLogLevelStorage.SetLevel(AppLevel.PumlTransition, LogLevel.Info);
+        appLogLevelStorage.SetLevel(AppLevel.Puml, LogLevel.Debug);
+        appLogLevelStorage.SetLevel(AppLevel.PumlTransition, LogLevel.Debug);
         appLogLevelStorage.SetLevel(AppLevel.Html, LogLevel.Error);
 
-        var appLogger = new AppLogger<AppLevel>(appLogLevelStorage, Console.WriteLine);
+        var defaultCW = new ConsoleLogWriter();
+
+        var appLogger = new IndentedAppLogger<AppLevel>(appLogLevelStorage, defaultCW);
 
         var options = new AppOptions();
 

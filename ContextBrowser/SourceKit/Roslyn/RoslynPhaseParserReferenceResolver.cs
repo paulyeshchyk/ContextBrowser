@@ -35,7 +35,7 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
         var semanticModel = _semanticModelBuilder.ModelStorage.GetModel(syntaxTree);
         if(semanticModel == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] SemanticModel not found for {filePath}");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"SemanticModel not found for {filePath}");
             return;
         }
 
@@ -61,13 +61,13 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
     {
         if(string.IsNullOrWhiteSpace(callerContext.SymbolName) || !collector.ByFullName.TryGetValue(callerContext.SymbolName, out var callerContextInfo))
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] {callerContext.SymbolName} not found in collector.ByFullName");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"{callerContext.SymbolName} not found in collector.ByFullName");
             return;
         }
         var callerSyntaxNode = callerContext.SyntaxNode;
         if(callerSyntaxNode == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] {callerContext.SymbolName} SyntaxNode is not defined");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"{callerContext.SymbolName} SyntaxNode is not defined");
             return;
         }
 
@@ -114,13 +114,13 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
         var symbolInfo = semanticModel.GetSymbolInfo(byInvocation, CancellationToken.None);
         if(symbolInfo.Symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] no SymbolInfo was found for {byInvocation}");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"No SymbolInfo was found for {byInvocation}");
             return null;
         }
 
         if(symbolInfo.Symbol is not IMethodSymbol result)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Error, $"[ERROR] SymbolInfo was found for {byInvocation}, but it has no MethodSymbol");
+            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Error, $"SymbolInfo was found for {byInvocation}, but it has no MethodSymbol");
             return null;
         }
 
