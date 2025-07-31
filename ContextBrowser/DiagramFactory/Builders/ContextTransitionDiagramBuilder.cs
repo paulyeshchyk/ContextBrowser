@@ -28,41 +28,41 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
                 classifier.HasActionAndDomain(ctx))
             .ToList();
 
-        if(!methods.Any())
+        if (!methods.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Warning, $"No methods for domain '{domainName}'");
+            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Warn, $"No methods for domain '{domainName}'");
             return false;
         }
 
         var allTransitions = new HashSet<UmlTransitionDto>();
 
-        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, IndentedAppLoggerHelpers.SStartTag);
-        foreach(var builder in _transitionBuilders)
+        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SStartTag);
+        foreach (var builder in _transitionBuilders)
         {
             var transitions = builder.BuildTransitions(methods, allContexts);
-            _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, IndentedAppLoggerHelpers.SStartTag);
+            _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SStartTag);
 
-            foreach(var t in transitions)
+            foreach (var t in transitions)
             {
-                _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, $"Writing transition: {t.CallerName} -> {t.CalleeName}");
+                _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Writing transition: {t.CallerName} -> {t.CalleeName}");
                 allTransitions.Add(t);
             }
 
-            _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, IndentedAppLoggerHelpers.SEndTag);
+            _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SEndTag);
         }
-        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, IndentedAppLoggerHelpers.SEndTag);
+        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SEndTag);
 
-        if(!allTransitions.Any())
+        if (!allTransitions.Any())
             return false;
 
-        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, IndentedAppLoggerHelpers.SStartTag);
+        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SStartTag);
 
-        foreach(var t in allTransitions)
+        foreach (var t in allTransitions)
         {
             TransitionRenderer.RenderFullTransition(diagram, t, _options, _onWriteLog);
         }
 
-        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, IndentedAppLoggerHelpers.SEndTag);
+        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SEndTag);
 
 
         TransitionRenderer.FinalizeDiagram(diagram);

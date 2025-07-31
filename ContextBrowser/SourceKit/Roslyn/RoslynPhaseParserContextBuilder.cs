@@ -71,7 +71,7 @@ public class RoslynPhaseParserContextBuilder<TContext> //: RoslynCodeParser<TCon
         var methodSymbol = model.GetDeclaredSymbol(resultSyntax);
         if(methodSymbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[UNRESOLVED SYMBOL] {methodName} in {nsName}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[UNRESOLVED SYMBOL] {methodName} in {nsName}");
             return default;
         }
 

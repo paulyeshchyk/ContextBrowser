@@ -1,21 +1,25 @@
-﻿namespace ContextBrowser.extensions;
+﻿using System.Text.Json.Serialization;
 
+namespace ContextBrowser.extensions;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AppLevel
 {
-    Csharp,
+    Roslyn,
     Puml,
     PumlTransition,
     Html,
-    file,
+    file
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum LogLevel
 {
     None,
-    Context,
-    Error,
-    Warning,
+    Cntx,
+    Err,
+    Warn,
     Info,
-    Verbose,
-    Debug,
+    Verb,
+    Dbg,
 }

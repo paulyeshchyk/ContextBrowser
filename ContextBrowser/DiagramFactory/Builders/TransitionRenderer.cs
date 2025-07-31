@@ -12,23 +12,23 @@ internal static class TransitionRenderer
     public static void RenderFullTransition(UmlDiagram diagram, UmlTransitionDto t, ContextTransitionDiagramBuilderOptions _options, OnWriteLog? onWriteLog = null)
     {
         // Активируем вызывающего, если ещё не активирован
-        if(!string.IsNullOrWhiteSpace(t.CallerClassName) && activated.Add(t.CallerClassName))
+        if (!string.IsNullOrWhiteSpace(t.CallerClassName) && activated.Add(t.CallerClassName))
         {
             diagram.Activate(t.CallerClassName);
-            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, $"Активируем {t.CallerClassName}");
+            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Активируем {t.CallerClassName}");
         }
         else
         {
-            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Debug, $"Не активируем {t.CallerClassName}");
+            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Не активируем {t.CallerClassName}");
         }
 
         // Контекст исполнения (если RunContext есть)
-        if(!string.IsNullOrWhiteSpace(t.RunContext))
+        if (!string.IsNullOrWhiteSpace(t.RunContext))
         {
             diagram.AddParticipant(t.RunContext, UmlParticipantKeyword.Control);
 
             // Активируем контрол, если он ещё не активирован
-            if(activated.Add(t.RunContext))
+            if (activated.Add(t.RunContext))
             {
                 diagram.Activate(t.RunContext);
             }
@@ -41,7 +41,7 @@ internal static class TransitionRenderer
         else
         {
             // Активируем вызываемого, если ещё не активирован
-            if(!string.IsNullOrWhiteSpace(t.CalleeClassName) && activated.Add(t.CalleeClassName))
+            if (!string.IsNullOrWhiteSpace(t.CalleeClassName) && activated.Add(t.CalleeClassName))
             {
                 diagram.Activate(t.CalleeClassName);
             }
@@ -53,7 +53,7 @@ internal static class TransitionRenderer
 
     public static void FinalizeDiagram(UmlDiagram diagram)
     {
-        foreach(var participant in activated)
+        foreach (var participant in activated)
         {
             diagram.Deactivate(participant);
         }

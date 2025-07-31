@@ -22,18 +22,16 @@ public static class Program
     // context: app, execute
     public static void Main(string[] args)
     {
+        var options = new AppOptions();
+
+        var defaultConfig = AppLoggerLevelStoreConfigurationLoader.LoadConfigurationJson<AppLevel, LogLevel>(options.LogLevelConfig, defaultValue: LogLevel.None);
         var appLogLevelStorage = new AppLoggerLevelStore<AppLevel>();
-        appLogLevelStorage.SetLevel(AppLevel.file, LogLevel.Error);
-        appLogLevelStorage.SetLevel(AppLevel.Csharp, LogLevel.Error);
-        appLogLevelStorage.SetLevel(AppLevel.Puml, LogLevel.Debug);
-        appLogLevelStorage.SetLevel(AppLevel.PumlTransition, LogLevel.Debug);
-        appLogLevelStorage.SetLevel(AppLevel.Html, LogLevel.Error);
+        appLogLevelStorage.SetLevels(defaultConfig);
 
         var defaultCW = new ConsoleLogWriter();
 
         var appLogger = new IndentedAppLogger<AppLevel>(appLogLevelStorage, defaultCW);
 
-        var options = new AppOptions();
 
         DirectorePreparator.Prepare(options, appLogger.WriteLog);
 
@@ -56,6 +54,7 @@ public static class Program
 
 public class AppOptions
 {
+    public string LogLevelConfig = "{\"LogLevels\":[{\"AppLevel\":\"file\",\"LogLevel\":\"Err\"},{\"AppLevel\":\"Roslyn\",\"LogLevel\":\"Err\"},{\"AppLevel\":\"Puml\",\"LogLevel\":\"Dbg\"},{\"AppLevel\":\"PumlTransition\",\"LogLevel\":\"Dbg\"},{\"AppLevel\":\"Html\",\"LogLevel\":\"Err\"}]}";
     public string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser";
     public string outputDirectory = ".\\output\\";
     public UnclassifiedPriority unclassifiedPriority = UnclassifiedPriority.Highest;
@@ -99,7 +98,7 @@ public static class ExtraDiagramsBuilder
 {
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
-        onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Context, "--- ExtraDiagramsBuilder.Build ---");
+        onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ExtraDiagramsBuilder.Build ---");
         //ContextMatrixUmlExporter.GenerateCsv(matrix, $"{theOutputPath}matrix.csv");
         //HeatmapExporter.GenerateHeatmapCsv(matrix, $"{theOutputPath}heatmap.csv", unclassifiedPriority);
 
@@ -119,7 +118,7 @@ public static class ContextModelBuildBuilder
     // context: ContextInfo, build
     public static ContextBuilderModel Build(AppOptions options, OnWriteLog? onWriteLog = null)
     {
-        onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Context, "--- ContextModelBuildBuilder.Build ---");
+        onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, "--- ContextModelBuildBuilder.Build ---");
 
         var contextsList = RoslynContextParser.Parse(options.theSourcePath, new List<string>() { options.outputDirectory }, onWriteLog);
 
@@ -145,7 +144,7 @@ public static class IndexHtmlBuilder
     // context: step3, build
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
-        onWriteLog?.Invoke(AppLevel.Html, LogLevel.Context, "--- IndexHtmlBuilder.Build ---");
+        onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
         IndexGenerator.GenerateContextIndexHtml(
             model.matrix,
             model.contextLookup,
@@ -163,7 +162,7 @@ public static class ContentHtmlBuilder
     // context: step3, build
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
-        onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Context, "--- ContentHtmlBuilder.Build ---");
+        onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ContentHtmlBuilder.Build ---");
         HtmlIndexPage.GenerateContextHtmlPages(model.matrix, options.outputDirectory);
     }
 }
@@ -172,7 +171,7 @@ public static class ComponentDiagram
 {
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
-        onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Context, "--- ComponentDiagram.Build ---");
+        onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ComponentDiagram.Build ---");
         UmlContextComponentDiagram.Build(model.matrix, options.outputDirectory);
     }
 }
@@ -182,7 +181,7 @@ public static class ActionPerDomainDiagramBuilder
 {
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
-        onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Context, "--- ActionPerDomainDiagramBuilder.Build ---");
+        onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ActionPerDomainDiagramBuilder.Build ---");
         UmlContextActionPerDomainDiagram.Build(model.matrix,(action, domain) => $"composite_{action}_{domain}.puml", $"{options.outputDirectory}uml.heatmap.link.puml");
     }
 }
@@ -193,7 +192,7 @@ public static class DimensionBuilder
     // context: contextInfo, build
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
-        onWriteLog?.Invoke(AppLevel.Html, LogLevel.Context, "--- DimensionBuilder.Build ---");
+        onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- DimensionBuilder.Build ---");
         var callback = AdaptToDomainCallback(
             contextItems: model.contextsList,
             classifier: new ContextClassifier(),

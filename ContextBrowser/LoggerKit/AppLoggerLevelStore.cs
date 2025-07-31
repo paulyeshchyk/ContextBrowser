@@ -18,11 +18,47 @@ public class AppLoggerLevelStore<T>
         }
     }
 
+    public void SetLevels(Dictionary<T, LogLevel> newLevels)
+    {
+        if(newLevels == null)
+        {
+            return;
+        }
+
+        lock(_lock)
+        {
+            _levels.Clear();
+
+            foreach(var entry in newLevels)
+            {
+                _levels[entry.Key] = entry.Value;
+            }
+        }
+    }
+
     public LogLevel GetLevel(T sectionId)
     {
         lock(_lock)
         {
             return _levels.TryGetValue(sectionId, out var level) ? level : LogLevel.None;
+        }
+    }
+
+    public void LoadFromDictionary(Dictionary<T, LogLevel> newLevels)
+    {
+        if(newLevels == null)
+        {
+            return;
+        }
+
+        lock(_lock)
+        {
+            _levels.Clear();
+
+            foreach(var entry in newLevels)
+            {
+                _levels[entry.Key] = entry.Value;
+            }
         }
     }
 }

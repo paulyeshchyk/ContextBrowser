@@ -33,9 +33,9 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
 
         // 2. Получаем сохранённую модель из хранилища
         var semanticModel = _semanticModelBuilder.ModelStorage.GetModel(syntaxTree);
-        if(semanticModel == null)
+        if (semanticModel == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"SemanticModel not found for {filePath}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"SemanticModel not found for {filePath}");
             return;
         }
 
@@ -43,7 +43,7 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
         var root = syntaxTree.GetCompilationUnitRoot(CancellationToken.None);
 
         // 4. Обрабатываем все методы, зарегистрированные в коллекторе
-        foreach(var method in _collector.GetAll().Where(m => m.ElementType == ContextInfoElementType.method))
+        foreach (var method in _collector.GetAll().Where(m => m.ElementType == ContextInfoElementType.method))
         {
             BuildReferences(method, _collector);
         }
@@ -59,22 +59,22 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
     // context: csharp, read
     protected void BuildReferences(TContext callerContext, IContextCollector<TContext> collector)
     {
-        if(string.IsNullOrWhiteSpace(callerContext.SymbolName) || !collector.ByFullName.TryGetValue(callerContext.SymbolName, out var callerContextInfo))
+        if (string.IsNullOrWhiteSpace(callerContext.SymbolName) || !collector.ByFullName.TryGetValue(callerContext.SymbolName, out var callerContextInfo))
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"{callerContext.SymbolName} not found in collector.ByFullName");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"{callerContext.SymbolName} not found in collector.ByFullName");
             return;
         }
         var callerSyntaxNode = callerContext.SyntaxNode;
-        if(callerSyntaxNode == null)
+        if (callerSyntaxNode == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"{callerContext.SymbolName} SyntaxNode is not defined");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"{callerContext.SymbolName} SyntaxNode is not defined");
             return;
         }
 
-        foreach(var invocation in callerSyntaxNode.DescendantNodes().OfType<InvocationExpressionSyntax>())
+        foreach (var invocation in callerSyntaxNode.DescendantNodes().OfType<InvocationExpressionSyntax>())
         {
             var methodSymbol = ResolveSymbol(_semanticInvocationResolver, invocation);
-            if(methodSymbol == null)
+            if (methodSymbol == null)
             {
                 continue;
             }
@@ -87,9 +87,9 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
     internal ISymbol? ResolveSymbol(ISemanticInvocationResolver semanticInvocationResolver, InvocationExpressionSyntax byInvocation)
     {
         var invocationSemanticModel = FindSemanticModel(semanticInvocationResolver, byInvocation, byInvocation.SyntaxTree);
-        if(invocationSemanticModel == null)
+        if (invocationSemanticModel == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Error, $"[ERROR] semantic model was not defined for {byInvocation}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERROR] semantic model was not defined for {byInvocation}");
             return null;
         }
 
@@ -98,9 +98,9 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
 
     private SemanticModel? FindSemanticModel(ISemanticInvocationResolver semanticInvocationResolver, InvocationExpressionSyntax invocation, SyntaxTree? syntaxTree)
     {
-        if(syntaxTree == null)
+        if (syntaxTree == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Error, $"[ERROR] tree was not provided for invocation {invocation}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERROR] tree was not provided for invocation {invocation}");
 
             return null;
         }
@@ -112,15 +112,15 @@ public class RoslynPhaseParserReferenceResolver<TContext> //: RoslynCodeParser<T
     {
         // 4. Получаем символ
         var symbolInfo = semanticModel.GetSymbolInfo(byInvocation, CancellationToken.None);
-        if(symbolInfo.Symbol == null)
+        if (symbolInfo.Symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"No SymbolInfo was found for {byInvocation}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"No SymbolInfo was found for {byInvocation}");
             return null;
         }
 
-        if(symbolInfo.Symbol is not IMethodSymbol result)
+        if (symbolInfo.Symbol is not IMethodSymbol result)
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Error, $"SymbolInfo was found for {byInvocation}, but it has no MethodSymbol");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"SymbolInfo was found for {byInvocation}, but it has no MethodSymbol");
             return null;
         }
 
@@ -133,14 +133,14 @@ internal static class TContextCollectionExts
     public static void LinkInvocation<TContext>(this IContextCollector<TContext> collector, TContext callerContextInfo, string? calleeSymbolName, OnWriteLog? _onWriteLog = null)
         where TContext : IContextWithReferences<TContext>
     {
-        if(string.IsNullOrWhiteSpace(calleeSymbolName))
+        if (string.IsNullOrWhiteSpace(calleeSymbolName))
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] Callee symbol name is empty not found");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[MISS] Callee symbol name is empty not found");
             return;
         }
-        if(!collector.ByFullName.TryGetValue(calleeSymbolName, out var calleeContextInfo))
+        if (!collector.ByFullName.TryGetValue(calleeSymbolName, out var calleeContextInfo))
         {
-            _onWriteLog?.Invoke(AppLevel.Csharp, LogLevel.Warning, $"[MISS] Callee: {calleeSymbolName} not found");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[MISS] Callee: {calleeSymbolName} not found");
             return;
         }
 
@@ -155,13 +155,13 @@ internal static class RoslynCodeParserOptionsExts
     public static IEnumerable<MemberDeclarationSyntax> GetMemberDeclarationSyntaxies(this RoslynCodeParserOptions options, CompilationUnitSyntax root)
     {
         IEnumerable<MemberDeclarationSyntax> typeNodes = Enumerable.Empty<MemberDeclarationSyntax>();
-        if(options.MemberTypes.Contains(RoslynCodeParserMemberType.@class))
+        if (options.MemberTypes.Contains(RoslynCodeParserMemberType.@class))
             typeNodes = typeNodes.Concat(FilterByModifier<ClassDeclarationSyntax>(root, options));
-        if(options.MemberTypes.Contains(RoslynCodeParserMemberType.@record))
+        if (options.MemberTypes.Contains(RoslynCodeParserMemberType.@record))
             typeNodes = typeNodes.Concat(FilterByModifier<RecordDeclarationSyntax>(root, options));
-        if(options.MemberTypes.Contains(RoslynCodeParserMemberType.@struct))
+        if (options.MemberTypes.Contains(RoslynCodeParserMemberType.@struct))
             typeNodes = typeNodes.Concat(FilterByModifier<StructDeclarationSyntax>(root, options));
-        if(options.MemberTypes.Contains(RoslynCodeParserMemberType.@enum))
+        if (options.MemberTypes.Contains(RoslynCodeParserMemberType.@enum))
             typeNodes = typeNodes.Concat(FilterByModifier<EnumDeclarationSyntax>(root, options));
         return typeNodes;
     }
@@ -169,13 +169,13 @@ internal static class RoslynCodeParserOptionsExts
     private static RoslynCodeParserAccessorModifierType? GetClassModifierType<T>(T member)
         where T : MemberDeclarationSyntax
     {
-        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
+        if (member.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
             return RoslynCodeParserAccessorModifierType.@public;
-        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
+        if (member.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
             return RoslynCodeParserAccessorModifierType.@protected;
-        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
+        if (member.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
             return RoslynCodeParserAccessorModifierType.@private;
-        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
+        if (member.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
             return RoslynCodeParserAccessorModifierType.@internal;
 
         return null;
