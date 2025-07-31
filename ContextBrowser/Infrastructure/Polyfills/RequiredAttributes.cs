@@ -1,7 +1,9 @@
-﻿
-#if !NET7_0_OR_GREATER
+﻿#if !NET7_0_OR_GREATER
+
 namespace System.Runtime.CompilerServices
 {
+    //namespace System.Runtime.CompilerServices
+
     // Атрибут, необходимый компилятору для функции 'required'
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
     public sealed class CompilerFeatureRequiredAttribute : Attribute
