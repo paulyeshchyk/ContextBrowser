@@ -4,13 +4,15 @@
 // pattern: Composite leaf
 public class UmlRelation : IUmlElement
 {
+    private const string SFakeRelationName = "FakeRelationName";
+
     public string From { get; }
 
     public string To { get; }
 
     public UmlRelation(string? from, string to)
     {
-        From = from ?? "???";
+        From = from ?? SFakeRelationName;
         To = to;
     }
 

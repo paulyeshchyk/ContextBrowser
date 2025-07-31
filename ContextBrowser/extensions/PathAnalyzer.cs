@@ -16,6 +16,7 @@ public class PathAnalyzer
         PlainText // Не является путем в файловой системе или не существует
     }
 
+    // context: directory, read
     public static PathType GetPathType(string path, OnWriteLog? onWriteLog = null)
     {
         if(string.IsNullOrWhiteSpace(path))

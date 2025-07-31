@@ -4,6 +4,7 @@ namespace ContextBrowser.SourceKit.Roslyn;
 public enum RoslynCodeParserMemberType
 {
     @class,
+    @interface,
     @record,
     @enum,
     @struct

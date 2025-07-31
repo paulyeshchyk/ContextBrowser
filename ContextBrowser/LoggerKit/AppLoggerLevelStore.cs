@@ -2,6 +2,7 @@
 
 namespace ContextBrowser.LoggerKit;
 
+// context: log, share
 public class AppLoggerLevelStore<T>
     where T : notnull
 {
@@ -10,6 +11,7 @@ public class AppLoggerLevelStore<T>
     // Объект для синхронизации доступа к словарю из разных потоков.
     private readonly object _lock = new();
 
+    // context: log, write
     public void SetLevel(T sectionId, LogLevel level)
     {
         lock(_lock)
@@ -18,6 +20,7 @@ public class AppLoggerLevelStore<T>
         }
     }
 
+    // context: log, write
     public void SetLevels(Dictionary<T, LogLevel> newLevels)
     {
         if(newLevels == null)
@@ -36,6 +39,7 @@ public class AppLoggerLevelStore<T>
         }
     }
 
+    // context: log, read
     public LogLevel GetLevel(T sectionId)
     {
         lock(_lock)
@@ -44,6 +48,7 @@ public class AppLoggerLevelStore<T>
         }
     }
 
+    // context: log, read
     public void LoadFromDictionary(Dictionary<T, LogLevel> newLevels)
     {
         if(newLevels == null)

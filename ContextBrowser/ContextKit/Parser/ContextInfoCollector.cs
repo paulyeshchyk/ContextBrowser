@@ -24,6 +24,7 @@ public class ContextInfoCollector<T> : IContextCollector<T>
         ByFullName = new Dictionary<string, T>(StringComparer.Ordinal);
     }
 
+    // context: ContextInfo, read
     public IEnumerable<T> GetAll() => Collection;
 
     // context: ContextInfo, build

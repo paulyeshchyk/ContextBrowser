@@ -6,20 +6,28 @@ namespace ContextBrowser.UmlKit.Diagrams;
 // pattern: Template method
 public abstract class UmlDiagram
 {
+    // context: create, uml
     public abstract IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
 
+    // context: create, uml
     public abstract UmlDiagram AddParticipant(IUmlElement participant);
 
+    // context: create, uml
     public abstract IUmlElement AddTransition(string? from, string? to, string? label = null);
 
+    // context: create, uml
     public abstract IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null);
 
+    // context: share, uml
     public abstract IUmlElement? Activate(string from);
 
+    // context: share, uml
     public abstract IUmlElement? Deactivate(string from);
 
+    // context: share, uml
     public abstract IUmlElement? Activate(IUmlDeclarable from);
 
+    // context: share, uml
     public abstract IUmlElement? Deactivate(IUmlDeclarable from);
 
     protected virtual string SUmlStartTag { get => "@startuml"; }
@@ -37,7 +45,7 @@ public abstract class UmlDiagram
     public void SetTitle(string title) => _title = title;
 
     // context: uml, update
-    public void SetSkinParam(string name, string value) => _skinParams[name] = value;
+    public void SetSkinParam(string name, string value) { _skinParams[name] = value; }
 
     // context: uml, share
     public void WriteTo(TextWriter writer)

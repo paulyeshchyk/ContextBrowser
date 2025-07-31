@@ -4,13 +4,15 @@
 // pattern: Composite leaf
 public class UmlMethodBox : IUmlElement
 {
+    private const string SFakeMethodName = "FakeMethodName";
+
     public string Name { get; }
 
     public string? Stereotype { get; }
 
     public UmlMethodBox(string? name, string? stereotype = null)
     {
-        Name = name ?? "???";
+        Name = name ?? SFakeMethodName;
         Stereotype = stereotype;
     }
 

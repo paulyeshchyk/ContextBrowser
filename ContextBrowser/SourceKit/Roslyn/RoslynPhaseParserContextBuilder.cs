@@ -28,8 +28,9 @@ public class RoslynPhaseParserContextBuilder<TContext> //: RoslynCodeParser<TCon
     }
 
     // context: csharp, builder, contextInfo
-    public void ParseCode(string code, string filePath, RoslynCodeParserOptions options, RoslynContextParserOptions contextOptions)
+    public void ParseCode(string code, string filePath, RoslynCodeParserOptions options)
     {
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parse code from file: {filePath}", LogLevelNode.Start);
         var compilationView = _semanticModelBuilder.BuildModel(code, filePath, options);
 
         var availableSyntaxies = options.GetMemberDeclarationSyntaxies(compilationView.unitSyntax);
@@ -37,45 +38,57 @@ public class RoslynPhaseParserContextBuilder<TContext> //: RoslynCodeParser<TCon
         var model = compilationView.model;
         foreach(var typeSyntax in availableSyntaxies)
         {
-            ParseTypeDeclaration(typeSyntax, options, contextOptions, model);
+            ParseTypeDeclaration(typeSyntax, options, model);
         }
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     // context: csharp, builder, contextInfo
-    public void ParseFile(string filePath, RoslynCodeParserOptions options, RoslynContextParserOptions contextOptions)
+    public void ParseFile(string filePath, RoslynCodeParserOptions options)
     {
         var code = File.ReadAllText(filePath);
-        ParseCode(code, filePath, options, contextOptions);
+        ParseCode(code, filePath, options);
     }
 
     // context: csharp, builder
-    public void ParseFiles(IEnumerable<string> codeFiles, RoslynCodeParserOptions options, RoslynContextParserOptions contextOptions)
+    public void ParseFiles(IEnumerable<string> codeFiles, RoslynCodeParserOptions options)
     {
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, "Phase 1", LogLevelNode.Start);
+
         var models = _semanticModelBuilder.BuildModels(codeFiles, options);
         foreach (var (tree, model) in models)
         {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parse model {tree.FilePath}", LogLevelNode.Start);
+
             var root = tree.GetCompilationUnitRoot(CancellationToken.None);
 
             var availableSyntaxies = options.GetMemberDeclarationSyntaxies(root);
+            if(!availableSyntaxies.Any())
+            {
+                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Model has no members: {tree.FilePath}");
+            }
             foreach(var typeSyntax in availableSyntaxies)
             {
-                ParseTypeDeclaration(typeSyntax, options, contextOptions, model);
+                ParseTypeDeclaration(typeSyntax, options, model);
             }
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         }
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     // context: csharp, builder, contextInfo
-    protected TContext? BuildContextInfoForMethod(MethodDeclarationSyntax resultSyntax, RoslynContextParserOptions contextOptions, SemanticModel model, string nsName, TContext? typeContext, Func<InvocationExpressionSyntax, SemanticModel?>? symbolResolver = null)
+    protected TContext? BuildContextInfoForMethod(MethodDeclarationSyntax resultSyntax, SemanticModel model, string nsName, TContext? typeContext, Func<InvocationExpressionSyntax, SemanticModel?>? symbolResolver = null)
     {
         var methodName = resultSyntax.Identifier.Text;
         var methodSymbol = model.GetDeclaredSymbol(resultSyntax);
         if(methodSymbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[UNRESOLVED SYMBOL] {methodName} in {nsName}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Symbol \"{methodName}\" was not resolved in {nsName}");
             return default;
         }
 
         var fullMemberName = methodSymbol.GetFullMemberName() ?? string.Empty;
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{methodSymbol.Name}]:Creating method context item");
 
         var result = _factory.Create(typeContext, ContextInfoElementType.method, nsName, typeContext, methodName, fullMemberName, resultSyntax);
 
@@ -87,34 +100,47 @@ public class RoslynPhaseParserContextBuilder<TContext> //: RoslynCodeParser<TCon
         return result;
     }
 
-    private void ParseTypeDeclaration(MemberDeclarationSyntax availableSyntax, RoslynCodeParserOptions options, RoslynContextParserOptions contextOptions, SemanticModel model)
+    private void ParseTypeDeclaration(MemberDeclarationSyntax availableSyntax, RoslynCodeParserOptions options, SemanticModel model)
     {
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parse type syntax", LogLevelNode.Start);
+
         string nsName = availableSyntax.GetNamespaceName();
-        var typeContext = BuildContextInfoForType(availableSyntax, contextOptions, model, nsName, null);
-        ParseMethodDeclarations(availableSyntax, options, contextOptions, model, nsName, typeContext, null);
+        var typeContext = BuildContextInfoForType(availableSyntax, model, nsName, null);
+        ParseMethodDeclarations(availableSyntax, options, model, nsName, typeContext, null);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     //context: csharp, build
-    protected void ParseMethodDeclarations(MemberDeclarationSyntax availableSyntax, RoslynCodeParserOptions options, RoslynContextParserOptions contextOptions, SemanticModel semanticModel, string nsName, TContext? typeContext, Func<InvocationExpressionSyntax, SemanticModel?>? symbolResolver = null)
+    protected void ParseMethodDeclarations(MemberDeclarationSyntax availableSyntax, RoslynCodeParserOptions options, SemanticModel semanticModel, string nsName, TContext? typeContext, Func<InvocationExpressionSyntax, SemanticModel?>? symbolResolver = null)
     {
         if(availableSyntax is not TypeDeclarationSyntax typeSyntax)
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Syntax is not TypeDeclaration syntax");
+
             return;
+        }
 
         var methodDeclarationSyntaxies = typeSyntax.FilteredMethodsList(options);
+        if(!methodDeclarationSyntaxies.Any())
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Syntax has no methods in List");
+            return;
+        }
 
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Iterating methods", LogLevelNode.Start);
         foreach(var methodDeclarationSyntax in methodDeclarationSyntaxies)
         {
-            BuildContextInfoForMethod(methodDeclarationSyntax, contextOptions, semanticModel, nsName, typeContext, symbolResolver);
+            BuildContextInfoForMethod(methodDeclarationSyntax, semanticModel, nsName, typeContext, symbolResolver);
         }
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
-    protected TContext? BuildContextInfoForType(MemberDeclarationSyntax callerSyntaxNode, RoslynContextParserOptions contextOptions, SemanticModel model, string nsName, Func<InvocationExpressionSyntax, SemanticModel?>? symbolResolver = null)
+    protected TContext? BuildContextInfoForType(MemberDeclarationSyntax callerSyntaxNode, SemanticModel model, string nsName, Func<InvocationExpressionSyntax, SemanticModel?>? symbolResolver = null)
     {
-        if(!contextOptions.ParseContexts)
-            return default;
-
         var kind = callerSyntaxNode.GetContextInfoElementType();
         var typeName = callerSyntaxNode.GetDeclarationName();
+
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{typeName}]:Creating type context item");
 
         var result = _factory.Create(default, kind, nsName, default, typeName, null, callerSyntaxNode);
         callerSyntaxNode.ParseSingleLineComments(_commentProcessor, result);
@@ -126,6 +152,8 @@ public class RoslynPhaseParserContextBuilder<TContext> //: RoslynCodeParser<TCon
 
 internal static class MemberDeclarationSyntaxExts
 {
+    private const string SFakeDeclaration = "FakeDeclaration";
+
     public static ContextInfoElementType GetContextInfoElementType(this MemberDeclarationSyntax? syntax)
     {
         return syntax switch
@@ -146,7 +174,7 @@ internal static class MemberDeclarationSyntaxExts
             RecordDeclarationSyntax r => r.Identifier.Text,
             EnumDeclarationSyntax e => e.Identifier.Text,
             BaseNamespaceDeclarationSyntax nn => nn.Name.ToFullString(),
-            _ => "???"
+            _ => SFakeDeclaration
         };
 
     public static RoslynCodeParserAccessorModifierType? GetModifierType(this MethodDeclarationSyntax method)

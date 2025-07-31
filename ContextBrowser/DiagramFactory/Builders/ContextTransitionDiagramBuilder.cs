@@ -28,45 +28,66 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
                 classifier.HasActionAndDomain(ctx))
             .ToList();
 
-        if (!methods.Any())
+        if(!methods.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Warn, $"No methods for domain '{domainName}'");
+            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Err, $"No methods found for domain '{domainName}'");
             return false;
         }
 
-        var allTransitions = new HashSet<UmlTransitionDto>();
+        HashSet<UmlTransitionDto> allTransitions = BuildAllTransitions(domainName, allContexts, methods);
 
-        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SStartTag);
-        foreach (var builder in _transitionBuilders)
+        if(!allTransitions.Any())
         {
-            var transitions = builder.BuildTransitions(methods, allContexts);
-            _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SStartTag);
-
-            foreach (var t in transitions)
-            {
-                _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Writing transition: {t.CallerName} -> {t.CalleeName}");
-                allTransitions.Add(t);
-            }
-
-            _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SEndTag);
-        }
-        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SEndTag);
-
-        if (!allTransitions.Any())
+            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Err, $"No transitions found for domain '{domainName}'");
             return false;
+        }
 
-        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SStartTag);
+        RenderAllTransitions(diagram, allTransitions);
 
-        foreach (var t in allTransitions)
+        return true;
+    }
+
+    private void RenderAllTransitions(UmlDiagram diagram, HashSet<UmlTransitionDto> allTransitions)
+    {
+        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, "RenderAllTransitions", LogLevelNode.Start);
+
+        foreach(var t in allTransitions)
         {
             TransitionRenderer.RenderFullTransition(diagram, t, _options, _onWriteLog);
         }
 
-        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, IndentedAppLoggerHelpers.SEndTag);
+        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
 
         TransitionRenderer.FinalizeDiagram(diagram);
+    }
 
-        return true;
+    private HashSet<UmlTransitionDto> BuildAllTransitions(string domainName, List<ContextInfo> allContexts, List<ContextInfo> methods)
+    {
+        var allTransitions = new HashSet<UmlTransitionDto>();
+
+        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Build transitions for domain: {domainName}", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Build transitions for domain: {domainName}");
+        if(!(_transitionBuilders.Any()))
+        {
+            _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Err, $"No transition builders provided for domain: {domainName}");
+            return allTransitions;
+        }
+
+        foreach(var builder in _transitionBuilders)
+        {
+            var transitions = builder.BuildTransitions(methods, allContexts);
+            _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Build Transition {builder.GetType().Name}", LogLevelNode.Start);
+
+            foreach(var t in transitions)
+            {
+                _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Writing transition: {t.CallerClassName}.{t.CallerMethod} -> {t.CalleeClassName}.{t.CalleeMethod}");
+                allTransitions.Add(t);
+            }
+
+            _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        }
+        _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        return allTransitions;
     }
 }

@@ -4,6 +4,8 @@
 // pattern: Composite leaf
 public class UmlComponentGroup : IUmlElement
 {
+    private const string SFakeComponentGroupName = "FakeComponentGroupName";
+
     public string Name { get; }
 
     public string Stereotype { get; }
@@ -12,7 +14,7 @@ public class UmlComponentGroup : IUmlElement
 
     public UmlComponentGroup(string? name, string stereotype)
     {
-        Name = name ?? "???";
+        Name = name ?? SFakeComponentGroupName;
         Stereotype = stereotype;
     }
 

@@ -9,7 +9,7 @@ public class ContextClassifier : IContextClassifier
     /// Если в описании есть только домен(ы), т.е. любые слова, но нет тех слов, что описаны в ContextClassifier.StandardActions, <br/>
     /// тогда описание будет трактоваться как с осутствующим действием.
     /// </summary>
-    public readonly string[] StandardActions = new[] { "create", "read", "update", "delete", "validate", "share", "build", "model" };
+    public readonly string[] StandardActions = new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute" };
 
     public static string EmptyDomain => "NoDomain";
 

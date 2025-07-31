@@ -91,7 +91,7 @@ public class RoslynCodeSemanticTreeModelStorage : ISemanticModelStorage
         }
     }
 
-    private void DisposeOldest_NoLock()
+    internal void DisposeOldest_NoLock()
     {
         if(_usageOrder.Count == 0)
             return;

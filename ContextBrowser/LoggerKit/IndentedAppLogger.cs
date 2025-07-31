@@ -2,7 +2,7 @@
 
 namespace ContextBrowser.LoggerKit;
 
-public static class IndentedAppLoggerHelpers
+public static class IndentedAppLoggerHelpers1
 {
     public static string SEndTag = "TreeEnd";
     public static string SStartTag = "TreeStart";
@@ -13,46 +13,69 @@ public class IndentedAppLogger<T> : AppLogger<T>
 {
     private readonly int _indenterSize;
     private readonly char _indentedBy;
-    private readonly Dictionary<LogKey<T>, int> _indentationLevels = new();
+    private readonly Dictionary<object, int> _indentationLevels = new();
     private readonly object _indentationLock = new();
+    private readonly bool _printEmptyNodes;
 
-    public IndentedAppLogger(AppLoggerLevelStore<T> store, ILogWriter writer, char indentedBy = '·', int indenterSize = 4) : base(store, writer)
+    public IndentedAppLogger(AppLoggerLevelStore<T> store, ILogWriter writer, char indentedBy = '·', int indenterSize = 4, bool printEmptyNodes = false) : base(store, writer)
     {
         _indentedBy = indentedBy;
         _indenterSize = indenterSize;
+        _printEmptyNodes = printEmptyNodes;
     }
 
-    protected override void TheWriteFunc(T appLevel, LogLevel logLevel, string message)
+    protected override void TheWriteFunc(T appLevel, LogLevel logLevel, string message, LogLevelNode logLevelNode = LogLevelNode.None)
     {
         // Создаём ключ один раз для текущего вызова
-        var logKey = new LogKey<T>(appLevel, logLevel);
+        var logKey = BuildIndentionKey(appLevel, logLevel);
 
-        // Обрабатываем маркеры
-        if(message.Equals(IndentedAppLoggerHelpers.SStartTag))
-        {
-            lock(_indentationLock)
-            {
-                // Увеличиваем отступ
-                _indentationLevels.TryGetValue(logKey, out var currentLevel);
-                _indentationLevels[logKey] = currentLevel + 1;
-            }
-            return; // Не выводим маркер
-        }
 
-        if(message.Equals(IndentedAppLoggerHelpers.SEndTag))
+        switch(logLevelNode)
         {
-            lock(_indentationLock)
-            {
-                // Уменьшаем отступ
-                _indentationLevels.TryGetValue(logKey, out var currentLevel);
-                if(currentLevel > 0)
+            case LogLevelNode.Start:
+                lock(_indentationLock)
                 {
-                    _indentationLevels[logKey] = currentLevel - 1;
-                }
-            }
-            return; // Не выводим маркер
-        }
+                    // Пишем до изменения отступа
+                    bool canPrintStartNode = (!string.IsNullOrWhiteSpace(message)) || _printEmptyNodes;
+                    if(canPrintStartNode)
+                    {
+                        var startformattedMessage = FormatIndentedMessage(message, logKey);
+                        _writer.Write(FormattedText(appLevel, logLevel, startformattedMessage));
+                    }
 
+                    // Увеличиваем отступ
+                    _indentationLevels.TryGetValue(logKey, out var currentLevel);
+                    _indentationLevels[logKey] = currentLevel + 1;
+                }
+                break;
+            case LogLevelNode.End:
+                lock(_indentationLock)
+                {
+                    // Уменьшаем отступ
+                    _indentationLevels.TryGetValue(logKey, out var currentLevel);
+                    if(currentLevel > 0)
+                    {
+                        _indentationLevels[logKey] = currentLevel - 1;
+                    }
+
+                    // Пишем после изменения отступа
+                    bool canPrintEndNode = (!string.IsNullOrWhiteSpace(message)) || _printEmptyNodes;
+                    if(canPrintEndNode)
+                    {
+                        var endformattedMessage = FormatIndentedMessage(message, logKey);
+                        _writer.Write(FormattedText(appLevel, logLevel, endformattedMessage));
+                    }
+                }
+                break;
+            default:
+                var formattedMessage = FormatIndentedMessage(message, logKey);
+                _writer.Write(FormattedText(appLevel, logLevel, formattedMessage));
+                break;
+        }
+    }
+
+    private string FormatIndentedMessage(string message, object logKey)
+    {
         // Форматируем сообщение с отступом
         var currentIndentation = 0;
         lock(_indentationLock)
@@ -62,10 +85,16 @@ public class IndentedAppLogger<T> : AppLogger<T>
 
         var indentation = new string(_indentedBy, currentIndentation * _indenterSize);
         var formattedMessage = $"{indentation}{message}";
+        return formattedMessage;
+    }
 
-        _writer.Write(FormattedText(appLevel, logLevel, formattedMessage));
+    private static object BuildIndentionKey(T appLevel, LogLevel logLevel)
+    {
+        return appLevel;
+        //return new IndentionExtKey<T, LogLevel>(appLevel, logLevel);
     }
 }
 
-public record LogKey<TAppLevel>(TAppLevel AppLevel, LogLevel LogLevel)
-    where TAppLevel : notnull;
+internal record IndentionExtKey<A, L>(A AppLevel, L LogLevel)
+    where A : notnull
+    where L : notnull;

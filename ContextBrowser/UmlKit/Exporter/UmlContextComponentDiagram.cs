@@ -8,7 +8,7 @@ namespace ContextBrowser.UmlKit.Exporter;
 // pattern: Builder
 internal static class UmlContextComponentDiagram
 {
-    //context: build, heatmap, uml, directory
+    //context: uml, build, heatmap, directory
     public static void Build(string targetDirectory, KeyValuePair<ContextContainer, List<string>> cell)
     {
         var (action, domain) = cell.Key;
@@ -27,6 +27,7 @@ internal static class UmlContextComponentDiagram
         diagram.WriteToFile(fileName);
     }
 
+    //context: uml, build, heatmap, directory
     public static void Build(Dictionary<ContextContainer, List<string>> matrix, string targetDirectory)
     {
         foreach(var cell in matrix)

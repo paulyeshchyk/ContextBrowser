@@ -1,42 +1,26 @@
 ﻿using ContextBrowser.ContextKit.Model;
+using ContextBrowser.ContextKit.Parser.CommentParser;
+using ContextBrowser.LoggerKit;
 
 namespace ContextBrowser.ContextKit.Parser;
 
+// context: contextInfo, build
 public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
     where T : ContextInfo
 {
-    private IContextClassifier _contextClassifier { get; }
+    private readonly List<ICommentParsingStrategy<T>> _strategies = new();
 
-    public ContextInfoCommentProcessor(IContextClassifier contextClassifier)
+    public ContextInfoCommentProcessor(IContextClassifier contextClassifier, OnWriteLog? onWriteLog = null)
     {
-        _contextClassifier = contextClassifier;
+        _strategies.Add(new ContextStrategy<T>(contextClassifier, onWriteLog));
+        _strategies.Add(new CoverageStrategy<T>());
     }
 
     public void Process(string comment, T target)
     {
-        if(comment.StartsWith("context:", StringComparison.OrdinalIgnoreCase))
+        foreach(var strategy in _strategies)
         {
-            var tags = comment.Substring("context:".Length)
-                              .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                              .Select(t => t.Trim().ToLowerInvariant());
-
-            var actions = tags.Where(t => _contextClassifier.IsVerb(t)).ToList();
-            target.Action = string.Join(";", actions);
-
-            var domains = tags.Where(t => _contextClassifier.IsNoun(t)).ToList();
-            foreach(var domain in domains)
-            {
-                target.Domains.Add(domain);
-            }
-            foreach(var tag in tags)
-                target.Contexts.Add(tag);
-        }
-
-
-        if(comment.StartsWith("coverage:", StringComparison.OrdinalIgnoreCase))
-        {
-            var val = comment.Substring("coverage:".Length).Trim();
-            target.Dimensions["coverage"] = val;
+            strategy.Execute(comment, target);
         }
     }
 }

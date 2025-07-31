@@ -2,6 +2,7 @@
 
 namespace ContextBrowser.LoggerKit;
 
+// context: log, model
 public class LogConfigEntry<A, L>
     where A : notnull
     where L : notnull
@@ -11,6 +12,7 @@ public class LogConfigEntry<A, L>
     public required L LogLevel { get; set; }
 }
 
+// context: log, model
 public class LogConfiguration<A, L>
     where A : notnull
     where L : notnull
@@ -18,8 +20,10 @@ public class LogConfiguration<A, L>
     public List<LogConfigEntry<A, L>> LogLevels { get; set; } = new List<LogConfigEntry<A, L>>();
 }
 
+// context: log, build
 public static class AppLoggerLevelStoreConfigurationLoader
 {
+    // context: log, build
     public static Dictionary<A, L> LoadConfigurationFile<A, L>(string filePath, L defaultValue)
         where A : notnull
         where L : notnull
@@ -35,6 +39,7 @@ public static class AppLoggerLevelStoreConfigurationLoader
         return LoadConfigurationJson<A, L>(jsonContent, defaultValue);
     }
 
+    // context: log, build
     public static Dictionary<A, L> LoadConfigurationJson<A, L>(string jsonContent, L defaultValue)
         where A : notnull
         where L : notnull
@@ -67,6 +72,7 @@ public static class AppLoggerLevelStoreConfigurationLoader
         }
     }
 
+    // context: logs, build
     public static Dictionary<A, L> LoadConfiguration<A, L>(LogConfiguration<A, L> data, L defaultValue)
         where A : notnull
         where L : notnull
@@ -89,7 +95,8 @@ public static class AppLoggerLevelStoreConfigurationLoader
         return finalConfig;
     }
 
-    private static void SetDefaultLogLevels<A, L>(Dictionary<A, L> config, L defaultValue)
+    // context: logs, build
+    internal static void SetDefaultLogLevels<A, L>(Dictionary<A, L> config, L defaultValue)
         where A : notnull
         where L : notnull
     {

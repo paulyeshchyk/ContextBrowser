@@ -2,6 +2,7 @@
 
 namespace ContextBrowser.extensions;
 
+// context: log, model
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AppLevel
 {
@@ -12,6 +13,7 @@ public enum AppLevel
     file
 }
 
+// context: log, model
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum LogLevel
 {
@@ -20,6 +22,6 @@ public enum LogLevel
     Err,
     Warn,
     Info,
-    Verb,
     Dbg,
+    Verb,
 }

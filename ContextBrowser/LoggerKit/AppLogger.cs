@@ -6,9 +6,9 @@ public class AppLogger<T>
     where T : notnull
 {
     private readonly AppLoggerLevelStore<T> _appLogLevelStorage;
-    protected readonly ILogWriter _writer; // Теперь это ILogWriter
+    protected readonly ILogWriter _writer;
 
-    public AppLogger(AppLoggerLevelStore<T> store, ILogWriter writer) // ILogWriter в конструкторе
+    public AppLogger(AppLoggerLevelStore<T> store, ILogWriter writer)
     {
         _appLogLevelStorage = store;
         _writer = writer;
@@ -56,17 +56,17 @@ public class AppLogger<T>
         return (int)requested <= (int)limitedByAppLevel;
     }
 
-    public void WriteLog(T appLevel, LogLevel logLevel, string message)
+    public void WriteLog(T appLevel, LogLevel logLevel, string message, LogLevelNode logLevelNode = LogLevelNode.None)
     {
         var limitedByAppLevel = _appLogLevelStorage.GetLevel(appLevel);
 
         if(CanWriteLog(logLevel, limitedByAppLevel))
         {
-            TheWriteFunc(appLevel, logLevel, message);
+            TheWriteFunc(appLevel, logLevel, message, logLevelNode);
         }
     }
 
-    protected virtual void TheWriteFunc(T appLevel, LogLevel logLevel, string message)
+    protected virtual void TheWriteFunc(T appLevel, LogLevel logLevel, string message, LogLevelNode logLevelNode = LogLevelNode.None)
     {
         var formattedMessage = FormattedText(appLevel, logLevel, message);
         _writer.Write(formattedMessage);
@@ -74,9 +74,19 @@ public class AppLogger<T>
 }
 
 
+// context: log, share
 public delegate void LogWriter(string message);
 
-public delegate void OnWriteLog(AppLevel al, LogLevel ll, string message);
+// context: log, share
+public delegate void OnWriteLog(AppLevel al, LogLevel ll, string message, LogLevelNode levelNode = LogLevelNode.None);
+
+// context: log, model
+public enum LogLevelNode
+{
+    None,
+    Start,
+    End
+}
 
 public interface ILogWriter
 {
@@ -87,6 +97,8 @@ public class ConsoleLogWriter : ILogWriter
 {
     public void Write(string message)
     {
+        if(string.IsNullOrEmpty(message))
+            return;
         Console.WriteLine(message);
     }
 }

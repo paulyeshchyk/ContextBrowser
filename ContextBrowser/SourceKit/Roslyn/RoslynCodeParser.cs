@@ -23,6 +23,7 @@ namespace ContextBrowser.SourceKit.Roslyn;
 
 internal static class SyntaxTriviaExt
 {
+    // context: csharp, build
     public static void ParseSingleLineComments<TContext>(this MemberDeclarationSyntax node, IContextInfoCommentProcessor<TContext> commentProcessor, TContext context)
     {
         foreach(var trivia in node.GetLeadingTrivia().Where(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia)))
@@ -32,6 +33,7 @@ internal static class SyntaxTriviaExt
         }
     }
 
+    // context: csharp, build
     internal static string ExtractComment(this SyntaxTrivia trivia)
     {
         return trivia.ToString()

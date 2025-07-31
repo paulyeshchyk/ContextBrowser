@@ -50,21 +50,24 @@ public static class Program
         DimensionBuilder.Build(contextBuilderModel, options, appLogger.WriteLog);
     }
 }
-// context: model, appoptions, app
 
+// context: model, appoptions, app
 public class AppOptions
 {
-    public string LogLevelConfig = "{\"LogLevels\":[{\"AppLevel\":\"file\",\"LogLevel\":\"Err\"},{\"AppLevel\":\"Roslyn\",\"LogLevel\":\"Err\"},{\"AppLevel\":\"Puml\",\"LogLevel\":\"Dbg\"},{\"AppLevel\":\"PumlTransition\",\"LogLevel\":\"Dbg\"},{\"AppLevel\":\"Html\",\"LogLevel\":\"Err\"}]}";
+    internal static IEnumerable<string> AssembliesPaths = new List<string>() { "." };
+    public string LogLevelConfig = "{\"LogLevels\":[{\"AppLevel\":\"file\",\"LogLevel\":\"Err\"},{\"AppLevel\":\"Roslyn\",\"LogLevel\":\"Dbg\"},{\"AppLevel\":\"Puml\",\"LogLevel\":\"Dbg\"},{\"AppLevel\":\"PumlTransition\",\"LogLevel\":\"Dbg\"},{\"AppLevel\":\"Html\",\"LogLevel\":\"Err\"}]}";
     public string theSourcePath = ".\\..\\..\\..\\..\\ContextBrowser";
     public string outputDirectory = ".\\output\\";
+    public IEnumerable<string> assemblyPaths = AssembliesPaths;
     public UnclassifiedPriority unclassifiedPriority = UnclassifiedPriority.Highest;
     public bool includeAllStandardActions = true;
+    public RoslynCodeParserOptions roslynCodeparserOptions = RoslynCodeParserOptions.Default(AssembliesPaths);
     public DiagramBuilderKeys diagramType = DiagramBuilderKeys.Transition;
     public SummaryPlacement summaryPlacement = SummaryPlacement.AfterFirst;
     public MatrixOrientation matrixOrientation = MatrixOrientation.DomainRows;
     public ContextTransitionDiagramBuilderOptions contextTransitionDiagramBuilderOptions = new(
-        detailLevel: DiagramDetailLevel.Full,
-        direction: DiagramDirection.Incoming,
+        detailLevel: DiagramDetailLevel.Summary,
+        direction: DiagramDirection.BiDirectional,
         defaultParticipantKeyword: UmlParticipantKeyword.Actor,
         useMethodAsParticipant: true);
 }
@@ -94,8 +97,10 @@ public class ContextBuilderModel
     }
 }
 
+// context uml, build
 public static class ExtraDiagramsBuilder
 {
+    // context uml, build
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ExtraDiagramsBuilder.Build ---");
@@ -120,7 +125,7 @@ public static class ContextModelBuildBuilder
     {
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, "--- ContextModelBuildBuilder.Build ---");
 
-        var contextsList = RoslynContextParser.Parse(options.theSourcePath, new List<string>() { options.outputDirectory }, onWriteLog);
+        var contextsList = RoslynContextParser.Parse(options.theSourcePath, options.roslynCodeparserOptions, onWriteLog);
 
         var matrix = ContextMatrixUmlExporter.GenerateMatrix(contextsList, new ContextClassifier(), options.unclassifiedPriority, options.includeAllStandardActions);
 
@@ -179,6 +184,7 @@ public static class ComponentDiagram
 // context: step2, build
 public static class ActionPerDomainDiagramBuilder
 {
+    // context: step2, build
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ActionPerDomainDiagramBuilder.Build ---");

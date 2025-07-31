@@ -34,13 +34,15 @@ public class RoslynCodeSemanticTreeModelBuilder : ISemanticModelBuilder
         return BuildModel(syntaxTree, options);
     }
 
-    private RoslynCompilationView BuildModel(SyntaxTree syntaxTree, RoslynCodeParserOptions options)
+    // context: csharp, build, contextInfo
+    internal RoslynCompilationView BuildModel(SyntaxTree syntaxTree, RoslynCodeParserOptions options)
     {
         var root = syntaxTree.GetCompilationUnitRoot(CancellationToken.None);
         return BuildModel(root, syntaxTree, options);
     }
 
-    private RoslynCompilationView BuildModel(CompilationUnitSyntax root, SyntaxTree syntaxTree, RoslynCodeParserOptions options)
+    // context: csharp, build, contextInfo
+    internal RoslynCompilationView BuildModel(CompilationUnitSyntax root, SyntaxTree syntaxTree, RoslynCodeParserOptions options)
     {
         var model = _modelStorage.GetModel(syntaxTree);
         if(model == null)

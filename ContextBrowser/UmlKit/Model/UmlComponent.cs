@@ -4,6 +4,8 @@
 // pattern: Composite leaf
 public class UmlComponent : IUmlElement, IUmlDeclarable
 {
+    private const string SFakeComponentName = "FakeComponentName";
+
     public string Name { get; }
 
     public string? Url { get; }
@@ -14,7 +16,7 @@ public class UmlComponent : IUmlElement, IUmlDeclarable
 
     public UmlComponent(string? name, string? url = null)
     {
-        Name = name ?? "???";
+        Name = name ?? SFakeComponentName;
         Url = url;
     }
 

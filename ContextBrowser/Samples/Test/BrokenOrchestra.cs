@@ -14,7 +14,15 @@ public class BrokenOrchestra
     //context: basic, read
     public void Test()
     {
-        Reader.ReadFile();
+        var data = Reader.ReadFile();
+        if(ValidateInput(data))
+        {
+            return;
+        }
+        else
+        {
+            throw new Exception(string.Empty);
+        }
     }
 }
 
@@ -22,8 +30,8 @@ public class BrokenOrchestra
 public class BrokenContextReader
 {
     // context: data, read
-    public void ReadFile()
+    public string ReadFile()
     {
-        File.ReadAllText(string.Empty);
+        return File.ReadAllText(string.Empty);
     }
 }

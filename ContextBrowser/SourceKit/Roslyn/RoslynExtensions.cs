@@ -7,6 +7,11 @@ namespace ContextBrowser.SourceKit.Roslyn;
 // context: csharp, read
 public static class RoslynExtensions
 {
+    public static string? GetNameOnly(this ISymbol? symbol)
+    {
+        return symbol?.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat);
+    }
+
     /// <summary>
     /// Возвращает полное имя члена, включая пространство имен.
     /// </summary>
