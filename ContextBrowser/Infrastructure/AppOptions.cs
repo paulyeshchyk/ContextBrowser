@@ -3,6 +3,7 @@ using ContextBrowser.DiagramFactory.Model;
 using ContextKit.Matrix;
 using ContextKit.Model;
 using HtmlKit.Model;
+using LoggerKit.Model;
 using RoslynKit.Model;
 using UmlKit.Model;
 
@@ -12,7 +13,21 @@ namespace ContextBrowser.Infrastructure;
 public class AppOptions
 {
     [CommandLineArgument("log-config", "JSON configuration for log levels.")]
-    public string LogLevelConfig { get; set; } = Resources.DefaultLogLevelConfigJson;
+    public LogConfiguration<AppLevel, LogLevel> LogConfiguration
+    {
+        get;
+        set;
+    } = new()
+    {
+        LogLevels =
+        {
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Err },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Puml, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.PumlTransition, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err }
+        }
+    };
 
     [CommandLineArgument("source-path", "The source code path.")]
     public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\ContextBrowser";//.\\..\\..\\..\\..\\ContextBrowser\\Program.cs

@@ -29,9 +29,8 @@ public static class Program
             return;
         }
 
-        var defaultConfig = AppLoggerLevelStoreConfigurationLoader.LoadConfigurationJson<AppLevel, LogLevel>(options.LogLevelConfig, defaultValue: LogLevel.None);
         var appLogLevelStorage = new AppLoggerLevelStore<AppLevel>();
-        appLogLevelStorage.SetLevels(defaultConfig);
+        appLogLevelStorage.SetLevels(options.LogConfiguration.LogLevels);
 
         var defaultCW = new ConsoleLogWriter();
 

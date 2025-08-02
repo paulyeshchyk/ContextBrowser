@@ -18,6 +18,22 @@ public class AppLoggerLevelStore<T>
         }
     }
 
+    public void SetLevels(List<LogConfigEntry<T, LogLevel>> newLevels)
+    {
+        lock(_lock)
+        {
+            _levels.Clear();
+
+            foreach(var entry in newLevels)
+            {
+                if(entry.AppLevel is T appLevel)
+                {
+                    _levels[appLevel] = entry.LogLevel;
+                }
+            }
+        }
+    }
+
     // context: log, update
     public void SetLevels(Dictionary<T, LogLevel> newLevels)
     {

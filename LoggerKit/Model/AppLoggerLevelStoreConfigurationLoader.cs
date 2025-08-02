@@ -31,29 +31,33 @@ public static class AppLoggerLevelStoreConfigurationLoader
         {
             var config = JsonSerializer.Deserialize<LogConfiguration<A, L>>(jsonContent, new JsonSerializerOptions
             {
-                // Это опция для обработки регистронезависимости,
-                // но лучше просто исправить имена в JSON.
                 PropertyNameCaseInsensitive = true
             });
-
-            if(config == null || config.LogLevels == null)
-            {
-                var defaultConfig = new Dictionary<A, L>();
-                SetDefaultLogLevels(defaultConfig, defaultValue);
-                return defaultConfig;
-            }
-
-            var result = LoadConfiguration(config, defaultValue);
-            return result;
+            return LoadConfiguration(defaultValue, config);
         }
         catch(Exception ex)
         {
-            // Здесь обрабатываем ошибки десериализации, например, неверные имена enum
             Console.WriteLine($"Ошибка десериализации конфигурации: {ex.Message}");
             var defaultConfig = new Dictionary<A, L>();
             SetDefaultLogLevels(defaultConfig, defaultValue);
             return defaultConfig;
         }
+    }
+
+    // context: log, build
+    public static Dictionary<A, L> LoadConfiguration<A, L>(L defaultValue, LogConfiguration<A, L>? config)
+        where A : notnull
+        where L : notnull
+    {
+        if(config == null || config.LogLevels == null)
+        {
+            var defaultConfig = new Dictionary<A, L>();
+            SetDefaultLogLevels(defaultConfig, defaultValue);
+            return defaultConfig;
+        }
+
+        var result = LoadConfiguration(config, defaultValue);
+        return result;
     }
 
     // context: log, build
