@@ -40,20 +40,26 @@ public abstract class UmlDiagram
 
     protected virtual string SUmlEndTag { get => "@enduml"; }
 
-    protected readonly List<IUmlElement> _elements = new();
+    private int _nextOrder = 0;
+    protected readonly SortedList<int, IUmlElement> _elements = new();
     protected readonly Dictionary<string, string> _skinParams = new();
     protected string? _title;
     protected ContextTransitionDiagramBuilderOptions _options;
 
     // context: uml, create
-    public void Add(IUmlElement element) => _elements.Add(element);
+    public void Add(IUmlElement element)
+    {
+        _elements.Add(_nextOrder++, element);
+    }
 
     // context: uml, update
     public void SetTitle(string title) => _title = title;
 
     // context: uml, update
     public void SetSkinParam(string name, string value)
-    { _skinParams[name] = value; }
+    {
+        _skinParams[name] = value;
+    }
 
     // context: uml, share
     public void WriteTo(TextWriter writer)

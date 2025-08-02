@@ -23,23 +23,24 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
     }
 
     // context: csharp, update
-    public void LinkInvocation(TContext callerContextInfo, RoslynCalleeSymbolDto symbolDto, RoslynCodeParserOptions options)
+    public TContext? LinkInvocation(TContext callerContextInfo, RoslynCalleeSymbolDto symbolDto, RoslynCodeParserOptions options)
     {
         var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, symbolDto.Name, symbolDto.ShortName, options);
-        if (calleeContextInfo == null)
+        if(calleeContextInfo == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] \ncaller: [{callerContextInfo.SymbolName}]\nwants:  [{symbolDto.Name}]");
-            return;
+            return default;
         }
         callerContextInfo.References.Add(calleeContextInfo);
         calleeContextInfo.InvokedBy.Add(callerContextInfo);
+        return calleeContextInfo;
     }
 
     private TContext? FindOrCreateCalleeNode(TContext callerContextInfo, string calleeSymbolName, string calleeShortestName, RoslynCodeParserOptions options)
     {
-        if (!_collector.ByFullName.TryGetValue(calleeSymbolName, out var calleeContextInfo))
+        if(!_collector.ByFullName.TryGetValue(calleeSymbolName, out var calleeContextInfo))
         {
-            if (!options.CreateFailedCallees)
+            if(!options.CreateFailedCallees)
             {
                 return default;
             }

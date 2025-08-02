@@ -84,7 +84,7 @@ public class UmlDiagramClasses : UmlDiagram
     {
         writer.WriteLine();
 
-        foreach(var element in _elements)
+        foreach(var element in _elements.Values)
         {
             element.WriteTo(writer);
         }
