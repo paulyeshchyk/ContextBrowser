@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.Samples.Test.Multifile;
+﻿namespace ContextBrowser.Samples.SampleMultifile;
 
 // context: create, sample.broken
 public class BrokenOrchestra

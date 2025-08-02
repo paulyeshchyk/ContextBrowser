@@ -5,6 +5,7 @@ using HtmlKit.Builders.Core;
 using HtmlKit.Page;
 using System.Text;
 using UmlKit.Diagrams;
+using UmlKit.Model.Options;
 
 namespace ContextBrowser.DiagramFactory;
 
@@ -16,11 +17,13 @@ internal class HtmlContextDimensionBuilder
     private readonly string _outputDirectory;
     private readonly Func<string, bool> _domainCallback;
     private readonly Func<IContextDiagramBuilder> _builderFactory;
+    private readonly ContextTransitionDiagramBuilderOptions _options;
 
     public HtmlContextDimensionBuilder(
         Dictionary<ContextContainer, List<string>> matrix,
         List<ContextInfo> allContexts,
         string outputDirectory,
+        ContextTransitionDiagramBuilderOptions options,
         Func<string, bool> domainCallback,
         Func<IContextDiagramBuilder> builderFactory)
     {
@@ -29,6 +32,7 @@ internal class HtmlContextDimensionBuilder
         _outputDirectory = outputDirectory;
         _domainCallback = domainCallback;
         _builderFactory = builderFactory;
+        _options = options;
     }
 
     // context: html, build
@@ -47,7 +51,7 @@ internal class HtmlContextDimensionBuilder
             if(!_domainCallback(domain))
                 continue;
 
-            var diagram = new UmlDiagramState();
+            var diagram = new UmlDiagramState(_options);
             diagram.SetTitle($"Context: {domain}");
             diagram.SetSkinParam("componentStyle", "rectangle");
 

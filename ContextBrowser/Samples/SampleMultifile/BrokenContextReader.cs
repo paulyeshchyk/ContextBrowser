@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.Samples.Test.Multifile;
+﻿namespace ContextBrowser.Samples.SampleMultifile;
 
 // context: data, read
 public class BrokenContextReader

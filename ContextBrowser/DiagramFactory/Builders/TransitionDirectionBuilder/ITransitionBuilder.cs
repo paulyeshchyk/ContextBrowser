@@ -1,6 +1,6 @@
 ﻿using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders.Model;
-using ContextBrowser.DiagramFactory.Model;
 using ContextKit.Model;
+using UmlKit.Model.Options;
 
 namespace ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
 

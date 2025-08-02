@@ -1,10 +1,10 @@
 ﻿using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders.Model;
 using ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
-using ContextBrowser.DiagramFactory.Model;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
 using UmlKit.Diagrams;
+using UmlKit.Model.Options;
 
 
 namespace ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
@@ -33,7 +33,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         if(!methods.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Err, $"No methods found for domain '{domainName}'");
+            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Dbg, $"No methods found for domain '{domainName}'");
             return false;
         }
 
@@ -41,7 +41,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         if(!allTransitions.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Err, $"No transitions found for domain '{domainName}'");
+            _onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Dbg, $"No transitions found for domain '{domainName}'");
             return false;
         }
 
@@ -61,7 +61,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         _onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
-        TransitionRenderer.FinalizeDiagram(diagram);
+        TransitionRenderer.FinalizeDiagram(diagram, _options);
     }
 
     private HashSet<UmlTransitionDto> BuildAllTransitions(string domainName, List<ContextInfo> allContexts, List<ContextInfo> methods)

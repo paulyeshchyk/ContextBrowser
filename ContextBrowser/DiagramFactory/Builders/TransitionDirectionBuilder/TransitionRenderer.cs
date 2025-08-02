@@ -1,9 +1,8 @@
 ﻿using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders.Model;
-using ContextBrowser.DiagramFactory.Model;
 using LoggerKit;
 using LoggerKit.Model;
 using UmlKit.Diagrams;
-
+using UmlKit.Model.Options;
 
 namespace ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
 
@@ -11,26 +10,29 @@ internal static class TransitionRenderer
 {
     private static readonly HashSet<string> activated = new();
 
-    public static void RenderFullTransition(UmlDiagram diagram, UmlTransitionDto t, ContextTransitionDiagramBuilderOptions _options, OnWriteLog? onWriteLog = null)
+    public static void RenderFullTransition(UmlDiagram diagram, UmlTransitionDto t, ContextTransitionDiagramBuilderOptions options, OnWriteLog? onWriteLog = null)
     {
-        // Активируем вызывающего, если ещё не активирован
-        if(!string.IsNullOrWhiteSpace(t.CallerClassName) && activated.Add(t.CallerClassName))
+        if(options.UseActivation)
         {
-            diagram.Activate(t.CallerClassName);
-            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Активируем {t.CallerClassName}");
-        }
-        else
-        {
-            onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Не активируем {t.CallerClassName}");
+            // Активируем вызывающего, если ещё не активирован
+            if(!string.IsNullOrWhiteSpace(t.CallerClassName) && activated.Add(t.CallerClassName))
+            {
+                diagram.Activate(t.CallerClassName);
+                onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Активируем {t.CallerClassName}");
+            }
+            else
+            {
+                onWriteLog?.Invoke(AppLevel.PumlTransition, LogLevel.Dbg, $"Не активируем {t.CallerClassName}");
+            }
         }
 
         // Контекст исполнения (если RunContext есть)
         if(!string.IsNullOrWhiteSpace(t.RunContext))
         {
-            diagram.AddParticipant(t.RunContext, _options.DefaultParticipantKeyword);
+            diagram.AddParticipant(t.RunContext, options.DefaultParticipantKeyword);
 
             // Активируем контрол, если он ещё не активирован
-            if(activated.Add(t.RunContext))
+            if(activated.Add(t.RunContext) && options.UseActivation)
             {
                 diagram.Activate(t.RunContext);
             }
@@ -43,7 +45,7 @@ internal static class TransitionRenderer
         else
         {
             // Активируем вызываемого, если ещё не активирован
-            if(!string.IsNullOrWhiteSpace(t.CalleeClassName) && activated.Add(t.CalleeClassName))
+            if(!string.IsNullOrWhiteSpace(t.CalleeClassName) && activated.Add(t.CalleeClassName) && options.UseActivation)
             {
                 diagram.Activate(t.CalleeClassName);
             }
@@ -53,11 +55,14 @@ internal static class TransitionRenderer
         }
     }
 
-    public static void FinalizeDiagram(UmlDiagram diagram)
+    public static void FinalizeDiagram(UmlDiagram diagram, ContextTransitionDiagramBuilderOptions options)
     {
         foreach(var participant in activated)
         {
-            diagram.Deactivate(participant);
+            if(options.UseActivation)
+            {
+                diagram.Deactivate(participant);
+            }
         }
 
         activated.Clear(); // на случай повторных генераций

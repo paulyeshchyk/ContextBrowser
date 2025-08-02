@@ -1,7 +1,8 @@
-﻿using UmlKit.Diagrams;
-using UmlKit.Model;
-using ContextKit.Model;
+﻿using ContextKit.Model;
 using System.Text.RegularExpressions;
+using UmlKit.Diagrams;
+using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace UmlKit.Exporter;
 
@@ -10,9 +11,9 @@ namespace UmlKit.Exporter;
 public static class UmlContextPackagesDiagram
 {
     // context: build, uml
-    public static void Build(List<ContextInfo> elements, string outputPath)
+    public static void Build(List<ContextInfo> elements, string outputPath, ContextTransitionDiagramBuilderOptions options)
     {
-        var diagram = new UmlDiagramClasses();
+        var diagram = new UmlDiagramClasses(options);
 
         var classes = elements.Where(e => e.ElementType == ContextInfoElementType.@class).ToList();
         var methods = elements.Where(e => e.ElementType == ContextInfoElementType.method).ToList();

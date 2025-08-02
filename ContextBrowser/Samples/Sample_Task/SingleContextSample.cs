@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.Samples.SingleContextSample;
+﻿namespace ContextBrowser.Samples.Sample_Task;
 
 // context: create, tasking
 public class TaskService

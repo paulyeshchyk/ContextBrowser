@@ -1,11 +1,11 @@
 ﻿using CommandlineKit.Polyfills;
-using ContextBrowser.DiagramFactory.Model;
 using ContextKit.Matrix;
 using ContextKit.Model;
 using HtmlKit.Model;
 using LoggerKit.Model;
 using RoslynKit.Model;
 using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace ContextBrowser.Infrastructure;
 
@@ -89,5 +89,6 @@ public class AppOptions
                 detailLevel: DiagramDetailLevel.Summary,
                 direction: DiagramDirection.BiDirectional,
                 defaultParticipantKeyword: UmlParticipantKeyword.Actor,
-                useMethodAsParticipant: true);
+                useMethodAsParticipant: true,
+                useActivation: false);
 }

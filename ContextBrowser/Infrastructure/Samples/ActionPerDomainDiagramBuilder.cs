@@ -12,6 +12,6 @@ public static class ActionPerDomainDiagramBuilder
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ActionPerDomainDiagramBuilder.Build ---");
-        UmlContextActionPerDomainDiagram.Build(model.matrix,(action, domain) => $"composite_{action}_{domain}.puml", $"{options.outputDirectory}uml.heatmap.link.puml");
+        UmlContextActionPerDomainDiagram.Build(model.matrix,(action, domain) => $"composite_{action}_{domain}.puml", $"{options.outputDirectory}uml.heatmap.link.puml", options.contextTransitionDiagramBuilderOptions);
     }
 }

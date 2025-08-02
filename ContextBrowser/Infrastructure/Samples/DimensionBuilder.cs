@@ -5,6 +5,7 @@ using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
 using UmlKit.Diagrams;
+using UmlKit.Model.Options;
 
 namespace ContextBrowser.Infrastructure.Samples;
 
@@ -20,6 +21,7 @@ public static class DimensionBuilder
             classifier: new ContextClassifier(),
             outputPath: options.outputDirectory,
             onWriteLog: onWriteLog,
+            transitionOptions: options.contextTransitionDiagramBuilderOptions,
             factory:(owl) => ContextDiagramFactory.Custom(options.diagramType, options.contextTransitionDiagramBuilderOptions, owl)
         );
 
@@ -27,6 +29,7 @@ public static class DimensionBuilder
             model.matrix,
             model.contextsList,
             options.outputDirectory,
+            options.contextTransitionDiagramBuilderOptions,
             callback,
             () => ContextDiagramFactory.Transition(options.contextTransitionDiagramBuilderOptions, onWriteLog));
 
@@ -34,11 +37,11 @@ public static class DimensionBuilder
     }
 
     // context: contextInfo, build, html
-    internal static Func<string, bool> AdaptToDomainCallback(List<ContextInfo> contextItems, ContextClassifier classifier, string outputPath, OnWriteLog? onWriteLog, Func<OnWriteLog?, IContextDiagramBuilder> factory)
+    internal static Func<string, bool> AdaptToDomainCallback(List<ContextInfo> contextItems, ContextClassifier classifier, string outputPath, OnWriteLog? onWriteLog, ContextTransitionDiagramBuilderOptions transitionOptions, Func<OnWriteLog?, IContextDiagramBuilder> factory)
     {
         return domain =>
         {
-            var diagram = new UmlDiagramSequence();
+            var diagram = new UmlDiagramSequence(transitionOptions);
             diagram.SetTitle($"Domain: {domain}");
             diagram.SetSkinParam("componentStyle", "rectangle");
 

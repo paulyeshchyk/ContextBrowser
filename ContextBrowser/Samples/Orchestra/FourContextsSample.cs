@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.Samples.FourContextsSample;
+﻿namespace ContextBrowser.Samples.Orchestra;
 
 // context: create, input
 public class InputProcessor

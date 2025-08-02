@@ -1,4 +1,5 @@
 ﻿using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace UmlKit.Diagrams;
 
@@ -30,6 +31,11 @@ public abstract class UmlDiagram
     // context: share, uml
     public abstract IUmlElement? Deactivate(IUmlDeclarable from);
 
+    public UmlDiagram(ContextTransitionDiagramBuilderOptions options)
+    {
+        _options = options;
+    }
+
     protected virtual string SUmlStartTag { get => "@startuml"; }
 
     protected virtual string SUmlEndTag { get => "@enduml"; }
@@ -37,6 +43,7 @@ public abstract class UmlDiagram
     protected readonly List<IUmlElement> _elements = new();
     protected readonly Dictionary<string, string> _skinParams = new();
     protected string? _title;
+    protected ContextTransitionDiagramBuilderOptions _options;
 
     // context: uml, create
     public void Add(IUmlElement element) => _elements.Add(element);

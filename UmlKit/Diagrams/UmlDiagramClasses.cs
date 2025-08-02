@@ -1,4 +1,5 @@
 ﻿using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace UmlKit.Diagrams;
 
@@ -7,6 +8,10 @@ public class UmlDiagramClasses : UmlDiagram
 {
     private readonly HashSet<UmlState> _states = new();
     private readonly List<UmlTransition> _transitions = new();
+
+    public UmlDiagramClasses(ContextTransitionDiagramBuilderOptions options) : base(options)
+    {
+    }
 
     // context: uml, create
     public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)

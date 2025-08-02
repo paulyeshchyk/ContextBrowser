@@ -1,6 +1,7 @@
-﻿using UmlKit.Diagrams;
+﻿using ContextKit.Model;
+using UmlKit.Diagrams;
 using UmlKit.Model;
-using ContextKit.Model;
+using UmlKit.Model.Options;
 
 namespace UmlKit.Exporter;
 
@@ -9,13 +10,13 @@ namespace UmlKit.Exporter;
 public static class UmlContextMethodsOnlyDiagram
 {
     // context: build, uml, links
-    public static void Build(List<ContextInfo> elements, string outputPath)
+    public static void Build(List<ContextInfo> elements, string outputPath, ContextTransitionDiagramBuilderOptions options)
     {
         var methods = elements
                 .Where(e => e.ElementType == ContextInfoElementType.method)
                 .ToList();
 
-        var diagram = new UmlDiagramClasses();
+        var diagram = new UmlDiagramClasses(options);
 
         foreach(var method in methods)
             diagram.Add(new UmlComponent(method.Name));

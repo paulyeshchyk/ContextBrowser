@@ -28,19 +28,15 @@ public class UndefinedInvocationResolver
         var invocationSemanticModel = FindSemanticModel(byInvocation);
         if(invocationSemanticModel == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Semantic model was not defined for {byInvocation}");
-            var result = byInvocation.GetMethodInfoFromSyntax();
-
-            return result;
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Semantic model was not defined for {byInvocation}");
+            return byInvocation.GetMethodInfoFromSyntax();
         }
 
         var symbol = GetMethodSymbol(byInvocation, invocationSemanticModel, cancellationToken);
         if(symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Symbol was not resolved for invocation {byInvocation}");
-            var result = byInvocation.GetMethodInfoFromSyntax();
-
-            return result;
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Symbol was not resolved for invocation {byInvocation}");
+            return byInvocation.GetMethodInfoFromSyntax();
         }
         return symbol.BuildDto();
     }

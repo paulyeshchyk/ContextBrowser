@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.DiagramFactory.Model;
+﻿namespace UmlKit.Model.Options;
 
 public enum DiagramDirection
 {

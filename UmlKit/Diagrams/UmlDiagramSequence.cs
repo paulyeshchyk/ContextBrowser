@@ -1,4 +1,5 @@
 ﻿using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace UmlKit.Diagrams;
 
@@ -10,6 +11,9 @@ public class UmlDiagramSequence : UmlDiagram
     private readonly HashSet<UmlParticipant> _participants = new();
     private readonly List<UmlSequence> _transitions = new();
     private readonly List<UmlTransitionBlock> transitionBlocks = new();
+    public UmlDiagramSequence(ContextTransitionDiagramBuilderOptions options) : base(options)
+    {
+    }
 
     public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
@@ -54,9 +58,12 @@ public class UmlDiagramSequence : UmlDiagram
 
         if(!block.IsActivated)
         {
-            block.Activate = new UmlActivate(from.ShortName);
-            block.Deactivate = new UmlDeactivate(from.ShortName);
-            block.MarkActivated();
+            if(_options.UseActivation)
+            {
+                block.Activate = new UmlActivate(from.ShortName);
+                block.Deactivate = new UmlDeactivate(from.ShortName);
+                block.MarkActivated();
+            }
         }
 
         var transition = new UmlSequence(theFrom, theTo, label);
