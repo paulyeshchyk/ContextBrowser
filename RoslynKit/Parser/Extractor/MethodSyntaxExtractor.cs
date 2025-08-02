@@ -21,7 +21,7 @@ public static class MethodSyntaxExtractor
             return default;
         }
 
-        var fullMemberName = methodSymbol.GetFullMemberName() ?? string.Empty;
+        var fullMemberName = methodSymbol.GetFullMemberName();
         return new MethodSyntaxModel() { methodFullName = fullMemberName, methodName = methodName };
     }
 }

@@ -2,7 +2,7 @@
 
 namespace GraphKit.Walkers;
 
-// context: build, ContextInfo
+// context: build, Walker
 // pattern: Visitor
 // pattern note: weak
 public class Walker<T>
@@ -19,6 +19,7 @@ public class Walker<T>
 
     protected bool CanAddToVisited(T item) => !Visited.Contains(item);
 
+    // context: update, Walker
     protected bool AddToVisited(T item, HashSet<T> visited)
     {
         if(!visited.Add(item))

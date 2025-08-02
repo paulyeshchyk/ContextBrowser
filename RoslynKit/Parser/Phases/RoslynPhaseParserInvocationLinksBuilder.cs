@@ -23,18 +23,12 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
     }
 
     // context: csharp, update
-    public void LinkInvocation(TContext callerContextInfo, string? calleeSymbolName, string? calleeShortestName, RoslynCodeParserOptions options)
+    public void LinkInvocation(TContext callerContextInfo, RoslynCalleeSymbolDto symbolDto, RoslynCodeParserOptions options)
     {
-        if(string.IsNullOrWhiteSpace(calleeSymbolName) || string.IsNullOrWhiteSpace(calleeShortestName))
+        var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, symbolDto.Name, symbolDto.ShortName, options);
+        if (calleeContextInfo == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] Callee symbol name is empty");
-            return;
-        }
-
-        var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, calleeSymbolName, calleeShortestName, options);
-        if(calleeContextInfo == null)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] \ncaller: [{callerContextInfo.SymbolName}]\nwants:  [{calleeSymbolName}]");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] \ncaller: [{callerContextInfo.SymbolName}]\nwants:  [{symbolDto.Name}]");
             return;
         }
         callerContextInfo.References.Add(calleeContextInfo);
@@ -43,9 +37,9 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
 
     private TContext? FindOrCreateCalleeNode(TContext callerContextInfo, string calleeSymbolName, string calleeShortestName, RoslynCodeParserOptions options)
     {
-        if(!_collector.ByFullName.TryGetValue(calleeSymbolName, out var calleeContextInfo))
+        if (!_collector.ByFullName.TryGetValue(calleeSymbolName, out var calleeContextInfo))
         {
-            if(!options.CreateFailedCallees)
+            if (!options.CreateFailedCallees)
             {
                 return default;
             }
@@ -56,4 +50,13 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
         }
         return calleeContextInfo;
     }
+}
+
+public record struct RoslynCalleeSymbolDto
+{
+    public bool isPartial { get; init; }
+
+    public string Name { get; init; }
+
+    public string ShortName { get; init; }
 }

@@ -7,15 +7,15 @@ namespace RoslynKit.Extensions;
 // context: csharp, read
 public static class RoslynExtensions
 {
-    public static string? GetShortestName(this ISymbol? symbol)
+    public static string GetShortestName(this ISymbol symbol)
     {
-        return symbol?.Name;
+        return symbol.Name;
         //return symbol?.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
     }
 
-    public static string? GetNameOnly(this ISymbol? symbol)
+    public static string GetNameOnly(this ISymbol symbol)
     {
-        return symbol?.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat);
+        return symbol.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat);
     }
 
     /// <summary>
@@ -25,9 +25,9 @@ public static class RoslynExtensions
     /// <param name="semanticModel">Семантическая модель, к которой принадлежит синтаксическое дерево.</param>
     /// <returns>Полное имя члена или null, если символ не может быть разрешен.</returns>
     // context: csharp, read
-    public static string? GetFullMemberName(this ISymbol? symbol)
+    public static string GetFullMemberName(this ISymbol symbol)
     {
-        return symbol?.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+        return symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
     }
 
     /// <summary>

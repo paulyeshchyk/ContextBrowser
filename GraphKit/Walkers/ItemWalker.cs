@@ -2,7 +2,7 @@
 
 namespace GraphKit.Walkers;
 
-// context: build, ContextInfo
+// context: build, Walker
 // pattern: Visitor
 // pattern note: weak
 public sealed class ItemWalker : Walker<ContextInfo>
@@ -24,7 +24,7 @@ public sealed class ItemWalker : Walker<ContextInfo>
         OnExportItem = onExportItem;
     }
 
-    // context: build, ContextInfo
+    // context: build, Walker
     public void Walk(IEnumerable<ContextInfo> items, bool skipDescendants = false)
     {
         foreach(var item in items)
@@ -33,7 +33,7 @@ public sealed class ItemWalker : Walker<ContextInfo>
         }
     }
 
-    // context: ContextInfo, read
+    // context: build, Walker
     public void Walk(ContextInfo item, bool skipDescendants = false)
     {
         // Добавляем item и все его References в Visited
@@ -51,7 +51,8 @@ public sealed class ItemWalker : Walker<ContextInfo>
         }
     }
 
-    private void TryExport(ContextInfo caller, ContextInfo callee)
+    // context: build, share
+    internal void TryExport(ContextInfo caller, ContextInfo callee)
     {
         var contexts = new HashSet<string>();
         contexts.UnionWith(caller.Contexts);
