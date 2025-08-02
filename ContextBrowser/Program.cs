@@ -1,8 +1,11 @@
-﻿using ContextBrowser.extensions;
+﻿using CommandlineKit;
+using CommandlineKit.Model;
+using ContextBrowser.ExporterKit;
 using ContextBrowser.Infrastructure;
-using ContextBrowser.Infrastructure.CommandLine;
+using ContextBrowser.Infrastructure.Extensions;
 using ContextBrowser.Infrastructure.Samples;
-using ContextBrowser.LoggerKit;
+using LoggerKit;
+using LoggerKit.Model;
 
 namespace ContextBrowser.ContextCommentsParser;
 
@@ -34,10 +37,9 @@ public static class Program
 
         var appLogger = new IndentedAppLogger<AppLevel>(appLogLevelStorage, defaultCW);
 
+        DirectoryUtils.Prepare(options, appLogger.WriteLog);
 
-        DirectorePreparator.Prepare(options, appLogger.WriteLog);
-
-        var contextBuilderModel = ContextModelBuildBuilder.Build(options, appLogger.WriteLog);
+        var contextBuilderModel = ContextModelBuildBuilder.Build(options, appLogger.WriteLog, CancellationToken.None);
 
         ExtraDiagramsBuilder.Build(contextBuilderModel, options, appLogger.WriteLog);
 

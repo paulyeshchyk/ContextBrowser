@@ -1,16 +1,17 @@
-﻿using ContextBrowser.ContextKit.Model;
-using ContextBrowser.DiagramFactory;
-using ContextBrowser.DiagramFactory.Builders;
-using ContextBrowser.extensions;
-using ContextBrowser.LoggerKit;
-using ContextBrowser.UmlKit.Diagrams;
+﻿using ContextBrowser.DiagramFactory;
+using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
+using ContextBrowser.ExporterKit;
+using ContextKit.Model;
+using LoggerKit;
+using LoggerKit.Model;
+using UmlKit.Diagrams;
 
 namespace ContextBrowser.Infrastructure.Samples;
 
-// context: contextInfo, build
+// context: contextInfo, build, html
 public static class DimensionBuilder
 {
-    // context: contextInfo, build
+    // context: contextInfo, build, html
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- DimensionBuilder.Build ---");
@@ -32,7 +33,7 @@ public static class DimensionBuilder
         builder.Build();
     }
 
-    // context: contextInfo, build
+    // context: contextInfo, build, html
     internal static Func<string, bool> AdaptToDomainCallback(List<ContextInfo> contextItems, ContextClassifier classifier, string outputPath, OnWriteLog? onWriteLog, Func<OnWriteLog?, IContextDiagramBuilder> factory)
     {
         return domain =>

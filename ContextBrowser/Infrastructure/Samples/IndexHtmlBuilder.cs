@@ -1,12 +1,14 @@
-﻿using ContextBrowser.extensions;
-using ContextBrowser.HtmlKit.Exporter;
-using ContextBrowser.LoggerKit;
+﻿using ContextBrowser.ExporterKit;
+using HtmlKit.Exporter;
+using LoggerKit;
+using LoggerKit.Model;
 
 namespace ContextBrowser.Infrastructure.Samples;
 
+// context: html, build
 public static class IndexHtmlBuilder
 {
-    // context: step3, build
+    // context: html, build
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");

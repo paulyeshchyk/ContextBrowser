@@ -1,6 +1,7 @@
-﻿using ContextBrowser.extensions;
-using ContextBrowser.LoggerKit;
-using ContextBrowser.UmlKit.Exporter;
+﻿using ContextBrowser.ExporterKit;
+using LoggerKit;
+using LoggerKit.Model;
+using UmlKit.Exporter;
 
 namespace ContextBrowser.Infrastructure.Samples;
 

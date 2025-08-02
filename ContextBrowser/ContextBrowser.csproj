@@ -1,15 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-		<LangVersion>11.0</LangVersion>
-    </PropertyGroup>
+	</PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ContextKit\ContextKit.csproj" />
+      <ProjectReference Include="..\GraphKit\GraphKit.csproj" />
+      <ProjectReference Include="..\HtmlKit\HtmlKit.csproj" />
+      <ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
+      <ProjectReference Include="..\RoslynKit\RoslynKit.csproj" />
+      <ProjectReference Include="..\UmlKit\UmlKit.csproj" />
     </ItemGroup>
 
     <ItemGroup>

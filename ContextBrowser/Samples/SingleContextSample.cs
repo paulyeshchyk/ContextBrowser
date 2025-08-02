@@ -24,7 +24,7 @@ public class TaskService
     // context: create, tasking
     public void CreateNewTask(TaskModel task)
     {
-        if (!ValidateTask(task))
+        if(!ValidateTask(task))
             return;
 
         var dto = BuildDto(task);

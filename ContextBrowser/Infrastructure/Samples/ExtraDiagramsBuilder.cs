@@ -1,8 +1,9 @@
-﻿using ContextBrowser.ContextKit.Model;
-using ContextBrowser.exporter;
-using ContextBrowser.extensions;
-using ContextBrowser.LoggerKit;
-using ContextBrowser.UmlKit.Exporter;
+﻿using ContextBrowser.DiagramFactory.Exporters;
+using ContextBrowser.ExporterKit;
+using ContextKit.Model;
+using LoggerKit;
+using LoggerKit.Model;
+using UmlKit.Exporter;
 
 namespace ContextBrowser.Infrastructure.Samples;
 
@@ -15,7 +16,6 @@ public static class ExtraDiagramsBuilder
         onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ExtraDiagramsBuilder.Build ---");
         //ContextMatrixUmlExporter.GenerateCsv(matrix, $"{theOutputPath}matrix.csv");
         //HeatmapExporter.GenerateHeatmapCsv(matrix, $"{theOutputPath}heatmap.csv", unclassifiedPriority);
-
 
         UmlContextPackagesDiagram.Build(model.contextsList, $"{options.outputDirectory}uml.packages.domains.puml");
         UmlContextMethodsOnlyDiagram.Build(model.contextsList, $"{options.outputDirectory}methodlinks.puml");

@@ -1,4 +1,4 @@
-﻿using ContextBrowser.ContextKit.Model;
+﻿using ContextKit.Model;
 
 namespace ContextBrowser.DiagramFactory.Builders;
 

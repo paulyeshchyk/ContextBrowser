@@ -1,11 +1,10 @@
-﻿using ContextBrowser.ContextKit.Model;
-using ContextBrowser.ContextKit.Parser;
-using ContextBrowser.DiagramFactory.Builders;
-using ContextBrowser.exporter.Puml;
-using ContextBrowser.HtmlKit.Builders.Core;
-using ContextBrowser.HtmlKit.Page;
-using ContextBrowser.UmlKit.Diagrams;
+﻿using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
+using ContextBrowser.ExporterKit.Puml;
+using ContextKit.Model;
+using HtmlKit.Builders.Core;
+using HtmlKit.Page;
 using System.Text;
+using UmlKit.Diagrams;
 
 namespace ContextBrowser.DiagramFactory;
 

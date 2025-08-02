@@ -61,104 +61,11 @@ namespace ContextBrowser {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to :root {
-        ///  --link-color: #0077cc;
-        ///  --cell-border-color: #cccccc;
-        ///  --cell-border-color-dark: #c0c0c0;
-        ///  --border-summary: #f3f3f3;
-        ///  --border-metadata: #f3f3f3;
-        ///
-        ///  --hover-background-light: #f0f0f0;
-        ///  --hover-background-dark: #e0e0e0;
-        ///
-        ///  --cell-padding: 6px 10px;
-        ///  --alt-cell-padding: 1px 1px; 
-        ///
-        ///  --link-text-decoration: none;
-        ///  --link-text-align: inherit;
-        ///  --link-color-inherit: inherit;
-        ///  --link-white-space: nowrap;
-        ///  --link-overflow: hidden;
-        ///  --link-text-overflow: ellipsis;
-        ///}
-        ///
-        ////* Вс [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to {&quot;LogLevels&quot;:[{&quot;AppLevel&quot;:&quot;file&quot;,&quot;LogLevel&quot;:&quot;Err&quot;},{&quot;AppLevel&quot;:&quot;Roslyn&quot;,&quot;LogLevel&quot;:&quot;Dbg&quot;},{&quot;AppLevel&quot;:&quot;Puml&quot;,&quot;LogLevel&quot;:&quot;Dbg&quot;},{&quot;AppLevel&quot;:&quot;PumlTransition&quot;,&quot;LogLevel&quot;:&quot;Dbg&quot;},{&quot;AppLevel&quot;:&quot;Html&quot;,&quot;LogLevel&quot;:&quot;Err&quot;}]}.
         /// </summary>
-        internal static string HtmlProducerContentStyle {
+        internal static string DefaultLogLevelConfigJson {
             get {
-                return ResourceManager.GetString("HtmlProducerContentStyle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to document.addEventListener(&apos;DOMContentLoaded&apos;, () =&gt; {
-        /// const table = document.querySelector(&apos;table&apos;);
-        /// const rows = Array.from(table.rows);
-        ///
-        /// rows.forEach(row =&gt; {
-        ///  Array.from(row.cells).forEach((cell, colIndex) =&gt; {
-        ///   cell.addEventListener(&apos;mouseenter&apos;, () =&gt; {
-        ///    rows.forEach(r =&gt; {
-        ///     if (r.cells[colIndex])
-        ///      r.cells[colIndex].classList.add(&apos;hover-col&apos;);
-        ///    });
-        ///    cell.classList.add(&apos;hover-cell&apos;);
-        ///   });
-        ///
-        ///   cell.addEventListener(&apos;mouseleave&apos;, () =&gt; {
-        ///    rows.forEach(r =&gt; {
-        ///   [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string HtmlProducerContentStyleScript {
-            get {
-                return ResourceManager.GetString("HtmlProducerContentStyleScript", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (function shrinkEmbeddedFonts() {
-        ///    const tables = document.querySelectorAll(&quot;.embedded-table&quot;);
-        ///    tables.forEach(table =&gt; {
-        ///        const cells = table.querySelectorAll(&quot;td&quot;);
-        ///        let fontSize = 0.65;
-        ///
-        ///        const testFits = () =&gt; {
-        ///            return [...cells].every(cell =&gt; {
-        ///                const clone = cell.cloneNode(true);
-        ///                clone.style.position = &quot;absolute&quot;;
-        ///                clone.style.visibility = &quot;hidden&quot;;
-        ///                clone.style.whiteSpace = &quot;nowrap&quot;;
-        ///      [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ScriptAutoFontShrink {
-            get {
-                return ResourceManager.GetString("ScriptAutoFontShrink", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to function autoResizeEmbeddedTables() {
-        ///    const tables = document.querySelectorAll(&quot;.embedded-table&quot;);
-        ///    tables.forEach(table =&gt; {
-        ///        let size = 0.7;
-        ///        const min = 0.4;
-        ///
-        ///        while (size &gt;= min) {
-        ///            table.style.fontSize = `${size}em`;
-        ///            const fits = [...table.querySelectorAll(&quot;td&quot;)].every(cell =&gt;
-        ///                cell.scrollWidth &lt;= cell.offsetWidth
-        ///            );
-        ///            if (fits) break;
-        ///            size -= 0.05;
-        ///        }
-        ///    });
-        ///}
-        ///
-        ///document.addEvent [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ScriptAutoShrinkEmbeddedTable {
-            get {
-                return ResourceManager.GetString("ScriptAutoShrinkEmbeddedTable", resourceCulture);
+                return ResourceManager.GetString("DefaultLogLevelConfigJson", resourceCulture);
             }
         }
     }

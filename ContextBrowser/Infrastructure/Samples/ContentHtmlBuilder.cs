@@ -1,13 +1,14 @@
-﻿using ContextBrowser.exporter.HtmlPageSamples;
-using ContextBrowser.extensions;
-using ContextBrowser.LoggerKit;
+﻿using ContextBrowser.ExporterKit;
+using ContextBrowser.ExporterKit.HtmlPageSamples;
+using LoggerKit;
+using LoggerKit.Model;
 
 namespace ContextBrowser.Infrastructure.Samples;
 
-// context: step3, build
+// context: html, build
 public static class ContentHtmlBuilder
 {
-    // context: step3, build
+    // context: html, build
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ContentHtmlBuilder.Build ---");

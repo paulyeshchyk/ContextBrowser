@@ -1,4 +1,6 @@
-﻿using ContextBrowser.ContextKit.Model;
+﻿using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders.Model;
+using ContextBrowser.DiagramFactory.Model;
+using ContextKit.Model;
 
 namespace ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
 
