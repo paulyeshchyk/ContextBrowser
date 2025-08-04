@@ -19,6 +19,7 @@ public class UmlMethodBox : IUmlElement
     // context: uml, share
     public void WriteTo(TextWriter writer)
     {
+        writer.WriteLine();
         if(!string.IsNullOrWhiteSpace(Stereotype))
             writer.WriteLine($"    [{Name}] <<{Stereotype}>>");
         else

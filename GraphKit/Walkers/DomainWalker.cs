@@ -2,7 +2,7 @@
 
 namespace GraphKit.Walkers;
 
-// context: build, ContextInfo
+// context: build, Walker
 // pattern: Visitor
 // pattern note: weak
 public sealed class DomainWalker : Walker<ContextInfo>
@@ -12,6 +12,7 @@ public sealed class DomainWalker : Walker<ContextInfo>
         StartingDomain = startingDomain;
     }
 
+    // context: build, Walker
     public void Walk(List<ContextInfo> allContexts)
     {
         foreach(var item in allContexts.Where(i => i.Domains.Contains(StartingDomain)))

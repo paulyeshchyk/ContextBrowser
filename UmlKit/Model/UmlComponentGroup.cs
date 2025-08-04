@@ -24,6 +24,7 @@ public class UmlComponentGroup : IUmlElement
     // context: uml, share
     public void WriteTo(TextWriter writer)
     {
+        writer.WriteLine();
         writer.WriteLine($"  component \"{Name}\" <<{Stereotype}>> {{");
         foreach(var member in Members)
             member.WriteTo(writer);

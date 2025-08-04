@@ -11,7 +11,7 @@ public static class ContentHtmlBuilder
     // context: html, build
     public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLog? onWriteLog = null)
     {
-        onWriteLog?.Invoke(AppLevel.Puml, LogLevel.Cntx, "--- ContentHtmlBuilder.Build ---");
+        onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Cntx, "--- ContentHtmlBuilder.Build ---");
         HtmlIndexPage.GenerateContextHtmlPages(model.matrix, options.outputDirectory);
     }
 }

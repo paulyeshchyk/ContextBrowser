@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.Samples.Test;
+﻿namespace ContextBrowser.Samples.Foo;
 
 // context: validate, test
 public class A

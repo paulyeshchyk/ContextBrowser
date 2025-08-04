@@ -29,13 +29,17 @@ public static class Program
             return;
         }
 
-        var defaultConfig = AppLoggerLevelStoreConfigurationLoader.LoadConfigurationJson<AppLevel, LogLevel>(options.LogLevelConfig, defaultValue: LogLevel.None);
         var appLogLevelStorage = new AppLoggerLevelStore<AppLevel>();
-        appLogLevelStorage.SetLevels(defaultConfig);
+        appLogLevelStorage.SetLevels(options.LogConfiguration.LogLevels);
 
         var defaultCW = new ConsoleLogWriter();
 
-        var appLogger = new IndentedAppLogger<AppLevel>(appLogLevelStorage, defaultCW);
+        var dependencies = new Dictionary<AppLevel, AppLevel>();
+        dependencies[AppLevel.P_Bld] = AppLevel.P_Cpl;
+        dependencies[AppLevel.P_Rnd] = AppLevel.P_Cpl;
+
+
+        var appLogger = new IndentedAppLogger<AppLevel>(appLogLevelStorage, defaultCW, dependencies: dependencies);
 
         DirectoryUtils.Prepare(options, appLogger.WriteLog);
 

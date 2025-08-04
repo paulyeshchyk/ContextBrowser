@@ -16,6 +16,7 @@ public class UmlPackage : IUmlElement
     // context: uml, share
     public void WriteTo(TextWriter writer)
     {
+        writer.WriteLine();
         writer.WriteLine($"package \"{Name}\" {{");
         foreach(var element in Elements)
             element.WriteTo(writer);

@@ -1,4 +1,5 @@
 ﻿using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace UmlKit.Diagrams;
 
@@ -7,140 +8,110 @@ namespace UmlKit.Diagrams;
 // pattern note: subclassing
 public class UmlDiagramSequence : UmlDiagram
 {
-    private readonly HashSet<UmlParticipant> _participants = new();
+    private readonly Dictionary<string, UmlParticipant> _participants = new();
     private readonly List<UmlSequence> _transitions = new();
-    private readonly List<UmlTransitionBlock> transitionBlocks = new();
+    private readonly List<UmlActivate> _activations = new();
+    private readonly List<UmlDeactivate> _deactivations = new();
+
+    public UmlDiagramSequence(ContextTransitionDiagramBuilderOptions options)
+        : base(options)
+    {
+    }
+
+    public override void AddSelfCallBreak(string name)
+    {
+        Add(new UmlNote(name, UmlNotePosition.Left, $"{name} -> {name}:"));
+    }
+
+    public override void AddSelfCallContinuation(string name)
+    {
+        var from = new UmlParticipant(name);
+        var to = from;
+        var selfTransition = new UmlSequence(from, to, new UmlArrow());
+        Add(selfTransition);
+
+        if(_options.UseActivation)
+            Activate(name);
+    }
 
     public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
+        if(string.IsNullOrWhiteSpace(name))
+            throw new ArgumentNullException(nameof(name));
+
+        if(_participants.ContainsKey(name))
+            return _participants[name];
+
         var result = new UmlParticipant(name, keyword);
-        _participants.Add(result);
+        _participants[name] = result;
+        Add(result);
         return result;
     }
 
     public override UmlDiagram AddParticipant(IUmlElement participant)
     {
-        if(participant is UmlParticipant theParticipant)
+        if(participant is UmlParticipant p && !_participants.ContainsKey(p.ShortName))
         {
-            _participants.Add(theParticipant);
-            return this;
+            _participants[p.ShortName] = p;
+            Add(p);
         }
-
-        throw new ArgumentException($"UmlParticipant is supported only {nameof(participant)}");
+        return this;
     }
 
-    // context: uml, create
     public override IUmlElement AddTransition(string? from, string? to, string? label = null)
     {
-        var theFrom = new UmlParticipant(from);
-        var theTo = new UmlParticipant(to);
+        if(string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
+            throw new ArgumentException($"From({from ?? string.Empty}) and To({to ?? string.Empty}) must not be null or empty");
 
-        return AddTransition(theFrom, theTo, label);
+        var f = AddParticipant(from);
+        var t = AddParticipant(to);
+        return AddTransition((IUmlDeclarable)f, (IUmlDeclarable)t, label);
     }
 
-    // context: uml, create
     public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null)
     {
-        if(from is not UmlParticipant theFrom || to is not UmlParticipant theTo)
-            throw new ArgumentException("Only UmlParticipant is supported for transition");
-
-        // Активируем ТОЛЬКО FROM
-        var block = transitionBlocks.FirstOrDefault(b => b.Subject.ShortName == from.ShortName);
-        if(block == null)
-        {
-            block = new UmlTransitionBlock(from);
-            transitionBlocks.Add(block);
-        }
-
-        if(!block.IsActivated)
-        {
-            block.Activate = new UmlActivate(from.ShortName);
-            block.Deactivate = new UmlDeactivate(from.ShortName);
-            block.MarkActivated();
-        }
-
-        var transition = new UmlSequence(theFrom, theTo, label);
+        var transition = new UmlSequence(from, to, new UmlArrow(), label);
         _transitions.Add(transition);
-
+        Add(transition);
         return transition;
     }
 
-    public override IUmlElement? Activate(string from)
-    {
-        var dto = new UmlDeclarableDto("empty declaration", from);
-        return Activate(dto);
-    }
+    public override IUmlElement? Activate(string from) =>
+        Activate(new UmlDeclarableDto("activation", from));
 
-    public override IUmlElement? Deactivate(string from)
-    {
-        var dto = new UmlDeclarableDto("empty declaration", from);
-        return Deactivate(dto);
-    }
+    public override IUmlElement? Deactivate(string from) =>
+        Deactivate(new UmlDeclarableDto("deactivation", from));
 
     public override IUmlElement? Activate(IUmlDeclarable from)
     {
-        var tb = transitionBlocks.FirstOrDefault(tb => tb.Subject.ShortName == from.ShortName);
-        if(tb == null)
-        {
-            tb = new UmlTransitionBlock(from);
-            transitionBlocks.Add(tb);
-        }
-
-        if(tb.IsActivated)
+        if(!_options.UseActivation)
             return null;
 
-        var result = new UmlActivate(from.ShortName);
-        tb.Activate = result;
-        tb.MarkActivated();
-        return result;
+        var act = new UmlActivate(from.ShortName);
+        _activations.Add(act);
+        Add(act);
+        return act;
     }
 
     public override IUmlElement? Deactivate(IUmlDeclarable from)
     {
-        var tb = transitionBlocks.FirstOrDefault(tb => tb.Subject.ShortName == from.ShortName);
-        if(tb == null)
-        {
-            tb = new UmlTransitionBlock(from);
-            transitionBlocks.Add(tb);
-        }
-
-        if(!tb.IsActivated)
+        if(!_options.UseActivation)
             return null;
 
-        var result = new UmlDeactivate(from.ShortName);
-        tb.Deactivate = result;
-        tb.MarkDeactivated();
-        return result;
+        var deact = new UmlDeactivate(from.ShortName);
+        _deactivations.Add(deact);
+        Add(deact);
+        return deact;
     }
 
     public override void WriteBody(TextWriter writer)
     {
-        foreach(var participant in _participants.Distinct())
-            participant.WriteTo(writer);
+        writer.WriteLine("autonumber");
 
-        writer.WriteLine();
-
-        foreach(var transition in _transitions)
+        // Уже отсортировано при добавлении
+        foreach(var element in _elements.OrderBy(e => e.Key).Select(e => e.Value))
         {
-            var block = transitionBlocks
-                .FirstOrDefault(tb => tb.Subject.ShortName == transition.From.ShortName);
-
-            // Важно: сначала activate, потом сам переход
-            if(block?.Activate is UmlActivate activate)
-            {
-                activate.WriteTo(writer);
-            }
-
-            transition.WriteTo(writer);
-        }
-
-        // В конце — деактивация всех, кто был активирован
-        foreach(var block in transitionBlocks)
-        {
-            if(block.Deactivate is UmlDeactivate deactivate)
-            {
-                deactivate.WriteTo(writer);
-            }
+            element.WriteTo(writer);
         }
     }
 }

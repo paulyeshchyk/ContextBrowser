@@ -1,7 +1,23 @@
-﻿namespace ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders.Model;
+﻿namespace ContextBrowser.DiagramFactory.Model;
 
 public readonly record struct UmlTransitionDto
 {
+    public UmlTransitionDto(string? callerId, string? callerName, string? callerClassName, string? callerMethod, string? calleeId, string? calleeName, string? calleeClassName, string? calleeMethod, string? domain, string? runContext, string? ownerClass, string? ownerMethod)
+    {
+        CallerId = callerId;
+        CallerName = callerName;
+        CallerClassName = callerClassName;
+        CallerMethod = callerMethod;
+        CalleeId = calleeId;
+        CalleeName = calleeName;
+        CalleeClassName = calleeClassName;
+        CalleeMethod = calleeMethod;
+        Domain = domain;
+        RunContext = runContext;
+        OwnerClass = ownerClass;
+        OwnerMethod = ownerMethod;
+    }
+
     public string? CallerId { get; init; }
 
     public string? CallerName { get; init; }
@@ -21,6 +37,10 @@ public readonly record struct UmlTransitionDto
     public string? Domain { get; init; }
 
     public string? RunContext { get; init; }
+
+    public string? OwnerClass { get; init; }
+
+    public string? OwnerMethod { get; init; }
 
     public override int GetHashCode()
     {

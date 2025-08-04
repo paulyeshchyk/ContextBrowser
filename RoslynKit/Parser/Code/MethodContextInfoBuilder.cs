@@ -1,4 +1,4 @@
-using ContextBrowser.ContextKit.Parser;
+﻿using ContextBrowser.ContextKit.Parser;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
@@ -27,25 +27,22 @@ public class MethodContextInfoBuilder<TContext>
     }
 
     // context: csharp, build, contextInfo
-    public IEnumerable<(TContext, MethodDeclarationSyntax)> BuildContextInfoForMethods(SemanticModel semanticModel, string nsName, TContext typeContext, IEnumerable<MethodDeclarationSyntax> methodDeclarationSyntaxies)
+    public List<(TContext context, MethodDeclarationSyntax syntax)> BuildContextInfoForMethods(SemanticModel semanticModel, string ns, TContext parent, IEnumerable<MethodDeclarationSyntax> methods)
     {
         var result = new List<(TContext, MethodDeclarationSyntax)>();
-        foreach(var methodDeclarationSyntax in methodDeclarationSyntaxies)
+
+        foreach(var method in methods)
         {
-            var methodmodel = MethodSyntaxExtractor.Extract(methodDeclarationSyntax, semanticModel);
-            if(methodmodel == null)
-            {
-                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{methodDeclarationSyntax}\" was not resolved in {nsName}");
+            var methodModel = MethodSyntaxExtractor.Extract(method, semanticModel);
+            if(methodModel == null)
                 continue;
-            }
 
+            var context = _factory.Create(parent, ContextInfoElementType.method, ns, methodModel.methodName, methodModel.methodFullName, method, methodModel.spanStart, methodModel.spanEnd);
 
-            var item = BuildContextInfoForMethod(methodmodel, nsName, typeContext, methodDeclarationSyntax);
-            if(item != null)
-            {
-                result.Add((item, methodDeclarationSyntax));
-            }
+            _collector.Add(context);
+            result.Add((context, method));
         }
+
         return result;
     }
 
@@ -54,9 +51,60 @@ public class MethodContextInfoBuilder<TContext>
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"[{methodmodel.methodName}]:Creating method ContextInfo");
 
-        var result = _factory.Create(typeContext, ContextInfoElementType.method, nsName, methodmodel.methodName, methodmodel.methodFullName, resultSyntax);
+        var result = _factory.Create(typeContext, ContextInfoElementType.method, nsName, methodmodel.methodName, methodmodel.methodFullName, resultSyntax, methodmodel.spanStart, methodmodel.spanEnd);
         _collector.Add(result);
 
         return result;
+    }
+}
+
+public static class ClassLevelForeignInstanceScanner
+{
+    public static void MarkForeignInstanceCalls<T>(SemanticModel semanticModel, MemberDeclarationSyntax classNode, IContextCollector<T> collector)
+        where T : IContextWithReferences<T>
+    {
+        var fieldInitializers = classNode.DescendantNodes().OfType<FieldDeclarationSyntax>();
+
+        var createdInstances = new Dictionary<string, string>();
+
+        foreach(var field in fieldInitializers)
+        {
+            foreach(var variable in field.Declaration.Variables)
+            {
+                if(variable.Initializer?.Value is ObjectCreationExpressionSyntax creation)
+                {
+                    var variableName = variable.Identifier.Text;
+                    var typeSymbol = semanticModel.GetSymbolInfo(creation.Type).Symbol;
+
+                    if(!string.IsNullOrEmpty(variableName) && typeSymbol != null)
+                    {
+                        createdInstances[variableName] = typeSymbol.ToDisplayString();
+                    }
+                }
+            }
+        }
+
+        var invocations = classNode.DescendantNodes().OfType<InvocationExpressionSyntax>();
+
+        foreach(var invocation in invocations)
+        {
+            if(invocation.Expression is MemberAccessExpressionSyntax access &&
+                access.Expression is IdentifierNameSyntax idName)
+            {
+                var varName = idName.Identifier.Text;
+                if(!createdInstances.TryGetValue(varName, out var targetClass))
+                    continue;
+
+                var symbol = semanticModel.GetSymbolInfo(access).Symbol;
+                if(symbol == null)
+                    continue;
+
+                var context = collector.ByFullName.GetValueOrDefault(symbol.ToDisplayString());
+                if(context != null)
+                {
+                    context.IsForeignInstance = true;
+                }
+            }
+        }
     }
 }

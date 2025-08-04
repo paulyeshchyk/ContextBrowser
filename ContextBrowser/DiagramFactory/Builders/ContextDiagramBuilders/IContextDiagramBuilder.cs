@@ -1,9 +1,9 @@
-﻿using UmlKit.Diagrams;
+﻿using ContextBrowser.DiagramFactory.Model;
 using ContextKit.Model;
 
 namespace ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
 
 public interface IContextDiagramBuilder
 {
-    bool Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier, UmlDiagram target);
+    SortedList<int, UmlTransitionDto>? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier);
 }

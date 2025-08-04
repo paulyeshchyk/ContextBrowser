@@ -21,8 +21,8 @@ public static class MethodSyntaxExtractor
             return default;
         }
 
-        var fullMemberName = methodSymbol.GetFullMemberName() ?? string.Empty;
-        return new MethodSyntaxModel() { methodFullName = fullMemberName, methodName = methodName };
+        var fullMemberName = methodSymbol.GetFullMemberName();
+        return new MethodSyntaxModel() { methodFullName = fullMemberName, methodName = methodName, spanStart = resultSyntax.Span.Start, spanEnd = resultSyntax.Span.End };
     }
 }
 
@@ -31,4 +31,6 @@ public record MethodSyntaxModel
 {
     public string? methodName;
     public string? methodFullName;
+    public int spanStart;
+    public int spanEnd;
 }

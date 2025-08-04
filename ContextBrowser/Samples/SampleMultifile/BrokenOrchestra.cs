@@ -1,6 +1,6 @@
-﻿namespace ContextBrowser.Samples.Test.Multifile;
+﻿namespace ContextBrowser.Samples.SampleMultifile;
 
-// context: create, sample.broken
+// context: create, build, sample.broken
 public class BrokenOrchestra
 {
     public readonly BrokenContextReader Reader = new BrokenContextReader();

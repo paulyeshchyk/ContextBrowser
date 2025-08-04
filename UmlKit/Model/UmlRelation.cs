@@ -19,6 +19,7 @@ public class UmlRelation : IUmlElement
     // context: uml, share
     public void WriteTo(TextWriter writer)
     {
+        writer.WriteLine();
         writer.WriteLine($"{From} --> {To}");
     }
 }

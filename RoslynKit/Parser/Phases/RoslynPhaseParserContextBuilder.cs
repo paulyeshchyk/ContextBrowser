@@ -111,6 +111,7 @@ public class RoslynPhaseParserContextBuilder<TContext>
             return;
         }
 
+        ClassLevelForeignInstanceScanner.MarkForeignInstanceCalls(model, availableSyntax, _collector);
 
         _triviaCommentBuilder.ParseComments(availableSyntax, typeContext);
 
@@ -206,6 +207,7 @@ internal static class TypeDeclarationDyntaxExts
             {
                 var mod = methodDeclarationSyntax.GetModifierType();
                 return mod.HasValue && options.MethodModifierTypes.Contains(mod.Value);
-            });
+            })
+            .OrderBy(m => m.SpanStart);
     }
 }

@@ -53,6 +53,7 @@ internal static class RoslynCodeParserOptionsExts
                    {
                        var modifier = GetClassModifierType(node);
                        return modifier.HasValue && options.ClassModifierTypes.Contains(modifier.Value);
-                   });
+                   })
+                   .OrderBy(n => n.SpanStart);
     }
 }

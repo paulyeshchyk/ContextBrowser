@@ -1,6 +1,7 @@
 ﻿using ContextKit.Model;
 using UmlKit.Diagrams;
 using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace UmlKit.Exporter;
 
@@ -9,9 +10,9 @@ namespace UmlKit.Exporter;
 public static class UmlContextMethodPerActionDomainDiagram
 {
     //context: build, uml
-    public static void Build(Dictionary<ContextContainer, List<string>> matrix, string outputPath)
+    public static void Build(Dictionary<ContextContainer, List<string>> matrix, string outputPath, ContextTransitionDiagramBuilderOptions options)
     {
-        var diagram = new UmlDiagramClasses();
+        var diagram = new UmlDiagramClasses(options);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach(var cell in matrix)

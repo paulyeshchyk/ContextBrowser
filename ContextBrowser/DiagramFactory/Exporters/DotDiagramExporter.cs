@@ -1,4 +1,4 @@
-﻿using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders.Model;
+﻿using ContextBrowser.DiagramFactory.Model;
 
 namespace ContextBrowser.DiagramFactory.Exporters;
 

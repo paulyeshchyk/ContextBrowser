@@ -35,9 +35,15 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public string PlantUmlId => InvalidCharsRegex.Replace(SymbolName, "_");
 
+    public int SpanStart { get; set; } = 0;
+
+    public int SpanEnd { get; set; } = 0;
+
     public SyntaxNode? SyntaxNode { get; set; }
+
+    public bool IsForeignInstance { get; set; } = false;
 
     public override int GetHashCode() => SymbolName.GetHashCode();
 
-    public override bool Equals(object? obj) => obj is ContextInfo other && SymbolName == other.SymbolName;
+    public override bool Equals(object? obj) => obj is ContextInfo other && SymbolName.Equals(other.SymbolName);
 }

@@ -1,10 +1,14 @@
 ﻿using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
+using ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
 using ContextBrowser.ExporterKit.Puml;
+using ContextBrowser.Infrastructure;
+using ContextBrowser.Infrastructure.Compiler;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Page;
+using LoggerKit;
+using LoggerKit.Model;
 using System.Text;
-using UmlKit.Diagrams;
 
 namespace ContextBrowser.DiagramFactory;
 
@@ -14,21 +18,21 @@ internal class HtmlContextDimensionBuilder
     private readonly Dictionary<ContextContainer, List<string>> _matrix;
     private readonly List<ContextInfo> _allContexts;
     private readonly string _outputDirectory;
-    private readonly Func<string, bool> _domainCallback;
-    private readonly Func<IContextDiagramBuilder> _builderFactory;
+    private readonly AppOptions _options;
+    private readonly TransitionRenderer _renderer;
+    private readonly OnWriteLog? _onWriteLog;
+    private Dictionary<string, bool> _renderedSequenceDomains = new Dictionary<string, bool>();
+    private Dictionary<string, bool> _renderedStateDomains = new Dictionary<string, bool>();
 
-    public HtmlContextDimensionBuilder(
-        Dictionary<ContextContainer, List<string>> matrix,
-        List<ContextInfo> allContexts,
-        string outputDirectory,
-        Func<string, bool> domainCallback,
-        Func<IContextDiagramBuilder> builderFactory)
+
+    public HtmlContextDimensionBuilder(Dictionary<ContextContainer, List<string>> matrix, List<ContextInfo> allContexts, string outputDirectory, AppOptions options, OnWriteLog? onWriteLog)
     {
         _matrix = matrix;
         _allContexts = allContexts;
         _outputDirectory = outputDirectory;
-        _domainCallback = domainCallback;
-        _builderFactory = builderFactory;
+        _options = options;
+        _onWriteLog = onWriteLog;
+        _renderer = new TransitionRenderer(onWriteLog);
     }
 
     // context: html, build
@@ -38,31 +42,31 @@ internal class HtmlContextDimensionBuilder
         GenerateHtmlPages();
     }
 
-    private void GenerateDomainDiagrams()
+    // context: html, build
+    internal void GenerateDomainDiagrams()
     {
         var classifier = new ContextClassifier();
 
         foreach(var domain in _matrix.Select(k => k.Key.Domain).Distinct())
         {
-            if(!_domainCallback(domain))
-                continue;
+            _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Compiling Domain [{domain}]", LogLevelNode.Start);
 
-            var diagram = new UmlDiagramState();
-            diagram.SetTitle($"Context: {domain}");
-            diagram.SetSkinParam("componentStyle", "rectangle");
+            var bf = ContextDiagramFactory.Transition(_options, _onWriteLog);
+            var sequenceDiagramCompiler = new SequenceDiagramCompiler(classifier, _outputDirectory, _onWriteLog, _options, bf);
+            var rendered_sequence = sequenceDiagramCompiler.Compile(domain, _allContexts);
+            _renderedSequenceDomains[domain] = rendered_sequence;
 
-            var builder = _builderFactory();
-            var success = builder.Build(domain, _allContexts, classifier, diagram);
+            var bf2 = ContextDiagramFactory.Custom(_options.diagramType, _options, _onWriteLog);
+            var stateDiagramCompiler = new StateDiagramCompiler(classifier, _options, bf2, _outputDirectory, _renderer, _onWriteLog);
+            var rendered_state = stateDiagramCompiler.Compile(domain, _allContexts);
+            _renderedStateDomains[domain] = rendered_state;
 
-            if(success)
-            {
-                var path = Path.Combine(_outputDirectory, $"state_domain_{domain}.puml");
-                diagram.WriteToFile(path);
-            }
+            _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         }
     }
 
-    private void GenerateHtmlPages()
+    // context: html, build
+    internal void GenerateHtmlPages()
     {
         var allActions = _matrix.Keys.Select(k => k.Action).Distinct();
         var allDomains = _matrix.Keys.Select(k => k.Domain).Distinct();
@@ -79,7 +83,7 @@ internal class HtmlContextDimensionBuilder
             string embeddedScript = string.Empty;
             string embeddedContent = string.Empty;
 
-            if(_domainCallback(action))
+            if(_renderedStateDomains.TryGetValue(action, out var rendered_sequence) && rendered_sequence == true)
             {
                 var puml = PumlInjector.InjectDomainEmbeddedHtml(action, _outputDirectory);
                 embeddedScript = puml.EmbeddedScript;
@@ -127,7 +131,7 @@ internal class HtmlContextDimensionBuilder
             string embeddedScript = string.Empty;
             string embeddedContent = string.Empty;
 
-            if(_domainCallback(domain))
+            if(_renderedSequenceDomains.TryGetValue(domain, out var rendered_sequence) && rendered_sequence == true)
             {
                 var puml = PumlInjector.InjectDomainEmbeddedHtml(domain, _outputDirectory);
                 embeddedScript = puml.EmbeddedScript;

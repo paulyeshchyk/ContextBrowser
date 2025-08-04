@@ -17,6 +17,7 @@ public class UmlActivate : IUmlElement, IUmlDeclarable
 
     public void WriteTo(TextWriter writer)
     {
+        writer.WriteLine();
         writer.WriteLine(Declaration);
     }
 }

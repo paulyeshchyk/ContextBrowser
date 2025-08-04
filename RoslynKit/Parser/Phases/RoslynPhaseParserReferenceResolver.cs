@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
 using RoslynKit.Model;
+using RoslynKit.Parser.Extractor;
 using RoslynKit.Parser.Semantic;
 
 namespace RoslynKit.Parser.Phases;
@@ -18,9 +19,9 @@ public class RoslynPhaseParserReferenceResolver<TContext>
     private ISemanticInvocationResolver _semanticInvocationResolver;
     private ISemanticModelBuilder _semanticModelBuilder;
     protected readonly IContextCollector<TContext> _collector;
-    private OnWriteLog? _onWriteLog = null;
+    private OnWriteLog? _onWriteLog;
     protected readonly IContextFactory<TContext> _factory;
-
+    private UndefinedInvocationResolver _invocationResolver;
 
     public RoslynPhaseParserReferenceResolver(IContextCollector<TContext> collector, IContextFactory<TContext> factory, ISemanticModelBuilder modelBuilder, ISemanticInvocationResolver semanticInvocationResolver, OnWriteLog? onWriteLog = null) : base()
     {
@@ -29,6 +30,7 @@ public class RoslynPhaseParserReferenceResolver<TContext>
         _collector = collector;
         _onWriteLog = onWriteLog;
         _factory = factory;
+        _invocationResolver = new UndefinedInvocationResolver(_semanticInvocationResolver, onWriteLog);
     }
 
     // context: csharp, read
@@ -83,10 +85,10 @@ public class RoslynPhaseParserReferenceResolver<TContext>
             return;
         }
 
-        var invocationList = callerSyntaxNode.DescendantNodes().OfType<InvocationExpressionSyntax>();
+        var invocationList = callerSyntaxNode.DescendantNodes().OfType<InvocationExpressionSyntax>().OrderBy(c => c.SpanStart);
         if(!invocationList.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{callerContext.MethodOwner?.Name ?? string.Empty}.{callerContext.Name}]:No invocation found");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"[{callerContext.MethodOwner?.Name ?? string.Empty}.{callerContext.Name}]:No invocation found");
         }
 
         var methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(collector, _factory, _onWriteLog, null);
@@ -94,66 +96,56 @@ public class RoslynPhaseParserReferenceResolver<TContext>
 
         foreach(var invocation in invocationList)
         {
-            var methodSymbol = ResolveSymbol(_semanticInvocationResolver, invocation, cancellationToken);
-            if(methodSymbol == null)
-            {
-                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{callerContext.Name}]:Symbol was not resolved for invocation {invocation}");
-                continue;
-            }
+            var symbolDto = _invocationResolver.ResolveSymbol(invocation, cancellationToken);
 
-            var calleeSymbolName = methodSymbol.GetFullMemberName();
-            var calleeShortestName = methodSymbol.GetShortestName();
-
-            linksInvocationBuilder.LinkInvocation(callerContextInfo, calleeSymbolName, calleeShortestName, options);
+            linksInvocationBuilder.LinkInvocation(callerContextInfo, symbolDto, options);
         }
     }
+}
 
-    // context: csharp, read
-    internal ISymbol? ResolveSymbol(ISemanticInvocationResolver semanticInvocationResolver, InvocationExpressionSyntax byInvocation, CancellationToken cancellationToken)
+internal static class SymbolExts
+{
+    public static RoslynCalleeSymbolDto BuildDto(this ISymbol methodSymbol, int spanStart, int spanEnd)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var invocationSemanticModel = FindSemanticModel(semanticInvocationResolver, byInvocation, byInvocation.SyntaxTree);
-        if(invocationSemanticModel == null)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Semantic model was not defined for {byInvocation}");
-            return null;
-        }
-
-        return GetMethodSymbol(byInvocation, invocationSemanticModel, cancellationToken);
+        return new RoslynCalleeSymbolDto() { Name = methodSymbol.GetFullMemberName(), ShortName = methodSymbol.GetShortestName(), SpanStart = spanStart, SpanEnd = spanEnd };
     }
+}
 
-    // context: csharp, read
-    internal SemanticModel? FindSemanticModel(ISemanticInvocationResolver semanticInvocationResolver, InvocationExpressionSyntax invocation, SyntaxTree? syntaxTree)
+internal static class InvocationExts
+{
+    /// <summary>
+    /// Извлекает имя метода и имя владельца (если есть) из InvocationExpressionSyntax,
+    /// работая только с синтаксическим деревом.
+    /// </summary>
+    /// <param name="invocationExpression">Синтаксический узел вызова метода.</param>
+    /// <returns>Кортеж с именем метода и именем владельца. Имя владельца может быть null.</returns>
+    public static RoslynCalleeSymbolDto GetMethodInfoFromSyntax(this InvocationExpressionSyntax invocationExpression)
     {
-        if(syntaxTree == null)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Tree was not provided for invocation {invocation}");
+        string methodName;
+        string ownerName;
+        bool isPartial;
 
-            return null;
+        var expression = invocationExpression.Expression;
+
+        if(expression is MemberAccessExpressionSyntax memberAccess)
+        {
+            isPartial = false;
+            methodName = memberAccess.Name.Identifier.Text;
+            ownerName = memberAccess.Expression.ToString();
+        }
+        else if(expression is IdentifierNameSyntax identifierName)
+        {
+            isPartial = true;
+            methodName = identifierName.Identifier.Text;
+            ownerName = "__not_parsed__";
+        }
+        else
+        {
+            isPartial = true;
+            methodName = "__not_parsed__";
+            ownerName = "__not_parsed__";
         }
 
-        return semanticInvocationResolver.Resolve(syntaxTree);
-    }
-
-    // context: csharp, read
-    internal IMethodSymbol? GetMethodSymbol(InvocationExpressionSyntax byInvocation, SemanticModel semanticModel, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        // 4. Получаем символ
-        var symbolInfo = semanticModel.GetSymbolInfo(byInvocation, cancellationToken);
-        if(symbolInfo.Symbol == null)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"No SymbolInfo was found for {byInvocation}");
-            return null;
-        }
-
-        if(symbolInfo.Symbol is not IMethodSymbol result)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"SymbolInfo was found for {byInvocation}, but it has no MethodSymbol");
-            return null;
-        }
-
-        return result;
+        return new RoslynCalleeSymbolDto() { isPartial = isPartial, Name = $"{ownerName}.{methodName}", ShortName = methodName };
     }
 }

@@ -16,11 +16,25 @@ public class IndentedAppLogger<T> : AppLogger<T>
     private readonly object _indentationLock = new();
     private readonly bool _printEmptyNodes;
 
+    // Добавляем словарь для хранения зависимостей Child -> Parent
+    private readonly Dictionary<T, T> _dependencies;
+
     public IndentedAppLogger(AppLoggerLevelStore<T> store, ILogWriter writer, char indentedBy = '·', int indenterSize = 4, bool printEmptyNodes = false) : base(store, writer)
     {
         _indentedBy = indentedBy;
         _indenterSize = indenterSize;
         _printEmptyNodes = printEmptyNodes;
+        _dependencies = new Dictionary<T, T>();
+    }
+
+    // Дополнительный конструктор для передачи словаря зависимостей
+    public IndentedAppLogger(AppLoggerLevelStore<T> store, ILogWriter writer, Dictionary<T, T> dependencies, char indentedBy = '·', int indenterSize = 4, bool printEmptyNodes = false)
+        : base(store, writer)
+    {
+        _indentedBy = indentedBy;
+        _indenterSize = indenterSize;
+        _printEmptyNodes = printEmptyNodes;
+        _dependencies = dependencies ?? new Dictionary<T, T>();
     }
 
     // context: log, share
@@ -82,7 +96,30 @@ public class IndentedAppLogger<T> : AppLogger<T>
         var currentIndentation = 0;
         lock(_indentationLock)
         {
-            _indentationLevels.TryGetValue(logKey, out currentIndentation);
+            // Проверяем, существует ли ключ в словаре уровней.
+            // Если да, получаем его значение.
+            if(_indentationLevels.TryGetValue(logKey, out var currentLevel))
+            {
+                currentIndentation = currentLevel;
+            }
+
+            // Если словарь зависимостей не пуст, добавляем отступы родительских уровней
+            if(_dependencies.Any())
+            {
+                if(logKey is T appLevel)
+                {
+                    // Рекурсивно поднимаемся по цепочке зависимостей
+                    var parentAppLevel = appLevel;
+                    while(_dependencies.TryGetValue(parentAppLevel, out var nextParent))
+                    {
+                        if(_indentationLevels.TryGetValue(nextParent, out var parentLevel))
+                        {
+                            currentIndentation += parentLevel;
+                        }
+                        parentAppLevel = nextParent;
+                    }
+                }
+            }
         }
 
         var indentation = new string(_indentedBy, currentIndentation * _indenterSize);
@@ -94,10 +131,5 @@ public class IndentedAppLogger<T> : AppLogger<T>
     protected static object BuildIndentionKey(T appLevel, LogLevel logLevel)
     {
         return appLevel;
-        //return new IndentionExtKey<T, LogLevel>(appLevel, logLevel);
     }
 }
-
-internal record IndentionExtKey<A, L>(A AppLevel, L LogLevel)
-    where A : notnull
-    where L : notnull;

@@ -1,10 +1,10 @@
 ﻿using CommandlineKit.Polyfills;
-using ContextBrowser.DiagramFactory.Model;
 using ContextKit.Matrix;
 using ContextKit.Model;
 using HtmlKit.Model;
+using LoggerKit.Model;
 using RoslynKit.Model;
-using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace ContextBrowser.Infrastructure;
 
@@ -12,10 +12,29 @@ namespace ContextBrowser.Infrastructure;
 public class AppOptions
 {
     [CommandLineArgument("log-config", "JSON configuration for log levels.")]
-    public string LogLevelConfig { get; set; } = Resources.DefaultLogLevelConfigJson;
+    public LogConfiguration<AppLevel, LogLevel> LogConfiguration
+    {
+        get;
+        set;
+    } = new()
+    {
+        LogLevels =
+        {
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Err },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err }
+        }
+    };
 
     [CommandLineArgument("source-path", "The source code path.")]
-    public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\ContextBrowser";//.\\..\\..\\..\\..\\ContextBrowser\\Program.cs
+    public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\";
+
+    //".\\..\\..\\..\\..\\"
+    //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs"
+    //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\AlphaClass.cs";
 
     [CommandLineArgument("output-dir", "The output directory for reports.")]
     public string outputDirectory { get; set; } = ".\\output\\";
@@ -56,7 +75,8 @@ public class AppOptions
             RoslynCodeParserMemberType.@struct
         },
         CustomAssembliesPaths: AssembliesPaths ?? Enumerable.Empty<string>(),
-        CreateFailedCallees: true
+        CreateFailedCallees: true,
+        ShowForeignInstancies: false
     );
 
     public DiagramBuilderKeys diagramType { get; set; } = DiagramBuilderKeys.Transition;
@@ -73,6 +93,7 @@ public class AppOptions
     } = new ContextTransitionDiagramBuilderOptions(
                 detailLevel: DiagramDetailLevel.Summary,
                 direction: DiagramDirection.BiDirectional,
-                defaultParticipantKeyword: UmlParticipantKeyword.Actor,
-                useMethodAsParticipant: true);
+                useMethodAsParticipant: true,
+                useActivation: true,
+                useSelfCallContinuation: true);
 }

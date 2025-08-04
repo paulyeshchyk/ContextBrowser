@@ -11,6 +11,8 @@ public interface IContextWithReferences<T>
 
     string SymbolName { get; set; }
 
+    int SpanStart { get; set; }
+
     HashSet<string> Domains { get; }
 
     ContextInfoElementType ElementType { get; set; }
@@ -19,7 +21,9 @@ public interface IContextWithReferences<T>
 
     HashSet<T> InvokedBy { get; }
 
-    public T? MethodOwner { get; set; }
+    T? MethodOwner { get; set; }
 
-    public SyntaxNode? SyntaxNode { get; set; }
+    SyntaxNode? SyntaxNode { get; set; }
+
+    bool IsForeignInstance { get; set; }
 }

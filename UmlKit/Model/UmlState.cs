@@ -20,6 +20,7 @@ public class UmlState : IUmlElement, IUmlDeclarable
 
     public void WriteTo(TextWriter writer)
     {
+        writer.WriteLine();
         writer.WriteLine(Declaration);
     }
 

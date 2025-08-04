@@ -32,8 +32,9 @@ public class TypeContextInfoBulder<TContext>
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"[{typemodel.typeFullName}]:Creating type ContextInfo");
-
-        var result = _factory.Create(default, typemodel.kind, nsName, typemodel.typeFullName, null, callerSyntaxNode);
+        var spanStart = callerSyntaxNode.Span.Start;
+        var spanEnd = callerSyntaxNode.Span.End;
+        var result = _factory.Create(default, typemodel.kind, nsName, typemodel.typeFullName, null, callerSyntaxNode, spanStart, spanEnd);
         _collector.Add(result);
 
         return result;

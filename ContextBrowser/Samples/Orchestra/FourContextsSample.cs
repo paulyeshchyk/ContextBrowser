@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.Samples.FourContextsSample;
+﻿namespace ContextBrowser.Samples.Orchestra;
 
 // context: create, input
 public class InputProcessor
@@ -46,6 +46,20 @@ public class Notifier
     }
 }
 
+public class Tester
+{
+    public void Test1()
+    {
+    }
+
+    public void Test2()
+    {
+    }
+    public static void TestStatic()
+    {
+    }
+}
+
 // context: create, orchestration
 public class FlowOrchestrator
 {
@@ -54,10 +68,12 @@ public class FlowOrchestrator
     private readonly StorageWriter _storage = new();
     private readonly Notifier _notifier = new();
     public readonly AnotherService Svc = new();
+    public readonly Tester tester = new Tester();
 
     // context: create, orchestration, share
     public void Run(string raw)
     {
+        tester.Test1();
         if(!_input.ValidateInput(raw))
             return;
 
@@ -66,8 +82,9 @@ public class FlowOrchestrator
 
         _storage.Save(transformed);
         _notifier.Notify("default", transformed);
-
+        tester.Test2();
         Svc.DoSomething(transformed);
+        Tester.TestStatic();
     }
 
     //context: create, orchestration, share

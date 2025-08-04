@@ -1,5 +1,6 @@
 ﻿using UmlKit.Diagrams;
 using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace UmlKit.Exporter;
 
@@ -8,9 +9,9 @@ namespace UmlKit.Exporter;
 public static class UmlContextRelationDiagram
 {
     //context: build, uml, links
-    public static void GenerateLinksUml(HashSet<(string From, string To)> links, string outputPath)
+    public static void GenerateLinksUml(HashSet<(string From, string To)> links, string outputPath, ContextTransitionDiagramBuilderOptions options)
     {
-        var diagram = new UmlDiagramClasses();
+        var diagram = new UmlDiagramClasses(options);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach (var (from, to) in links)

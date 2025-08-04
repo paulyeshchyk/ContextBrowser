@@ -1,4 +1,5 @@
 ﻿using UmlKit.Model;
+using UmlKit.Model.Options;
 
 namespace UmlKit.Diagrams;
 
@@ -7,6 +8,22 @@ public class UmlDiagramClasses : UmlDiagram
 {
     private readonly HashSet<UmlState> _states = new();
     private readonly List<UmlTransition> _transitions = new();
+
+    public UmlDiagramClasses(ContextTransitionDiagramBuilderOptions options) : base(options)
+    {
+    }
+
+    public override void AddSelfCallBreak(string name)
+    {
+#warning that is not correct for Class diagram
+        Add(new UmlNote(name, UmlNotePosition.Left, $"{name} -> {name}:"));
+    }
+
+    public override void AddSelfCallContinuation(string name)
+    {
+#warning not working
+        //throw new NotImplementedException();
+    }
 
     // context: uml, create
     public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
@@ -79,7 +96,7 @@ public class UmlDiagramClasses : UmlDiagram
     {
         writer.WriteLine();
 
-        foreach(var element in _elements)
+        foreach(var element in _elements.Values)
         {
             element.WriteTo(writer);
         }
