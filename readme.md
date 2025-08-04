@@ -1,5 +1,4 @@
-
-# Журнал изменений (Release Notes)
+# Release Notes
 
 ### v1.13
 
