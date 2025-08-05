@@ -42,6 +42,17 @@ public readonly record struct UmlTransitionDto
 
     public string? OwnerMethod { get; init; }
 
+    public string Id
+    {
+        get
+        {
+            var list = new List<string?>() { CallerId, CalleeId, Domain }.Where(s => !string.IsNullOrEmpty(s)).Select(s => s!);
+            return (list == null)
+                ? string.Empty
+                : string.Join(".", list);
+        }
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(CallerId, CalleeId, Domain);

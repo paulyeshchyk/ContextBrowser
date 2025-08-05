@@ -1,12 +1,13 @@
 # Release Notes
 
-### v1.14
+### v1.16
 
-#### Git Tag: `v1.14`
+#### Git Tag: `v1.16`
 
-**Дата:** 4 августа 2025 г.
+**Дата:** 5 августа 2025 г.
 
-  * **Тест precomit hook**: Тест
+  * **Новые функции**: **Добавлег локальный plantuml server [[https://github.com/plantuml/plantuml/releases/download/v1.2025.4/plantuml-1.2025.4.jar]]**. 
+  * **Исправления**: Lorem ipsum
 
 -----
 

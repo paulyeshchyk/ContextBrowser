@@ -135,9 +135,8 @@ public class RoslynPhaseParserContextBuilder<TContext>
             return;
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"[{typeContext.Name}]:Iterating methods", LogLevelNode.Start);
-
         var buildItems = _methodContextInfoBuilder.BuildContextInfoForMethods(semanticModel, nsName, typeContext, methodDeclarationSyntaxies);
+
         foreach(var item in buildItems)
         {
             _triviaCommentBuilder.ParseComments(item.Item2, item.Item1);

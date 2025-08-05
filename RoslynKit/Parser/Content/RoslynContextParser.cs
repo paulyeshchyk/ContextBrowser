@@ -69,10 +69,13 @@ public sealed class RoslynContextParser
         var factory = new ContextInfoFactory<ContextInfo>();
         var referenceParser = new RoslynPhaseParserReferenceResolver<ContextInfo>(referenceCollector, factory, modelBuilder, semanticInvocationResolver, onWriteLog);
 
+        onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, "Parsing files", LogLevelNode.Start);
         foreach(var file in files)
         {
             referenceParser.ParseFile(file, options, cancellationToken);
         }
+        onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 

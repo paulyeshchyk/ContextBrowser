@@ -17,7 +17,7 @@ public static class UmlContextComponentDiagram
         var fileName = Path.Combine(targetDirectory, $"composite_{action}_{domain}.puml");
 
         var diagram = new UmlDiagramClasses(options);
-        diagram.SetTitle($"{action.ToUpper()} → {domain}");
+        diagram.SetTitle($"{action.ToUpper()} -> {domain}");
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach(var method in methods)

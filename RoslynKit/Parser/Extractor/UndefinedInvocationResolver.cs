@@ -28,16 +28,19 @@ public class UndefinedInvocationResolver
         var invocationSemanticModel = FindSemanticModel(byInvocation);
         if(invocationSemanticModel == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Semantic model was not defined for {byInvocation}");
-            return byInvocation.GetMethodInfoFromSyntax();
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Semantic model was not defined for [{byInvocation}]");
+            return byInvocation.GetMethodInfoFromSyntax(null, _onWriteLog);
         }
 
         var symbol = GetMethodSymbol(byInvocation, invocationSemanticModel, cancellationToken);
         if(symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Symbol was not resolved for invocation {byInvocation}");
-            return byInvocation.GetMethodInfoFromSyntax();
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Symbol was not resolved for invocation [{byInvocation}]");
+            return byInvocation.GetMethodInfoFromSyntax(null, _onWriteLog);
         }
+
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Symbol was resolved for invocation [{byInvocation}]");
+
         return symbol.BuildDto(byInvocation.Span.Start, byInvocation.Span.End);
     }
 
@@ -47,7 +50,7 @@ public class UndefinedInvocationResolver
         var syntaxTree = invocation.SyntaxTree;
         if(syntaxTree == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Tree was not provided for invocation {invocation}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Tree was not provided for invocation [{invocation}]");
 
             return null;
         }

@@ -22,15 +22,15 @@ public class AppOptions
         {
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Err },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Dbg },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Dbg },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err }
         }
     };
 
     [CommandLineArgument("source-path", "The source code path.")]
-    public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\";
+    public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs";
 
     //".\\..\\..\\..\\..\\"
     //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs"

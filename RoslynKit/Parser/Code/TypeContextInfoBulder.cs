@@ -5,6 +5,8 @@ using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Parser.Extractor;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RoslynKit.Parser.Phases;
 
@@ -31,11 +33,14 @@ public class TypeContextInfoBulder<TContext>
             return default;
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"[{typemodel.typeFullName}]:Creating type ContextInfo");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating type ContextInfo [{typemodel.typeFullName}]", LogLevelNode.Start);
         var spanStart = callerSyntaxNode.Span.Start;
         var spanEnd = callerSyntaxNode.Span.End;
         var result = _factory.Create(default, typemodel.kind, nsName, typemodel.typeFullName, null, callerSyntaxNode, spanStart, spanEnd);
         _collector.Add(result);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Created type ContextInfo: {typemodel.typeFullName}");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"Created type ContextInfo: \r\n{JsonSerializer.Serialize(result, options: new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true })}");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
         return result;
     }

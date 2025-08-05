@@ -37,7 +37,7 @@ public class RoslynPhaseParserReferenceResolver<TContext>
     public void ParseCode(string code, string filePath, RoslynCodeParserOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"parse code: {filePath}");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing code: {filePath}");
 
         // 1. Достаём дерево из файла
         var syntaxTree = CSharpSyntaxTree.ParseText(code, path: filePath, cancellationToken: cancellationToken);
@@ -50,20 +50,29 @@ public class RoslynPhaseParserReferenceResolver<TContext>
             return;
         }
 
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Generating syntax tree: {filePath}");
         // 3. Получаем рут узел
         var root = syntaxTree.GetCompilationUnitRoot(cancellationToken);
 
         // 4. Обрабатываем все методы, зарегистрированные в коллекторе
-        foreach(var method in _collector.GetAll().Where(m => m.ElementType == ContextInfoElementType.method))
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Building method references: {filePath}", LogLevelNode.Start);
+        var theCollection = _collector.GetAll().Where(m => m.ElementType == ContextInfoElementType.method);
+        if(!theCollection.Any())
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"No method references found in: {filePath}");
+        }
+
+        foreach(var method in theCollection)
         {
             BuildReferences(method, _collector, options, cancellationToken);
         }
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     // context: csharp, read
     public void ParseFile(string filePath, RoslynCodeParserOptions options, CancellationToken cancellationToken)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"read file: {filePath}");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing file: {filePath}");
 
         var code = File.ReadAllText(filePath);
         ParseCode(code, filePath, options, cancellationToken);
@@ -72,9 +81,10 @@ public class RoslynPhaseParserReferenceResolver<TContext>
     // context: csharp, read
     protected void BuildReferences(TContext callerContext, IContextCollector<TContext> collector, RoslynCodeParserOptions options, CancellationToken cancellationToken)
     {
-        if(string.IsNullOrWhiteSpace(callerContext.SymbolName) || !collector.ByFullName.TryGetValue(callerContext.SymbolName, out var callerContextInfo))
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Building method reference [{callerContext.Name}]");
+        if(string.IsNullOrWhiteSpace(callerContext.SymbolName) || !collector.BySymbolDisplayName.TryGetValue(callerContext.SymbolName, out var callerContextInfo))
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{callerContext.SymbolName}]:Symbol not found in {collector.ByFullName}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{callerContext.SymbolName}]:Symbol not found in {collector.BySymbolDisplayName}");
             return;
         }
 
@@ -94,12 +104,18 @@ public class RoslynPhaseParserReferenceResolver<TContext>
         var methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(collector, _factory, _onWriteLog, null);
         var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(collector, _onWriteLog, methodContextInfoBuilder);
 
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Building invocations [{callerContext.Name}]", LogLevelNode.Start);
+        if(!invocationList.Any())
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"No invocations found [{callerContext.Name}]");
+        }
         foreach(var invocation in invocationList)
         {
             var symbolDto = _invocationResolver.ResolveSymbol(invocation, cancellationToken);
 
             linksInvocationBuilder.LinkInvocation(callerContextInfo, symbolDto, options);
         }
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 }
 
@@ -107,7 +123,7 @@ internal static class SymbolExts
 {
     public static RoslynCalleeSymbolDto BuildDto(this ISymbol methodSymbol, int spanStart, int spanEnd)
     {
-        return new RoslynCalleeSymbolDto() { Name = methodSymbol.GetFullMemberName(), ShortName = methodSymbol.GetShortestName(), SpanStart = spanStart, SpanEnd = spanEnd };
+        return new RoslynCalleeSymbolDto() { Name = methodSymbol.GetFullMemberName(), ShortName = methodSymbol.GetShortestName(), SpanStart = spanStart, SpanEnd = spanEnd, Symbol = methodSymbol };
     }
 }
 
@@ -119,12 +135,11 @@ internal static class InvocationExts
     /// </summary>
     /// <param name="invocationExpression">Синтаксический узел вызова метода.</param>
     /// <returns>Кортеж с именем метода и именем владельца. Имя владельца может быть null.</returns>
-    public static RoslynCalleeSymbolDto GetMethodInfoFromSyntax(this InvocationExpressionSyntax invocationExpression)
+    public static RoslynCalleeSymbolDto GetMethodInfoFromSyntax(this InvocationExpressionSyntax invocationExpression, ISymbol? symbol, OnWriteLog? onWriteLog)
     {
         string methodName;
         string ownerName;
         bool isPartial;
-
         var expression = invocationExpression.Expression;
 
         if(expression is MemberAccessExpressionSyntax memberAccess)
@@ -132,20 +147,23 @@ internal static class InvocationExts
             isPartial = false;
             methodName = memberAccess.Name.Identifier.Text;
             ownerName = memberAccess.Expression.ToString();
+            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Found new owner and methodname for invocation [{invocationExpression}]: [{ownerName}.{methodName}]");
         }
         else if(expression is IdentifierNameSyntax identifierName)
         {
             isPartial = true;
             methodName = identifierName.Identifier.Text;
             ownerName = "__not_parsed__";
+            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Composed new owner and methodname for invocation [{invocationExpression}]: [{ownerName}.{methodName}]");
         }
         else
         {
             isPartial = true;
             methodName = "__not_parsed__";
             ownerName = "__not_parsed__";
+            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Invocation was not identified [{invocationExpression}]");
         }
 
-        return new RoslynCalleeSymbolDto() { isPartial = isPartial, Name = $"{ownerName}.{methodName}", ShortName = methodName };
+        return new RoslynCalleeSymbolDto() { isPartial = isPartial, Name = $"{ownerName}.{methodName}", ShortName = methodName, Symbol = symbol };
     }
 }

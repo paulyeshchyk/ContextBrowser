@@ -8,7 +8,7 @@ public class Alpha
     // context: initiator, build
     public void Method1()
     {
-        beta.Method2(); // Alpha.Method1 → Beta.Method2
+        beta.Method2();
     }
 
     // context: initiator, build
@@ -26,7 +26,7 @@ public class Beta
     // context: processor, build
     public void Method2()
     {
-        gamma.Method3(); // Beta.Method2 → Gamma.Method3
+        gamma.Method3();
     }
 }
 
@@ -38,6 +38,6 @@ public class Gamma
     // context: bridge, build
     public void Method3()
     {
-        alpha.Method5(); // Gamma.Method3 → Alpha.Method5 (переход в исходный класс)
+        alpha.Method5();
     }
 }

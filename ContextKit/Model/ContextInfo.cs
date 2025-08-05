@@ -19,9 +19,21 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public string? Namespace { get; set; }
 
-    public ContextInfo? ClassOwner { get; set; }
+    private ContextInfo? _classOwner { get; set; }
 
-    public ContextInfo? MethodOwner { get; set; }
+    public ContextInfo? ClassOwner
+    {
+        get { return _classOwner; }
+        set { _classOwner = value; }
+    }
+
+    private ContextInfo? _methodOwner;
+
+    public ContextInfo? MethodOwner
+    {
+        get { return _methodOwner; }
+        set { _methodOwner = value; }
+    }
 
     public string? Action { get; set; }
 

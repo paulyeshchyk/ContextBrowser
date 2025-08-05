@@ -8,7 +8,7 @@ public interface IContextCollector<T>
 
     IEnumerable<T> GetAll();
 
-    public Dictionary<string, T> ByFullName { get; }
+    public Dictionary<string, T> BySymbolDisplayName { get; }
 }
 
 // context: ContextInfo, build
@@ -17,11 +17,11 @@ public class ContextInfoCollector<T> : IContextCollector<T>
 {
     public readonly List<T> Collection = new List<T>();
 
-    public Dictionary<string, T> ByFullName { get; }
+    public Dictionary<string, T> BySymbolDisplayName { get; }
 
     public ContextInfoCollector()
     {
-        ByFullName = new Dictionary<string, T>(StringComparer.Ordinal);
+        BySymbolDisplayName = new Dictionary<string, T>(StringComparer.Ordinal);
     }
 
     // context: ContextInfo, read
@@ -31,15 +31,15 @@ public class ContextInfoCollector<T> : IContextCollector<T>
     public void Add(T info)
     {
         Collection.Add(info);
-        if(!string.IsNullOrWhiteSpace(info.SymbolName))
-            ByFullName[info.SymbolName] = info;
+        if (!string.IsNullOrWhiteSpace(info.SymbolName))
+            BySymbolDisplayName[info.SymbolName] = info;
     }
 }
 
 public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    public Dictionary<string, TContext> ByFullName { get; }
+    public Dictionary<string, TContext> BySymbolDisplayName { get; }
 
     private readonly List<TContext> _existing;
 
@@ -47,7 +47,7 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     {
         _existing = existing.ToList();
 
-        ByFullName = _existing
+        BySymbolDisplayName = _existing
             .Where(x => !string.IsNullOrWhiteSpace(x.SymbolName))
             .GroupBy(x => x.SymbolName!)
             .ToDictionary(

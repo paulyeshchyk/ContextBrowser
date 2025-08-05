@@ -1,0 +1,1 @@
+java -jar plantuml-1.2025.4.jar -picoweb

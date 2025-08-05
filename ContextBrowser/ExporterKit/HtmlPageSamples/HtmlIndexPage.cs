@@ -18,7 +18,7 @@ public static class HtmlIndexPage
             var fileName = $"composite_{action}_{domain}.html";
             var filePath = Path.Combine(outputDirectory, fileName);
 
-            var title = $" {action}  →  {domain} ";
+            var title = $" {action}  ->  {domain} ";
             var methodCount = cell.Value.Count;
             var distinctMethods = cell.Value.Distinct();
 
@@ -40,7 +40,7 @@ public static class HtmlIndexPage
 
                 HtmlBuilderFactory.Body.With(writer,() =>
                 {
-                    HtmlBuilderFactory.H1.Cell(writer, $"{action.ToUpper()} → {domain}");
+                    HtmlBuilderFactory.H1.Cell(writer, $"{action.ToUpper()} -> {domain}");
                     HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methodCount}");
 
                     HtmlBuilderFactory.Ul.With(writer,() =>

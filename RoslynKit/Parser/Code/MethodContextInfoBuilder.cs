@@ -5,6 +5,8 @@ using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Parser.Extractor;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RoslynKit.Parser.Phases;
 
@@ -30,26 +32,40 @@ public class MethodContextInfoBuilder<TContext>
     public List<(TContext context, MethodDeclarationSyntax syntax)> BuildContextInfoForMethods(SemanticModel semanticModel, string ns, TContext parent, IEnumerable<MethodDeclarationSyntax> methods)
     {
         var result = new List<(TContext, MethodDeclarationSyntax)>();
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Iterating methods [{parent.Name}]", LogLevelNode.Start);
 
         foreach(var method in methods)
         {
             var methodModel = MethodSyntaxExtractor.Extract(method, semanticModel);
             if(methodModel == null)
+            {
+                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{parent.Name}]: Модель для метода не найдена [{method}]", LogLevelNode.Start);
                 continue;
+            }
 
             var context = _factory.Create(parent, ContextInfoElementType.method, ns, methodModel.methodName, methodModel.methodFullName, method, methodModel.spanStart, methodModel.spanEnd);
+            if(context != null)
+            {
+                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating method ContextInfo: {methodModel.methodName}");
+                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"Creating method ContextInfo: \r\n{JsonSerializer.Serialize(context, options: new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true })}");
+            }
+            else
+            {
+                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"ContextInfo for method not created");
+            }
 
             _collector.Add(context);
             result.Add((context, method));
         }
 
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return result;
     }
 
     // context: csharp, build, contextInfo
     public TContext? BuildContextInfoForMethod(MethodSyntaxModel methodmodel, string nsName, TContext typeContext, MethodDeclarationSyntax? resultSyntax = null)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"[{methodmodel.methodName}]:Creating method ContextInfo");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating method ContextInfo [{methodmodel.methodName}]");
 
         var result = _factory.Create(typeContext, ContextInfoElementType.method, nsName, methodmodel.methodName, methodmodel.methodFullName, resultSyntax, methodmodel.spanStart, methodmodel.spanEnd);
         _collector.Add(result);
@@ -99,7 +115,7 @@ public static class ClassLevelForeignInstanceScanner
                 if(symbol == null)
                     continue;
 
-                var context = collector.ByFullName.GetValueOrDefault(symbol.ToDisplayString());
+                var context = collector.BySymbolDisplayName.GetValueOrDefault(symbol.ToDisplayString());
                 if(context != null)
                 {
                     context.IsForeignInstance = true;
