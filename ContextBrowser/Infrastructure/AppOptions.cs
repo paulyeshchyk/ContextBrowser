@@ -23,7 +23,7 @@ public class AppOptions
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Err },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Dbg },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Dbg },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err }
         }
@@ -93,7 +93,9 @@ public class AppOptions
     } = new ContextTransitionDiagramBuilderOptions(
                 detailLevel: DiagramDetailLevel.Summary,
                 direction: DiagramDirection.BiDirectional,
-                useMethodAsParticipant: true,
+                useMethodAsParticipant: false,
                 useActivation: true,
-                useSelfCallContinuation: true);
+                useSelfCallContinuation: true,
+                useContextTransitionTreeBuilderMode: ContextTransitionTreeBuilderMode.FromParentToChild,
+                collapseCalleeClassIfSameAsCaller: true);
 }

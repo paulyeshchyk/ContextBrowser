@@ -11,6 +11,10 @@ public interface IContextWithReferences<T>
 
     string SymbolName { get; set; }
 
+    ISymbol? Symbol { get; set; }
+
+    T? ClassOwner { get; set; }
+
     int SpanStart { get; set; }
 
     HashSet<string> Domains { get; }

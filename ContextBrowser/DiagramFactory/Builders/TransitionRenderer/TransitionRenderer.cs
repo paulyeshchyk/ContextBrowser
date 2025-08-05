@@ -4,13 +4,12 @@ using LoggerKit;
 using LoggerKit.Model;
 using UmlKit.Diagrams;
 using UmlKit.Model;
-using UmlKit.Model.Options;
 
 namespace ContextBrowser.DiagramFactory.Builders.TransitionRenderer;
 
 public class TransitionRenderer
 {
-    private readonly OnWriteLog? _onWriteLog;
+    protected readonly OnWriteLog? _onWriteLog;
 
     public TransitionRenderer(OnWriteLog? onWriteLog)
     {
@@ -48,8 +47,7 @@ public class TransitionRenderer
         return true;
     }
 
-
-    private static void RenderFullTransition(RenderContext ctx)
+    internal static void RenderFullTransition(RenderContext ctx)
     {
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render Full Transition [{ctx.Caller}.{ctx.CallerMethod} -> {ctx.Callee}.{ctx.CalleeMethod}]", LogLevelNode.Start);
 
@@ -158,46 +156,4 @@ public class TransitionRenderer
             ctx.Diagram.Deactivate(ctx.ActivationStack.Pop());
         }
     }
-
-    private sealed class RenderContext
-    {
-        public UmlTransitionDto T { get; }
-
-        public UmlDiagram Diagram { get; }
-
-        public ContextTransitionDiagramBuilderOptions Options { get; }
-
-        public Stack<string> ActivationStack { get; }
-
-        public OnWriteLog? Log { get; }
-
-        public string? Caller => T.CallerClassName;
-
-        public string? Callee => T.CalleeClassName;
-
-        public string? RunContext => T.RunContext;
-
-        public string? CallerMethod => T.CallerMethod;
-
-        public string? CalleeMethod => T.CalleeMethod;
-
-        public string? Step1 => !string.IsNullOrWhiteSpace(RunContext) ? RunContext : Callee;
-
-        public string? Step2 => !string.IsNullOrWhiteSpace(RunContext) ? Callee : null;
-
-        public RenderContext(
-            UmlTransitionDto t,
-            UmlDiagram diagram,
-            ContextTransitionDiagramBuilderOptions options,
-            Stack<string> activationStack,
-            OnWriteLog? log)
-        {
-            T = t;
-            Diagram = diagram;
-            Options = options;
-            ActivationStack = activationStack;
-            Log = log;
-        }
-    }
 }
-

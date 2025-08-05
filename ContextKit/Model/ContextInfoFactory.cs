@@ -4,7 +4,7 @@ namespace ContextKit.Model;
 
 public interface IContextFactory<T>
 {
-    T Create(T? owner, ContextInfoElementType type, string? ns, string? itemName, string? symbolName, SyntaxNode? syntaxNode, int spanStart, int spanEnd);
+    T Create(T? owner, ContextInfoElementType type, string? ns, string? itemName, string? symbolName, SyntaxNode? syntaxNode, int spanStart, int spanEnd, ISymbol? symbol);
 }
 
 // context: ContextInfo, build
@@ -14,7 +14,7 @@ public class ContextInfoFactory<T> : IContextFactory<T>
 {
     public const string SUnknownSymbolName = "unknown symbolname";
 
-    public T Create(T? owner, ContextInfoElementType type, string? ns, string? itemName, string? symbolName, SyntaxNode? syntaxNode, int spanStart, int spanEnd)
+    public T Create(T? owner, ContextInfoElementType type, string? ns, string? itemName, string? symbolName, SyntaxNode? syntaxNode, int spanStart, int spanEnd, ISymbol? symbol)
     {
         var result = new ContextInfo
         {
@@ -25,7 +25,8 @@ public class ContextInfoFactory<T> : IContextFactory<T>
             SymbolName = symbolName ?? SUnknownSymbolName,
             SyntaxNode = syntaxNode,
             SpanStart = spanStart,
-            SpanEnd = spanEnd
+            SpanEnd = spanEnd,
+            Symbol = symbol
         };
 
         // устанавливаем ссылочную информацию

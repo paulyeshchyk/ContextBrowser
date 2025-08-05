@@ -51,6 +51,8 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public int SpanEnd { get; set; } = 0;
 
+    public ISymbol? Symbol { get; set; }
+
     public SyntaxNode? SyntaxNode { get; set; }
 
     public bool IsForeignInstance { get; set; } = false;

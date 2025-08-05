@@ -12,12 +12,25 @@ public record ContextTransitionDiagramBuilderOptions
 
     public bool UseSelfCallContinuation;
 
-    public ContextTransitionDiagramBuilderOptions(DiagramDetailLevel detailLevel, DiagramDirection direction, bool useMethodAsParticipant, bool useActivation, bool useSelfCallContinuation)
+    public ContextTransitionTreeBuilderMode TreeBuilderMode;
+
+    public bool CollapseCalleeClassIfSameAsCaller;
+
+    public ContextTransitionDiagramBuilderOptions(DiagramDetailLevel detailLevel, DiagramDirection direction, bool useMethodAsParticipant, bool useActivation, bool useSelfCallContinuation, ContextTransitionTreeBuilderMode useContextTransitionTreeBuilderMode, bool collapseCalleeClassIfSameAsCaller)
     {
         DetailLevel = detailLevel;
         Direction = direction;
         UseMethodAsParticipant = useMethodAsParticipant;
         UseActivation = useActivation;
         UseSelfCallContinuation = useSelfCallContinuation;
+        TreeBuilderMode = useContextTransitionTreeBuilderMode;
+        CollapseCalleeClassIfSameAsCaller = collapseCalleeClassIfSameAsCaller;
     }
+}
+
+public enum ContextTransitionTreeBuilderMode
+{
+    FromParentToChild,
+    FromChildToParent,
+    BiDirectional
 }

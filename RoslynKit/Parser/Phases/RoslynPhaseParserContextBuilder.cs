@@ -103,8 +103,9 @@ public class RoslynPhaseParserContextBuilder<TContext>
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"Parse type syntax");
 
+        var symbol = model.GetDeclaredSymbol(availableSyntax);
         string nsName = availableSyntax.GetNamespaceName();
-        var typeContext = _typeContextInfoBuilder.BuildContextInfoForType(availableSyntax, model, nsName);
+        var typeContext = _typeContextInfoBuilder.BuildContextInfoForType(availableSyntax, model, nsName, symbol);
         if(typeContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{availableSyntax}\" was not resolved in {nsName}");

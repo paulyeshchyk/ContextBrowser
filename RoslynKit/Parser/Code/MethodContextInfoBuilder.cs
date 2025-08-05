@@ -43,7 +43,7 @@ public class MethodContextInfoBuilder<TContext>
                 continue;
             }
 
-            var context = _factory.Create(parent, ContextInfoElementType.method, ns, methodModel.methodName, methodModel.methodFullName, method, methodModel.spanStart, methodModel.spanEnd);
+            var context = _factory.Create(parent, ContextInfoElementType.method, ns, methodModel.methodName, methodModel.methodFullName, method, methodModel.spanStart, methodModel.spanEnd, methodModel.Symbol);
             if(context != null)
             {
                 _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating method ContextInfo: {methodModel.methodName}");
@@ -67,7 +67,7 @@ public class MethodContextInfoBuilder<TContext>
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating method ContextInfo [{methodmodel.methodName}]");
 
-        var result = _factory.Create(typeContext, ContextInfoElementType.method, nsName, methodmodel.methodName, methodmodel.methodFullName, resultSyntax, methodmodel.spanStart, methodmodel.spanEnd);
+        var result = _factory.Create(typeContext, ContextInfoElementType.method, nsName, methodmodel.methodName, methodmodel.methodFullName, resultSyntax, methodmodel.spanStart, methodmodel.spanEnd, methodmodel.Symbol);
         _collector.Add(result);
 
         return result;

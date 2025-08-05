@@ -15,14 +15,15 @@ public static class MethodSyntaxExtractor
         }
 
         var methodName = resultSyntax.Identifier.Text;
-        var methodSymbol = model.GetDeclaredSymbol(resultSyntax);
-        if(methodSymbol == null)
+        var symbol = model.GetDeclaredSymbol(resultSyntax);
+        if(symbol == null)
         {
+            Console.WriteLine($"[ERR] Symbol not found for {methodName}");
             return default;
         }
 
-        var fullMemberName = methodSymbol.GetFullMemberName();
-        return new MethodSyntaxModel() { methodFullName = fullMemberName, methodName = methodName, spanStart = resultSyntax.Span.Start, spanEnd = resultSyntax.Span.End };
+        var fullMemberName = symbol.GetFullMemberName();
+        return new MethodSyntaxModel() { methodFullName = fullMemberName, methodName = methodName, spanStart = resultSyntax.Span.Start, spanEnd = resultSyntax.Span.End, Symbol = symbol };
     }
 }
 
@@ -33,4 +34,5 @@ public record MethodSyntaxModel
     public string? methodFullName;
     public int spanStart;
     public int spanEnd;
+    public ISymbol? Symbol;
 }

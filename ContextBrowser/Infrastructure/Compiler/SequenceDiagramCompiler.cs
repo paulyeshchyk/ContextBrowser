@@ -18,6 +18,7 @@ public class SequenceDiagramCompiler
     private readonly OnWriteLog? _onWriteLog;
     private readonly AppOptions _options;
     private readonly IContextDiagramBuilder _diagramBuilder;
+    private readonly TransitionRenderer _renderer;
 
     /// <summary>
     /// Создает новый экземпляр компилятора.
@@ -39,6 +40,7 @@ public class SequenceDiagramCompiler
         _onWriteLog = onWriteLog;
         _options = options;
         _diagramBuilder = diagramBuilder;
+        _renderer = new TransitionRenderer(_onWriteLog);
     }
 
     /// <summary>
@@ -64,8 +66,7 @@ public class SequenceDiagramCompiler
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Render domain [{domain}]", LogLevelNode.Start);
 
         // Используем рендерер для отрисовки переходов
-        var renderer = new TransitionRenderer(_onWriteLog);
-        var result = renderer.RenderAllTransitions(diagram, transitions, _options, domain);
+        var result = _renderer.RenderAllTransitions(diagram, transitions, _options, domain);
 
         if(result)
         {
