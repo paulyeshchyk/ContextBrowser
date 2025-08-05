@@ -1,4 +1,4 @@
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 namespace RoslynKit.Loader;
 
@@ -17,17 +17,14 @@ public static class AssemblyLoader
 
         // Собираем все .dll файлы из этой директории как ссылки
         // (Можно фильтровать по имени, чтобы не добавлять все подряд, но для общего парсинга это хороший старт)
-        var references = Directory.GetFiles(runtimeDirectory, "*.dll")
+        var references = Directory.GetFiles(runtimeDirectory, "System.Runtime*.dll")
                                   .Select(path => MetadataReference.CreateFromFile(path))
                                   .ToList();
 
-        AssemblyReferencesBuilder.AddTrustedAssemblies(references);
-
         AssemblyReferencesBuilder.AddExtraAssemblies(references);
-
+        AssemblyReferencesBuilder.AddTrustedAssemblies(references);
         return references;
     }
-
 
     // context: csharp, build
     public static IEnumerable<MetadataReference> Fetch(IEnumerable<string> runtimeDirectory)

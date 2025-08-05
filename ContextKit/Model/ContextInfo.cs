@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using System.Text.RegularExpressions;
 
 namespace ContextKit.Model;
 
@@ -7,7 +6,7 @@ namespace ContextKit.Model;
 // context: ContextInfo, model
 public class ContextInfo : IContextWithReferences<ContextInfo>
 {
-    private static readonly Regex InvalidCharsRegex = new("[^a-zA-Z0-9_]", RegexOptions.Compiled);
+    //private static readonly Regex InvalidCharsRegex = new("[^a-zA-Z0-9_]", RegexOptions.Compiled);
 
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
 
@@ -44,8 +43,6 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
     public HashSet<ContextInfo> InvokedBy { get; set; } = new();
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
-
-    public string PlantUmlId => InvalidCharsRegex.Replace(SymbolName, "_");
 
     public int SpanStart { get; set; } = 0;
 

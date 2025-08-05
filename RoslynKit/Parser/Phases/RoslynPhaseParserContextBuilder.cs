@@ -35,7 +35,7 @@ public class RoslynPhaseParserContextBuilder<TContext>
         _triviaCommentBuilder = new CommentSyntaxTriviaBuilder<TContext>(_commentProcessor);
 
         _typeContextInfoBuilder = new TypeContextInfoBulder<TContext>(_collector, _factory, _onWriteLog);
-        _methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog, default);
+        _methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
     }
 
     // context: csharp, build, contextInfo
@@ -47,11 +47,7 @@ public class RoslynPhaseParserContextBuilder<TContext>
         var availableSyntaxies = options.GetMemberDeclarationSyntaxies(compilationView.unitSyntax);
 
         var model = compilationView.model;
-        foreach(var typeSyntax in availableSyntaxies)
-        {
-            ParseTypeSyntax(typeSyntax, options, model);
-        }
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, string.Empty, LogLevelNode.End);
+        ParseTypeSyntax(availableSyntaxies, options, model);
     }
 
     // context: csharp, build, contextInfo
@@ -93,34 +89,13 @@ public class RoslynPhaseParserContextBuilder<TContext>
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Model has no members: {tree.FilePath}");
         }
-        foreach(var typeSyntax in availableSyntaxies)
-        {
-            ParseTypeSyntax(typeSyntax, options, model);
-        }
+
+        ParseTypeSyntax(availableSyntaxies, options, model);
     }
 
-    private void ParseTypeSyntax(MemberDeclarationSyntax availableSyntax, RoslynCodeParserOptions options, SemanticModel model)
-    {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"Parse type syntax");
-
-        var symbol = model.GetDeclaredSymbol(availableSyntax);
-        string nsName = availableSyntax.GetNamespaceName();
-        var typeContext = _typeContextInfoBuilder.BuildContextInfoForType(availableSyntax, model, nsName, symbol);
-        if(typeContext == null)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{availableSyntax}\" was not resolved in {nsName}");
-            return;
-        }
-
-        ClassLevelForeignInstanceScanner.MarkForeignInstanceCalls(model, availableSyntax, _collector);
-
-        _triviaCommentBuilder.ParseComments(availableSyntax, typeContext);
-
-        ParseMethodDeclarations(availableSyntax, options, model, nsName, typeContext);
-    }
 
     //context: csharp, build
-    protected void ParseMethodDeclarations(MemberDeclarationSyntax availableSyntax, RoslynCodeParserOptions options, SemanticModel semanticModel, string nsName, TContext typeContext)
+    protected void ParseMethodSyntax(MemberDeclarationSyntax availableSyntax, RoslynCodeParserOptions options, SemanticModel semanticModel, string nsName, TContext typeContext)
     {
         if(availableSyntax is not TypeDeclarationSyntax typeSyntax)
         {
@@ -143,6 +118,41 @@ public class RoslynPhaseParserContextBuilder<TContext>
             _triviaCommentBuilder.ParseComments(item.Item2, item.Item1);
         }
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, string.Empty, LogLevelNode.End);
+    }
+
+    private void ParseTypeSyntax(IEnumerable<MemberDeclarationSyntax> availableSyntaxies, RoslynCodeParserOptions options, SemanticModel model)
+    {
+        foreach(var availableSyntax in availableSyntaxies)
+        {
+            if(availableSyntax is not TypeDeclarationSyntax typeSyntax)
+            {
+                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax is not TypeDeclaration syntax");
+                continue;
+            }
+
+            ParseTypeSyntax(typeSyntax, options, model);
+        }
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, string.Empty, LogLevelNode.End);
+    }
+
+    private void ParseTypeSyntax(TypeDeclarationSyntax typeSyntax, RoslynCodeParserOptions options, SemanticModel model)
+    {
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"Parse type syntax");
+
+        var symbol = model.GetDeclaredSymbol(typeSyntax);
+        string nsName = typeSyntax.GetNamespaceName();
+        var typeContext = _typeContextInfoBuilder.BuildContextInfoForType(typeSyntax, model, nsName, symbol);
+        if(typeContext == null)
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {nsName}");
+            return;
+        }
+
+        ClassLevelForeignInstanceScanner.MarkForeignInstanceCalls(model, typeSyntax, _collector);
+
+        _triviaCommentBuilder.ParseComments(typeSyntax, typeContext);
+
+        ParseMethodSyntax(typeSyntax, options, model, nsName, typeContext);
     }
 }
 

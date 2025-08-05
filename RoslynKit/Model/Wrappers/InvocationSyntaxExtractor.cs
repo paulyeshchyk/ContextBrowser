@@ -6,22 +6,41 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Parser.Phases;
 using RoslynKit.Parser.Semantic;
 
-namespace RoslynKit.Parser.Extractor;
+namespace RoslynKit.Model.Wrappers;
 
 //context csharp, builder
-public class UndefinedInvocationResolver
+public class InvocationSyntaxExtractor
 {
     private OnWriteLog? _onWriteLog;
     private ISemanticInvocationResolver _semanticInvocationResolver;
 
-    public UndefinedInvocationResolver(ISemanticInvocationResolver semanticInvocationResolver, OnWriteLog? onWriteLog)
+    public InvocationSyntaxExtractor(ISemanticInvocationResolver semanticInvocationResolver, OnWriteLog? onWriteLog)
     {
         _onWriteLog = onWriteLog;
         _semanticInvocationResolver = semanticInvocationResolver;
     }
 
+    public InvocationSyntaxWrapper? Extract(InvocationExpressionSyntax? resultSyntax, SemanticModel model)
+    {
+        if(resultSyntax == null)
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERR] Syntax not found");
+            return default;
+        }
+
+        var symbol = model.GetSymbolInfo(resultSyntax).Symbol;
+        if(symbol == null)
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERR] Symbol not resolved for {resultSyntax}");
+            return default;
+        }
+
+        return new InvocationSyntaxWrapper(symbol: symbol, syntax: resultSyntax);
+    }
+
+
     // context: csharp, read
-    public RoslynCalleeSymbolDto ResolveSymbol(InvocationExpressionSyntax byInvocation, CancellationToken cancellationToken)
+    public InvocationSyntaxWrapper? ResolveSymbol(InvocationExpressionSyntax byInvocation, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -41,7 +60,7 @@ public class UndefinedInvocationResolver
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Symbol was resolved for invocation [{byInvocation}]");
 
-        return symbol.BuildDto(byInvocation.Span.Start, byInvocation.Span.End);
+        return Extract(byInvocation, invocationSemanticModel);
     }
 
     // context: csharp, read
@@ -59,23 +78,18 @@ public class UndefinedInvocationResolver
     }
 
     // context: csharp, read
-    internal IMethodSymbol? GetMethodSymbol(InvocationExpressionSyntax byInvocation, SemanticModel semanticModel, CancellationToken cancellationToken)
+    internal IMethodSymbol? GetMethodSymbol(InvocationExpressionSyntax invocation, SemanticModel semanticModel, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        var symbolInfo = semanticModel.GetSymbolInfo(invocation.Expression, cancellationToken);
 
-        var symbolInfo = semanticModel.GetSymbolInfo(byInvocation, cancellationToken);
-        if(symbolInfo.Symbol == null)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"No SymbolInfo was found for {byInvocation}");
-            return null;
-        }
+        if(symbolInfo.Symbol is IMethodSymbol method)
+            return method;
 
-        if(symbolInfo.Symbol is not IMethodSymbol result)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"SymbolInfo was found for {byInvocation}, but it has no MethodSymbol");
-            return null;
-        }
+        if(symbolInfo.CandidateSymbols.Length > 0)
+            return symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
 
-        return result;
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[FAIL] No symbol for expression: {invocation.Expression}");
+        return null;
     }
 }

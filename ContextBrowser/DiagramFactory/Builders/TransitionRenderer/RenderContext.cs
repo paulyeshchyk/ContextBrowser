@@ -7,7 +7,7 @@ namespace ContextBrowser.DiagramFactory.Builders.TransitionRenderer;
 
 internal sealed class RenderContext
 {
-    public UmlTransitionDto T { get; }
+    public UmlTransitionDto Transition { get; }
 
     public UmlDiagram Diagram { get; }
 
@@ -17,15 +17,15 @@ internal sealed class RenderContext
 
     public OnWriteLog? Log { get; }
 
-    public string? Caller => T.CallerClassName;
+    public string? Caller => Transition.CallerClassName;
 
-    public string? Callee => T.CalleeClassName;
+    public string? Callee => Transition.CalleeClassName;
 
-    public string? RunContext => T.RunContext;
+    public string? RunContext => Transition.RunContext;
 
-    public string? CallerMethod => T.CallerMethod;
+    public string? CallerMethod => Transition.CallerMethod;
 
-    public string? CalleeMethod => T.CalleeMethod;
+    public string? CalleeMethod => Transition.CalleeMethod;
 
     public string? Step1 => !string.IsNullOrWhiteSpace(RunContext) ? RunContext : Callee;
 
@@ -38,7 +38,7 @@ internal sealed class RenderContext
         Stack<string> activationStack,
         OnWriteLog? log)
     {
-        T = t;
+        Transition = t;
         Diagram = diagram;
         Options = options;
         ActivationStack = activationStack;

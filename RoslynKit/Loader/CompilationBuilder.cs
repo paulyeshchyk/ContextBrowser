@@ -8,16 +8,23 @@ namespace RoslynKit.Loader;
 // context: csharp, build
 public static class CompilationBuilder
 {
+    private static string PsoudoCodeInject(string filePath)
+    {
+        var code = File.ReadAllText(filePath);
+        if(!code.Contains("using System;", StringComparison.Ordinal))
+        {
+            // Вставим в самое начало, добавим отступ
+            code = "using System;\n" + code;
+        }
+        return code;
+    }
+
     // context: csharp, build
     public static Dictionary<SyntaxTree, SemanticModel> BuildModels(IEnumerable<string> codeFiles, RoslynCodeParserOptions options, OnWriteLog? onWriteLog = null, CancellationToken cancellationToken = default)
     {
         // 1. Читаем все файлы и создаём деревья с путями
         var syntaxTrees = codeFiles
-            .Select(filePath =>
-                CSharpSyntaxTree.ParseText(
-                    File.ReadAllText(filePath),
-                    path: filePath,
-                    cancellationToken: cancellationToken))
+            .Select(filePath => CSharpSyntaxTree.ParseText(PsoudoCodeInject(filePath), path: filePath, cancellationToken: cancellationToken))
             .ToList();
 
         // 2. Создаём единый Compilation
@@ -35,20 +42,18 @@ public static class CompilationBuilder
     }
 
     // context: csharp, build
-    public static CSharpCompilation Build(SyntaxTree syntaxTree, IEnumerable<string> customAssembliesPaths, string name = "Parser")
-    {
-        return CSharpCompilation.Create(name)
-                    .AddSyntaxTrees(syntaxTree)
-                    .AddReferences(AssemblyLoader.Fetch())
-                    .AddReferences(AssemblyLoader.Fetch(customAssembliesPaths));
-    }
-
-    // context: csharp, build
     public static CSharpCompilation Build(IEnumerable<SyntaxTree> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name = "Parser")
     {
-        return CSharpCompilation.Create(name)
+        var compilation = CSharpCompilation.Create(name, options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                     .AddSyntaxTrees(syntaxTrees)
-                    .AddReferences(AssemblyLoader.Fetch())
-                    .AddReferences(AssemblyLoader.Fetch(customAssembliesPaths));
+                    .AddReferences(AssemblyLoader.Fetch());
+
+        var diags = compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error);
+        foreach(var diagnostic in diags)
+        {
+            Console.WriteLine(diagnostic.ToString());
+        }
+
+        return compilation;
     }
 }

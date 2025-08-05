@@ -5,9 +5,8 @@ using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Extensions;
 using RoslynKit.Model;
-using RoslynKit.Parser.Extractor;
+using RoslynKit.Model.Wrappers;
 using RoslynKit.Parser.Semantic;
 
 namespace RoslynKit.Parser.Phases;
@@ -21,7 +20,7 @@ public class RoslynPhaseParserReferenceResolver<TContext>
     protected readonly IContextCollector<TContext> _collector;
     private OnWriteLog? _onWriteLog;
     protected readonly IContextFactory<TContext> _factory;
-    private UndefinedInvocationResolver _invocationResolver;
+    private InvocationSyntaxExtractor _invocationResolver;
 
     public RoslynPhaseParserReferenceResolver(IContextCollector<TContext> collector, IContextFactory<TContext> factory, ISemanticModelBuilder modelBuilder, ISemanticInvocationResolver semanticInvocationResolver, OnWriteLog? onWriteLog = null) : base()
     {
@@ -30,7 +29,7 @@ public class RoslynPhaseParserReferenceResolver<TContext>
         _collector = collector;
         _onWriteLog = onWriteLog;
         _factory = factory;
-        _invocationResolver = new UndefinedInvocationResolver(_semanticInvocationResolver, onWriteLog);
+        _invocationResolver = new InvocationSyntaxExtractor(_semanticInvocationResolver, onWriteLog);
     }
 
     // context: csharp, read
@@ -101,8 +100,9 @@ public class RoslynPhaseParserReferenceResolver<TContext>
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"[{callerContext.MethodOwner?.Name ?? string.Empty}.{callerContext.Name}]:No invocation found");
         }
 
-        var methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(collector, _factory, _onWriteLog, null);
-        var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(collector, _onWriteLog, methodContextInfoBuilder);
+        var typeContextInfoBuilder = new TypeContextInfoBulder<TContext>(collector, _factory, _onWriteLog);
+        var methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(collector, _factory, _onWriteLog);
+        var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(collector, _onWriteLog, methodContextInfoBuilder, typeContextInfoBuilder);
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Building invocations [{callerContext.Name}]", LogLevelNode.Start);
         if(!invocationList.Any())
@@ -112,58 +112,13 @@ public class RoslynPhaseParserReferenceResolver<TContext>
         foreach(var invocation in invocationList)
         {
             var symbolDto = _invocationResolver.ResolveSymbol(invocation, cancellationToken);
-
+            if(symbolDto == null)
+            {
+                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"No invocations resolved [{invocation}]");
+                continue;
+            }
             linksInvocationBuilder.LinkInvocation(callerContextInfo, symbolDto, options);
         }
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
-    }
-}
-
-internal static class SymbolExts
-{
-    public static RoslynCalleeSymbolDto BuildDto(this ISymbol methodSymbol, int spanStart, int spanEnd)
-    {
-        return new RoslynCalleeSymbolDto() { Name = methodSymbol.GetFullMemberName(), ShortName = methodSymbol.GetShortestName(), SpanStart = spanStart, SpanEnd = spanEnd, Symbol = methodSymbol };
-    }
-}
-
-internal static class InvocationExts
-{
-    /// <summary>
-    /// Извлекает имя метода и имя владельца (если есть) из InvocationExpressionSyntax,
-    /// работая только с синтаксическим деревом.
-    /// </summary>
-    /// <param name="invocationExpression">Синтаксический узел вызова метода.</param>
-    /// <returns>Кортеж с именем метода и именем владельца. Имя владельца может быть null.</returns>
-    public static RoslynCalleeSymbolDto GetMethodInfoFromSyntax(this InvocationExpressionSyntax invocationExpression, ISymbol? symbol, OnWriteLog? onWriteLog)
-    {
-        string methodName;
-        string ownerName;
-        bool isPartial;
-        var expression = invocationExpression.Expression;
-
-        if(expression is MemberAccessExpressionSyntax memberAccess)
-        {
-            isPartial = false;
-            methodName = memberAccess.Name.Identifier.Text;
-            ownerName = memberAccess.Expression.ToString();
-            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Found new owner and methodname for invocation [{invocationExpression}]: [{ownerName}.{methodName}]");
-        }
-        else if(expression is IdentifierNameSyntax identifierName)
-        {
-            isPartial = true;
-            methodName = identifierName.Identifier.Text;
-            ownerName = "__not_parsed__";
-            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Composed new owner and methodname for invocation [{invocationExpression}]: [{ownerName}.{methodName}]");
-        }
-        else
-        {
-            isPartial = true;
-            methodName = "__not_parsed__";
-            ownerName = "__not_parsed__";
-            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Invocation was not identified [{invocationExpression}]");
-        }
-
-        return new RoslynCalleeSymbolDto() { isPartial = isPartial, Name = $"{ownerName}.{methodName}", ShortName = methodName, Symbol = symbol };
     }
 }

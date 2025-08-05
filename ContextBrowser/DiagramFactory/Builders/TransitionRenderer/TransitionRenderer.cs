@@ -34,8 +34,8 @@ public class TransitionRenderer
 
             if(!seenTransitions.Add(key) && _options.roslynCodeparserOptions.ShowForeignInstancies)
             {
-                diagram.AddNoteOver(transition.CallerClassName, $"duplicate run call on {transition.CalleeClassName}");
-                diagram.AddNoteOver(transition.CalleeClassName, $"duplicate run call on {transition.CallerClassName}");
+                diagram.AddNoteOver(transition.CallerClassName ?? "unknown callee", $"duplicate run call on {transition.CalleeClassName}");
+                diagram.AddNoteOver(transition.CalleeClassName ?? "unknown callee", $"duplicate run call on {transition.CallerClassName}");
                 continue;
             }
 
@@ -116,11 +116,10 @@ public class TransitionRenderer
 
     private static void AddParticipants(RenderContext ctx, UmlParticipantKeyword defaultParticipantKeyword)
     {
-        foreach(var p in new[] { ctx.T.CallerClassName, ctx.T.CalleeClassName, ctx.T.RunContext }
-                              .Where(x => !string.IsNullOrWhiteSpace(x)))
+        foreach(var p in new[] { ctx.Transition.CallerClassName, ctx.Transition.CalleeClassName, ctx.Transition.RunContext }.Where(x => !string.IsNullOrWhiteSpace(x)))
         {
             ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg,
-                $"Render participant [{p}][{ctx.T.CallerClassName}.{ctx.T.CallerMethod} -> {ctx.T.CalleeClassName}.{ctx.T.CalleeMethod}]");
+                $"Render participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");
 
             ctx.Diagram.AddParticipant(p!, defaultParticipantKeyword);
         }

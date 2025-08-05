@@ -1,10 +1,11 @@
 ﻿using ContextBrowser.ContextKit.Parser;
+using ContextKit.Extensions;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using RoslynKit.Model;
-using RoslynKit.Parser.Extractor;
+using RoslynKit.Model.Wrappers;
 
 namespace RoslynKit.Parser.Phases;
 
@@ -15,23 +16,25 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
     private IContextCollector<TContext> _collector;
     private OnWriteLog? _onWriteLog;
     private readonly MethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
+    private readonly TypeContextInfoBulder<TContext> _typeContextInfoBuilder;
 
-    public RoslynPhaseParserInvocationLinksBuilder(IContextCollector<TContext> collector, OnWriteLog? onWriteLog, MethodContextInfoBuilder<TContext> methodContextInfoBuilder)
+    public RoslynPhaseParserInvocationLinksBuilder(IContextCollector<TContext> collector, OnWriteLog? onWriteLog, MethodContextInfoBuilder<TContext> methodContextInfoBuilder, TypeContextInfoBulder<TContext> typeContextInfoBuilder)
     {
         _collector = collector;
         _onWriteLog = onWriteLog;
         _methodContextInfoBuilder = methodContextInfoBuilder;
+        _typeContextInfoBuilder = typeContextInfoBuilder;
     }
 
     // context: csharp, update
-    public TContext? LinkInvocation(TContext callerContextInfo, RoslynCalleeSymbolDto symbolDto, RoslynCodeParserOptions options)
+    public TContext? LinkInvocation(TContext callerContextInfo, InvocationSyntaxWrapper symbolDto, RoslynCodeParserOptions options)
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Building invocation [{callerContextInfo.Name}]", LogLevelNode.Start);
 
         var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, symbolDto, options);
         if(calleeContextInfo == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] \ncaller: [{callerContextInfo.SymbolName}]\nwants:  [{symbolDto.Name}]");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] \ncaller: [{callerContextInfo.SymbolName}]\nwants:  [{symbolDto.FullName}]");
             return default;
         }
 
@@ -47,11 +50,11 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
     }
 
     // Класс: RoslynPhaseParserInvocationLinksBuilder<TContext>
-    private TContext? FindOrCreateCalleeNode(TContext callerContextInfo, RoslynCalleeSymbolDto symbolDto, RoslynCodeParserOptions options)
+    private TContext? FindOrCreateCalleeNode(TContext callerContextInfo, InvocationSyntaxWrapper symbolDto, RoslynCodeParserOptions options)
     {
         if(symbolDto.Symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[FAIL] Symbol is null in RoslynCalleeSymbolDto for {symbolDto.Name}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[FAIL] Symbol is null in RoslynCalleeSymbolDto for {symbolDto.FullName}");
         }
         else
         {
@@ -59,9 +62,9 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
         }
 
         // 1. Поиск по symbolDto.Name
-        if(_collector.BySymbolDisplayName.TryGetValue(symbolDto.Name, out var calleeContextInfo))
+        if(_collector.BySymbolDisplayName.TryGetValue(symbolDto.FullName, out var calleeContextInfo))
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[OK] Found ContextInfo by SymbolName: {symbolDto.Name}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[OK] Found ContextInfo by SymbolName: {symbolDto.FullName}");
             return calleeContextInfo;
         }
 
@@ -88,31 +91,13 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
             return default;
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[CREATE] Fallback fake callee created for: {symbolDto.Name}");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[CREATE] Fallback fake callee created for: {symbolDto.FullName}");
 
-        var methodmodel = new MethodSyntaxModel
-        {
-            methodName = symbolDto.ShortName,
-            methodFullName = symbolDto.Name,
-            spanStart = symbolDto.SpanStart,
-            spanEnd = symbolDto.SpanEnd
-        };
+        var className = symbolDto.FullName.BeforeFirstDot().ToAlphanumericUnderscore();
+        var typeModel = new TypeSyntaxWrapper(kind: ContextInfoElementType.@class, typeFullName: className, symbolName: className);
+        var typeContext = _typeContextInfoBuilder.BuildContextInfoForType(typeModel, "FakeNamespace");
 
-        return _methodContextInfoBuilder.BuildContextInfoForMethod(methodmodel, "FakeNamespace", callerContextInfo, null);
+        var methodmodel = new MethodSyntaxWrapper(symbol: symbolDto.Symbol, symbolDto.FullName, symbolDto.SpanStart, symbolDto.SpanEnd);
+        return _methodContextInfoBuilder.BuildContextInfoForMethod(typeContext, methodmodel, "FakeNamespace", null);
     }
-}
-
-public record struct RoslynCalleeSymbolDto
-{
-    public bool isPartial { get; init; }
-
-    public string Name { get; init; }
-
-    public string ShortName { get; init; }
-
-    public int SpanStart { get; init; }
-
-    public int SpanEnd { get; init; }
-
-    public ISymbol? Symbol { get; set; }
 }
