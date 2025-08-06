@@ -1,4 +1,4 @@
-﻿using ContextBrowser.Infrastructure.Extensions;
+﻿using UmlKit.Extensions;
 
 namespace UmlKit.Model;
 
@@ -13,7 +13,7 @@ public class UmlActivate : IUmlElement, IUmlDeclarable
 
     public string Declaration => $"activate {this.ParticipantName}";
 
-    public string ShortName => ParticipantName.AlphanumericOnly();
+    public string Alias => ParticipantName.AlphanumericOnly();
 
     public void WriteTo(TextWriter writer)
     {

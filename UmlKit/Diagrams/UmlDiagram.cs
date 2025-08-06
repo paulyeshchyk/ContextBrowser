@@ -8,10 +8,10 @@ namespace UmlKit.Diagrams;
 public abstract class UmlDiagram
 {
     // context: create, uml
-    public abstract IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
+    public abstract IUmlElement AddParticipant(string name, string alias, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
 
     // context: create, uml
-    public abstract UmlDiagram AddParticipant(IUmlElement participant);
+    public abstract UmlDiagram AddParticipant(IUmlElement participant, string alias);
 
     public abstract void AddSelfCallBreak(string name);
 

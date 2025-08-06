@@ -18,9 +18,9 @@ public class UmlSequence : IUmlElement
     public void WriteTo(TextWriter writer)
     {
         var arrowL = Label is not null ? $" : {Label}" : string.Empty;
-        writer.Write($"{From.ShortName}");
+        writer.Write($"{From.Alias}");
         Arrow.WriteTo(writer);
-        writer.Write($"{To.ShortName}{arrowL}");
+        writer.Write($"{To.Alias}{arrowL}");
         writer.WriteLine();
     }
 }

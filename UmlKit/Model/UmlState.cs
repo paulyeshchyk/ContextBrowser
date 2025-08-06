@@ -1,4 +1,4 @@
-﻿using ContextBrowser.Infrastructure.Extensions;
+﻿using UmlKit.Extensions;
 
 namespace UmlKit.Model;
 
@@ -7,7 +7,7 @@ public class UmlState : IUmlElement, IUmlDeclarable
     private const string SUnknownState = "unknown_state";
     protected readonly string _raw;
 
-    public string ShortName => _raw.AlphanumericOnly();
+    public string Alias => _raw.AlphanumericOnly();
 
     public string FullName => $"\"{_raw}\" as {_raw.AlphanumericOnly()}";
 

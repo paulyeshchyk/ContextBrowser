@@ -12,7 +12,7 @@ public class UmlComponent : IUmlElement, IUmlDeclarable
 
     public string Declaration => $"component \"{Name}\"";
 
-    public string ShortName => Name;
+    public string Alias => Name;
 
     public UmlComponent(string? name, string? url = null)
     {

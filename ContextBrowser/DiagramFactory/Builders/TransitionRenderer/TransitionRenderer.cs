@@ -3,6 +3,7 @@ using ContextBrowser.Infrastructure;
 using LoggerKit;
 using LoggerKit.Model;
 using UmlKit.Diagrams;
+using UmlKit.Extensions;
 using UmlKit.Model;
 
 namespace ContextBrowser.DiagramFactory.Builders.TransitionRenderer;
@@ -18,7 +19,7 @@ public class TransitionRenderer
         _onWriteLog = onWriteLog;
     }
 
-    public bool RenderAllTransitions(UmlDiagram diagram, SortedList<int, UmlTransitionDto>? allTransitions, string domain)
+    public bool RenderDiagramTransitions(UmlDiagram diagram, SortedList<int, UmlTransitionDto>? allTransitions, string domain)
     {
         if(allTransitions == null || !allTransitions.Any())
         {
@@ -26,7 +27,7 @@ public class TransitionRenderer
             return false;
         }
 
-        _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Rendering All transitions for [{domain}]", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Rendering Diagram transitions for [{domain}]", LogLevelNode.Start);
         var activationStack = new Stack<string>();
         var seenTransitions = new HashSet<string>();
         var transitonList = allTransitions.OrderBy(t => t.Key).Select(t => t.Value);
@@ -42,16 +43,16 @@ public class TransitionRenderer
             }
 
             var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
-            RenderFullTransition(ctx);
+            RenderSingleTransition(ctx);
         }
 
         _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return true;
     }
 
-    internal static void RenderFullTransition(RenderContext ctx)
+    internal static void RenderSingleTransition(RenderContext ctx)
     {
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render Full Transition [{ctx.Caller}.{ctx.CallerMethod} -> {ctx.Callee}.{ctx.CalleeMethod}]", LogLevelNode.Start);
+        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render Single Transition [{ctx.Caller}.{ctx.CallerMethod} -> {ctx.Callee}.{ctx.CalleeMethod}]", LogLevelNode.Start);
 
         AddParticipants(ctx, UmlParticipantKeyword.Actor);
         MaybeAddSelfCallContinuation(ctx);
@@ -66,11 +67,12 @@ public class TransitionRenderer
 
     private static void RenderCallerToStep1(RenderContext ctx)
     {
-        string? from = ctx.Caller;
-        string? to = ctx.Step1;
+        //TODO: extra convert
+        string? from = ctx.Caller?.AlphanumericOnly();
+        string? to = ctx.Step1?.AlphanumericOnly();
         string? label = ctx.CallerMethod;
 
-        if(from == to)
+        if(from?.Equals(to) ?? false)
             ctx.Diagram.AddSelfCallBreak(from);
 
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render CallerToStep1 transition [{from} -> {to}]:<{label}>");
@@ -118,13 +120,17 @@ public class TransitionRenderer
 
     private static void AddParticipants(RenderContext ctx, UmlParticipantKeyword defaultParticipantKeyword)
     {
+        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Adding paticipants for context: {ctx.RunContext}", LogLevelNode.Start);
         foreach(var p in new[] { ctx.Transition.CallerClassName, ctx.Transition.CalleeClassName, ctx.Transition.RunContext }.Where(x => !string.IsNullOrWhiteSpace(x)))
         {
+            if(string.IsNullOrEmpty(p))
+                continue;
             ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg,
-                $"Render participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");
+                $"Adding participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");
 
-            ctx.Diagram.AddParticipant(p!, defaultParticipantKeyword);
+            ctx.Diagram.AddParticipant(p, p.AlphanumericOnly(), defaultParticipantKeyword);
         }
+        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     private static void MaybeAddSelfCallContinuation(RenderContext ctx)

@@ -26,14 +26,14 @@ public class UmlDiagramClasses : UmlDiagram
     }
 
     // context: uml, create
-    public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public override IUmlElement AddParticipant(string name, string alias, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
         var result = new UmlState(name);
         _states.Add(result);
         return result;
     }
 
-    public override UmlDiagram AddParticipant(IUmlElement participant)
+    public override UmlDiagram AddParticipant(IUmlElement participant, string alias)
     {
         if(participant is UmlState state)
         {
@@ -83,12 +83,12 @@ public class UmlDiagramClasses : UmlDiagram
 
     public override IUmlElement Activate(IUmlDeclarable from)
     {
-        return new UmlActivate(from.ShortName);
+        return new UmlActivate(from.Alias);
     }
 
     public override IUmlElement Deactivate(IUmlDeclarable from)
     {
-        return new UmlDeactivate(from.ShortName);
+        return new UmlDeactivate(from.Alias);
     }
 
     // context: uml, share

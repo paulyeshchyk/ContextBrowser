@@ -1,4 +1,5 @@
-﻿using UmlKit.Model;
+﻿using UmlKit.Extensions;
+using UmlKit.Model;
 using UmlKit.Model.Options;
 
 namespace UmlKit.Diagrams;
@@ -25,7 +26,7 @@ public class UmlDiagramSequence : UmlDiagram
 
     public override void AddSelfCallContinuation(string name)
     {
-        var from = new UmlParticipant(name);
+        var from = new UmlParticipant(name, name.AlphanumericOnly());
         var to = from;
         var selfTransition = new UmlSequence(from, to, new UmlArrow());
         Add(selfTransition);
@@ -34,7 +35,7 @@ public class UmlDiagramSequence : UmlDiagram
             Activate(name);
     }
 
-    public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public override IUmlElement AddParticipant(string name, string alias, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
         if(string.IsNullOrWhiteSpace(name))
             throw new ArgumentNullException(nameof(name));
@@ -42,17 +43,17 @@ public class UmlDiagramSequence : UmlDiagram
         if(_participants.ContainsKey(name))
             return _participants[name];
 
-        var result = new UmlParticipant(name, keyword);
+        var result = new UmlParticipant(name, alias, keyword);
         _participants[name] = result;
         Add(result);
         return result;
     }
 
-    public override UmlDiagram AddParticipant(IUmlElement participant)
+    public override UmlDiagram AddParticipant(IUmlElement participant, string alias)
     {
-        if(participant is UmlParticipant p && !_participants.ContainsKey(p.ShortName))
+        if(participant is UmlParticipant p && !_participants.ContainsKey(p.Alias))
         {
-            _participants[p.ShortName] = p;
+            _participants[p.Alias] = p;
             Add(p);
         }
         return this;
@@ -63,8 +64,8 @@ public class UmlDiagramSequence : UmlDiagram
         if(string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
             throw new ArgumentException($"From({from ?? string.Empty}) and To({to ?? string.Empty}) must not be null or empty");
 
-        var f = AddParticipant(from);
-        var t = AddParticipant(to);
+        var f = AddParticipant(from, from.AlphanumericOnly());
+        var t = AddParticipant(to, to.AlphanumericOnly());
         return AddTransition((IUmlDeclarable)f, (IUmlDeclarable)t, label);
     }
 
@@ -87,7 +88,8 @@ public class UmlDiagramSequence : UmlDiagram
         if(!_options.UseActivation)
             return null;
 
-        var act = new UmlActivate(from.ShortName);
+#warning dirty hack with AlphaNumeric()
+        var act = new UmlActivate(from.Alias.AlphanumericOnly());
         _activations.Add(act);
         Add(act);
         return act;
@@ -97,8 +99,8 @@ public class UmlDiagramSequence : UmlDiagram
     {
         if(!_options.UseActivation)
             return null;
-
-        var deact = new UmlDeactivate(from.ShortName);
+#warning dirty hack with AlphaNumeric()
+        var deact = new UmlDeactivate(from.Alias.AlphanumericOnly());
         _deactivations.Add(deact);
         Add(deact);
         return deact;

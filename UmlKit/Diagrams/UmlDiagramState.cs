@@ -26,14 +26,14 @@ public class UmlDiagramState : UmlDiagram
         //throw new NotImplementedException();
     }
 
-    public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public override IUmlElement AddParticipant(string name, string alias, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
         var result = new UmlState(name);
         _states.Add(result);
         return result;
     }
 
-    public override UmlDiagram AddParticipant(IUmlElement participant)
+    public override UmlDiagram AddParticipant(IUmlElement participant, string alias)
     {
         if(participant is UmlState theParticipant)
         {
@@ -82,12 +82,12 @@ public class UmlDiagramState : UmlDiagram
 
     public override IUmlElement Activate(IUmlDeclarable from)
     {
-        return new UmlActivate(from.ShortName);
+        return new UmlActivate(from.Alias);
     }
 
     public override IUmlElement Deactivate(IUmlDeclarable from)
     {
-        return new UmlDeactivate(from.ShortName);
+        return new UmlDeactivate(from.Alias);
     }
 
     public override void WriteBody(TextWriter writer)
@@ -114,12 +114,12 @@ public class UmlDiagramState : UmlDiagram
             .ToList();
 
         var possibleStarts = entryTransitions
-            .Select(t => t.To.ShortName)
+            .Select(t => t.To.Alias)
             .Distinct()
             .ToList();
 
         var possibleEnds = exitTransitions
-            .Select(t => t.From.ShortName)
+            .Select(t => t.From.Alias)
             .Distinct()
             .ToList();
 

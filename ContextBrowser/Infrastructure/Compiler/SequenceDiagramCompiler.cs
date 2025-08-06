@@ -66,9 +66,9 @@ public class SequenceDiagramCompiler
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Render domain [{domain}]", LogLevelNode.Start);
 
         // Используем рендерер для отрисовки переходов
-        var result = _renderer.RenderAllTransitions(diagram, transitions, domain);
+        var result = _renderer.RenderDiagramTransitions(diagram, transitions, domain);
 
-        if(result)
+        if (result)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
             var path = Path.Combine(_outputPath, $"sequence_domain_{domain}.puml");

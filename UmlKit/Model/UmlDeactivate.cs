@@ -1,4 +1,4 @@
-﻿using ContextBrowser.Infrastructure.Extensions;
+﻿using UmlKit.Extensions;
 
 namespace UmlKit.Model;
 
@@ -13,11 +13,11 @@ public class UmlDeactivate : IUmlElement, IUmlDeclarable
 
     public string Declaration => $"deactivate {this.ParticipantName}";
 
-    public string ShortName => ParticipantName.AlphanumericOnly();
+    public string Alias => ParticipantName.AlphanumericOnly();
 
     public void WriteTo(TextWriter writer)
     {
-        writer.WriteLine();
         writer.WriteLine(Declaration);
+        writer.WriteLine();
     }
 }

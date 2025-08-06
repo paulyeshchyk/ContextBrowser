@@ -1,4 +1,4 @@
-﻿using ContextBrowser.Infrastructure.Extensions;
+﻿using UmlKit.Extensions;
 
 namespace UmlKit.Model;
 
@@ -9,7 +9,7 @@ public class UmlTransition : IUmlElement
     public readonly string? Label;
     private readonly UmlArrow _arrow;
 
-    public string Declaration => $"{From.ShortName}";
+    public string Declaration => $"{From.Alias}";
 
     public UmlTransition(UmlState from, UmlState to, UmlArrow arrow, string? label = null)
     {
@@ -21,10 +21,10 @@ public class UmlTransition : IUmlElement
 
     public void WriteTo(TextWriter writer)
     {
-        var theLabel = this.Label is not null ? $" : {this.Label.AlphanumericOnly()}" : string.Empty;
-        writer.Write($"{From.ShortName} ");
+        var theLabel = Label is not null ? $" : {Label.AlphanumericOnly()}" : string.Empty;
+        writer.Write($"{From.Alias} ");
         _arrow.WriteTo(writer);
-        writer.Write($" {To.ShortName}");
+        writer.Write($" {To.Alias}");
         writer.Write(theLabel);
         writer.WriteLine();
     }
