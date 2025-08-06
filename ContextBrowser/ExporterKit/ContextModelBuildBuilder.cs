@@ -3,7 +3,7 @@ using ContextBrowser.Infrastructure;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
-using RoslynKit.Parser.Content;
+using RoslynKit.Phases;
 
 namespace ContextBrowser.ExporterKit;
 

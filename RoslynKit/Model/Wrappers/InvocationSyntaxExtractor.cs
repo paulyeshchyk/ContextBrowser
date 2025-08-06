@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Parser.Phases;
-using RoslynKit.Parser.Semantic;
+using RoslynKit.Semantic;
 
 namespace RoslynKit.Model.Wrappers;
 

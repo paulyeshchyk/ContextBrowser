@@ -1,0 +1,64 @@
+using ContextBrowser.ContextKit.Parser;
+using ContextKit.Model;
+using LoggerKit;
+using LoggerKit.Model;
+using Microsoft.CodeAnalysis;
+
+namespace RoslynKit.Phases;
+
+public class ReferenceBuilderValidator<TContext, I>
+    where TContext : ContextInfo, IContextWithReferences<TContext>
+    where I : SyntaxNode
+{
+    private readonly OnWriteLog? _onWriteLog;
+
+    public ReferenceBuilderValidator(OnWriteLog? onWriteLog)
+    {
+        _onWriteLog = onWriteLog;
+    }
+
+    /// <summary>
+    /// Результат валидации, содержащий необходимые данные для дальнейшей работы.
+    /// </summary>
+    public class ValidationResult
+    {
+        public TContext CallerContextInfo { get; }
+
+        public IEnumerable<I> Invocations { get; }
+
+        public ValidationResult(TContext callerContextInfo, IEnumerable<I> invocations)
+        {
+            CallerContextInfo = callerContextInfo;
+            Invocations = invocations;
+        }
+    }
+
+    /// <summary>
+    /// Выполняет серию проверок и возвращает ValidationResult в случае успеха.
+    /// </summary>
+    /// <returns>Экземпляр ValidationResult с данными или null, если валидация не пройдена.</returns>
+    public ValidationResult? Validate(TContext callerContext, IContextCollector<TContext> collector)
+    {
+        if(string.IsNullOrWhiteSpace(callerContext.SymbolName) || !collector.BySymbolDisplayName.TryGetValue(callerContext.SymbolName, out var callerContextInfo))
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[MISS]: Symbol not found in {collector.BySymbolDisplayName} for {callerContext.SymbolName}");
+            return null;
+        }
+
+        var callerSyntaxNode = callerContext.SyntaxNode;
+        if(callerSyntaxNode == null)
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[MISS]: SyntaxNode is not defined for {callerContext.SymbolName}");
+            return null;
+        }
+
+        var invocationList = callerSyntaxNode.DescendantNodes().OfType<I>().OrderBy(c => c.SpanStart);
+        if(!invocationList.Any())
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[MISS]: No invocation found for {callerContextInfo.GetDebugName()}");
+            return null;
+        }
+
+        return new ValidationResult(callerContextInfo, invocationList);
+    }
+}

@@ -9,5 +9,6 @@ public enum ContextInfoElementType
     @struct,
     @record,
     @enum,
-    @namespace
+    @namespace,
+    @delegate
 }

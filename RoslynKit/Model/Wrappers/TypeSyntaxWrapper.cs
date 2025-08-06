@@ -2,7 +2,6 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
-using RoslynKit.Parser.Phases;
 
 namespace RoslynKit.Model.Wrappers;
 
