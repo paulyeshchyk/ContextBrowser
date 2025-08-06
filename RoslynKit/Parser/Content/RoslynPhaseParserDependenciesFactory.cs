@@ -1,11 +1,10 @@
 ﻿using ContextBrowser.ContextKit.Parser;
 using ContextKit.Model;
 using LoggerKit;
-using RoslynKit.Context.Builder;
 using RoslynKit.Model;
-using RoslynKit.Parser.Code;
 using RoslynKit.Syntax;
-using RoslynKit.Syntax.Parser;
+using RoslynKit.Syntax.Parser.Base;
+using RoslynKit.Syntax.Parser.ContextInfo;
 
 namespace RoslynKit.Parser.Content;
 
@@ -34,19 +33,48 @@ public class RoslynPhaseParserDependenciesFactory<TContext>
 
     public SyntaxRouter<TContext> CreateRouter()
     {
+        // 1. Создаем билдеры контекстов и другие вспомогательные классы
         var typeContextInfoBuilder = new TypeContextInfoBulder<TContext>(_collector, _factory, _onWriteLog);
         var methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
-        var triviaContextInfoBuilder = new CommentSyntaxTriviaBuilder<TContext>(_commentProcessor);
+        var triviaCommentBuilder = new CommentSyntaxTriviaContentInfoBuilder<TContext>(_commentProcessor, _onWriteLog);
         var delegateContextInfoBuilder = new DelegateContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
         var interfaceContextInfoBuilder = new InterfaceContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
+        var propertyContextInfoBuilder = new PropertyContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
 
+        var propertyDeclarationParser = new PropertyDeclarationParser<TContext>(
+            _collector,
+            propertyContextInfoBuilder,
+            triviaCommentBuilder,
+            typeContextInfoBuilder,
+            _onWriteLog);
+
+        var enumDeclarationParser = new EnumDeclarationParser<TContext>(_onWriteLog);
+        var delegateDeclarationParser = new DelegateDeclarationParser<TContext>(delegateContextInfoBuilder, triviaCommentBuilder, _onWriteLog);
+
+        var interfaceDeclarationParser = new InterfaceDeclarationParser<TContext>(
+            interfaceContextInfoBuilder,
+            methodContextInfoBuilder,
+            triviaCommentBuilder,
+            _onWriteLog);
+
+        var typeDeclarationParser = new TypeDeclarationParser<TContext>(
+            _collector,
+            typeContextInfoBuilder,
+            methodContextInfoBuilder,
+            propertyDeclarationParser,
+            triviaCommentBuilder,
+            _options,
+            _onWriteLog);
+
+        // 4. Собираем все парсеры в список для роутера
         var parsers = new List<ISyntaxParser<TContext>>
-        {
-            new InterfaceDeclarationParser<TContext>(interfaceContextInfoBuilder, methodContextInfoBuilder, triviaContextInfoBuilder, _onWriteLog),
-            new TypeSyntaxParser<TContext>(_collector, typeContextInfoBuilder, methodContextInfoBuilder,triviaContextInfoBuilder, _options,_onWriteLog),
-            new EnumDeclarationParser<TContext>(_onWriteLog),
-            new DelegateDeclarationParser<TContext>(delegateContextInfoBuilder, triviaContextInfoBuilder,_onWriteLog)
-        };
+    {
+        interfaceDeclarationParser,
+        typeDeclarationParser,
+        enumDeclarationParser,
+        propertyDeclarationParser,
+        delegateDeclarationParser
+    };
 
         return new SyntaxRouter<TContext>(_onWriteLog, parsers);
     }

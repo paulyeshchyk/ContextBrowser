@@ -2,10 +2,10 @@
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
-using RoslynKit.Context.Builder;
 using RoslynKit.Model;
 using RoslynKit.Parser.Phases;
 using RoslynKit.Phases.SymbolLookupHandler;
+using RoslynKit.Syntax.Parser.ContextInfo;
 
 namespace RoslynKit.Phases;
 

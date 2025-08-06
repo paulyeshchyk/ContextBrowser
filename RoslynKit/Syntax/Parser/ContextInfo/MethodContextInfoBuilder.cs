@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Model.Wrappers;
 
-namespace RoslynKit.Context.Builder;
+namespace RoslynKit.Syntax.Parser.ContextInfo;
 
 // context: csharp, build, contextInfo
 public class MethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext>

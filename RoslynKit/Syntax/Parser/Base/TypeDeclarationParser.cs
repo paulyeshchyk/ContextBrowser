@@ -4,28 +4,28 @@ using LoggerKit;
 using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Context.Builder;
 using RoslynKit.Extensions;
 using RoslynKit.Model;
-using RoslynKit.Parser.Code;
-using RoslynKit.Syntax.Parser.Builder;
+using RoslynKit.Syntax.Parser.ContextInfo;
 
-namespace RoslynKit.Syntax.Parser;
+namespace RoslynKit.Syntax.Parser.Base;
 
-public class TypeSyntaxParser<TContext> : BaseSyntaxParser<TContext>
+public class TypeDeclarationParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private readonly TypeContextInfoBulder<TContext> _typeContextInfoBuilder;
     private readonly RoslynCodeParserOptions _options;
     private readonly MethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
-    private readonly CommentSyntaxTriviaBuilder<TContext> _triviaCommentBuilder;
-    private readonly RoslynTypeMethodSyntaxBuilder<TContext> _methodSyntaxBuilder;
+    private readonly CommentSyntaxTriviaContentInfoBuilder<TContext> _triviaCommentBuilder;
+    private readonly MethodDeclarationParser<TContext> _methodSyntaxBuilder;
+    private readonly PropertyDeclarationParser<TContext> _propertyDeclarationParser;
 
-    public TypeSyntaxParser(
+    public TypeDeclarationParser(
         IContextCollector<TContext> collector,
         TypeContextInfoBulder<TContext> typeContextInfoBuilder,
         MethodContextInfoBuilder<TContext> methodContextInfoBuilder,
-        CommentSyntaxTriviaBuilder<TContext> triviaCommentBuilder,
+        PropertyDeclarationParser<TContext> propertyDeclarationParser,
+        CommentSyntaxTriviaContentInfoBuilder<TContext> triviaCommentBuilder,
         RoslynCodeParserOptions options,
         OnWriteLog? onWriteLog) : base(onWriteLog)
     {
@@ -33,14 +33,15 @@ public class TypeSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         _options = options;
         _methodContextInfoBuilder = methodContextInfoBuilder;
         _triviaCommentBuilder = triviaCommentBuilder;
-        _methodSyntaxBuilder = new RoslynTypeMethodSyntaxBuilder<TContext>(_methodContextInfoBuilder, _triviaCommentBuilder, _options, _onWriteLog);
+        _propertyDeclarationParser = propertyDeclarationParser;
+        _methodSyntaxBuilder = new MethodDeclarationParser<TContext>(_methodContextInfoBuilder, _triviaCommentBuilder, _options, _onWriteLog);
     }
 
     public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is TypeDeclarationSyntax;
 
     public override void Parse(MemberDeclarationSyntax syntax, SemanticModel model)
     {
-        if(syntax is not TypeDeclarationSyntax typeSyntax)
+        if (syntax is not TypeDeclarationSyntax typeSyntax)
         {
             throw new ArgumentException($"Syntax ({nameof(syntax)}) is not TypeDeclarationSyntax");
         }
@@ -50,13 +51,19 @@ public class TypeSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         var symbol = model.GetDeclaredSymbol(typeSyntax);
         var nsName = typeSyntax.GetNamespaceName();
         var typeContext = _typeContextInfoBuilder.BuildContextInfoForType(typeSyntax, model, nsName, symbol);
-        if(typeContext == null)
+        if (typeContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {nsName}");
             return;
         }
 
-        _triviaCommentBuilder.ParseComments(typeSyntax, typeContext);
+        var propertySyntaxes = typeSyntax.Members.OfType<PropertyDeclarationSyntax>();
+        foreach (var propertySyntax in propertySyntaxes)
+        {
+            _propertyDeclarationParser.Parse(propertySyntax, model);
+        }
+
+        _triviaCommentBuilder.Parse(typeSyntax, typeContext);
 
         _methodSyntaxBuilder.ParseMethodSyntax(typeSyntax, model, nsName, typeContext);
     }

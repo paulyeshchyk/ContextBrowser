@@ -4,7 +4,7 @@ using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace RoslynKit.Syntax.Parser;
+namespace RoslynKit.Syntax.Parser.Base;
 
 public class EnumDeclarationParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>

@@ -2,7 +2,7 @@ using ContextBrowser.ContextKit.Parser;
 using ContextKit.Model;
 using LoggerKit;
 
-namespace RoslynKit.Context.Builder;
+namespace RoslynKit.Syntax.Parser.ContextInfo;
 
 public abstract class BaseContextInfoBuilder<TContext>
     where TContext : IContextWithReferences<TContext>

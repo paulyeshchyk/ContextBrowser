@@ -3,7 +3,7 @@ using LoggerKit;
 using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Syntax.Parser;
+using RoslynKit.Syntax.Parser.Base;
 
 namespace RoslynKit.Syntax;
 

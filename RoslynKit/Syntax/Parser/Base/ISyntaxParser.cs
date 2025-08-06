@@ -2,7 +2,7 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace RoslynKit.Syntax.Parser;
+namespace RoslynKit.Syntax.Parser.Base;
 
 public interface ISyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>

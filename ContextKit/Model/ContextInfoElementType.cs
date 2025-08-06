@@ -11,5 +11,6 @@ public enum ContextInfoElementType
     @enum,
     @namespace,
     @interface,
+    @property,
     @delegate
 }

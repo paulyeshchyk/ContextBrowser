@@ -58,7 +58,7 @@ public class RoslynPhaseParserContextBuilder<TContext>
 
         if(!availableSyntaxies.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Model has no members: {tree.FilePath}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Model has no members: {tree.FilePath}");
             return;
         }
 

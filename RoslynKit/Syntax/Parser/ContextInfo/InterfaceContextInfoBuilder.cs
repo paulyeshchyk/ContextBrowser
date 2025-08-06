@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
 
-namespace RoslynKit.Context.Builder;
+namespace RoslynKit.Syntax.Parser.ContextInfo;
 
 public class InterfaceContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext>
     where TContext : IContextWithReferences<TContext>

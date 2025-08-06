@@ -23,7 +23,7 @@ public static class AssemblyLoader
                                   .Select(path => MetadataReference.CreateFromFile(path))
                                   .ToList();
 
-        AssemblyReferencesBuilder.AddExtraAssemblies(references);
+        AssemblyReferencesBuilder.FetchAllLoadedAssemblies(references);
         AssemblyReferencesBuilder.AddTrustedAssemblies(references);
         return references;
     }

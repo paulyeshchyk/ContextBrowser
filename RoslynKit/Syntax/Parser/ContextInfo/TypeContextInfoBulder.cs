@@ -8,7 +8,7 @@ using RoslynKit.Model.Wrappers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RoslynKit.Context.Builder;
+namespace RoslynKit.Syntax.Parser.ContextInfo;
 
 public class TypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TContext>
     where TContext : IContextWithReferences<TContext>

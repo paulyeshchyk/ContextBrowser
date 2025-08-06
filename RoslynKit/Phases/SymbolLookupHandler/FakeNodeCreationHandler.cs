@@ -3,10 +3,10 @@ using ContextKit.Extensions;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
-using RoslynKit.Context.Builder;
 using RoslynKit.Model;
 using RoslynKit.Model.Wrappers;
 using RoslynKit.Parser.Phases;
+using RoslynKit.Syntax.Parser.ContextInfo;
 
 namespace RoslynKit.Phases.SymbolLookupHandler;
 
@@ -45,14 +45,22 @@ public class FakeNodeCreationHandler<TContext> : BaseSymbolLookupHandler<TContex
 
         var typeModel = new TypeSyntaxWrapper(kind: ContextInfoElementType.@class, typeFullName: fullname, symbolName: className);
         var typeContext = _typeContextInfoBuilder.BuildContextInfoForType(typeModel, ns);
+        if(typeContext == null)
+        {
+            return default;
+        }
 
         _collector.Append(typeContext);
 
         var methodmodel = new MethodSyntaxWrapper(symbol: symbolDto.Symbol, symbolDto.FullName, symbolDto.SpanStart, symbolDto.SpanEnd);
         var methodContext = _methodContextInfoBuilder.BuildContextInfoForMethod(typeContext, methodmodel, _options.FakeNamespaceName, null);
 
-        _collector.Append(methodContext);
+        if(methodContext == null)
+        {
+            return default;
+        }
 
+        _collector.Append(methodContext);
 
         return methodContext;
     }

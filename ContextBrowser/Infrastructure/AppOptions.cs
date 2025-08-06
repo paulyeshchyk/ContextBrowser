@@ -73,6 +73,7 @@ public class AppOptions
             RoslynCodeParserMemberType.@enum,
             RoslynCodeParserMemberType.@class,
             RoslynCodeParserMemberType.@interface,
+            RoslynCodeParserMemberType.@delegate,
             RoslynCodeParserMemberType.@record,
             RoslynCodeParserMemberType.@struct
         },

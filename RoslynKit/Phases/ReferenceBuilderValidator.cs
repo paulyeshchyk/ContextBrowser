@@ -52,11 +52,12 @@ public class ReferenceBuilderValidator<TContext, I>
             return null;
         }
 
+
+        var canRaiseNoInvocationError = !(callerContext.ClassOwner?.ElementType == ContextInfoElementType.@class || callerContext.ClassOwner?.ElementType == ContextInfoElementType.@interface);
         var invocationList = callerSyntaxNode.DescendantNodes().OfType<I>().OrderBy(c => c.SpanStart);
-        if(!invocationList.Any())
+        if(!invocationList.Any() && canRaiseNoInvocationError)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[MISS]: No invocation found for {callerContextInfo.GetDebugName()}");
-            return null;
         }
 
         return new ValidationResult(callerContextInfo, invocationList);

@@ -3,22 +3,21 @@ using LoggerKit;
 using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Context.Builder;
 using RoslynKit.Extensions;
 using RoslynKit.Model;
-using RoslynKit.Parser.Code;
+using RoslynKit.Syntax.Parser.ContextInfo;
 
-namespace RoslynKit.Syntax.Parser.Builder;
+namespace RoslynKit.Syntax.Parser.Base;
 
-public class RoslynTypeMethodSyntaxBuilder<TContext>
+public class MethodDeclarationParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private RoslynCodeParserOptions _options;
     private OnWriteLog? _onWriteLog;
     private MethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
-    private CommentSyntaxTriviaBuilder<TContext> _triviaCommentBuilder;
+    private CommentSyntaxTriviaContentInfoBuilder<TContext> _triviaCommentBuilder;
 
-    public RoslynTypeMethodSyntaxBuilder(MethodContextInfoBuilder<TContext> methodContextInfoBuilder, CommentSyntaxTriviaBuilder<TContext> triviaCommentBuilder, RoslynCodeParserOptions options, OnWriteLog? onWriteLog)
+    public MethodDeclarationParser(MethodContextInfoBuilder<TContext> methodContextInfoBuilder, CommentSyntaxTriviaContentInfoBuilder<TContext> triviaCommentBuilder, RoslynCodeParserOptions options, OnWriteLog? onWriteLog)
     {
         _options = options;
         _onWriteLog = onWriteLog;
@@ -29,7 +28,7 @@ public class RoslynTypeMethodSyntaxBuilder<TContext>
     //context: csharp, build
     public void ParseMethodSyntax(MemberDeclarationSyntax availableSyntax, SemanticModel semanticModel, string nsName, TContext typeContext)
     {
-        if(availableSyntax is not TypeDeclarationSyntax typeSyntax)
+        if (availableSyntax is not TypeDeclarationSyntax typeSyntax)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{typeContext.Name}]:Syntax is not TypeDeclaration syntax");
 
@@ -37,7 +36,7 @@ public class RoslynTypeMethodSyntaxBuilder<TContext>
         }
 
         var methodDeclarationSyntaxies = typeSyntax.FilteredMethodsList(_options);
-        if(!methodDeclarationSyntaxies.Any())
+        if (!methodDeclarationSyntaxies.Any())
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{typeContext.Name}]:Syntax has no methods in List");
             return;
@@ -45,9 +44,9 @@ public class RoslynTypeMethodSyntaxBuilder<TContext>
 
         var buildItems = _methodContextInfoBuilder.BuildContextInfoForMethods(semanticModel, nsName, typeContext, methodDeclarationSyntaxies);
 
-        foreach(var item in buildItems)
+        foreach (var item in buildItems)
         {
-            _triviaCommentBuilder.ParseComments(item.Item2, item.Item1);
+            _triviaCommentBuilder.Parse(item.Item2, item.Item1);
         }
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }

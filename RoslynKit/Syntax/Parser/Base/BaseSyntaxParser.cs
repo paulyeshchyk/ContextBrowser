@@ -3,7 +3,7 @@ using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace RoslynKit.Syntax.Parser;
+namespace RoslynKit.Syntax.Parser.Base;
 
 public abstract class BaseSyntaxParser<TContext> : ISyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>

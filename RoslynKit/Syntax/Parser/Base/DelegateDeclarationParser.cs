@@ -3,19 +3,18 @@ using LoggerKit;
 using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Context.Builder;
-using RoslynKit.Parser.Code;
+using RoslynKit.Syntax.Parser.ContextInfo;
 
-namespace RoslynKit.Syntax.Parser;
+namespace RoslynKit.Syntax.Parser.Base;
 
 // context: csharp, build
 public class DelegateDeclarationParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private readonly DelegateContextInfoBuilder<TContext> _delegateContextInfoBuilder;
-    private readonly CommentSyntaxTriviaBuilder<TContext> _triviaCommentBuilder;
+    private readonly CommentSyntaxTriviaContentInfoBuilder<TContext> _triviaCommentBuilder;
 
-    public DelegateDeclarationParser(DelegateContextInfoBuilder<TContext> delegateContextInfoBuilder, CommentSyntaxTriviaBuilder<TContext> triviaCommentBuilder, OnWriteLog? onWriteLog)
+    public DelegateDeclarationParser(DelegateContextInfoBuilder<TContext> delegateContextInfoBuilder, CommentSyntaxTriviaContentInfoBuilder<TContext> triviaCommentBuilder, OnWriteLog? onWriteLog)
         : base(onWriteLog)
     {
         _delegateContextInfoBuilder = delegateContextInfoBuilder;
@@ -27,7 +26,7 @@ public class DelegateDeclarationParser<TContext> : BaseSyntaxParser<TContext>
     // context: csharp, build
     public override void Parse(MemberDeclarationSyntax syntax, SemanticModel model)
     {
-        if(syntax is not DelegateDeclarationSyntax delegateSyntax)
+        if (syntax is not DelegateDeclarationSyntax delegateSyntax)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax is not DelegateDeclarationSyntax");
             return;
@@ -36,13 +35,13 @@ public class DelegateDeclarationParser<TContext> : BaseSyntaxParser<TContext>
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parse delegate syntax: {delegateSyntax.Identifier.Text}");
 
         var delegateContext = _delegateContextInfoBuilder.BuildContextInfoForDelegate(delegateSyntax, model);
-        if(delegateContext == null)
+        if (delegateContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{delegateSyntax}\" was not resolved");
             return;
         }
 
-        _triviaCommentBuilder.ParseComments(delegateSyntax, delegateContext);
+        _triviaCommentBuilder.Parse(delegateSyntax, delegateContext);
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, "Finished parsing DelegateDeclarationSyntax");
     }

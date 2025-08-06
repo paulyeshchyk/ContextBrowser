@@ -5,10 +5,10 @@ using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Context.Builder;
 using RoslynKit.Model;
 using RoslynKit.Model.Wrappers;
 using RoslynKit.Semantic;
+using RoslynKit.Syntax.Parser.ContextInfo;
 
 namespace RoslynKit.Phases;
 
