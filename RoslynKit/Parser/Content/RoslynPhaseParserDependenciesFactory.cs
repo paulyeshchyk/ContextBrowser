@@ -38,9 +38,11 @@ public class RoslynPhaseParserDependenciesFactory<TContext>
         var methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
         var triviaContextInfoBuilder = new CommentSyntaxTriviaBuilder<TContext>(_commentProcessor);
         var delegateContextInfoBuilder = new DelegateContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
+        var interfaceContextInfoBuilder = new InterfaceContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
 
         var parsers = new List<ISyntaxParser<TContext>>
         {
+            new InterfaceDeclarationParser<TContext>(interfaceContextInfoBuilder, methodContextInfoBuilder, triviaContextInfoBuilder, _onWriteLog),
             new TypeSyntaxParser<TContext>(_collector, typeContextInfoBuilder, methodContextInfoBuilder,triviaContextInfoBuilder, _options,_onWriteLog),
             new EnumDeclarationParser<TContext>(_onWriteLog),
             new DelegateDeclarationParser<TContext>(delegateContextInfoBuilder, triviaContextInfoBuilder,_onWriteLog)

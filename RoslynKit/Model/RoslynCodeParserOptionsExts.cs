@@ -21,8 +21,8 @@ internal static class RoslynCodeParserOptionsExts
             typeNodes = typeNodes.Concat(FilterByModifier<EnumDeclarationSyntax>(root, options));
         if(options.MemberTypes.Contains(RoslynCodeParserMemberType.@interface))
             typeNodes = typeNodes.Concat(FilterByModifier<InterfaceDeclarationSyntax>(root, options));
-
-        typeNodes = typeNodes.Concat(FilterByModifier<DelegateDeclarationSyntax>(root, options));
+        if(options.MemberTypes.Contains(RoslynCodeParserMemberType.@delegate))
+            typeNodes = typeNodes.Concat(FilterByModifier<DelegateDeclarationSyntax>(root, options));
 
         return typeNodes;
     }

@@ -8,6 +8,7 @@ using RoslynKit.Parser.Code;
 
 namespace RoslynKit.Syntax.Parser;
 
+// context: csharp, build
 public class DelegateDeclarationParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
@@ -23,6 +24,7 @@ public class DelegateDeclarationParser<TContext> : BaseSyntaxParser<TContext>
 
     public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is DelegateDeclarationSyntax;
 
+    // context: csharp, build
     public override void Parse(MemberDeclarationSyntax syntax, SemanticModel model)
     {
         if(syntax is not DelegateDeclarationSyntax delegateSyntax)

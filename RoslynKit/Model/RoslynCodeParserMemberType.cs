@@ -5,6 +5,7 @@ public enum RoslynCodeParserMemberType
 {
     @class,
     @interface,
+    @delegate,
     @record,
     @enum,
     @struct

@@ -1,4 +1,4 @@
-using ContextBrowser.ContextKit.Parser;
+ï»¿using ContextBrowser.ContextKit.Parser;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
@@ -28,11 +28,11 @@ public class DelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCont
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating delegate ContextInfo: {symbol.Name}");
 
         var result = _factory.Create(
-            default, // Ó äåëåãàòà ìîæåò íå áûòü ðîäèòåëüñêîãî êîíòåêñòà
-            type: ContextInfoElementType.@delegate,
-            ns: delegateSyntax.GetNamespaceName(),
-            itemName: symbol.Name,
-            symbolName: symbol.ToDisplayString(),
+            default, // Ð£ Ð´ÐµÐ»ÐµÐ³Ð°Ñ‚Ð° Ð¼Ð¾Ð¶ÐµÑ‚ Ð½Ðµ Ð±Ñ‹Ñ‚ÑŒ Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ¾Ð³Ð¾ ÐºÐ¾Ð½Ñ‚ÐµÐºÑÑ‚Ð°
+            elementType: ContextInfoElementType.@delegate,
+            nsName: delegateSyntax.GetNamespaceName(),
+            name: symbol.Name,
+            fullName: symbol.ToDisplayString(),
             syntaxNode: delegateSyntax,
             spanStart: delegateSyntax.Span.Start,
             spanEnd: delegateSyntax.Span.End,

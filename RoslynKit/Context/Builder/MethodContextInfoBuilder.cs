@@ -17,8 +17,7 @@ public class MethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContex
     {
     }
 
-    // context: csharp, build, contextInfo
-    public List<(TContext context, MethodDeclarationSyntax syntax)> BuildContextInfoForMethods(SemanticModel semanticModel, string ns, TContext parent, IEnumerable<MethodDeclarationSyntax> methods)
+    public List<(TContext context, MethodDeclarationSyntax syntax)> ParseMethodSyntax(IEnumerable<MethodDeclarationSyntax> methods, SemanticModel semanticModel, string ns, TContext parent)
     {
         var result = new List<(TContext, MethodDeclarationSyntax)>();
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Iterating methods [{parent.Name}]", LogLevelNode.Start);
@@ -41,6 +40,12 @@ public class MethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContex
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return result;
+    }
+
+    // context: csharp, build, contextInfo
+    public List<(TContext context, MethodDeclarationSyntax syntax)> BuildContextInfoForMethods(SemanticModel semanticModel, string ns, TContext parent, IEnumerable<MethodDeclarationSyntax> methods)
+    {
+        return ParseMethodSyntax(methods, semanticModel, ns, parent);
     }
 
     // context: csharp, build, contextInfo

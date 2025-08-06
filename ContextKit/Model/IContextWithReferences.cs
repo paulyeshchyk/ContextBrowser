@@ -17,6 +17,8 @@ public interface IContextWithReferences<T>
 
     int SpanStart { get; set; }
 
+    public string? Namespace { get; set; }
+
     HashSet<string> Domains { get; }
 
     ContextInfoElementType ElementType { get; set; }
