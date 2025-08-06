@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using LoggerKit;
+using LoggerKit.Model;
+using Microsoft.CodeAnalysis;
 
 namespace RoslynKit.Loader;
 
@@ -6,12 +8,12 @@ namespace RoslynKit.Loader;
 public static class AssemblyLoader
 {
     // context: csharp, build
-    public static IEnumerable<MetadataReference> Fetch()
+    public static IEnumerable<MetadataReference> Fetch(OnWriteLog? onWriteLog)
     {
         var runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
         if(string.IsNullOrWhiteSpace(runtimeDirectory))
         {
-            Console.WriteLine("Не найден путь assembly для typeof(object)");
+            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, "[MISS]: Не найден путь assembly для typeof(object)");
             return Enumerable.Empty<MetadataReference>();
         }
 
@@ -27,22 +29,23 @@ public static class AssemblyLoader
     }
 
     // context: csharp, build
-    public static IEnumerable<MetadataReference> Fetch(IEnumerable<string> runtimeDirectory)
+    public static IEnumerable<MetadataReference> Fetch(IEnumerable<string> runtimeDirectory, OnWriteLog? onWriteLog)
     {
         var references = new List<MetadataReference>();
         foreach(var directory in runtimeDirectory)
         {
-            references.AddRange(Fetch(directory));
+            references.AddRange(Fetch(directory, onWriteLog));
         }
         return references;
     }
 
     // context: csharp, build
-    public static IEnumerable<MetadataReference> Fetch(string runtimeDirectory)
+    public static IEnumerable<MetadataReference> Fetch(string runtimeDirectory, OnWriteLog? onWriteLog)
     {
         if(string.IsNullOrWhiteSpace(runtimeDirectory) || !Directory.Exists(runtimeDirectory))
         {
-            Console.WriteLine($"Warning: Custom project bin path not found or invalid: {runtimeDirectory}");
+            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Warning: Custom project bin path not found or invalid: {runtimeDirectory}");
+
             return Enumerable.Empty<MetadataReference>();
         }
 
@@ -55,7 +58,7 @@ public static class AssemblyLoader
             }
             catch(Exception ex)
             {
-                Console.WriteLine($"Warning: Could not add reference from {file}: {ex.Message}");
+                onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Warning: Could not add reference from {file}: {ex.Message}");
             }
         }
         return references;

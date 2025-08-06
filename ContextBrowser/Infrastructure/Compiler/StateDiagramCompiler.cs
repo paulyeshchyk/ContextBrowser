@@ -60,7 +60,7 @@ public class StateDiagramCompiler
         var transitions = _builder.Build(domain, allContexts, _classifier);
 
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Render domain [{domain}]", LogLevelNode.Start);
-        var rendered = _renderer.RenderAllTransitions(diagram, transitions, _options, domain);
+        var rendered = _renderer.RenderAllTransitions(diagram, transitions, domain);
 
         if(rendered)
         {

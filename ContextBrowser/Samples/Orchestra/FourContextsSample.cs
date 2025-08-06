@@ -26,6 +26,7 @@ public class AnotherService
     // context: share, orchestration
     public void DoSomething(string data)
     {
+        Console.WriteLine(data);
         flowOrchestrator.CallbackFromAnotherService(data);
     }
 }

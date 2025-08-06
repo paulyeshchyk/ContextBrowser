@@ -24,7 +24,8 @@ public class RoslynCodeSemanticTreeModelBuilder : ISemanticModelBuilder
     // context: csharp, build, contextInfo
     public Dictionary<SyntaxTree, SemanticModel> BuildModels(IEnumerable<string> codeFiles, RoslynCodeParserOptions options, CancellationToken cancellationToken)
     {
-        var compilation = CompilationBuilder.BuildModels(codeFiles, options, _onWriteLog, cancellationToken);
+        var builder = new CompilationBuilder(options, _onWriteLog);
+        var compilation = builder.BuildModels(codeFiles, cancellationToken);
         _modelStorage.AddRange(compilation);
         return compilation;
     }
@@ -55,7 +56,9 @@ public class RoslynCodeSemanticTreeModelBuilder : ISemanticModelBuilder
                 .Concat(new[] { syntaxTree })
                 .Distinct();
 
-            var compilation = CompilationBuilder.Build(allSyntaxTrees, options.CustomAssembliesPaths);
+            var builder = new CompilationBuilder(options, _onWriteLog);
+
+            var compilation = builder.Build(allSyntaxTrees, options.CustomAssembliesPaths);
             model = compilation.GetSemanticModel(syntaxTree);
             _modelStorage.Add(syntaxTree, model);
         }

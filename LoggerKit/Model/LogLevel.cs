@@ -11,6 +11,6 @@ public enum LogLevel
     Err,
     Warn,
     Dbg,
-    Info,
+    Trace,
     Verb,
 }

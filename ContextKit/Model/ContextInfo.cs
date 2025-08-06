@@ -6,8 +6,6 @@ namespace ContextKit.Model;
 // context: ContextInfo, model
 public class ContextInfo : IContextWithReferences<ContextInfo>
 {
-    //private static readonly Regex InvalidCharsRegex = new("[^a-zA-Z0-9_]", RegexOptions.Compiled);
-
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
 
     public string? Name { get; set; }
@@ -48,6 +46,7 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public int SpanEnd { get; set; } = 0;
 
+#warning move this out of model
     public ISymbol? Symbol { get; set; }
 
     public SyntaxNode? SyntaxNode { get; set; }
@@ -57,4 +56,13 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
     public override int GetHashCode() => SymbolName.GetHashCode();
 
     public override bool Equals(object? obj) => obj is ContextInfo other && SymbolName.Equals(other.SymbolName);
+
+    public string GetDebugName()
+    {
+        if(Symbol != null)
+        {
+            return Symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+        }
+        return $"{(MethodOwner?.Name ?? string.Empty)}.{Name}";
+    }
 }

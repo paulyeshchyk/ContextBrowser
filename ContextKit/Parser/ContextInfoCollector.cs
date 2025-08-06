@@ -6,33 +6,54 @@ public interface IContextCollector<T>
 {
     void Add(T item);
 
+    void Append(T item);
+
     IEnumerable<T> GetAll();
+
+    void MergeFakeItems();
 
     public Dictionary<string, T> BySymbolDisplayName { get; }
 }
 
 // context: ContextInfo, build
-public class ContextInfoCollector<T> : IContextCollector<T>
-    where T : IContextWithReferences<T>
+public class ContextInfoCollector<TContext> : IContextCollector<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
-    public readonly List<T> Collection = new List<T>();
+    public readonly List<TContext> Collection = new List<TContext>();
+    private readonly List<TContext> FakeCollection = new List<TContext>();
 
-    public Dictionary<string, T> BySymbolDisplayName { get; }
+    public Dictionary<string, TContext> BySymbolDisplayName { get; }
 
     public ContextInfoCollector()
     {
-        BySymbolDisplayName = new Dictionary<string, T>(StringComparer.Ordinal);
+        BySymbolDisplayName = new Dictionary<string, TContext>(StringComparer.Ordinal);
     }
 
     // context: ContextInfo, read
-    public IEnumerable<T> GetAll() => Collection;
+    public IEnumerable<TContext> GetAll() => Collection;
 
     // context: ContextInfo, build
-    public void Add(T info)
+    public void Add(TContext info)
     {
         Collection.Add(info);
-        if (!string.IsNullOrWhiteSpace(info.SymbolName))
+        if(!string.IsNullOrWhiteSpace(info.SymbolName))
             BySymbolDisplayName[info.SymbolName] = info;
+    }
+
+    public void Append(TContext info)
+    {
+        FakeCollection.Add(info);
+        if(!string.IsNullOrWhiteSpace(info.SymbolName))
+            BySymbolDisplayName[info.SymbolName] = info;
+    }
+
+    public void MergeFakeItems()
+    {
+        foreach(var item in FakeCollection)
+        {
+            Add(item);
+        }
+        FakeCollection.Clear();
     }
 }
 
@@ -40,6 +61,8 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     where TContext : IContextWithReferences<TContext>
 {
     public Dictionary<string, TContext> BySymbolDisplayName { get; }
+
+    private readonly List<TContext> FakeCollection = new List<TContext>();
 
     private readonly List<TContext> _existing;
 
@@ -62,4 +85,21 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     }
 
     public IEnumerable<TContext> GetAll() => _existing;
+
+    public void Append(TContext info)
+    {
+        FakeCollection.Add(info);
+        if(!string.IsNullOrWhiteSpace(info.SymbolName))
+            BySymbolDisplayName[info.SymbolName] = info;
+    }
+
+
+    public void MergeFakeItems()
+    {
+        foreach(var item in FakeCollection)
+        {
+            _existing.Add(item);
+        }
+        FakeCollection.Clear();
+    }
 }

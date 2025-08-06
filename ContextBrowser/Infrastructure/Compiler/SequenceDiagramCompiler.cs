@@ -40,7 +40,7 @@ public class SequenceDiagramCompiler
         _onWriteLog = onWriteLog;
         _options = options;
         _diagramBuilder = diagramBuilder;
-        _renderer = new TransitionRenderer(_onWriteLog);
+        _renderer = new TransitionRenderer(_options, _onWriteLog);
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class SequenceDiagramCompiler
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Render domain [{domain}]", LogLevelNode.Start);
 
         // Используем рендерер для отрисовки переходов
-        var result = _renderer.RenderAllTransitions(diagram, transitions, _options, domain);
+        var result = _renderer.RenderAllTransitions(diagram, transitions, domain);
 
         if(result)
         {

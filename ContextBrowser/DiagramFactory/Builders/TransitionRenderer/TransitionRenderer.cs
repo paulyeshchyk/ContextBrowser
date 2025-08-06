@@ -10,13 +10,15 @@ namespace ContextBrowser.DiagramFactory.Builders.TransitionRenderer;
 public class TransitionRenderer
 {
     protected readonly OnWriteLog? _onWriteLog;
+    private readonly AppOptions _options;
 
-    public TransitionRenderer(OnWriteLog? onWriteLog)
+    public TransitionRenderer(AppOptions options, OnWriteLog? onWriteLog)
     {
+        _options = options;
         _onWriteLog = onWriteLog;
     }
 
-    public bool RenderAllTransitions(UmlDiagram diagram, SortedList<int, UmlTransitionDto>? allTransitions, AppOptions _options, string domain)
+    public bool RenderAllTransitions(UmlDiagram diagram, SortedList<int, UmlTransitionDto>? allTransitions, string domain)
     {
         if(allTransitions == null || !allTransitions.Any())
         {

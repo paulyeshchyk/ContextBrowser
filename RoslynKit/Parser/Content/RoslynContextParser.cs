@@ -67,14 +67,12 @@ public sealed class RoslynContextParser
         var semanticInvocationResolver = new RoslynCodeSemanticInvocationResolver(semanticModelStorage);
 
         var factory = new ContextInfoFactory<ContextInfo>();
-        var referenceParser = new RoslynPhaseParserReferenceResolver<ContextInfo>(referenceCollector, factory, modelBuilder, semanticInvocationResolver, onWriteLog);
+        var referenceParser = new RoslynPhaseParserReferenceResolver<ContextInfo>(referenceCollector, factory, modelBuilder, semanticInvocationResolver, options, onWriteLog);
 
-        onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, "Parsing files", LogLevelNode.Start);
         foreach(var file in files)
         {
-            referenceParser.ParseFile(file, options, cancellationToken);
+            referenceParser.ParseFile(file, cancellationToken);
         }
-        onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
@@ -92,9 +90,19 @@ public sealed class RoslynContextParser
         // 1. Первый проход: собираем все context'ы (типы и методы), без ссылок
         var processor = new ContextInfoCommentProcessor<ContextInfo>(strategies);
         var factory = new ContextInfoFactory<ContextInfo>();
-        var phaseParser = new RoslynPhaseParserContextBuilder<ContextInfo>(contextCollector, factory, processor, modelBuilder, onWriteLog);
 
-        phaseParser.ParseFiles(files, options, cancellationToken);
+        var dependenciesFactory = new RoslynPhaseParserDependenciesFactory<ContextInfo>(contextCollector, factory, processor, options, onWriteLog);
+
+        var router = dependenciesFactory.CreateRouter();
+
+        var phaseParser = new RoslynPhaseParserContextBuilder<ContextInfo>(
+            contextCollector,
+            modelBuilder,
+            onWriteLog,
+            options,
+            router);
+
+        phaseParser.ParseFiles(files, cancellationToken);
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 

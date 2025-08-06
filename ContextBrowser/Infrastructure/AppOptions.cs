@@ -20,17 +20,17 @@ public class AppOptions
     {
         LogLevels =
         {
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Err },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Dbg },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err }
         }
     };
 
     [CommandLineArgument("source-path", "The source code path.")]
-    public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs";
+    public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\";
 
     //".\\..\\..\\..\\..\\"
     //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs"
@@ -58,12 +58,14 @@ public class AppOptions
         {
             RoslynCodeParserAccessorModifierType.@public,
             RoslynCodeParserAccessorModifierType.@protected,
+            RoslynCodeParserAccessorModifierType.@private,
             RoslynCodeParserAccessorModifierType.@internal
         },
         ClassModifierTypes: new()
         {
             RoslynCodeParserAccessorModifierType.@public,
             RoslynCodeParserAccessorModifierType.@protected,
+            RoslynCodeParserAccessorModifierType.@private,
             RoslynCodeParserAccessorModifierType.@internal
         },
         MemberTypes: new()
@@ -74,6 +76,9 @@ public class AppOptions
             RoslynCodeParserMemberType.@record,
             RoslynCodeParserMemberType.@struct
         },
+        FakeNamespaceName: "privateNS",
+        FakeOwnerName: "privateTYPE",
+        FakeMethodName: "privateMETHOD",
         CustomAssembliesPaths: AssembliesPaths ?? Enumerable.Empty<string>(),
         CreateFailedCallees: true,
         ShowForeignInstancies: false

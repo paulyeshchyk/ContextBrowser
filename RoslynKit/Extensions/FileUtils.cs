@@ -28,14 +28,14 @@ public static class FileUtils
     {
         if(Directory.Exists(path))
         {
-            onWriteLog?.Invoke(AppLevel.file, LogLevel.Warn, string.Format(SFolderExistsTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Dbg, string.Format(SFolderExistsTemplate, path));
             return;
         }
 
         try
         {
             Directory.CreateDirectory(path);
-            onWriteLog?.Invoke(AppLevel.file, LogLevel.Info, string.Format(SFolderCreatedTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Dbg, string.Format(SFolderCreatedTemplate, path));
         }
         catch(IOException e)
         {
@@ -87,7 +87,7 @@ public static class FileUtils
                 DeleteDirectory(dir, onWriteLog: onWriteLog);
             }
 
-            onWriteLog?.Invoke(AppLevel.file, LogLevel.Info, string.Format(SFolderWipedTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Dbg, string.Format(SFolderWipedTemplate, path));
         }
         catch(Exception e)
         {
@@ -107,7 +107,7 @@ public static class FileUtils
         try
         {
             File.Delete(file);
-            onWriteLog?.Invoke(AppLevel.file, LogLevel.Warn, string.Format(SFileErasedTemplate, file));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Dbg, string.Format(SFileErasedTemplate, file));
         }
         catch(IOException ex)
         {
@@ -131,7 +131,7 @@ public static class FileUtils
         try
         {
             Directory.Delete(path, recursive);
-            onWriteLog?.Invoke(AppLevel.file, LogLevel.Info, string.Format(SFolderWipedSuccessfullyTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Trace, string.Format(SFolderWipedSuccessfullyTemplate, path));
         }
         catch(IOException e)
         {

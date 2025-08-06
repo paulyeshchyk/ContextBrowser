@@ -8,7 +8,7 @@ namespace RoslynKit.Model;
 internal static class RoslynCodeParserOptionsExts
 {
     //context: csharp, read
-    public static IEnumerable<MemberDeclarationSyntax> GetMemberDeclarationSyntaxies(this RoslynCodeParserOptions options, CompilationUnitSyntax root)
+    public static IEnumerable<MemberDeclarationSyntax> GetMemberDeclarationSyntaxies(this CompilationUnitSyntax root, RoslynCodeParserOptions options)
     {
         IEnumerable<MemberDeclarationSyntax> typeNodes = Enumerable.Empty<MemberDeclarationSyntax>();
         if(options.MemberTypes.Contains(RoslynCodeParserMemberType.@class))

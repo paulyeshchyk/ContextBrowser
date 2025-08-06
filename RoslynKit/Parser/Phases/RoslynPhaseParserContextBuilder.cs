@@ -4,10 +4,9 @@ using LoggerKit;
 using LoggerKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Model;
-using RoslynKit.Parser.Code;
 using RoslynKit.Parser.Semantic;
+using RoslynKit.Parser.Syntaxies.Parser;
 
 namespace RoslynKit.Parser.Phases;
 
@@ -16,208 +15,56 @@ public class RoslynPhaseParserContextBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     protected readonly ISemanticModelBuilder _semanticModelBuilder;
-    protected readonly IContextInfoCommentProcessor<TContext> _commentProcessor;
     protected readonly IContextCollector<TContext> _collector;
-    protected readonly IContextFactory<TContext> _factory;
-    private readonly OnWriteLog? _onWriteLog = null;
-    private readonly TypeContextInfoBulder<TContext> _typeContextInfoBuilder;
-    private readonly MethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
-    private readonly CommentSyntaxTriviaBuilder<TContext> _triviaCommentBuilder;
+    private readonly OnWriteLog? _onWriteLog;
+    private readonly SyntaxRouter<TContext> _router;
+    private readonly RoslynCodeParserOptions _options;
 
-    public RoslynPhaseParserContextBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IContextInfoCommentProcessor<TContext> commentProcessor, ISemanticModelBuilder modelBuilder, OnWriteLog? onWriteLog) : base()
+    public RoslynPhaseParserContextBuilder(
+        IContextCollector<TContext> collector,
+        ISemanticModelBuilder modelBuilder,
+        OnWriteLog? onWriteLog,
+        RoslynCodeParserOptions options,
+        SyntaxRouter<TContext> router)
     {
         _semanticModelBuilder = modelBuilder;
-        _commentProcessor = commentProcessor;
         _collector = collector;
-        _factory = factory;
         _onWriteLog = onWriteLog;
-
-        _triviaCommentBuilder = new CommentSyntaxTriviaBuilder<TContext>(_commentProcessor);
-
-        _typeContextInfoBuilder = new TypeContextInfoBulder<TContext>(_collector, _factory, _onWriteLog);
-        _methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
-    }
-
-    // context: csharp, build, contextInfo
-    public void ParseCode(string code, string filePath, RoslynCodeParserOptions options, CancellationToken cancellationToken)
-    {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"Parse code from file: {filePath}", LogLevelNode.Start);
-        var compilationView = _semanticModelBuilder.BuildModel(code, filePath, options, cancellationToken);
-
-        var availableSyntaxies = options.GetMemberDeclarationSyntaxies(compilationView.unitSyntax);
-
-        var model = compilationView.model;
-        ParseTypeSyntax(availableSyntaxies, options, model);
-    }
-
-    // context: csharp, build, contextInfo
-    public void ParseFile(string filePath, RoslynCodeParserOptions options, CancellationToken cancellationToken)
-    {
-        var code = File.ReadAllText(filePath);
-        ParseCode(code, filePath, options, cancellationToken);
+        _options = options;
+        _router = router;
     }
 
     // context: csharp, build
-    public void ParseFiles(IEnumerable<string> codeFiles, RoslynCodeParserOptions options, CancellationToken cancellationToken)
+    public void ParseFiles(IEnumerable<string> codeFiles, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, "Parsing files", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, "Parsing files", LogLevelNode.Start);
 
-        var models = _semanticModelBuilder.BuildModels(codeFiles, options, cancellationToken);
+        var models = _semanticModelBuilder.BuildModels(codeFiles, _options, cancellationToken);
         foreach (var (tree, model) in models)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            ParseDeclarations(options, tree, model, cancellationToken);
+            ParseDeclarations(_options, tree, model, cancellationToken);
         }
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, string.Empty, LogLevelNode.End);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     private void ParseDeclarations(RoslynCodeParserOptions options, SyntaxTree tree, SemanticModel model, CancellationToken cancellationToken)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"Parse model {tree.FilePath}", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parse model {tree.FilePath}", LogLevelNode.Start);
 
         var root = tree.GetCompilationUnitRoot(cancellationToken);
+        var availableSyntaxies = root.GetMemberDeclarationSyntaxies(options);
 
-        var availableSyntaxies = options.GetMemberDeclarationSyntaxies(root);
-        ParseSyntaxies(options, tree, model, availableSyntaxies);
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, string.Empty, LogLevelNode.End);
-    }
-
-    private void ParseSyntaxies(RoslynCodeParserOptions options, SyntaxTree tree, SemanticModel model, IEnumerable<MemberDeclarationSyntax> availableSyntaxies)
-    {
         if(!availableSyntaxies.Any())
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Model has no members: {tree.FilePath}");
-        }
-
-        ParseTypeSyntax(availableSyntaxies, options, model);
-    }
-
-
-    //context: csharp, build
-    protected void ParseMethodSyntax(MemberDeclarationSyntax availableSyntax, RoslynCodeParserOptions options, SemanticModel semanticModel, string nsName, TContext typeContext)
-    {
-        if(availableSyntax is not TypeDeclarationSyntax typeSyntax)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{typeContext.Name}]:Syntax is not TypeDeclaration syntax");
-
             return;
         }
 
-        var methodDeclarationSyntaxies = typeSyntax.FilteredMethodsList(options);
-        if(!methodDeclarationSyntaxies.Any())
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{typeContext.Name}]:Syntax has no methods in List");
-            return;
-        }
+        _router.Route(availableSyntaxies, model);
 
-        var buildItems = _methodContextInfoBuilder.BuildContextInfoForMethods(semanticModel, nsName, typeContext, methodDeclarationSyntaxies);
 
-        foreach(var item in buildItems)
-        {
-            _triviaCommentBuilder.ParseComments(item.Item2, item.Item1);
-        }
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, string.Empty, LogLevelNode.End);
-    }
-
-    private void ParseTypeSyntax(IEnumerable<MemberDeclarationSyntax> availableSyntaxies, RoslynCodeParserOptions options, SemanticModel model)
-    {
-        foreach(var availableSyntax in availableSyntaxies)
-        {
-            if(availableSyntax is not TypeDeclarationSyntax typeSyntax)
-            {
-                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax is not TypeDeclaration syntax");
-                continue;
-            }
-
-            ParseTypeSyntax(typeSyntax, options, model);
-        }
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, string.Empty, LogLevelNode.End);
-    }
-
-    private void ParseTypeSyntax(TypeDeclarationSyntax typeSyntax, RoslynCodeParserOptions options, SemanticModel model)
-    {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Info, $"Parse type syntax");
-
-        var symbol = model.GetDeclaredSymbol(typeSyntax);
-        string nsName = typeSyntax.GetNamespaceName();
-        var typeContext = _typeContextInfoBuilder.BuildContextInfoForType(typeSyntax, model, nsName, symbol);
-        if(typeContext == null)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {nsName}");
-            return;
-        }
-
-        ClassLevelForeignInstanceScanner.MarkForeignInstanceCalls(model, typeSyntax, _collector);
-
-        _triviaCommentBuilder.ParseComments(typeSyntax, typeContext);
-
-        ParseMethodSyntax(typeSyntax, options, model, nsName, typeContext);
-    }
-}
-
-internal static class MemberDeclarationSyntaxExts
-{
-    private const string SFakeDeclaration = "FakeDeclaration";
-
-    public static ContextInfoElementType GetContextInfoElementType(this MemberDeclarationSyntax? syntax)
-    {
-        return syntax switch
-        {
-            ClassDeclarationSyntax => ContextInfoElementType.@class,
-            StructDeclarationSyntax => ContextInfoElementType.@struct,
-            RecordDeclarationSyntax => ContextInfoElementType.@record,
-            EnumDeclarationSyntax => ContextInfoElementType.@enum,
-            _ => ContextInfoElementType.none
-        };
-    }
-
-    public static string GetDeclarationName(this MemberDeclarationSyntax member) =>
-        member switch
-        {
-            ClassDeclarationSyntax c => c.Identifier.Text,
-            StructDeclarationSyntax s => s.Identifier.Text,
-            RecordDeclarationSyntax r => r.Identifier.Text,
-            EnumDeclarationSyntax e => e.Identifier.Text,
-            BaseNamespaceDeclarationSyntax nn => nn.Name.ToFullString(),
-            _ => SFakeDeclaration
-        };
-
-    public static RoslynCodeParserAccessorModifierType? GetModifierType(this MethodDeclarationSyntax method)
-    {
-        if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
-            return RoslynCodeParserAccessorModifierType.@public;
-        if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
-            return RoslynCodeParserAccessorModifierType.@protected;
-        if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
-            return RoslynCodeParserAccessorModifierType.@private;
-        if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
-            return RoslynCodeParserAccessorModifierType.@internal;
-
-        return null;
-    }
-
-    public static string GetNamespaceName(this MemberDeclarationSyntax availableSyntax)
-    {
-        var nameSpaceNodeSyntax = availableSyntax
-            .Ancestors()
-            .OfType<BaseNamespaceDeclarationSyntax>()
-            .FirstOrDefault();
-
-        return nameSpaceNodeSyntax?.Name.ToString() ?? "Global";
-    }
-}
-
-internal static class TypeDeclarationDyntaxExts
-{
-    public static IEnumerable<MethodDeclarationSyntax> FilteredMethodsList(this TypeDeclarationSyntax typeSyntax, RoslynCodeParserOptions options)
-    {
-        return typeSyntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(methodDeclarationSyntax =>
-            {
-                var mod = methodDeclarationSyntax.GetModifierType();
-                return mod.HasValue && options.MethodModifierTypes.Contains(mod.Value);
-            })
-            .OrderBy(m => m.SpanStart);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 }

@@ -13,25 +13,27 @@ public class InvocationSyntaxExtractor
 {
     private OnWriteLog? _onWriteLog;
     private ISemanticInvocationResolver _semanticInvocationResolver;
+    private RoslynCodeParserOptions _options;
 
-    public InvocationSyntaxExtractor(ISemanticInvocationResolver semanticInvocationResolver, OnWriteLog? onWriteLog)
+    public InvocationSyntaxExtractor(ISemanticInvocationResolver semanticInvocationResolver, RoslynCodeParserOptions options, OnWriteLog? onWriteLog)
     {
         _onWriteLog = onWriteLog;
         _semanticInvocationResolver = semanticInvocationResolver;
+        _options = options;
     }
 
     public InvocationSyntaxWrapper? Extract(InvocationExpressionSyntax? resultSyntax, SemanticModel model)
     {
         if(resultSyntax == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERR] Syntax not found");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERR]: Syntax not found");
             return default;
         }
 
         var symbol = model.GetSymbolInfo(resultSyntax).Symbol;
         if(symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERR] Symbol not resolved for {resultSyntax}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERR]: Symbol not resolved for {resultSyntax}");
             return default;
         }
 
@@ -48,14 +50,14 @@ public class InvocationSyntaxExtractor
         if(invocationSemanticModel == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Semantic model was not defined for [{byInvocation}]");
-            return byInvocation.GetMethodInfoFromSyntax(null, _onWriteLog);
+            return byInvocation.GetMethodInfoFromSyntax(null, _options, _onWriteLog);
         }
 
         var symbol = GetMethodSymbol(byInvocation, invocationSemanticModel, cancellationToken);
         if(symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Symbol was not resolved for invocation [{byInvocation}]");
-            return byInvocation.GetMethodInfoFromSyntax(null, _onWriteLog);
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Symbol was not resolved for invocation [{byInvocation}]");
+            return byInvocation.GetMethodInfoFromSyntax(null, _options, _onWriteLog);
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Symbol was resolved for invocation [{byInvocation}]");
@@ -69,7 +71,7 @@ public class InvocationSyntaxExtractor
         var syntaxTree = invocation.SyntaxTree;
         if(syntaxTree == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Tree was not provided for invocation [{invocation}]");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS]: Tree was not provided for invocation [{invocation}]");
 
             return null;
         }
@@ -84,12 +86,18 @@ public class InvocationSyntaxExtractor
         var symbolInfo = semanticModel.GetSymbolInfo(invocation.Expression, cancellationToken);
 
         if(symbolInfo.Symbol is IMethodSymbol method)
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Found IMethodSymbol for expression: {invocation.Expression}");
             return method;
+        }
 
         if(symbolInfo.CandidateSymbols.Length > 0)
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Found Candidate of IMethodSymbol for expression: {invocation.Expression}");
             return symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
+        }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[FAIL] No symbol for expression: {invocation.Expression}");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[MISS]: No symbol for expression: {invocation.Expression}");
         return null;
     }
 }
