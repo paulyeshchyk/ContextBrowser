@@ -30,9 +30,6 @@ public class UmlDiagramSequence : UmlDiagram
         var to = from;
         var selfTransition = new UmlSequence(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
         Add(selfTransition);
-
-        if(_options.UseActivation)
-            Activate(name);
     }
 
     public override IUmlElement AddParticipant(string name, string alias, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)

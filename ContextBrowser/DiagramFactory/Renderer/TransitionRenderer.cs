@@ -143,9 +143,15 @@ public class TransitionRenderer
 
     private static void MaybeAddSelfCallContinuation(RenderContext ctx)
     {
-        if(ctx.Options.UseActivation && ctx.Options.UseSelfCallContinuation)
+        if(ctx.Options.UseSelfCallContinuation)
         {
             ctx.Diagram.AddSelfCallContinuation(ctx.Caller);
+        }
+        if(ctx.Options.UseActivation)
+        {
+            if(ctx.Options.UseActivation)
+                ctx.Diagram.Activate(ctx.Caller);
+
             ctx.ActivationStack.Push(ctx.Caller);
         }
     }

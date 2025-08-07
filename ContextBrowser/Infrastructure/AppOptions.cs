@@ -102,6 +102,6 @@ public class AppOptions
                                       useActivation: true,
                                           useReturn: false,
                                            useAsync: false,
-                            useSelfCallContinuation: true,
+                            useSelfCallContinuation: false,
                 useContextTransitionTreeBuilderMode: ContextTransitionTreeBuilderMode.FromParentToChild);
 }
