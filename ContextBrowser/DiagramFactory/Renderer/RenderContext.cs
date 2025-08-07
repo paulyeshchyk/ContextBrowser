@@ -1,5 +1,6 @@
 ﻿using ContextBrowser.DiagramFactory.Renderer.Model;
 using LoggerKit;
+using LoggerKit.Model;
 using UmlKit.Diagrams;
 using UmlKit.Model.Options;
 
@@ -13,7 +14,7 @@ internal sealed class RenderContext
 
     public ContextTransitionDiagramBuilderOptions Options { get; }
 
-    public Stack<string> ActivationStack { get; }
+    public ActivationStack ActivationStack { get; }
 
     public OnWriteLog? Log { get; }
 
@@ -35,7 +36,7 @@ internal sealed class RenderContext
         UmlTransitionDto t,
         UmlDiagram diagram,
         ContextTransitionDiagramBuilderOptions options,
-        Stack<string> activationStack,
+        ActivationStack activationStack,
         OnWriteLog? log)
     {
         Transition = t;
@@ -46,3 +47,37 @@ internal sealed class RenderContext
     }
 }
 
+public class ActivationStack : Stack<string>
+{
+    private readonly OnWriteLog? _onWriteLog;
+    public ActivationStack(OnWriteLog? onWriteLog) : base()
+    {
+        _onWriteLog = onWriteLog;
+    }
+
+    public void TryPush(string? value)
+    {
+        if(string.IsNullOrWhiteSpace(value))
+        {
+            _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, "[PUSH_FAIL]: item is empty");
+            return;
+        }
+
+        _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"[PUSH_OK]: {value}");
+        Push(value);
+    }
+
+    public bool TryPeek2(out String? result)
+    {
+        var isSuccess = TryPeek(out result);
+        if(isSuccess)
+        {
+            _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"[PEEK_OK]: {result}");
+        }
+        else
+        {
+            _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Err, $"[PEEK_FAIL] Can't peek");
+        }
+        return isSuccess;
+    }
+}

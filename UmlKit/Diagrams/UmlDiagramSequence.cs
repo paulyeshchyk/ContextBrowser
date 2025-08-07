@@ -24,10 +24,18 @@ public class UmlDiagramSequence : UmlDiagram
         Add(new UmlNote(name, UmlNotePosition.Left, $"{name} -> {name}:"));
     }
 
-    public override void AddSelfCallContinuation(string name)
+    public void AddAnonymousCallContinuation(string name)
     {
         var from = new UmlParticipant(name, name.AlphanumericOnly());
         var to = from;
+        var selfTransition = new UmlSequence(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
+        Add(selfTransition);
+    }
+
+    public override void AddSelfCallContinuation(string name)
+    {
+        var from = new UmlParticipant(string.Empty, string.Empty);
+        var to = new UmlParticipant(name, name.AlphanumericOnly());
         var selfTransition = new UmlSequence(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
         Add(selfTransition);
     }
@@ -74,19 +82,19 @@ public class UmlDiagramSequence : UmlDiagram
         return transition;
     }
 
-    public override IUmlElement? Activate(string from) =>
-        Activate(new UmlDeclarableDto("activation", from));
+    public override IUmlElement? Activate(string from, bool isSystemCall) => Activate(new UmlDeclarableDto("activation", from), isSystemCall);
 
-    public override IUmlElement? Deactivate(string from) =>
-        Deactivate(new UmlDeclarableDto("deactivation", from));
+    public override IUmlElement? Deactivate(string from) => Deactivate(new UmlDeclarableDto("deactivation", from));
 
-    public override IUmlElement? Activate(IUmlDeclarable from)
+    public override IUmlElement? Activate(IUmlDeclarable from, bool isSystemCall)
     {
         if(!_options.UseActivation)
             return null;
 
+        //AddAnonymousCallContinuation(from.Alias);
+
 #warning dirty hack with AlphaNumeric()
-        var act = new UmlActivate(from.Alias.AlphanumericOnly());
+        var act = new UmlActivate(from.Alias.AlphanumericOnly(), isSystemCall);
         _activations.Add(act);
         Add(act);
         return act;

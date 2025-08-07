@@ -69,10 +69,10 @@ public class UmlDiagramClasses : UmlDiagram
         return result;
     }
 
-    public override IUmlElement Activate(string from)
+    public override IUmlElement Activate(string from, bool isSystemCall)
     {
         var dto = new UmlDeclarableDto("empty declaration", from);
-        return Activate(dto);
+        return Activate(dto, isSystemCall);
     }
 
     public override IUmlElement Deactivate(string from)
@@ -81,9 +81,9 @@ public class UmlDiagramClasses : UmlDiagram
         return Deactivate(dto);
     }
 
-    public override IUmlElement Activate(IUmlDeclarable from)
+    public override IUmlElement Activate(IUmlDeclarable from, bool isSystemCall)
     {
-        return new UmlActivate(from.Alias);
+        return new UmlActivate(from.Alias, isSystemCall);
     }
 
     public override IUmlElement Deactivate(IUmlDeclarable from)

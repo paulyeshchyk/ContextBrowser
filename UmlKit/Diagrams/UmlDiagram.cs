@@ -24,13 +24,13 @@ public abstract class UmlDiagram
     public abstract IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, bool isAsync = false, string? label = null);
 
     // context: share, uml
-    public abstract IUmlElement? Activate(string from);
+    public abstract IUmlElement? Activate(string from, bool isSystemCall);
 
     // context: share, uml
     public abstract IUmlElement? Deactivate(string from);
 
     // context: share, uml
-    public abstract IUmlElement? Activate(IUmlDeclarable from);
+    public abstract IUmlElement? Activate(IUmlDeclarable from, bool isSystemCall);
 
     // context: share, uml
     public abstract IUmlElement? Deactivate(IUmlDeclarable from);

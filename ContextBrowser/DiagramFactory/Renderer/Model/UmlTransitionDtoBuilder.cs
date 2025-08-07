@@ -1,20 +1,14 @@
-﻿using ContextBrowser.DiagramFactory.Builders;
-using ContextKit.Model;
+﻿using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
 using RoslynKit.Model;
+using UmlKit.Extensions;
 
 namespace ContextBrowser.DiagramFactory.Renderer.Model;
 
 internal class UmlTransitionDtoBuilder
 {
     public const string SUnknownDomainName = "unknown";
-    private readonly IControlParticipantResolver _controlResolver;
-
-    public UmlTransitionDtoBuilder(IControlParticipantResolver controlResolver)
-    {
-        _controlResolver = controlResolver;
-    }
 
     public static UmlTransitionDto? CreateTransition(ContextInfo? caller, ContextInfo? callee, OnWriteLog? log, RoslynCodeParserOptions options)
     {
@@ -40,7 +34,7 @@ internal class UmlTransitionDtoBuilder
         var callerInfo = ExtractParticipantInfo(caller);
         var calleeInfo = ExtractParticipantInfo(callee);
 
-        var runContext = callee.MethodOwner?.ClassOwner?.Name;
+        var runContext = callee.MethodOwner?.ClassOwner?.Name.AlphanumericOnly();
         var ownerClass = caller.MethodOwner?.ClassOwner?.Name;
         var ownerMethod = caller.MethodOwner?.Name;
 
@@ -74,7 +68,7 @@ internal class UmlTransitionDtoBuilder
         }
 
         // Падение в fallback: или это класс, или что-то нераспарсенное
-        return new ParticipantInfo(contextInfo.SymbolName, contextInfo.Name, contextInfo.Name, contextInfo.Name);
+        return new ParticipantInfo(contextInfo?.SymbolName, contextInfo?.Name, contextInfo?.Name, contextInfo?.Name);
     }
 }
 

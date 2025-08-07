@@ -17,8 +17,8 @@ public class UmlParticipant : IUmlElement, IUmlDeclarable
 
     public UmlParticipant(string? raw, string alias, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
-        _raw = string.IsNullOrWhiteSpace(raw) ? SUnknownParticipant : raw;
-        Alias = string.IsNullOrWhiteSpace(alias) ? _raw.AlphanumericOnly() : alias;
+        _raw = string.IsNullOrWhiteSpace(raw) ? " " : raw;
+        Alias = string.IsNullOrWhiteSpace(alias) ? _raw.AlphanumericOnly(replaceBy: " ") : alias;
         Keyword = keyword;
     }
 
