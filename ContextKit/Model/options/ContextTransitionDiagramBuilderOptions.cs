@@ -6,28 +6,26 @@ public record ContextTransitionDiagramBuilderOptions
 
     public DiagramDirection Direction;
 
-    public bool UseMethodAsParticipant;
-
     public bool UseActivation;
 
     public bool UseSelfCallContinuation;
 
     public bool UseReturn;
 
+    public bool UseAsync;
+
     public ContextTransitionTreeBuilderMode TreeBuilderMode;
 
-    public bool CollapseCalleeClassIfSameAsCaller;
 
-    public ContextTransitionDiagramBuilderOptions(DiagramDetailLevel detailLevel, DiagramDirection direction, bool useMethodAsParticipant, bool useActivation, bool useReturn, bool useSelfCallContinuation, ContextTransitionTreeBuilderMode useContextTransitionTreeBuilderMode, bool collapseCalleeClassIfSameAsCaller)
+    public ContextTransitionDiagramBuilderOptions(DiagramDetailLevel detailLevel, DiagramDirection direction, bool useActivation, bool useReturn, bool useAsync, bool useSelfCallContinuation, ContextTransitionTreeBuilderMode useContextTransitionTreeBuilderMode)
     {
         DetailLevel = detailLevel;
         Direction = direction;
-        UseMethodAsParticipant = useMethodAsParticipant;
         UseActivation = useActivation;
         UseReturn = useReturn;
+        UseAsync = useAsync;
         UseSelfCallContinuation = useSelfCallContinuation;
         TreeBuilderMode = useContextTransitionTreeBuilderMode;
-        CollapseCalleeClassIfSameAsCaller = collapseCalleeClassIfSameAsCaller;
     }
 }
 

@@ -45,14 +45,14 @@ public class UmlDiagramClasses : UmlDiagram
     }
 
     // context: uml, create
-    public override IUmlElement AddTransition(string? from, string? to, string? label = null)
+    public override IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null)
     {
         var theFrom = new UmlState(from);
         var theTo = new UmlState(to);
-        return AddTransition(theFrom, theTo, label);
+        return AddTransition(theFrom, theTo, isAsync, label);
     }
 
-    public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null)
+    public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, bool isAsync = false, string? label = null)
     {
         if(from is not UmlState theFrom)
         {

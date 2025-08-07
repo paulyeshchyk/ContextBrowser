@@ -80,7 +80,7 @@ public class TransitionRenderer
             ctx.Diagram.AddSelfCallBreak(from);
 
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render CallerToStep1 transition [{from} -> {to}]:<{label}>");
-        ctx.Diagram.AddTransition(from, to, label);
+        ctx.Diagram.AddTransition(from, to, isAsync: ctx.Options.UseAsync, label);
         TryActivate(ctx, to);
     }
 
@@ -94,7 +94,7 @@ public class TransitionRenderer
             return;
 
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render transition S1S2 [{from} -> {to}]:<{label}>");
-        ctx.Diagram.AddTransition(from, to, label);
+        ctx.Diagram.AddTransition(from, to, isAsync: ctx.Options.UseAsync, label);
         TryActivate(ctx, to);
     }
 
@@ -113,7 +113,7 @@ public class TransitionRenderer
             return;
 
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render transition S2S1 [{from} -> {to}]:<return>");
-        ctx.Diagram.AddTransition(from, to, "return");
+        ctx.Diagram.AddTransition(from, to, isAsync: ctx.Options.UseAsync, "return");
         TryDeactivate(ctx, from);
     }
 
@@ -123,7 +123,7 @@ public class TransitionRenderer
         string? to = ctx.Caller;
 
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render Step1ToCallerDone transition [{from} -> {to}]:<done>");
-        ctx.Diagram.AddTransition(from, to, "done");
+        ctx.Diagram.AddTransition(from, to, isAsync: ctx.Options.UseAsync, "done");
         TryDeactivate(ctx, from);
         TryDeactivate(ctx, to);
     }

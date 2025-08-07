@@ -97,12 +97,11 @@ public class AppOptions
         get;
         set;
     } = new ContextTransitionDiagramBuilderOptions(
-                detailLevel: DiagramDetailLevel.Summary,
-                direction: DiagramDirection.BiDirectional,
-                useMethodAsParticipant: false,
-                useActivation: false,
-                useReturn: false,
-                useSelfCallContinuation: true,
-                useContextTransitionTreeBuilderMode: ContextTransitionTreeBuilderMode.FromParentToChild,
-                collapseCalleeClassIfSameAsCaller: true);
+                                        detailLevel: DiagramDetailLevel.Summary,
+                                          direction: DiagramDirection.BiDirectional,
+                                      useActivation: true,
+                                          useReturn: false,
+                                           useAsync: false,
+                            useSelfCallContinuation: true,
+                useContextTransitionTreeBuilderMode: ContextTransitionTreeBuilderMode.FromParentToChild);
 }

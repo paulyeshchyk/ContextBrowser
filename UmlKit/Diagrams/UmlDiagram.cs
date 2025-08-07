@@ -18,10 +18,10 @@ public abstract class UmlDiagram
     public abstract void AddSelfCallContinuation(string name);
 
     // context: create, uml
-    public abstract IUmlElement AddTransition(string? from, string? to, string? label = null);
+    public abstract IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null);
 
     // context: create, uml
-    public abstract IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null);
+    public abstract IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, bool isAsync = false, string? label = null);
 
     // context: share, uml
     public abstract IUmlElement? Activate(string from);

@@ -28,7 +28,7 @@ public class UmlDiagramSequence : UmlDiagram
     {
         var from = new UmlParticipant(name, name.AlphanumericOnly());
         var to = from;
-        var selfTransition = new UmlSequence(from, to, new UmlArrow());
+        var selfTransition = new UmlSequence(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
         Add(selfTransition);
 
         if(_options.UseActivation)
@@ -59,19 +59,19 @@ public class UmlDiagramSequence : UmlDiagram
         return this;
     }
 
-    public override IUmlElement AddTransition(string? from, string? to, string? label = null)
+    public override IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null)
     {
         if(string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
             throw new ArgumentException($"From({from ?? string.Empty}) and To({to ?? string.Empty}) must not be null or empty");
 
         var f = AddParticipant(from, from.AlphanumericOnly());
         var t = AddParticipant(to, to.AlphanumericOnly());
-        return AddTransition((IUmlDeclarable)f, (IUmlDeclarable)t, label);
+        return AddTransition((IUmlDeclarable)f, (IUmlDeclarable)t, isAsync, label);
     }
 
-    public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null)
+    public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, bool isAsync = false, string? label = null)
     {
-        var transition = new UmlSequence(from, to, new UmlArrow(), label);
+        var transition = new UmlSequence(from, to, new UmlArrow(flowType: isAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), label);
         _transitions.Add(transition);
         Add(transition);
         return transition;
