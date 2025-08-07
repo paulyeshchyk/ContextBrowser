@@ -100,7 +100,8 @@ public class AppOptions
                 detailLevel: DiagramDetailLevel.Summary,
                 direction: DiagramDirection.BiDirectional,
                 useMethodAsParticipant: false,
-                useActivation: true,
+                useActivation: false,
+                useReturn: false,
                 useSelfCallContinuation: true,
                 useContextTransitionTreeBuilderMode: ContextTransitionTreeBuilderMode.FromParentToChild,
                 collapseCalleeClassIfSameAsCaller: true);

@@ -100,6 +100,12 @@ public class TransitionRenderer
 
     private static void RenderStep2ToStep1Return(RenderContext ctx)
     {
+        if(!ctx.Options.UseReturn)
+        {
+            ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"[SKIP] Return disabled by option");
+            return;
+        }
+
         string? from = ctx.Step2;
         string? to = ctx.Step1;
 
