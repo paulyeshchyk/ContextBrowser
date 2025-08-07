@@ -5,7 +5,7 @@ using LoggerKit;
 using LoggerKit.Model;
 using RoslynKit.Extensions;
 using RoslynKit.Model;
-using RoslynKit.Parser.Content;
+using RoslynKit.Phases.Validation;
 using RoslynKit.Semantic;
 
 namespace RoslynKit.Phases;

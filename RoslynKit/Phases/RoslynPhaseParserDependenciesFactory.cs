@@ -6,7 +6,7 @@ using RoslynKit.Syntax;
 using RoslynKit.Syntax.Parser.Base;
 using RoslynKit.Syntax.Parser.ContextInfo;
 
-namespace RoslynKit.Parser.Content;
+namespace RoslynKit.Phases;
 
 public class RoslynPhaseParserDependenciesFactory<TContext>
     where TContext : IContextWithReferences<TContext>
@@ -68,13 +68,13 @@ public class RoslynPhaseParserDependenciesFactory<TContext>
 
         // 4. Собираем все парсеры в список для роутера
         var parsers = new List<ISyntaxParser<TContext>>
-    {
-        interfaceDeclarationParser,
-        typeDeclarationParser,
-        enumDeclarationParser,
-        propertyDeclarationParser,
-        delegateDeclarationParser
-    };
+        {
+            interfaceDeclarationParser,
+            typeDeclarationParser,
+            enumDeclarationParser,
+            propertyDeclarationParser,
+            delegateDeclarationParser
+        };
 
         return new SyntaxRouter<TContext>(_onWriteLog, parsers);
     }

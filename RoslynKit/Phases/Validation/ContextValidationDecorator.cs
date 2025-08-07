@@ -3,7 +3,7 @@ using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
 
-namespace RoslynKit.Parser.Content;
+namespace RoslynKit.Phases.Validation;
 
 // context: csharp, contextInfo, build
 public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
