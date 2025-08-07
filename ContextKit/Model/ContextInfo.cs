@@ -36,9 +36,9 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public HashSet<string> Domains { get; } = new();
 
-    public HashSet<ContextInfo> References { get; set; } = new();
+    private HashSet<ContextInfo> References { get; set; } = new();
 
-    public HashSet<ContextInfo> InvokedBy { get; set; } = new();
+    private HashSet<ContextInfo> InvokedBy { get; set; } = new();
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 
@@ -53,6 +53,10 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public bool IsForeignInstance { get; set; } = false;
 
+    HashSet<ContextInfo> IContextWithReferences<ContextInfo>.InvokedBy => InvokedBy;
+
+    HashSet<ContextInfo> IContextWithReferences<ContextInfo>.References => References;
+
     public override int GetHashCode() => SymbolName.GetHashCode();
 
     public override bool Equals(object? obj) => obj is ContextInfo other && SymbolName.Equals(other.SymbolName);
@@ -64,5 +68,26 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
             return Symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
         }
         return $"{(MethodOwner?.Name ?? string.Empty)}.{Name}";
+    }
+
+
+    public void AddToReferences(ContextInfo obj)
+    {
+        References.Add(obj);
+    }
+
+    public void AddToInvokedBy(ContextInfo obj)
+    {
+        InvokedBy.Add(obj);
+    }
+
+    public HashSet<ContextInfo> GetReferences()
+    {
+        return References;
+    }
+
+    public HashSet<ContextInfo> GetInvokedBy()
+    {
+        return InvokedBy;
     }
 }

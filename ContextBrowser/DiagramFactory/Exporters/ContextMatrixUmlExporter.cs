@@ -165,7 +165,7 @@ public static class ContextMatrixUmlExporter
             if(!methodToCell.TryGetValue(callerId, out var fromCell))
                 continue;
 
-            foreach(var calledName in callerMethod.References)
+            foreach(var calledName in callerMethod.GetReferences())
             {
                 // Ищем вызываемый метод среди всех методов
                 var calleeMethod = theMethods.FirstOrDefault(m =>

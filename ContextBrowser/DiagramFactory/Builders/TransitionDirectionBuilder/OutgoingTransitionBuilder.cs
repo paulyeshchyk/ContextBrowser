@@ -26,8 +26,8 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
         _onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Dbg, "Iterating domain methods", LogLevelNode.Start);
         foreach(var ctx in domainMethods.OrderBy(m => m.SpanStart))
         {
-            _onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Dbg, $"Domain method [{ctx.Name}]");
-            foreach(var callee in ctx.References)
+            _onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Dbg, $"Iterating domain domain method [{ctx.Name}]");
+            foreach(var callee in ctx.GetReferences())
             {
                 if(callee.ElementType != ContextInfoElementType.method)
                 {

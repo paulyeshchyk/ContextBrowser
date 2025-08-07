@@ -23,7 +23,7 @@ public class IncomingTransitionBuilder : ITransitionBuilder
     {
         foreach(var callee in domainMethods)
         {
-            foreach(var caller in callee.InvokedBy ?? Enumerable.Empty<ContextInfo>())
+            foreach(var caller in callee.GetInvokedBy())
             {
                 if(caller.ElementType != ContextInfoElementType.method)
                     continue;

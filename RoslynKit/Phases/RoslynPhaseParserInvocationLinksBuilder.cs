@@ -29,19 +29,19 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
     // context: csharp, update
     public TContext? LinkInvocation(TContext callerContextInfo, InvocationSyntaxWrapper symbolDto, RoslynCodeParserOptions options)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Building invocation [{callerContextInfo.Name}]");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking invocation [{callerContextInfo.Name}]");
 
         var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, symbolDto, options);
         if(calleeContextInfo == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] \ncaller: [{callerContextInfo.SymbolName}]\nwants:  [{symbolDto.FullName}]");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] Linking invocation \ncaller: [{callerContextInfo.SymbolName}]\nwants:  [{symbolDto.FullName}]");
             return default;
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Adding invocation Reference [{calleeContextInfo.Name}]");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking invocation: Adding link to Reference [{calleeContextInfo.Name}]");
         callerContextInfo.References.Add(calleeContextInfo);
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Adding invocation InvokedBy [{callerContextInfo.Name}]");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking invocation: Adding link to InvokedBy [{callerContextInfo.Name}]");
         calleeContextInfo.InvokedBy.Add(callerContextInfo);
 
         return calleeContextInfo;

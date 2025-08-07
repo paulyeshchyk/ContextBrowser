@@ -21,16 +21,16 @@ public class AppOptions
         LogLevels =
         {
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Verb },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Verb },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err }
         }
     };
 
     [CommandLineArgument("source-path", "The source code path.")]
-    public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\";
+    public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs";
 
     //".\\..\\..\\..\\..\\"
     //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs"
@@ -102,6 +102,6 @@ public class AppOptions
                                       useActivation: true,
                                           useReturn: false,
                                            useAsync: false,
-                            useSelfCallContinuation: false,
+                            useSelfCallContinuation: true,
                 useContextTransitionTreeBuilderMode: ContextTransitionTreeBuilderMode.FromParentToChild);
 }

@@ -21,8 +21,8 @@ public class RoslynPhaseParserReferenceResolver<TContext>
     protected readonly IContextCollector<TContext> _collector;
     private OnWriteLog? _onWriteLog;
     protected readonly IContextFactory<TContext> _factory;
-    private InvocationSyntaxExtractor _invocationResolver;
     private RoslynCodeParserOptions _options;
+    private InvocationReferenceBuilder<TContext> _invocationReferenceBuilder;
 
     public RoslynPhaseParserReferenceResolver(IContextCollector<TContext> collector, IContextFactory<TContext> factory, ISemanticModelBuilder modelBuilder, ISemanticInvocationResolver semanticInvocationResolver, RoslynCodeParserOptions options, OnWriteLog? onWriteLog = null) : base()
     {
@@ -32,7 +32,7 @@ public class RoslynPhaseParserReferenceResolver<TContext>
         _onWriteLog = onWriteLog;
         _factory = factory;
         _options = options;
-        _invocationResolver = new InvocationSyntaxExtractor(_semanticInvocationResolver, _options, onWriteLog);
+        _invocationReferenceBuilder = new InvocationReferenceBuilder<TContext>(_onWriteLog, _factory, _semanticInvocationResolver, _options, _collector);
     }
 
     // context: csharp, read
@@ -68,7 +68,7 @@ public class RoslynPhaseParserReferenceResolver<TContext>
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.Start);
         foreach(var method in theCollection)
         {
-            BuildReferences(method, _collector, cancellationToken);
+            _invocationReferenceBuilder.BuildReferences(method, cancellationToken);
         }
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
@@ -83,14 +83,35 @@ public class RoslynPhaseParserReferenceResolver<TContext>
         var code = File.ReadAllText(filePath);
         ParseCode(code, filePath, cancellationToken);
     }
+}
+
+public class InvocationReferenceBuilder<TContext>
+    where TContext : ContextInfo, IContextWithReferences<TContext>
+{
+    private OnWriteLog? _onWriteLog;
+    protected readonly IContextFactory<TContext> _factory;
+    private InvocationSyntaxExtractor _invocationResolver;
+    private RoslynCodeParserOptions _options;
+    private IContextCollector<TContext> _collector;
+    private ISemanticInvocationResolver _semanticInvocationResolver;
+
+    public InvocationReferenceBuilder(OnWriteLog? onWriteLog, IContextFactory<TContext> factory, ISemanticInvocationResolver semanticInvocationResolver, RoslynCodeParserOptions options, IContextCollector<TContext> collector)
+    {
+        _semanticInvocationResolver = semanticInvocationResolver;
+        _onWriteLog = onWriteLog;
+        _factory = factory;
+        _options = options;
+        _collector = collector;
+        _invocationResolver = new InvocationSyntaxExtractor(_semanticInvocationResolver, _options, onWriteLog);
+    }
 
     // context: csharp, read
-    protected void BuildReferences(TContext callerContext, IContextCollector<TContext> collector, CancellationToken cancellationToken)
+    public void BuildReferences(TContext callerContext, CancellationToken cancellationToken)
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Build references for {callerContext.Name}");
 
         var validator = new ReferenceBuilderValidator<TContext, InvocationExpressionSyntax>(_onWriteLog);
-        var validationResult = validator.Validate(callerContext, collector);
+        var validationResult = validator.Validate(callerContext, _collector);
 
         if(validationResult == null)
         {
@@ -100,20 +121,28 @@ public class RoslynPhaseParserReferenceResolver<TContext>
         var callerContextInfo = validationResult.CallerContextInfo;
         var invocationList = validationResult.Invocations;
 
-        var typeContextInfoBuilder = new TypeContextInfoBulder<TContext>(collector, _factory, _onWriteLog);
-        var methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(collector, _factory, _onWriteLog);
-        var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(collector, _onWriteLog, methodContextInfoBuilder, typeContextInfoBuilder);
+        var typeContextInfoBuilder = new TypeContextInfoBulder<TContext>(_collector, _factory, _onWriteLog);
+        var methodContextInfoBuilder = new MethodContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
+        var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(_collector, _onWriteLog, methodContextInfoBuilder, typeContextInfoBuilder);
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Resolving invocations for {callerContext.Name}", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Resolving invocations for [{callerContext.Name}]", LogLevelNode.Start);
         foreach(var invocation in invocationList)
         {
-            var symbolDto = _invocationResolver.ResolveSymbol(invocation, cancellationToken);
-            if(symbolDto == null)
-            {
-                continue;
-            }
-            linksInvocationBuilder.LinkInvocation(callerContextInfo, symbolDto, _options);
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Resolving invocation symbol", LogLevelNode.Start);
+            ResolveSymbolThenLink(callerContextInfo, linksInvocationBuilder, invocation, cancellationToken);
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         }
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+    }
+
+    private void ResolveSymbolThenLink(TContext callerContextInfo, RoslynPhaseParserInvocationLinksBuilder<TContext> linksInvocationBuilder, InvocationExpressionSyntax invocation, CancellationToken cancellationToken)
+    {
+        var symbolDto = _invocationResolver.ResolveSymbol(invocation, cancellationToken);
+        if(symbolDto == null)
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[FAIL]: Symbol was not found");
+            return;
+        }
+        linksInvocationBuilder.LinkInvocation(callerContextInfo, symbolDto, _options);
     }
 }
