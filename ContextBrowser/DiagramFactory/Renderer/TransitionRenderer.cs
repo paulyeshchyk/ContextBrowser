@@ -1,12 +1,13 @@
-﻿using ContextBrowser.DiagramFactory.Model;
+﻿using ContextBrowser.DiagramFactory.Renderer.Model;
 using ContextBrowser.Infrastructure;
 using LoggerKit;
 using LoggerKit.Model;
+using System.Text.Json;
 using UmlKit.Diagrams;
 using UmlKit.Extensions;
 using UmlKit.Model;
 
-namespace ContextBrowser.DiagramFactory.Builders.TransitionRenderer;
+namespace ContextBrowser.DiagramFactory.Renderer;
 
 public class TransitionRenderer
 {
@@ -30,6 +31,9 @@ public class TransitionRenderer
         _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Rendering Diagram transitions for [{domain}]", LogLevelNode.Start);
         var activationStack = new Stack<string>();
         var seenTransitions = new HashSet<string>();
+        var s = JsonSerializer.Serialize(allTransitions);
+        Console.WriteLine(s);
+
         var transitonList = allTransitions.OrderBy(t => t.Key).Select(t => t.Value);
         foreach(var transition in transitonList)
         {
@@ -121,12 +125,10 @@ public class TransitionRenderer
     private static void AddParticipants(RenderContext ctx, UmlParticipantKeyword defaultParticipantKeyword)
     {
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Adding paticipants for context: {ctx.RunContext}", LogLevelNode.Start);
-        foreach(var p in new[] { ctx.Transition.CallerClassName, ctx.Transition.CalleeClassName, ctx.Transition.RunContext }.Where(x => !string.IsNullOrWhiteSpace(x)))
+        var participants = new[] { ctx.Transition.CallerClassName, ctx.Transition.CalleeClassName, ctx.Transition.RunContext }.Where(x => !string.IsNullOrWhiteSpace(x));
+        foreach(var p in participants)
         {
-            if(string.IsNullOrEmpty(p))
-                continue;
-            ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg,
-                $"Adding participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");
+            ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Adding participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");
 
             ctx.Diagram.AddParticipant(p, p.AlphanumericOnly(), defaultParticipantKeyword);
         }

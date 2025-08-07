@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.DiagramFactory.Model;
+﻿namespace ContextBrowser.DiagramFactory.Renderer.Model;
 
 public readonly record struct UmlTransitionDto
 {
@@ -47,7 +47,7 @@ public readonly record struct UmlTransitionDto
         get
         {
             var list = new List<string?>() { CallerId, CalleeId, Domain }.Where(s => !string.IsNullOrEmpty(s)).Select(s => s!);
-            return (list == null)
+            return list == null
                 ? string.Empty
                 : string.Join(".", list);
         }

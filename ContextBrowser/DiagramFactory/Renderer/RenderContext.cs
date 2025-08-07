@@ -1,9 +1,9 @@
-﻿using ContextBrowser.DiagramFactory.Model;
+﻿using ContextBrowser.DiagramFactory.Renderer.Model;
 using LoggerKit;
 using UmlKit.Diagrams;
 using UmlKit.Model.Options;
 
-namespace ContextBrowser.DiagramFactory.Builders.TransitionRenderer;
+namespace ContextBrowser.DiagramFactory.Renderer;
 
 internal sealed class RenderContext
 {

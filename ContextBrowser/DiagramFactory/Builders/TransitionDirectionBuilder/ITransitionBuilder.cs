@@ -1,4 +1,4 @@
-﻿using ContextBrowser.DiagramFactory.Model;
+﻿using ContextBrowser.DiagramFactory.Renderer.Model;
 using ContextKit.Model;
 using UmlKit.Model.Options;
 

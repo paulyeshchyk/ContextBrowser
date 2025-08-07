@@ -1,5 +1,5 @@
 ﻿using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
-using ContextBrowser.DiagramFactory.Builders.TransitionRenderer;
+using ContextBrowser.DiagramFactory.Renderer;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
@@ -68,7 +68,7 @@ public class SequenceDiagramCompiler
         // Используем рендерер для отрисовки переходов
         var result = _renderer.RenderDiagramTransitions(diagram, transitions, domain);
 
-        if (result)
+        if(result)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
             var path = Path.Combine(_outputPath, $"sequence_domain_{domain}.puml");

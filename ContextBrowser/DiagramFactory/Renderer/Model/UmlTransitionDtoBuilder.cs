@@ -4,7 +4,7 @@ using LoggerKit;
 using LoggerKit.Model;
 using RoslynKit.Model;
 
-namespace ContextBrowser.DiagramFactory.Model;
+namespace ContextBrowser.DiagramFactory.Renderer.Model;
 
 internal class UmlTransitionDtoBuilder
 {

@@ -1,5 +1,5 @@
 ﻿using ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
-using ContextBrowser.DiagramFactory.Builders.TransitionRenderer;
+using ContextBrowser.DiagramFactory.Renderer;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;

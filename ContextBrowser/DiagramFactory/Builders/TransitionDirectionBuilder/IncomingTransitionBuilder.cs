@@ -1,4 +1,4 @@
-﻿using ContextBrowser.DiagramFactory.Model;
+﻿using ContextBrowser.DiagramFactory.Renderer.Model;
 using ContextKit.Model;
 using LoggerKit;
 using RoslynKit.Model;
@@ -21,15 +21,15 @@ public class IncomingTransitionBuilder : ITransitionBuilder
 
     public IEnumerable<UmlTransitionDto> BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
     {
-        foreach (var callee in domainMethods)
+        foreach(var callee in domainMethods)
         {
-            foreach (var caller in callee.InvokedBy ?? Enumerable.Empty<ContextInfo>())
+            foreach(var caller in callee.InvokedBy ?? Enumerable.Empty<ContextInfo>())
             {
-                if (caller.ElementType != ContextInfoElementType.method)
+                if(caller.ElementType != ContextInfoElementType.method)
                     continue;
 
                 var result = UmlTransitionDtoBuilder.CreateTransition(caller, callee, _onWriteLog, _options);
-                if (result != null)
+                if(result != null)
                 {
                     yield return (UmlTransitionDto)result;
                 }
