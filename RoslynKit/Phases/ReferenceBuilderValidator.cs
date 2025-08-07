@@ -48,7 +48,7 @@ public class ReferenceBuilderValidator<TContext, I>
         var callerSyntaxNode = callerContext.SyntaxNode;
         if(callerSyntaxNode == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[MISS]: SyntaxNode is not defined for {callerContext.SymbolName}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"[MISS]: SyntaxNode is not defined for {callerContext.SymbolName}");
             return null;
         }
 

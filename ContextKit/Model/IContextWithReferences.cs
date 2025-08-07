@@ -5,7 +5,7 @@ namespace ContextKit.Model;
 public interface IContextWithReferences<T>
     where T : IContextWithReferences<T>
 {
-    string? Name { get; set; }
+    string Name { get; set; }
 
     string? Action { get; set; }
 
@@ -17,7 +17,7 @@ public interface IContextWithReferences<T>
 
     int SpanStart { get; set; }
 
-    public string? Namespace { get; set; }
+    public string Namespace { get; set; }
 
     HashSet<string> Domains { get; }
 

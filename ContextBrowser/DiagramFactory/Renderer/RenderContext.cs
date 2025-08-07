@@ -18,9 +18,9 @@ internal sealed class RenderContext
 
     public OnWriteLog? Log { get; }
 
-    public string? Caller => Transition.CallerClassName;
+    public string Caller => Transition.CallerClassName;
 
-    public string? Callee => Transition.CalleeClassName;
+    public string Callee => Transition.CalleeClassName;
 
     public string? RunContext => Transition.RunContext;
 

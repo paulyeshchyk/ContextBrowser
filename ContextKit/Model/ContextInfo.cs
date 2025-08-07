@@ -8,13 +8,13 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 {
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
 
-    public string? Name { get; set; }
+    public string Name { get; set; } = "unknown_context_info_name";
 
     public string SymbolName { get; set; } = string.Empty;
 
     public HashSet<string> Contexts { get; set; } = new();
 
-    public string? Namespace { get; set; }
+    public string Namespace { get; set; } = "Global";
 
     private ContextInfo? _classOwner { get; set; }
 

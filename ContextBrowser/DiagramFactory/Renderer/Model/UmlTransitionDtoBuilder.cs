@@ -34,7 +34,7 @@ internal class UmlTransitionDtoBuilder
         var callerInfo = ExtractParticipantInfo(caller);
         var calleeInfo = ExtractParticipantInfo(callee);
 
-        var runContext = callee.MethodOwner?.ClassOwner?.Name.AlphanumericOnly();
+        var runContext = callee.MethodOwner?.ClassOwner?.Name?.AlphanumericOnly();
         var ownerClass = caller.MethodOwner?.ClassOwner?.Name;
         var ownerMethod = caller.MethodOwner?.Name;
 
@@ -68,18 +68,18 @@ internal class UmlTransitionDtoBuilder
         }
 
         // Падение в fallback: или это класс, или что-то нераспарсенное
-        return new ParticipantInfo(contextInfo?.SymbolName, contextInfo?.Name, contextInfo?.Name, contextInfo?.Name);
+        return new ParticipantInfo(contextInfo?.SymbolName, contextInfo?.Name ?? "unknown_context_info_name", contextInfo?.Name ?? "unknown_context_info_name", contextInfo?.Name);
     }
 }
 
-internal record struct ParticipantInfo(string? Id, string? Name, string? ClassName, string? MethodName)
+internal record struct ParticipantInfo(string? Id, string Name, string ClassName, string? MethodName)
 {
-    public static implicit operator (string? Id, string? Name, string? ClassName, string? MethodName)(ParticipantInfo value)
+    public static implicit operator (string? Id, string Name, string ClassName, string? MethodName)(ParticipantInfo value)
     {
         return (value.Id, value.Name, value.ClassName, value.MethodName);
     }
 
-    public static implicit operator ParticipantInfo((string Id, string? Name, string? ClassName, string? MethodName) value)
+    public static implicit operator ParticipantInfo((string Id, string Name, string ClassName, string? MethodName) value)
     {
         return new ParticipantInfo(value.Id, value.Name, value.ClassName, value.MethodName);
     }

@@ -2,7 +2,6 @@
 using ContextBrowser.Infrastructure;
 using LoggerKit;
 using LoggerKit.Model;
-using System.Text.Json;
 using UmlKit.Diagrams;
 using UmlKit.Extensions;
 using UmlKit.Model;
@@ -31,8 +30,6 @@ public class TransitionRenderer
         _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Rendering Diagram transitions for [{domain}]", LogLevelNode.Start);
         var activationStack = new ActivationStack(_onWriteLog);
         var seenTransitions = new HashSet<string>();
-        var s = JsonSerializer.Serialize(allTransitions);
-        Console.WriteLine(s);
 
         var transitonList = allTransitions.OrderBy(t => t.Key).Select(t => t.Value);
         foreach(var transition in transitonList)
@@ -56,7 +53,7 @@ public class TransitionRenderer
 
     internal static void RenderSingleTransition(RenderContext ctx)
     {
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render Single Transition [{ctx.Caller}.{ctx.CallerMethod} -> {ctx.Callee}.{ctx.CalleeMethod}]", LogLevelNode.Start);
+        //ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render Single Transition [{ctx.Caller}.{ctx.CallerMethod} -> {ctx.Callee}.{ctx.CalleeMethod}]", LogLevelNode.Start);
 
         AddParticipants(ctx, UmlParticipantKeyword.Actor);
 
@@ -73,7 +70,7 @@ public class TransitionRenderer
         _ = DeactivateCaller(ctx);
 
 
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        //ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     private static bool RenderCallerToStep1(RenderContext ctx)
@@ -141,7 +138,7 @@ public class TransitionRenderer
     private static void AddParticipants(RenderContext ctx, UmlParticipantKeyword defaultParticipantKeyword)
     {
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Adding paticipants for context: {ctx.RunContext}", LogLevelNode.Start);
-        var participants = new[] { ctx.Transition.CallerClassName, ctx.Transition.CalleeClassName, ctx.Transition.RunContext }.Where(x => !string.IsNullOrWhiteSpace(x));
+        var participants = new[] { ctx.Transition.CallerClassName, ctx.Transition.CalleeClassName, ctx.Transition.RunContext }.Where(x => !string.IsNullOrWhiteSpace(x)).Select(s => s!);
         foreach(var p in participants)
         {
             ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Adding participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");

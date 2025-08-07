@@ -1,11 +1,11 @@
 ﻿namespace ContextBrowser.Samples.SampleMultifile;
 
-// context: create, build, sample.broken
+// context: create, build, test.broken
 public class BrokenOrchestra
 {
     public readonly BrokenContextReader Reader = new BrokenContextReader();
 
-    // context: validate, sample.broken
+    // context: validate, test.broken
     public bool ValidateInput(string raw)
     {
         return !string.IsNullOrWhiteSpace(raw);

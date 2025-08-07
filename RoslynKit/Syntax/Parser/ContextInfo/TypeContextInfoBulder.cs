@@ -22,7 +22,20 @@ public class TypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TContext>
     {
         var spanStart = callerSyntaxNode.Span.Start;
         var spanEnd = callerSyntaxNode.Span.End;
-        var typemodel = TypeSyntaxExtractor.Extract(callerSyntaxNode, model);
+
+        TypeSyntaxWrapper? typemodel = null;
+
+        try
+        {
+            typemodel = TypeSyntaxExtractor.Extract(callerSyntaxNode, model);
+        }
+        catch(Exception ex)
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Exception due symbol extracting {callerSyntaxNode}", LogLevelNode.Start);
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"{ex}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, string.Empty, LogLevelNode.End);
+        }
+
         if(typemodel == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{callerSyntaxNode}\" was not resolved in {nsName}");
@@ -36,7 +49,17 @@ public class TypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TContext>
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating type ContextInfo [{typemodel.TypeFullName}]");
 
-        var result = _factory.Create(default, typemodel.kind, nsName, typemodel.TypeFullName, typemodel.SymbolName, callerSyntaxNode, spanStart, spanEnd, symbol);
+        var result = _factory.Create(
+                                default,
+                                typemodel.kind,
+                                nsName,
+                                typemodel.TypeFullName,
+                                typemodel.SymbolName,
+                                callerSyntaxNode,
+                                spanStart,
+                                spanEnd,
+                                symbol
+                                );
         if(result == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Creating type ContextInfo failed {typemodel.TypeFullName}");

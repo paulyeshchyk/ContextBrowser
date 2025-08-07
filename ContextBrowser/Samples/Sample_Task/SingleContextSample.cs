@@ -1,27 +1,27 @@
 ﻿namespace ContextBrowser.Samples.Sample_Task;
 
-// context: create, tasking
+// context: create, test.tasking
 public class TaskService
 {
-    // context: validate, tasking
+    // context: validate, test.tasking
     public bool ValidateTask(TaskModel task)
     {
         return new TaskValidator().IsValid(task);
     }
 
-    // context: build, tasking
+    // context: build, test.tasking
     public TaskDto BuildDto(TaskModel model)
     {
         return new TaskDtoBuilder().From(model);
     }
 
-    // context: share, notification
+    // context: share, test.notification
     public void Notify(TaskDto dto)
     {
         new Notifier().Send("task.created", dto);
     }
 
-    // context: create, tasking
+    // context: create, test.tasking
     public void CreateNewTask(TaskModel task)
     {
         if(!ValidateTask(task))
@@ -33,7 +33,7 @@ public class TaskService
     }
 }
 
-// context: validate, tasking
+// context: validate, test.tasking
 public class TaskValidator
 {
     public bool IsValid(TaskModel task)
@@ -42,7 +42,7 @@ public class TaskValidator
     }
 }
 
-// context: build, tasking
+// context: build, test.tasking
 public class TaskDtoBuilder
 {
     public TaskDto From(TaskModel model)
@@ -51,7 +51,7 @@ public class TaskDtoBuilder
     }
 }
 
-// context: share, notification
+// context: share, test.notification
 public class Notifier
 {
     public void Send(string message, TaskDto dto)
@@ -60,7 +60,7 @@ public class Notifier
     }
 }
 
-// context: create, tasking
+// context: create, test.tasking
 public class Repository
 {
     public void Save(TaskDto dto)
@@ -69,13 +69,13 @@ public class Repository
     }
 }
 
-// context: model, tasking
+// context: model, test.tasking
 public class TaskModel
 {
     public string Title { get; set; } = string.Empty;
 }
 
-// context: model, tasking
+// context: model, test.tasking
 public class TaskDto
 {
     public string Title { get; set; } = string.Empty;

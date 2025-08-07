@@ -4,7 +4,7 @@ namespace ContextKit.Model;
 
 public interface IContextFactory<T>
 {
-    T Create(T? owner, ContextInfoElementType elementType, string? nsName, string? name, string? fullName, SyntaxNode? syntaxNode, int spanStart, int spanEnd, ISymbol? symbol);
+    T Create(T? owner, ContextInfoElementType elementType, string nsName, string name, string? fullName, SyntaxNode? syntaxNode, int spanStart, int spanEnd, ISymbol? symbol);
 }
 
 // context: ContextInfo, build
@@ -14,12 +14,12 @@ public class ContextInfoFactory<T> : IContextFactory<T>
 {
     public const string SUnknownSymbolName = "unknown symbolname";
 
-    public T Create(T? owner, ContextInfoElementType elementType, string? nsName, string? name, string? fullName, SyntaxNode? syntaxNode, int spanStart, int spanEnd, ISymbol? symbol)
+    public T Create(T? owner, ContextInfoElementType elementType, string nsName, string name, string? fullName, SyntaxNode? syntaxNode, int spanStart, int spanEnd, ISymbol? symbol)
     {
         var result = new ContextInfo
         {
             ElementType = elementType,
-            Name = name ?? owner?.Name,
+            Name = name,
             Namespace = nsName,
             ClassOwner = elementType == ContextInfoElementType.method ? owner : null,
             SymbolName = fullName ?? SUnknownSymbolName,
@@ -30,7 +30,7 @@ public class ContextInfoFactory<T> : IContextFactory<T>
         };
 
         // устанавливаем ссылочную информацию
-        if (elementType == ContextInfoElementType.method)
+        if(elementType == ContextInfoElementType.method)
         {
             result.ClassOwner = owner;
             result.MethodOwner = result; // сам себе owner

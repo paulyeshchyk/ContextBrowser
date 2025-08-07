@@ -1,9 +1,9 @@
 ﻿namespace ContextBrowser.Samples.SampleMultifile;
 
-// context: data, read
+// context: test.data, read
 public class BrokenContextReader
 {
-    // context: data, read
+    // context: test.data, read
     public string ReadFile()
     {
         return File.ReadAllText(string.Empty);

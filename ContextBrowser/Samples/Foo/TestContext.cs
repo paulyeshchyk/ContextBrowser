@@ -1,9 +1,9 @@
 ﻿namespace ContextBrowser.Samples.Foo;
 
-// context: validate, test
+// context: validate, test.Foo
 public class A
 {
-    // context: validate, test
+    // context: validate, test.Foo
     public void Foo()
     {
         var b = new B();
@@ -11,10 +11,10 @@ public class A
     }
 }
 
-// context: validate, test
+// context: validate, test.Foo
 public class B
 {
-    // context: validate, test
+    // context: validate, test.Foo
     public void Bar()
     {
     }

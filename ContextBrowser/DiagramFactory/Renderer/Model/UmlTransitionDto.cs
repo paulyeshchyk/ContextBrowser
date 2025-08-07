@@ -2,7 +2,7 @@
 
 public readonly record struct UmlTransitionDto
 {
-    public UmlTransitionDto(string? callerId, string? callerName, string? callerClassName, string? callerMethod, string? calleeId, string? calleeName, string? calleeClassName, string? calleeMethod, string? domain, string? runContext, string? ownerClass, string? ownerMethod)
+    public UmlTransitionDto(string? callerId, string callerName, string callerClassName, string? callerMethod, string? calleeId, string calleeName, string calleeClassName, string? calleeMethod, string? domain, string? runContext, string? ownerClass, string? ownerMethod)
     {
         CallerId = callerId;
         CallerName = callerName;
@@ -20,17 +20,17 @@ public readonly record struct UmlTransitionDto
 
     public string? CallerId { get; init; }
 
-    public string? CallerName { get; init; }
+    public string CallerName { get; init; }
 
-    public string? CallerClassName { get; init; }
+    public string CallerClassName { get; init; }
 
     public string? CallerMethod { get; init; }
 
     public string? CalleeId { get; init; }
 
-    public string? CalleeName { get; init; }
+    public string CalleeName { get; init; }
 
-    public string? CalleeClassName { get; init; }
+    public string CalleeClassName { get; init; }
 
     public string? CalleeMethod { get; init; }
 

@@ -11,10 +11,11 @@ public static class TypeSyntaxExtractor
         {
             return default;
         }
-        var symbol = model.GetDeclaredSymbol(resultSyntax);
+
+        ISymbol? symbol = model.GetDeclaredSymbol(resultSyntax);
+
         if(symbol == null)
         {
-            Console.WriteLine($"[ERR] Symbol not found for {resultSyntax.Identifier.Text}");
             return default;
         }
 

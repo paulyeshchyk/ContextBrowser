@@ -23,14 +23,14 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
     public SortedList<int, UmlTransitionDto>? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
     {
-        _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"ContextTransitionDiagramBuilder.Build transitions for {domainName}", LogLevelNode.Start);
-
         var resultFromCache = _cache.GetFromCache(domainName);
         if(resultFromCache?.Any() ?? false)
         {
             _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"returning from cache");
             return resultFromCache;
         }
+
+        _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"ContextTransitionDiagramBuilder.Build transitions for {domainName}", LogLevelNode.Start);
 
         var result = Fetch(domainName, allContexts, classifier);
 

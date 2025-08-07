@@ -12,8 +12,7 @@ namespace RoslynKit.Syntax.Parser.ContextInfo;
 public class MethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    public MethodContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog)
-         : base(collector, factory, onWriteLog)
+    public MethodContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog) : base(collector, factory, onWriteLog)
     {
     }
 

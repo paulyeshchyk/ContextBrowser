@@ -87,6 +87,8 @@ public class RoslynPhaseParserReferenceResolver<TContext>
     // context: csharp, read
     protected void BuildReferences(TContext callerContext, IContextCollector<TContext> collector, CancellationToken cancellationToken)
     {
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Build references for {callerContext.Name}");
+
         var validator = new ReferenceBuilderValidator<TContext, InvocationExpressionSyntax>(_onWriteLog);
         var validationResult = validator.Validate(callerContext, collector);
 
