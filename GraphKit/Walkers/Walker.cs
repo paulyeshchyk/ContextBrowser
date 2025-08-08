@@ -27,7 +27,7 @@ public class Walker<T>
 
         VisitCallback?.Invoke(item);
 
-        foreach(var reference in item.References)
+        foreach(var reference in item.GetReferencesSortedByInvocation())
             AddToVisited(reference, visited);
         return true;
     }

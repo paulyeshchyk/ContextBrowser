@@ -32,8 +32,6 @@ public class TransitionRenderer
         var seenTransitions = new HashSet<string>();
 
         var callStack = new Stack<string>();
-
-        // Храним отложенные активации
         string? pendingActivation = null;
 
         var transitionList = allTransitions.OrderBy(t => t.Key).Select(t => t.Value);
@@ -46,7 +44,7 @@ public class TransitionRenderer
                     var caller = transition.CallerClassName;
                     var callee = transition.CalleeClassName;
 
-                    // --- 1. Проверка caller ---
+                    // --- caller ---
                     if(callStack.Count > 0)
                     {
                         if(callStack.Peek() != caller)
@@ -57,14 +55,9 @@ public class TransitionRenderer
                                 {
                                     var toClose = callStack.Pop();
                                     if(pendingActivation == toClose)
-                                    {
-                                        // отбрасываем пустую активацию
                                         pendingActivation = null;
-                                    }
                                     else
-                                    {
-                                        diagram.Deactivate(toClose);
-                                    }
+                                        diagram.AddLine($"deactivate {toClose}");
                                 }
                             }
                             else
@@ -73,15 +66,11 @@ public class TransitionRenderer
                                 {
                                     var toClose = callStack.Pop();
                                     if(pendingActivation == toClose)
-                                    {
                                         pendingActivation = null;
-                                    }
                                     else
-                                    {
-                                        diagram.Deactivate(toClose);
-                                    }
+                                        diagram.AddLine($"deactivate {toClose}");
                                 }
-                                diagram.AddSelfCallContinuation(caller, string.Empty);
+                                diagram.AddLine($"-> {caller}");
                                 pendingActivation = caller;
                                 callStack.Push(caller);
                             }
@@ -89,23 +78,21 @@ public class TransitionRenderer
                     }
                     else
                     {
-                        //diagram.AddLine($"-> {caller}:");
-                        diagram.AddSelfCallContinuation(callee, string.Empty);
+                        diagram.AddLine($"-> {caller}");
                         pendingActivation = caller;
                         callStack.Push(caller);
                     }
 
-                    // --- 2. Рисуем переход ---
+                    // --- переход ---
                     if(pendingActivation != null)
                     {
-                        diagram.Activate(pendingActivation, false);
+                        diagram.AddLine($"activate {pendingActivation}");
                         pendingActivation = null;
                     }
-
                     var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
                     RenderSingleTransition(ctx);
 
-                    // --- 3. Обработка callee ---
+                    // --- callee ---
                     if(!string.IsNullOrWhiteSpace(callee))
                     {
                         if(callStack.Contains(callee))
@@ -114,13 +101,9 @@ public class TransitionRenderer
                             {
                                 var toClose = callStack.Pop();
                                 if(pendingActivation == toClose)
-                                {
                                     pendingActivation = null;
-                                }
                                 else
-                                {
-                                    diagram.Deactivate(toClose);
-                                }
+                                    diagram.AddLine($"deactivate {toClose}");
                             }
                         }
                         else
@@ -134,23 +117,20 @@ public class TransitionRenderer
             }
         }
 
-        // --- 4. Закрытие оставшегося ---
+        // --- закрытие ---
         while(callStack.Count > 0)
         {
             var toClose = callStack.Pop();
             if(pendingActivation == toClose)
-            {
-                pendingActivation = null; // не активировали — ничего не закрываем
-            }
+                pendingActivation = null;
             else
-            {
-                diagram.Deactivate(toClose);
-            }
+                diagram.AddLine($"deactivate {toClose}");
         }
 
         _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return true;
     }
+
 
     internal static void RenderSingleTransition(RenderContext ctx)
     {

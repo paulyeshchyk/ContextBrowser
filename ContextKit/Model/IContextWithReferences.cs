@@ -23,11 +23,13 @@ public interface IContextWithReferences<T>
 
     ContextInfoElementType ElementType { get; set; }
 
-    HashSet<T> References { get; }
+    SortedList<int, T> References { get; }
 
     HashSet<T> InvokedBy { get; }
 
     T? MethodOwner { get; set; }
 
     SyntaxNode? SyntaxNode { get; set; }
+
+    IEnumerable<T> GetReferencesSortedByInvocation();
 }

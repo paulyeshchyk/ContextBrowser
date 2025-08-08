@@ -28,7 +28,7 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
         foreach(var ctx in domainMethods.OrderBy(m => m.SpanStart))
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Getting references for method [{ctx.Name}]", LogLevelNode.Start);
-            foreach(var callee in ctx.GetReferences())
+            foreach(var callee in ctx.GetReferencesSortedByInvocation())
             {
                 if(callee.ElementType != ContextInfoElementType.method)
                 {

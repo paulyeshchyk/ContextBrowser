@@ -36,7 +36,7 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public HashSet<string> Domains { get; } = new();
 
-    private HashSet<ContextInfo> References { get; set; } = new();
+    private SortedList<int, ContextInfo> References { get; set; } = new();
 
     private HashSet<ContextInfo> InvokedBy { get; set; } = new();
 
@@ -53,7 +53,7 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     HashSet<ContextInfo> IContextWithReferences<ContextInfo>.InvokedBy => InvokedBy;
 
-    HashSet<ContextInfo> IContextWithReferences<ContextInfo>.References => References;
+    SortedList<int, ContextInfo> IContextWithReferences<ContextInfo>.References => References;
 
     public override int GetHashCode() => SymbolName.GetHashCode();
 
@@ -71,7 +71,8 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public void AddToReferences(ContextInfo obj)
     {
-        References.Add(obj);
+        var index = References.Count;
+        References.Add(index, obj);
     }
 
     public void AddToInvokedBy(ContextInfo obj)
@@ -79,9 +80,14 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
         InvokedBy.Add(obj);
     }
 
-    public HashSet<ContextInfo> GetReferences()
+    public SortedList<int, ContextInfo> GetReferences()
     {
         return References;
+    }
+
+    public IEnumerable<ContextInfo> GetReferencesSortedByInvocation()
+    {
+        return References.OrderBy(t => t.Key).Select(t => t.Value);
     }
 
     public HashSet<ContextInfo> GetInvokedBy()

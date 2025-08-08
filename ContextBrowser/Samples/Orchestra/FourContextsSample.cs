@@ -30,12 +30,14 @@ public class AnotherService
         Step2(data);
     }
 
-    private void Step2(string data)
+    // context: share, test.orchestration
+    public void Step2(string data)
     {
         flowOrchestrator.CallbackFromAnotherService(data);
     }
 
-    private static void Step1(string data)
+    // context: share, test.orchestration
+    public static void Step1(string data)
     {
         Console.WriteLine(data);
     }

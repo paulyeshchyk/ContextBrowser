@@ -39,7 +39,7 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking invocation: Adding link to Reference [{calleeContextInfo.Name}]");
-        callerContextInfo.References.Add(calleeContextInfo);
+        callerContextInfo.AddToReferences(calleeContextInfo);
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking invocation: Adding link to InvokedBy [{callerContextInfo.Name}]");
         calleeContextInfo.InvokedBy.Add(callerContextInfo);
