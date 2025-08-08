@@ -27,6 +27,8 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, "Iterating domain methods", LogLevelNode.Start);
         foreach(var ctx in domainMethods.OrderBy(m => m.SpanStart))
         {
+            string theKey = Guid.NewGuid().ToString();
+
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Getting references for method [{ctx.Name}]", LogLevelNode.Start);
             foreach(var callee in ctx.GetReferencesSortedByInvocation())
             {
@@ -38,7 +40,7 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
                 var result = UmlTransitionDtoBuilder.CreateTransition(ctx, callee, _onWriteLog, _options);
                 if(result != null)
                 {
-                    resultList.Add((UmlTransitionDto)result, callee.ClassOwner?.SymbolName ?? "unknown_callee_classowner");
+                    resultList.Add((UmlTransitionDto)result, theKey);
                 }
             }
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);

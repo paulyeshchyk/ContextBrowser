@@ -28,19 +28,32 @@ public class TransitionRenderer
         }
 
         _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Rendering Diagram transitions for [{domain}]", LogLevelNode.Start);
-        var activationStack = new ActivationStack(_onWriteLog);
-        var seenTransitions = new HashSet<string>();
 
+        var activationStack = new ActivationStack(_onWriteLog);
         var callStack = new Stack<string>();
         string? pendingActivation = null;
 
+        // Используем упорядоченный список
         var transitionList = allTransitions.GetTransitionList();
+
+        string? lastCallee = null;
+
         foreach(var transition in transitionList)
         {
             var caller = transition.CallerClassName;
             var callee = transition.CalleeClassName;
 
-            // --- caller ---
+            // --- Восстановление контекста ---
+            // Если предыдущий callee совпадает с текущим caller, 
+            // то мы, скорее всего, продолжаем вложенный сценарий
+            if(lastCallee != null && lastCallee == caller && !callStack.Contains(caller))
+            {
+                diagram.AddLine($"-> {caller.AlphanumericOnly()}");
+                pendingActivation = caller;
+                callStack.Push(caller);
+            }
+
+            // --- Caller ---
             if(callStack.Count > 0)
             {
                 if(callStack.Peek() != caller)
@@ -66,7 +79,7 @@ public class TransitionRenderer
                             else
                                 diagram.AddLine($"deactivate {toClose}");
                         }
-                        diagram.AddLine($"-> {caller}");
+                        diagram.AddLine($"-> {caller.AlphanumericOnly()}");
                         pendingActivation = caller;
                         callStack.Push(caller);
                     }
@@ -74,44 +87,36 @@ public class TransitionRenderer
             }
             else
             {
-                diagram.AddLine($"-> {caller}");
+                diagram.AddLine($"-> {caller.AlphanumericOnly()}");
                 pendingActivation = caller;
                 callStack.Push(caller);
             }
 
-            // --- переход ---
+            // --- Переход ---
             if(pendingActivation != null)
             {
                 diagram.AddLine($"activate {pendingActivation}");
                 pendingActivation = null;
             }
+
             var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
             RenderSingleTransition(ctx);
 
-            // --- callee ---
+            // --- Callee ---
             if(!string.IsNullOrWhiteSpace(callee))
             {
-                if(callStack.Contains(callee))
+                if(!callStack.Contains(callee))
                 {
-                    while(callStack.Count > 0 && callStack.Peek() != callee)
-                    {
-                        var toClose = callStack.Pop();
-                        if(pendingActivation == toClose)
-                            pendingActivation = null;
-                        else
-                            diagram.AddLine($"deactivate {toClose}");
-                    }
-                }
-                else
-                {
-                    diagram.AddLine($"-> {callee}");
+                    diagram.AddLine($"-> {callee.AlphanumericOnly()}");
                     pendingActivation = callee;
                     callStack.Push(callee);
                 }
             }
+
+            lastCallee = callee;
         }
 
-        // --- закрытие ---
+        // --- Закрытие ---
         while(callStack.Count > 0)
         {
             var toClose = callStack.Pop();

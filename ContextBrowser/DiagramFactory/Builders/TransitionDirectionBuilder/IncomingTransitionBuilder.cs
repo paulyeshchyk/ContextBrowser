@@ -42,7 +42,7 @@ public class IncomingTransitionBuilder : ITransitionBuilder
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] Building invoked by list for callee {callee.SymbolName}, no invoked by found");
         }
-
+        string theKey = Guid.NewGuid().ToString();
         foreach(var caller in invokedByList)
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Building invoked by {callee.SymbolName} -> {caller.SymbolName}");
@@ -58,7 +58,7 @@ public class IncomingTransitionBuilder : ITransitionBuilder
                 _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[MISS] Building invoked by {callee.SymbolName} -> {caller.SymbolName}, transition was not created");
                 continue;
             }
-            resultList.Add((UmlTransitionDto)result, callee.SymbolName);
+            resultList.Add((UmlTransitionDto)result, theKey);
         }
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }

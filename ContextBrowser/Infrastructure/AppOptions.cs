@@ -99,7 +99,7 @@ public class AppOptions
         set;
     } = new ContextTransitionDiagramBuilderOptions(
                                         detailLevel: DiagramDetailLevel.Summary,
-                                          direction: DiagramDirection.BiDirectional,
+                                          direction: DiagramDirection.Outgoing,
                                       useActivation: true,
                                           useReturn: false,
                                            useAsync: false,
