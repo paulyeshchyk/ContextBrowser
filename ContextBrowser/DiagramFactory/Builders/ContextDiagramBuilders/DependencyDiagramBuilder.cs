@@ -1,10 +1,15 @@
-﻿using ContextBrowser.DiagramFactory.Renderer.Model;
+﻿using ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
 using ContextKit.Model;
 
 namespace ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
 
 public class DependencyDiagramBuilder : IContextDiagramBuilder
 {
-    public SortedList<int, UmlTransitionDto>? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
+    public SortedGrouppedTransitionList? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
         => throw new NotImplementedException();
+
+    SortedGrouppedTransitionList? IContextDiagramBuilder.Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -21,26 +21,29 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
     public DiagramDirection Direction => DiagramDirection.Outgoing;
 
 
-    public IEnumerable<UmlTransitionDto> BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
+    public GroupedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
     {
-        _onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Dbg, "Iterating domain methods", LogLevelNode.Start);
+        var resultList = new GroupedTransitionList();
+        _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, "Iterating domain methods", LogLevelNode.Start);
         foreach(var ctx in domainMethods.OrderBy(m => m.SpanStart))
         {
-            _onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Dbg, $"Iterating domain domain method [{ctx.Name}]");
+            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Getting references for method [{ctx.Name}]", LogLevelNode.Start);
             foreach(var callee in ctx.GetReferences())
             {
                 if(callee.ElementType != ContextInfoElementType.method)
                 {
-                    _onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Warn, $"Найдена ссылка, записанная в Reference, но не являющаяся методом [{callee.Name}]");
+                    _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"Найдена ссылка, записанная в Reference, но не являющаяся методом [{callee.Name}]");
                     continue;
                 }
                 var result = UmlTransitionDtoBuilder.CreateTransition(ctx, callee, _onWriteLog, _options);
                 if(result != null)
                 {
-                    yield return (UmlTransitionDto)result;
+                    resultList.Add((UmlTransitionDto)result);
                 }
             }
+            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         }
-        _onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        return resultList;
     }
 }

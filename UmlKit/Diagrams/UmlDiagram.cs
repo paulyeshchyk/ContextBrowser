@@ -15,7 +15,7 @@ public abstract class UmlDiagram
 
     public abstract void AddSelfCallBreak(string name);
 
-    public abstract void AddSelfCallContinuation(string name);
+    public abstract void AddSelfCallContinuation(string name, string methodName);
 
     // context: create, uml
     public abstract IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null);

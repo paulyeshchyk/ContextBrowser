@@ -26,7 +26,17 @@ public class AnotherService
     // context: share, test.orchestration
     public void DoSomething(string data)
     {
-        Console.WriteLine(data);
+        Step1(data);
+        Step2(data);
+    }
+
+    private void Step2(string data)
+    {
         flowOrchestrator.CallbackFromAnotherService(data);
+    }
+
+    private static void Step1(string data)
+    {
+        Console.WriteLine(data);
     }
 }

@@ -1,4 +1,4 @@
-﻿using ContextBrowser.DiagramFactory.Renderer.Model;
+﻿using ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
 using ContextBrowser.Infrastructure;
 using LoggerKit;
 using LoggerKit.Model;
@@ -19,7 +19,7 @@ public class TransitionRenderer
         _onWriteLog = onWriteLog;
     }
 
-    public bool RenderDiagramTransitions(UmlDiagram diagram, SortedList<int, UmlTransitionDto>? allTransitions, string domain)
+    public bool RenderDiagramTransitions(UmlDiagram diagram, SortedGrouppedTransitionList? allTransitions, string domain)
     {
         if(allTransitions == null || !allTransitions.Any())
         {
@@ -32,19 +32,25 @@ public class TransitionRenderer
         var seenTransitions = new HashSet<string>();
 
         var transitonList = allTransitions.OrderBy(t => t.Key).Select(t => t.Value);
-        foreach(var transition in transitonList)
+        foreach(var transitionD in transitonList)
         {
-            var key = $"{transition.CallerClassName}.{transition.CallerMethod}->{transition.CalleeClassName}.{transition.CalleeMethod}";
-
-            if(!seenTransitions.Add(key) && _options.roslynCodeparserOptions.ShowForeignInstancies)
+            foreach(var transitionL in transitionD.Values)
             {
-                diagram.AddNoteOver(transition.CallerClassName ?? "unknown callee", $"duplicate run call on {transition.CalleeClassName}");
-                diagram.AddNoteOver(transition.CalleeClassName ?? "unknown callee", $"duplicate run call on {transition.CallerClassName}");
-                continue;
-            }
+                foreach(var transition in transitionL)
+                {
+                    var key = $"{transition.CallerClassName}.{transition.CallerMethod}->{transition.CalleeClassName}.{transition.CalleeMethod}";
 
-            var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
-            RenderSingleTransition(ctx);
+                    if(!seenTransitions.Add(key) && _options.roslynCodeparserOptions.ShowForeignInstancies)
+                    {
+                        diagram.AddNoteOver(transition.CallerClassName ?? "unknown callee", $"duplicate run call on {transition.CalleeClassName}");
+                        diagram.AddNoteOver(transition.CalleeClassName ?? "unknown callee", $"duplicate run call on {transition.CallerClassName}");
+                        continue;
+                    }
+
+                    var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
+                    RenderSingleTransition(ctx);
+                }
+            }
         }
 
         _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
@@ -78,7 +84,7 @@ public class TransitionRenderer
         //TODO: extra convert
         string? from = ctx.Caller?.AlphanumericOnly();
         string? to = ctx.Step1?.AlphanumericOnly();
-        string? label = ctx.CallerMethod;
+        string? label = ctx.CalleeMethod; //ctx.CallerMethod;
 
         if(from?.Equals(to) ?? false)
             ctx.Diagram.AddSelfCallBreak(from);
@@ -152,7 +158,7 @@ public class TransitionRenderer
     {
         if(ctx.Options.UseSelfCallContinuation)
         {
-            ctx.Diagram.AddSelfCallContinuation(ctx.Caller);
+            ctx.Diagram.AddSelfCallContinuation(ctx.Caller, ctx.CallerMethod);
         }
 
         if(ctx.Options.UseSelfCallContinuation && ctx.Options.UseActivation)

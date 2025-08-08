@@ -32,11 +32,11 @@ public class UmlDiagramSequence : UmlDiagram
         Add(selfTransition);
     }
 
-    public override void AddSelfCallContinuation(string name)
+    public override void AddSelfCallContinuation(string name, string methodName)
     {
         var from = new UmlParticipant(string.Empty, string.Empty);
         var to = new UmlParticipant(name, name.AlphanumericOnly());
-        var selfTransition = new UmlSequence(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
+        var selfTransition = new UmlSequence(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), methodName);
         Add(selfTransition);
     }
 

@@ -19,7 +19,7 @@ public class UmlDiagramClasses : UmlDiagram
         Add(new UmlNote(name, UmlNotePosition.Left, $"{name} -> {name}:"));
     }
 
-    public override void AddSelfCallContinuation(string name)
+    public override void AddSelfCallContinuation(string name, string methodName)
     {
 #warning not working
         //throw new NotImplementedException();

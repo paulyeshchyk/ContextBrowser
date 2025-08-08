@@ -1,4 +1,4 @@
-using ContextBrowser.ContextKit.Parser;
+п»їusing ContextBrowser.ContextKit.Parser;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
@@ -29,7 +29,7 @@ public class PropertyContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCont
 
         var result = _factory.Create(
             parentContext,
-            elementType: ContextInfoElementType.@property, // У вас должен быть такой тип в перечислении
+            elementType: ContextInfoElementType.@property,
             nsName: propertySyntax.GetNamespaceName(),
             name: symbol.Name,
             fullName: symbol.ToDisplayString(),

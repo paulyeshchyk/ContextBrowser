@@ -1,5 +1,4 @@
-﻿using ContextBrowser.DiagramFactory.Renderer.Model;
-using ContextKit.Model;
+﻿using ContextKit.Model;
 using LoggerKit;
 using RoslynKit.Model;
 using UmlKit.Model.Options;
@@ -21,14 +20,20 @@ public class BiDirectionalTransitionBuilder : ITransitionBuilder
         _incoming = new IncomingTransitionBuilder(options, onWriteLog);
     }
 
-    public IEnumerable<UmlTransitionDto> BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
+    public GroupedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
     {
         var outgoing = _outgoing.BuildTransitions(domainMethods, allContexts);
         var incoming = _incoming.BuildTransitions(domainMethods, allContexts);
         var result = outgoing.Concat(incoming);
 
-        return _options.ShowForeignInstancies
+        var theList = _options.ShowForeignInstancies
             ? result
             : result.GroupBy(r => r.Id).Distinct().Select(g => g.FirstOrDefault());
+        var resultList = new GroupedTransitionList();
+        foreach(var a in theList)
+        {
+            resultList.Add(a);
+        }
+        return resultList;
     }
 }

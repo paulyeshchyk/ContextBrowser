@@ -4,6 +4,7 @@ public readonly record struct UmlTransitionDto
 {
     public UmlTransitionDto(string? callerId, string callerName, string callerClassName, string? callerMethod, string? calleeId, string calleeName, string calleeClassName, string? calleeMethod, string? domain, string? runContext, string? ownerClass, string? ownerMethod)
     {
+        Uid = Guid.Empty;
         CallerId = callerId;
         CallerName = callerName;
         CallerClassName = callerClassName;
@@ -41,6 +42,8 @@ public readonly record struct UmlTransitionDto
     public string? OwnerClass { get; init; }
 
     public string? OwnerMethod { get; init; }
+
+    public Guid? Uid { get; init; }
 
     public string Id
     {
