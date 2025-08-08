@@ -4,52 +4,144 @@ using UmlKit.Model.Options;
 
 namespace ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
 
-public class GroupedTransitionList : List<UmlTransitionDto>
+public class SortedTransitionlist : SortedList<int, UmlTransitionDto>
 {
+    public SortedTransitionlist()
+    {
+    }
+
+    // Используем конструктор-копию, но если UmlTransitionDto изменяем,
+    // нужен глубокий клон.
+    public SortedTransitionlist(SortedTransitionlist source) : base(source)
+    {
+    }
 }
 
-public class SortedGrouppedTransitionList
+public class GrouppedSortedTransitionList
 {
-    private SortedList<int, Dictionary<Guid, IEnumerable<UmlTransitionDto>>> _groupedTransitions =
-        new SortedList<int, Dictionary<Guid, IEnumerable<UmlTransitionDto>>>();
+    private readonly Dictionary<string, SortedTransitionlist> _dataset;
 
-    // Добавляем один переход. 
-    // Предположим, что у UmlTransitionDto есть свойство Guid
-    public void Add(int index, UmlTransitionDto transition)
+    public GrouppedSortedTransitionList()
     {
-        // Проверяем, существует ли уже элемент с таким ключом index
-        if(!_groupedTransitions.ContainsKey(index))
-        {
-            // Если нет, создаем новый словарь и добавляем его
-            _groupedTransitions.Add(index, new Dictionary<Guid, IEnumerable<UmlTransitionDto>>());
-        }
+        _dataset = new Dictionary<string, SortedTransitionlist>();
+    }
 
-        // Получаем словарь для текущего индекса
-        var transitionsForIndex = _groupedTransitions[index];
+    public GrouppedSortedTransitionList(GrouppedSortedTransitionList initialData)
+        : this(initialData.GetDataset())
+    {
+    }
 
-        // Предположим, что у UmlTransitionDto есть свойство Guid, по которому будем группировать
-        var groupKey = transition.Uid ?? Guid.Empty; // Или любое другое свойство для группировки
-
-        // Проверяем, существует ли уже группа для данного Guid
-        if(transitionsForIndex.ContainsKey(groupKey))
+    public GrouppedSortedTransitionList(IReadOnlyDictionary<string, SortedTransitionlist> initialData)
+    {
+        _dataset = new Dictionary<string, SortedTransitionlist>();
+        foreach(var pair in initialData)
         {
-            // Если да, добавляем переход к существующей коллекции
-            var currentTransitions = transitionsForIndex[groupKey].ToList();
-            currentTransitions.Add(transition);
-            transitionsForIndex[groupKey] = currentTransitions;
-        }
-        else
-        {
-            // Если нет, создаем новую группу
-            transitionsForIndex.Add(groupKey, new List<UmlTransitionDto> { transition });
+            _dataset.Add(pair.Key, new SortedTransitionlist(pair.Value));
         }
     }
 
-    public bool Any() => _groupedTransitions.Any();
+    public IReadOnlyDictionary<string, SortedTransitionlist> GetDataset() => _dataset;
 
-    public IOrderedEnumerable<KeyValuePair<int, Dictionary<Guid, IEnumerable<UmlTransitionDto>>>> OrderBy<TKey>(Func<KeyValuePair<int, Dictionary<Guid, IEnumerable<UmlTransitionDto>>>, TKey> keySelector)
+    public void Add(UmlTransitionDto transitionDto, string key)
     {
-        return _groupedTransitions.OrderBy(keySelector);
+        if(!_dataset.TryGetValue(key, out var transitionList))
+        {
+            transitionList = new SortedTransitionlist();
+            _dataset.Add(key, transitionList);
+        }
+
+        transitionList.Add(transitionList.Count, transitionDto);
+    }
+
+    public SortedTransitionlist? GetTransitionList(string key)
+    {
+        return _dataset.TryGetValue(key, out var result) ? result : null;
+    }
+
+    public IEnumerable<string> GetAllKeys()
+    {
+        return _dataset.Keys;
+    }
+
+    public List<UmlTransitionDto> GetTransitionList()
+    {
+        return _dataset
+            .OrderBy(pair => pair.Key)
+            .SelectMany(pair => pair.Value.Values)
+            .ToList();
+    }
+
+    public bool HasTransitions(string key)
+    {
+        return _dataset.TryGetValue(key, out var list) && list.Any();
+    }
+
+    public bool HasTransitions()
+    {
+        return _dataset.Any(pair => pair.Value.Any());
+    }
+
+    public void Merge(GrouppedSortedTransitionList sourceB)
+    {
+        var _finalDataset = this.Concat(sourceB);
+        _dataset.Clear();
+        foreach(var pair in _finalDataset)
+        {
+            _dataset.Add(pair.Key, new SortedTransitionlist(pair.Value));
+        }
+    }
+
+    public GrouppedSortedTransitionList Copy(GrouppedSortedTransitionList sourceB)
+    {
+        return new GrouppedSortedTransitionList(this.Concat(sourceB));
+    }
+
+    public Dictionary<string, SortedTransitionlist> Concat(GrouppedSortedTransitionList sourceB)
+    {
+        var allKeys = _dataset.Keys.Union(sourceB.GetDataset().Keys);
+
+        return allKeys.ToDictionary(
+            key => key,
+            key =>
+            {
+                var combinedList = new SortedTransitionlist();
+
+                if(sourceB.GetDataset().TryGetValue(key, out var listB))
+                {
+                    foreach(var item in listB.Values)
+                    {
+                        combinedList.Add(combinedList.Count, item);
+                    }
+                }
+
+                if(_dataset.TryGetValue(key, out var listA))
+                {
+                    foreach(var item in listA.Values)
+                    {
+                        combinedList.Add(combinedList.Count, item);
+                    }
+                }
+                return combinedList;
+            }
+        );
+    }
+
+    public List<UmlTransitionDto> ConcatToList(GrouppedSortedTransitionList sourceB)
+    {
+        var resultList = new List<UmlTransitionDto>();
+
+        foreach(var list in sourceB.GetDataset().Values)
+        {
+            resultList.AddRange(list.Values);
+        }
+
+        var uniqueKeysFromA = _dataset.Keys.Except(sourceB.GetDataset().Keys);
+        foreach(var key in uniqueKeysFromA)
+        {
+            resultList.AddRange(_dataset[key].Values);
+        }
+
+        return resultList;
     }
 }
 
@@ -57,5 +149,5 @@ public interface ITransitionBuilder
 {
     DiagramDirection Direction { get; }
 
-    GroupedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts);
+    GrouppedSortedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts);
 }

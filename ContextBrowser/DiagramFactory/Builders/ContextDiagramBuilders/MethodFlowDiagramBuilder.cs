@@ -5,6 +5,6 @@ namespace ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
 
 public class MethodFlowDiagramBuilder : IContextDiagramBuilder
 {
-    public SortedGrouppedTransitionList? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
+    public GrouppedSortedTransitionList? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
         => throw new NotImplementedException();
 }

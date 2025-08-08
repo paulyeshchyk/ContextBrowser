@@ -21,9 +21,9 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
     public DiagramDirection Direction => DiagramDirection.Outgoing;
 
 
-    public GroupedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
+    public GrouppedSortedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
     {
-        var resultList = new GroupedTransitionList();
+        var resultList = new GrouppedSortedTransitionList();
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, "Iterating domain methods", LogLevelNode.Start);
         foreach(var ctx in domainMethods.OrderBy(m => m.SpanStart))
         {
@@ -38,7 +38,7 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
                 var result = UmlTransitionDtoBuilder.CreateTransition(ctx, callee, _onWriteLog, _options);
                 if(result != null)
                 {
-                    resultList.Add((UmlTransitionDto)result);
+                    resultList.Add((UmlTransitionDto)result, callee.ClassOwner?.SymbolName ?? "unknown_callee_classowner");
                 }
             }
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);

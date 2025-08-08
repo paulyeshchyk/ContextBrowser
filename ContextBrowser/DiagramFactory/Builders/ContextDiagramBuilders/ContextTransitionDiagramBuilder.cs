@@ -20,10 +20,10 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
         _cache = new ContextTransitionDiagramBuilderCache(onWriteLog);
     }
 
-    public SortedGrouppedTransitionList? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
+    public GrouppedSortedTransitionList? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
     {
         var resultFromCache = _cache.GetFromCache(domainName);
-        if(resultFromCache?.Any() ?? false)
+        if(resultFromCache?.HasTransitions() ?? false)
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"returning from cache");
             return resultFromCache;
@@ -39,7 +39,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
         return result;
     }
 
-    private SortedGrouppedTransitionList? Fetch(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
+    private GrouppedSortedTransitionList? Fetch(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier)
     {
         var methods = FetchAllMethods(domainName, allContexts, classifier);
 
@@ -62,9 +62,9 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
             .ToList();
     }
 
-    private SortedGrouppedTransitionList BuildAllTransitions(string domainName, List<ContextInfo> allContexts, List<ContextInfo> methods)
+    private GrouppedSortedTransitionList BuildAllTransitions(string domainName, List<ContextInfo> allContexts, List<ContextInfo> methods)
     {
-        var allTransitions = new SortedGrouppedTransitionList();
+        var allTransitions = new GrouppedSortedTransitionList();
 
         if(!_transitionBuilders.Any())
         {
@@ -74,13 +74,12 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Build Domain [{domainName}]", LogLevelNode.Start);
 
-        int globalCounter = 0;
         foreach(var builder in _transitionBuilders)
         {
-            globalCounter += BuildWithConcreteBuilder(builder, allContexts, methods, allTransitions, globalCounter);
+            BuildWithConcreteBuilder(builder, allContexts, methods, allTransitions);
         }
 
-        if(!allTransitions.Any())
+        if(!allTransitions.HasTransitions())
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"No transitions found for domain [{domainName}]");
         }
@@ -89,34 +88,29 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
         return allTransitions;
     }
 
-    private int BuildWithConcreteBuilder(ITransitionBuilder builder, List<ContextInfo> allContexts, List<ContextInfo> methods, SortedGrouppedTransitionList allTransitions, int globalIndex)
+    private void BuildWithConcreteBuilder(ITransitionBuilder builder, List<ContextInfo> allContexts, List<ContextInfo> methods, GrouppedSortedTransitionList allTransitions)
     {
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Building Transitions [{builder.GetType().Name}]", LogLevelNode.Start);
 
         var transitions = builder.BuildTransitions(methods, allContexts);
 
-        foreach(var t in transitions)
-        {
-            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Save Transition [{t.CallerClassName}.{t.CallerMethod} -> {t.CalleeClassName}.{t.CalleeMethod}]");
-            allTransitions.Add(globalIndex++, t);
-        }
+        allTransitions.Merge(transitions);
 
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
-        return globalIndex;
     }
 }
 
 internal class ContextTransitionDiagramBuilderCache
 {
     private readonly OnWriteLog? _onWriteLog = null;
-    private readonly ConcurrentDictionary<string, SortedGrouppedTransitionList> _cache = new();
+    private readonly ConcurrentDictionary<string, GrouppedSortedTransitionList> _cache = new();
 
     public ContextTransitionDiagramBuilderCache(OnWriteLog? onWriteLog)
     {
         _onWriteLog = onWriteLog;
     }
 
-    public SortedGrouppedTransitionList? GetFromCache(string cacheKey)
+    public GrouppedSortedTransitionList? GetFromCache(string cacheKey)
     {
         // Попытка получить данные из кэша.
         if(_cache.TryGetValue(cacheKey, out var cachedResult))
@@ -129,9 +123,9 @@ internal class ContextTransitionDiagramBuilderCache
         return null;
     }
 
-    public void AddToCache(string cacheKey, SortedGrouppedTransitionList? result)
+    public void AddToCache(string cacheKey, GrouppedSortedTransitionList? result)
     {
-        if(result == null || !result.Any())
+        if(result == null || !result.HasTransitions())
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Результат не передан для кеширования для [{cacheKey}]");
             return;

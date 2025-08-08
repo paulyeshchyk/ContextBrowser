@@ -20,9 +20,9 @@ public class IncomingTransitionBuilder : ITransitionBuilder
 
     public DiagramDirection Direction => DiagramDirection.Incoming;
 
-    public GroupedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
+    public GrouppedSortedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
     {
-        var resultList = new GroupedTransitionList();
+        var resultList = new GrouppedSortedTransitionList();
 
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Build incoming", LogLevelNode.Start);
 
@@ -34,7 +34,7 @@ public class IncomingTransitionBuilder : ITransitionBuilder
         return resultList;
     }
 
-    private void BuildCallee(GroupedTransitionList resultList, ContextInfo callee)
+    private void BuildCallee(GrouppedSortedTransitionList resultList, ContextInfo callee)
     {
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Build invoked by list for callee {callee.SymbolName}", LogLevelNode.Start);
         var invokedByList = callee.GetInvokedBy();
@@ -58,7 +58,7 @@ public class IncomingTransitionBuilder : ITransitionBuilder
                 _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[MISS] Building invoked by {callee.SymbolName} -> {caller.SymbolName}, transition was not created");
                 continue;
             }
-            resultList.Add((UmlTransitionDto)result);
+            resultList.Add((UmlTransitionDto)result, callee.SymbolName);
         }
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }

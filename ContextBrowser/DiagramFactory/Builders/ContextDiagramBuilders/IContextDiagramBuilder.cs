@@ -5,5 +5,5 @@ namespace ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
 
 public interface IContextDiagramBuilder
 {
-    SortedGrouppedTransitionList? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier);
+    GrouppedSortedTransitionList? Build(string domainName, List<ContextInfo> allContexts, ContextClassifier classifier);
 }

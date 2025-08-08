@@ -18,7 +18,7 @@ public class FlowOrchestrator
     }
 }
 
-// context: share, test.orchestration
+// context: share, test.orchestration1
 public class AnotherService
 {
     private FlowOrchestrator flowOrchestrator = new FlowOrchestrator();
@@ -31,14 +31,14 @@ public class AnotherService
     }
 
     // context: share, test.orchestration
-    public void Step2(string data)
-    {
-        flowOrchestrator.CallbackFromAnotherService(data);
-    }
-
-    // context: share, test.orchestration
     public static void Step1(string data)
     {
         Console.WriteLine(data);
+    }
+
+    // context: share, test.orchestration
+    public void Step2(string data)
+    {
+        flowOrchestrator.CallbackFromAnotherService(data);
     }
 }

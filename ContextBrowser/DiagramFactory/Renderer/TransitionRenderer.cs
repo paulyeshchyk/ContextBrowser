@@ -19,9 +19,9 @@ public class TransitionRenderer
         _onWriteLog = onWriteLog;
     }
 
-    public bool RenderDiagramTransitions(UmlDiagram diagram, SortedGrouppedTransitionList? allTransitions, string domain)
+    public bool RenderDiagramTransitions(UmlDiagram diagram, GrouppedSortedTransitionList? allTransitions, string domain)
     {
-        if(allTransitions == null || !allTransitions.Any())
+        if(allTransitions == null || !allTransitions.HasTransitions())
         {
             _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Err, $"No transitions provided for [{domain}]");
             return false;
@@ -34,85 +34,79 @@ public class TransitionRenderer
         var callStack = new Stack<string>();
         string? pendingActivation = null;
 
-        var transitionList = allTransitions.OrderBy(t => t.Key).Select(t => t.Value);
-        foreach(var transitionD in transitionList)
+        var transitionList = allTransitions.GetTransitionList();
+        foreach(var transition in transitionList)
         {
-            foreach(var transitionL in transitionD.Values)
-            {
-                foreach(var transition in transitionL)
-                {
-                    var caller = transition.CallerClassName;
-                    var callee = transition.CalleeClassName;
+            var caller = transition.CallerClassName;
+            var callee = transition.CalleeClassName;
 
-                    // --- caller ---
-                    if(callStack.Count > 0)
+            // --- caller ---
+            if(callStack.Count > 0)
+            {
+                if(callStack.Peek() != caller)
+                {
+                    if(callStack.Contains(caller))
                     {
-                        if(callStack.Peek() != caller)
+                        while(callStack.Count > 0 && callStack.Peek() != caller)
                         {
-                            if(callStack.Contains(caller))
-                            {
-                                while(callStack.Count > 0 && callStack.Peek() != caller)
-                                {
-                                    var toClose = callStack.Pop();
-                                    if(pendingActivation == toClose)
-                                        pendingActivation = null;
-                                    else
-                                        diagram.AddLine($"deactivate {toClose}");
-                                }
-                            }
+                            var toClose = callStack.Pop();
+                            if(pendingActivation == toClose)
+                                pendingActivation = null;
                             else
-                            {
-                                while(callStack.Count > 0)
-                                {
-                                    var toClose = callStack.Pop();
-                                    if(pendingActivation == toClose)
-                                        pendingActivation = null;
-                                    else
-                                        diagram.AddLine($"deactivate {toClose}");
-                                }
-                                diagram.AddLine($"-> {caller}");
-                                pendingActivation = caller;
-                                callStack.Push(caller);
-                            }
+                                diagram.AddLine($"deactivate {toClose}");
                         }
                     }
                     else
                     {
+                        while(callStack.Count > 0)
+                        {
+                            var toClose = callStack.Pop();
+                            if(pendingActivation == toClose)
+                                pendingActivation = null;
+                            else
+                                diagram.AddLine($"deactivate {toClose}");
+                        }
                         diagram.AddLine($"-> {caller}");
                         pendingActivation = caller;
                         callStack.Push(caller);
                     }
+                }
+            }
+            else
+            {
+                diagram.AddLine($"-> {caller}");
+                pendingActivation = caller;
+                callStack.Push(caller);
+            }
 
-                    // --- переход ---
-                    if(pendingActivation != null)
-                    {
-                        diagram.AddLine($"activate {pendingActivation}");
-                        pendingActivation = null;
-                    }
-                    var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
-                    RenderSingleTransition(ctx);
+            // --- переход ---
+            if(pendingActivation != null)
+            {
+                diagram.AddLine($"activate {pendingActivation}");
+                pendingActivation = null;
+            }
+            var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
+            RenderSingleTransition(ctx);
 
-                    // --- callee ---
-                    if(!string.IsNullOrWhiteSpace(callee))
+            // --- callee ---
+            if(!string.IsNullOrWhiteSpace(callee))
+            {
+                if(callStack.Contains(callee))
+                {
+                    while(callStack.Count > 0 && callStack.Peek() != callee)
                     {
-                        if(callStack.Contains(callee))
-                        {
-                            while(callStack.Count > 0 && callStack.Peek() != callee)
-                            {
-                                var toClose = callStack.Pop();
-                                if(pendingActivation == toClose)
-                                    pendingActivation = null;
-                                else
-                                    diagram.AddLine($"deactivate {toClose}");
-                            }
-                        }
+                        var toClose = callStack.Pop();
+                        if(pendingActivation == toClose)
+                            pendingActivation = null;
                         else
-                        {
-                            diagram.AddLine($"-> {callee}");
-                            pendingActivation = callee;
-                            callStack.Push(callee);
-                        }
+                            diagram.AddLine($"deactivate {toClose}");
                     }
+                }
+                else
+                {
+                    diagram.AddLine($"-> {callee}");
+                    pendingActivation = callee;
+                    callStack.Push(callee);
                 }
             }
         }

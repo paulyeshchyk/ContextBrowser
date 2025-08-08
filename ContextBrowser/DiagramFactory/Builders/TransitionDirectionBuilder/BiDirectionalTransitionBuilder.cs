@@ -20,18 +20,13 @@ public class BiDirectionalTransitionBuilder : ITransitionBuilder
         _incoming = new IncomingTransitionBuilder(options, onWriteLog);
     }
 
-    public GroupedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
+    public GrouppedSortedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
     {
         var outgoing = _outgoing.BuildTransitions(domainMethods, allContexts);
         var incoming = _incoming.BuildTransitions(domainMethods, allContexts);
-        var result = outgoing.Concat(incoming);
 
-        var theList = result.GroupBy(r => r.Id).Distinct().Select(g => g.FirstOrDefault());
-        var resultList = new GroupedTransitionList();
-        foreach(var a in theList)
-        {
-            resultList.Add(a);
-        }
-        return resultList;
+        var result = new GrouppedSortedTransitionList(outgoing);
+        result.Concat(incoming);
+        return result;
     }
 }
