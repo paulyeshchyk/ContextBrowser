@@ -82,8 +82,7 @@ public class AppOptions
         FakeOwnerName: "privateTYPE",
         FakeMethodName: "privateMETHOD",
         CustomAssembliesPaths: AssembliesPaths ?? Enumerable.Empty<string>(),
-        CreateFailedCallees: true,
-        ShowForeignInstancies: false
+        CreateFailedCallees: true
     );
 
     public DiagramBuilderKeys diagramType { get; set; } = DiagramBuilderKeys.Transition;

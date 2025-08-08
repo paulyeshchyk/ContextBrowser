@@ -39,15 +39,8 @@ public class TransitionRenderer
                 foreach(var transition in transitionL)
                 {
                     var key = $"{transition.CallerClassName}.{transition.CallerMethod}->{transition.CalleeClassName}.{transition.CalleeMethod}";
-
-                    if(!seenTransitions.Add(key) && _options.roslynCodeparserOptions.ShowForeignInstancies)
-                    {
-                        diagram.AddNoteOver(transition.CallerClassName ?? "unknown callee", $"duplicate run call on {transition.CalleeClassName}");
-                        diagram.AddNoteOver(transition.CalleeClassName ?? "unknown callee", $"duplicate run call on {transition.CallerClassName}");
-                        continue;
-                    }
-
                     var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
+
                     RenderSingleTransition(ctx);
                 }
             }
@@ -59,8 +52,6 @@ public class TransitionRenderer
 
     internal static void RenderSingleTransition(RenderContext ctx)
     {
-        //ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Render Single Transition [{ctx.Caller}.{ctx.CallerMethod} -> {ctx.Callee}.{ctx.CalleeMethod}]", LogLevelNode.Start);
-
         AddParticipants(ctx, UmlParticipantKeyword.Actor);
 
         _ = ActivateCaller(ctx);
@@ -74,9 +65,6 @@ public class TransitionRenderer
         _ = RenderStep1ToCallerDone(ctx);
 
         _ = DeactivateCaller(ctx);
-
-
-        //ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     private static bool RenderCallerToStep1(RenderContext ctx)

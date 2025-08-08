@@ -26,9 +26,7 @@ public class BiDirectionalTransitionBuilder : ITransitionBuilder
         var incoming = _incoming.BuildTransitions(domainMethods, allContexts);
         var result = outgoing.Concat(incoming);
 
-        var theList = _options.ShowForeignInstancies
-            ? result
-            : result.GroupBy(r => r.Id).Distinct().Select(g => g.FirstOrDefault());
+        var theList = result.GroupBy(r => r.Id).Distinct().Select(g => g.FirstOrDefault());
         var resultList = new GroupedTransitionList();
         foreach(var a in theList)
         {

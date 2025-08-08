@@ -30,6 +30,4 @@ public interface IContextWithReferences<T>
     T? MethodOwner { get; set; }
 
     SyntaxNode? SyntaxNode { get; set; }
-
-    bool IsForeignInstance { get; set; }
 }

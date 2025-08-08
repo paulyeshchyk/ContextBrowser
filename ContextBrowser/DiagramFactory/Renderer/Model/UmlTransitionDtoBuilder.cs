@@ -12,22 +12,13 @@ internal class UmlTransitionDtoBuilder
 
     public static UmlTransitionDto? CreateTransition(ContextInfo? caller, ContextInfo? callee, OnWriteLog? log, RoslynCodeParserOptions options)
     {
-        log?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"Creating UmlTransitionDto: {caller?.SymbolName ?? string.Empty} -> {callee?.SymbolName ?? string.Empty}");
-
-        // Если callee помечен как foreign, и их нельзя показывать — игнорируем
-        if((callee?.IsForeignInstance ?? false) && !options.ShowForeignInstancies)
-        {
-            log?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[SKIP] Callee {callee.Name} is foreign instance");
-            return null;
-        }
-
         // Метод -> Метод
         if(caller?.MethodOwner != null && callee?.MethodOwner != null)
             return CreateTransitionFromMethodCall(caller, callee, log);
 
         // По другим типам можно расширить тут логику
 
-        log?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[SKIP] Transition unsupported for: {caller?.Name ?? string.Empty} -> {callee?.Name ?? string.Empty}");
+        log?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[SKIP] Creating UmlTransitionDto: Transition unsupported for {caller?.Name ?? string.Empty} -> {callee?.Name ?? string.Empty}");
         return null;
     }
 

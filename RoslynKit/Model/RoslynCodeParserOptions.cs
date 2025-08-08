@@ -10,7 +10,6 @@ public record RoslynCodeParserOptions(
     HashSet<RoslynCodeParserAccessorModifierType> ClassModifierTypes,
     HashSet<RoslynCodeParserMemberType> MemberTypes,
     IEnumerable<string> CustomAssembliesPaths,
-    bool CreateFailedCallees,
-    bool ShowForeignInstancies)
+    bool CreateFailedCallees)
 {
 }

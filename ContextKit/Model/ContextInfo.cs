@@ -51,8 +51,6 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public SyntaxNode? SyntaxNode { get; set; }
 
-    public bool IsForeignInstance { get; set; } = false;
-
     HashSet<ContextInfo> IContextWithReferences<ContextInfo>.InvokedBy => InvokedBy;
 
     HashSet<ContextInfo> IContextWithReferences<ContextInfo>.References => References;
