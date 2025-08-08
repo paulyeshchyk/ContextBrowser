@@ -125,7 +125,7 @@ public class TransitionRenderer
                         }
                         else
                         {
-                            //diagram.AddLine($"-> {callee}");
+                            diagram.AddLine($"-> {callee}");
                             pendingActivation = callee;
                             callStack.Push(callee);
                         }

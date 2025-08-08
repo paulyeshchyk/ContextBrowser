@@ -13,7 +13,9 @@ public class PropertyDeclarationParser<TContext> : BaseSyntaxParser<TContext>
 {
     private readonly PropertyContextInfoBuilder<TContext> _propertyContextInfoBuilder;
     private readonly CommentSyntaxTriviaContentInfoBuilder<TContext> _triviaCommentBuilder;
+    private readonly RecordContextInfoBuilder<TContext> _recordSyntaxBuilder;
     private readonly TypeContextInfoBulder<TContext> _typeSyntaxBuilder;
+    private readonly EnumContextInfoBuilder<TContext> _enumSyntaxBuilder;
     private readonly IContextCollector<TContext> _collector;
 
     public PropertyDeclarationParser(
@@ -21,6 +23,8 @@ public class PropertyDeclarationParser<TContext> : BaseSyntaxParser<TContext>
         PropertyContextInfoBuilder<TContext> propertyContextInfoBuilder,
         CommentSyntaxTriviaContentInfoBuilder<TContext> triviaCommentBuilder,
         TypeContextInfoBulder<TContext> typeSyntaxBuilder,
+        RecordContextInfoBuilder<TContext> recordSyntaxBuilder,
+        EnumContextInfoBuilder<TContext> enumSyntaxBuilder,
         OnWriteLog? onWriteLog)
         : base(onWriteLog)
     {
@@ -28,13 +32,15 @@ public class PropertyDeclarationParser<TContext> : BaseSyntaxParser<TContext>
         _propertyContextInfoBuilder = propertyContextInfoBuilder;
         _triviaCommentBuilder = triviaCommentBuilder;
         _typeSyntaxBuilder = typeSyntaxBuilder;
+        _recordSyntaxBuilder = recordSyntaxBuilder;
+        _enumSyntaxBuilder = enumSyntaxBuilder;
     }
 
     public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is PropertyDeclarationSyntax;
 
     public override void Parse(MemberDeclarationSyntax syntax, SemanticModel model)
     {
-        if (syntax is not PropertyDeclarationSyntax propertySyntax)
+        if(syntax is not PropertyDeclarationSyntax propertySyntax)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax is not PropertyDeclarationSyntax");
             return;
@@ -44,7 +50,7 @@ public class PropertyDeclarationParser<TContext> : BaseSyntaxParser<TContext>
 
         //1.Создание контекста для самого свойства
         var propertyContext = _propertyContextInfoBuilder.BuildContextInfoForProperty(propertySyntax, model);
-        if (propertyContext == null)
+        if(propertyContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, "Failed to build context for property.", LogLevelNode.End);
             return;
@@ -55,25 +61,46 @@ public class PropertyDeclarationParser<TContext> : BaseSyntaxParser<TContext>
 
         // 3. Обработка типа свойства (рекурсивный обход)
         var propertyTypeSyntax = propertySyntax.Type;
-        if (propertyTypeSyntax != null)
+        if(propertyTypeSyntax != null)
         {
             var typeSymbol = model.GetTypeInfo(propertyTypeSyntax).Type;
 
             // Проверяем, что это не базовый тип (например, int, string, object)
-            if (typeSymbol != null && typeSymbol.Locations.Any())
+            if(typeSymbol != null && typeSymbol.Locations.Any())
             {
                 // Проверяем, существует ли уже контекст для этого типа, чтобы избежать рекурсии
                 var cnt = _collector.BySymbolDisplayName.GetValueOrDefault(typeSymbol.ToDisplayString());
-                if (cnt == null)
+                if(cnt == null)
                 {
                     // Получаем синтаксический узел из семантического символа
                     var typeDeclarationSyntax = typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
 
-                    // Если это TypeDeclarationSyntax (класс, struct и т.д.), парсим его
-                    if (typeDeclarationSyntax is TypeDeclarationSyntax tds)
+                    if(typeDeclarationSyntax != null)
                     {
-                        // Рекурсивный вызов парсера типа
-                        _typeSyntaxBuilder.BuildContextInfoForType(tds, model, string.Empty, null);
+                        // Если это TypeDeclarationSyntax (класс, struct и т.д.), парсим его
+                        if(typeDeclarationSyntax is ClassDeclarationSyntax tds)
+                        {
+                            // Рекурсивный вызов парсера типа
+                            _typeSyntaxBuilder.BuildContextInfoForType(tds, model, string.Empty, null);
+                        }
+                        else if(typeDeclarationSyntax is RecordDeclarationSyntax rds)
+                        {
+                            // Рекурсивный вызов парсера типа
+                            _recordSyntaxBuilder.BuildContextInfoForRecord(rds, model, string.Empty, null);
+                        }
+                        else if(typeDeclarationSyntax is EnumDeclarationSyntax eds)
+                        {
+                            // Рекурсивный вызов парсера типа
+                            _enumSyntaxBuilder.BuildContextInfoForEnum(eds, model);
+                        }
+                        else
+                        {
+                            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax was not parsed: {typeDeclarationSyntax} ");
+                        }
+                    }
+                    else
+                    {
+                        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Symbol has no declared syntax: {typeSymbol} ");
                     }
                 }
             }

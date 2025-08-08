@@ -10,61 +10,54 @@ using RoslynKit.Syntax.Parser.ContextInfo;
 
 namespace RoslynKit.Syntax.Parser.Base;
 
-public class TypeDeclarationParser<TContext> : BaseSyntaxParser<TContext>
+public class RecordDeclarationParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly TypeContextInfoBulder<TContext> _typeContextInfoBuilder;
+    private readonly RecordContextInfoBuilder<TContext> _recordContextInfoBuilder;
     private readonly RoslynCodeParserOptions _options;
-    private readonly MethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
     private readonly CommentSyntaxTriviaContentInfoBuilder<TContext> _triviaCommentBuilder;
-    private readonly MethodDeclarationParser<TContext> _methodSyntaxBuilder;
     private readonly PropertyDeclarationParser<TContext> _propertyDeclarationParser;
 
-    public TypeDeclarationParser(
+    public RecordDeclarationParser(
         IContextCollector<TContext> collector,
-        TypeContextInfoBulder<TContext> typeContextInfoBuilder,
-        MethodContextInfoBuilder<TContext> methodContextInfoBuilder,
+        RecordContextInfoBuilder<TContext> typeContextInfoBuilder,
         PropertyDeclarationParser<TContext> propertyDeclarationParser,
         CommentSyntaxTriviaContentInfoBuilder<TContext> triviaCommentBuilder,
         RoslynCodeParserOptions options,
         OnWriteLog? onWriteLog) : base(onWriteLog)
     {
-        _typeContextInfoBuilder = typeContextInfoBuilder;
+        _recordContextInfoBuilder = typeContextInfoBuilder;
         _options = options;
-        _methodContextInfoBuilder = methodContextInfoBuilder;
         _triviaCommentBuilder = triviaCommentBuilder;
         _propertyDeclarationParser = propertyDeclarationParser;
-        _methodSyntaxBuilder = new MethodDeclarationParser<TContext>(_methodContextInfoBuilder, _triviaCommentBuilder, _options, _onWriteLog);
     }
 
-    public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is ClassDeclarationSyntax;
+    public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is RecordDeclarationSyntax;
 
     public override void Parse(MemberDeclarationSyntax syntax, SemanticModel model)
     {
-        if(syntax is not ClassDeclarationSyntax typeSyntax)
+        if (syntax is not RecordDeclarationSyntax typeSyntax)
         {
-            throw new ArgumentException($"Syntax ({nameof(syntax)}) is not TypeDeclarationSyntax");
+            throw new ArgumentException($"Syntax ({nameof(syntax)}) is not RecordDeclarationSyntax");
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parse type syntax");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Parse type syntax");
 
         var symbol = model.GetDeclaredSymbol(typeSyntax);
         var nsName = typeSyntax.GetNamespaceName();
-        var typeContext = _typeContextInfoBuilder.BuildContextInfoForType(typeSyntax, model, nsName, symbol);
-        if(typeContext == null)
+        var typeContext = _recordContextInfoBuilder.BuildContextInfoForRecord(typeSyntax, model, nsName, symbol);
+        if (typeContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {nsName}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {nsName}");
             return;
         }
 
         var propertySyntaxes = typeSyntax.Members.OfType<PropertyDeclarationSyntax>();
-        foreach(var propertySyntax in propertySyntaxes)
+        foreach (var propertySyntax in propertySyntaxes)
         {
             _propertyDeclarationParser.Parse(propertySyntax, model);
         }
 
         _triviaCommentBuilder.Parse(typeSyntax, typeContext);
-
-        _methodSyntaxBuilder.ParseMethodSyntax(typeSyntax, model, nsName, typeContext);
     }
 }

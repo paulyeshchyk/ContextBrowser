@@ -40,12 +40,16 @@ public class RoslynPhaseParserDependenciesFactory<TContext>
         var delegateContextInfoBuilder = new DelegateContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
         var interfaceContextInfoBuilder = new InterfaceContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
         var propertyContextInfoBuilder = new PropertyContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
+        var recordContextInfoBuilder = new RecordContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
+        var enumContextInfoBuilder = new EnumContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
 
         var propertyDeclarationParser = new PropertyDeclarationParser<TContext>(
             _collector,
             propertyContextInfoBuilder,
             triviaCommentBuilder,
             typeContextInfoBuilder,
+            recordContextInfoBuilder,
+            enumContextInfoBuilder,
             _onWriteLog);
 
         var enumDeclarationParser = new EnumDeclarationParser<TContext>(_onWriteLog);
@@ -66,6 +70,15 @@ public class RoslynPhaseParserDependenciesFactory<TContext>
             _options,
             _onWriteLog);
 
+        var recordDeclarationParser = new RecordDeclarationParser<TContext>(
+            _collector,
+            recordContextInfoBuilder,
+            propertyDeclarationParser,
+            triviaCommentBuilder,
+            _options,
+            _onWriteLog);
+
+
         // 4. Собираем все парсеры в список для роутера
         var parsers = new List<ISyntaxParser<TContext>>
         {
@@ -73,7 +86,8 @@ public class RoslynPhaseParserDependenciesFactory<TContext>
             typeDeclarationParser,
             enumDeclarationParser,
             propertyDeclarationParser,
-            delegateDeclarationParser
+            delegateDeclarationParser,
+            recordDeclarationParser
         };
 
         return new SyntaxRouter<TContext>(_onWriteLog, parsers);

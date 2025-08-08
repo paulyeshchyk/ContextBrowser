@@ -21,11 +21,11 @@ public class PropertyContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCont
         var symbol = model.GetDeclaredSymbol(propertySyntax);
         if(symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Symbol for property not found: {propertySyntax.Identifier.Text}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Symbol for property not found: {propertySyntax.Identifier.Text}");
             return default;
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating property ContextInfo: {symbol.Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Creating property ContextInfo: {symbol.Name}");
 
         var result = _factory.Create(
             parentContext,
@@ -40,12 +40,12 @@ public class PropertyContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCont
 
         if(result == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Creating property ContextInfo failed: {symbol.Name}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Creating property ContextInfo failed: {symbol.Name}");
             return default;
         }
 
         _collector.Add(result);
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Created property ContextInfo: {symbol.Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Created property ContextInfo: {symbol.Name}");
 
         return result;
     }

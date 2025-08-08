@@ -21,11 +21,11 @@ public class DelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCont
         var symbol = model.GetDeclaredSymbol(delegateSyntax);
         if(symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Symbol for delegate not found: {delegateSyntax.Identifier.Text}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Symbol for delegate not found: {delegateSyntax.Identifier.Text}");
             return default;
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating delegate ContextInfo: {symbol.Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Creating delegate ContextInfo: {symbol.Name}");
 
         var result = _factory.Create(
             default, // У делегата может не быть родительского контекста
@@ -40,12 +40,12 @@ public class DelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCont
 
         if(result == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Creating delegate ContextInfo failed: {symbol.Name}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Creating delegate ContextInfo failed: {symbol.Name}");
             return default;
         }
 
         _collector.Add(result);
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Created delegate ContextInfo: {symbol.Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Created delegate ContextInfo: {symbol.Name}");
 
         return result;
     }

@@ -7,6 +7,7 @@ namespace LoggerKit.Model;
 public enum AppLevel
 {
     Roslyn,
+    R_Parse,
     P_Tran,
     P_Bld,
     P_Rnd,

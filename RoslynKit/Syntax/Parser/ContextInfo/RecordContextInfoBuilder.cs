@@ -10,15 +10,15 @@ using System.Text.Json.Serialization;
 
 namespace RoslynKit.Syntax.Parser.ContextInfo;
 
-public class TypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TContext>
+public class RecordContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    public TypeContextInfoBulder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog)
+    public RecordContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog)
         : base(collector, factory, onWriteLog)
     {
     }
 
-    public TContext? BuildContextInfoForType(TypeDeclarationSyntax callerSyntaxNode, SemanticModel model, string nsName, ISymbol? symbol)
+    public TContext? BuildContextInfoForRecord(RecordDeclarationSyntax callerSyntaxNode, SemanticModel model, string nsName, ISymbol? symbol)
     {
         var spanStart = callerSyntaxNode.Span.Start;
         var spanEnd = callerSyntaxNode.Span.End;
@@ -28,6 +28,7 @@ public class TypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TContext>
         try
         {
             typemodel = TypeSyntaxExtractor.Extract(callerSyntaxNode, model);
+
             if(typemodel == null)
             {
                 _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Syntax \"{callerSyntaxNode}\" was not resolved in {nsName}");
@@ -42,11 +43,10 @@ public class TypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TContext>
             return default;
         }
 
-
-        return BuildContextInfoForType(typemodel, nsName, spanStart, spanEnd, callerSyntaxNode, symbol);
+        return BuildContextInfoForRecord(typemodel, nsName, spanStart, spanEnd, callerSyntaxNode, symbol);
     }
 
-    public TContext? BuildContextInfoForType(TypeSyntaxWrapper typemodel, string nsName, int spanStart = 0, int spanEnd = 0, TypeDeclarationSyntax? callerSyntaxNode = null, ISymbol? symbol = null)
+    public TContext? BuildContextInfoForRecord(TypeSyntaxWrapper typemodel, string nsName, int spanStart = 0, int spanEnd = 0, TypeDeclarationSyntax? callerSyntaxNode = null, ISymbol? symbol = null)
     {
         _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Creating type ContextInfo [{typemodel.TypeFullName}]");
 

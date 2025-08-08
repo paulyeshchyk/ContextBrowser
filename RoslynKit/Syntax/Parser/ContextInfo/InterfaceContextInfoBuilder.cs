@@ -21,11 +21,11 @@ public class InterfaceContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCon
         var symbol = model.GetDeclaredSymbol(interfaceSyntax);
         if(symbol == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Symbol for interface not found: {interfaceSyntax.Identifier.Text}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Symbol for interface not found: {interfaceSyntax.Identifier.Text}");
             return default;
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating interface ContextInfo: {symbol.Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Creating interface ContextInfo: {symbol.Name}");
 
         var result = _factory.Create(
             default,
@@ -40,12 +40,12 @@ public class InterfaceContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCon
 
         if(result == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Creating interface ContextInfo failed: {symbol.Name}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Creating interface ContextInfo failed: {symbol.Name}");
             return default;
         }
 
         _collector.Add(result);
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Created interface ContextInfo: {symbol.Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Created interface ContextInfo: {symbol.Name}");
 
         return result;
     }

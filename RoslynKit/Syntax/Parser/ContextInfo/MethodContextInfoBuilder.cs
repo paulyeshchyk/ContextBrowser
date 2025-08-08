@@ -19,14 +19,14 @@ public class MethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContex
     public List<(TContext context, MethodDeclarationSyntax syntax)> ParseMethodSyntax(IEnumerable<MethodDeclarationSyntax> methods, SemanticModel semanticModel, string ns, TContext parent)
     {
         var result = new List<(TContext, MethodDeclarationSyntax)>();
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Iterating methods [{parent.Name}]", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Iterating methods [{parent.Name}]", LogLevelNode.Start);
 
         foreach(var method in methods)
         {
             var methodModel = MethodSyntaxExtractor.Extract(method, semanticModel);
             if(methodModel == null)
             {
-                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{parent.Name}]: Модель для метода не найдена [{method}]", LogLevelNode.Start);
+                _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Warn, $"[{parent.Name}]: Модель для метода не найдена [{method}]", LogLevelNode.Start);
                 continue;
             }
 
@@ -37,7 +37,7 @@ public class MethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContex
             }
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return result;
     }
 
@@ -50,7 +50,7 @@ public class MethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContex
     // context: csharp, build, contextInfo
     public TContext? BuildContextInfoForMethod(TContext? typeContext, MethodSyntaxWrapper methodmodel, string nsName, MethodDeclarationSyntax? resultSyntax = null)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Creating method ContextInfo: {methodmodel.MethodName}");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Creating method ContextInfo: {methodmodel.MethodName}");
 
         var result = _factory.Create(
             typeContext,
@@ -65,7 +65,7 @@ public class MethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContex
 
         if(result == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Creating method ContextInfo failed {methodmodel.MethodName}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Creating method ContextInfo failed {methodmodel.MethodName}");
             return default;
         }
 

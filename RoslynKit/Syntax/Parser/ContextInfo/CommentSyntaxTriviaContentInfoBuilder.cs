@@ -18,7 +18,7 @@ public class CommentSyntaxTriviaContentInfoBuilder<TContext> : BaseCommentConten
 
     public override void Parse(MemberDeclarationSyntax node, TContext context)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing comments for {node.GetType().Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Parsing comments for {node.GetType().Name}");
 
         foreach(var trivia in node.GetLeadingTrivia().Where(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia)))
         {
