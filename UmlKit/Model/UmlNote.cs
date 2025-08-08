@@ -19,6 +19,7 @@ public class UmlNote : IUmlElement
         writer.WriteLine($"note {_position.ToUmlString()} {_caller}");
         writer.WriteLine(_note);
         writer.WriteLine("end note");
+        writer.WriteLine();
     }
 }
 

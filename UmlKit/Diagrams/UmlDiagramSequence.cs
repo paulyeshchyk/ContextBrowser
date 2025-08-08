@@ -121,4 +121,11 @@ public class UmlDiagramSequence : UmlDiagram
             element.WriteTo(writer);
         }
     }
+
+    public override IUmlElement AddLine(string line)
+    {
+        var result = new UmlLine(line);
+        Add(result);
+        return result;
+    }
 }

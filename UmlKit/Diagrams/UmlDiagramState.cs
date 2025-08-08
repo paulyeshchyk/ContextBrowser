@@ -143,4 +143,10 @@ public class UmlDiagramState : UmlDiagram
             startTransition.WriteTo(writer);
         }
     }
+
+    public override IUmlElement AddLine(string line)
+    {
+        var result = new UmlLine(line);
+        return result;
+    }
 }

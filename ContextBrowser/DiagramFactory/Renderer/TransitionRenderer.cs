@@ -31,18 +31,120 @@ public class TransitionRenderer
         var activationStack = new ActivationStack(_onWriteLog);
         var seenTransitions = new HashSet<string>();
 
-        var transitonList = allTransitions.OrderBy(t => t.Key).Select(t => t.Value);
-        foreach(var transitionD in transitonList)
+        var callStack = new Stack<string>();
+
+        // Храним отложенные активации
+        string? pendingActivation = null;
+
+        var transitionList = allTransitions.OrderBy(t => t.Key).Select(t => t.Value);
+        foreach(var transitionD in transitionList)
         {
             foreach(var transitionL in transitionD.Values)
             {
                 foreach(var transition in transitionL)
                 {
-                    var key = $"{transition.CallerClassName}.{transition.CallerMethod}->{transition.CalleeClassName}.{transition.CalleeMethod}";
-                    var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
+                    var caller = transition.CallerClassName;
+                    var callee = transition.CalleeClassName;
 
+                    // --- 1. Проверка caller ---
+                    if(callStack.Count > 0)
+                    {
+                        if(callStack.Peek() != caller)
+                        {
+                            if(callStack.Contains(caller))
+                            {
+                                while(callStack.Count > 0 && callStack.Peek() != caller)
+                                {
+                                    var toClose = callStack.Pop();
+                                    if(pendingActivation == toClose)
+                                    {
+                                        // отбрасываем пустую активацию
+                                        pendingActivation = null;
+                                    }
+                                    else
+                                    {
+                                        diagram.Deactivate(toClose);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                while(callStack.Count > 0)
+                                {
+                                    var toClose = callStack.Pop();
+                                    if(pendingActivation == toClose)
+                                    {
+                                        pendingActivation = null;
+                                    }
+                                    else
+                                    {
+                                        diagram.Deactivate(toClose);
+                                    }
+                                }
+                                diagram.AddSelfCallContinuation(caller, string.Empty);
+                                pendingActivation = caller;
+                                callStack.Push(caller);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //diagram.AddLine($"-> {caller}:");
+                        diagram.AddSelfCallContinuation(callee, string.Empty);
+                        pendingActivation = caller;
+                        callStack.Push(caller);
+                    }
+
+                    // --- 2. Рисуем переход ---
+                    if(pendingActivation != null)
+                    {
+                        diagram.Activate(pendingActivation, false);
+                        pendingActivation = null;
+                    }
+
+                    var ctx = new RenderContext(transition, diagram, _options.contextTransitionDiagramBuilderOptions, activationStack, _onWriteLog);
                     RenderSingleTransition(ctx);
+
+                    // --- 3. Обработка callee ---
+                    if(!string.IsNullOrWhiteSpace(callee))
+                    {
+                        if(callStack.Contains(callee))
+                        {
+                            while(callStack.Count > 0 && callStack.Peek() != callee)
+                            {
+                                var toClose = callStack.Pop();
+                                if(pendingActivation == toClose)
+                                {
+                                    pendingActivation = null;
+                                }
+                                else
+                                {
+                                    diagram.Deactivate(toClose);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //diagram.AddLine($"-> {callee}");
+                            pendingActivation = callee;
+                            callStack.Push(callee);
+                        }
+                    }
                 }
+            }
+        }
+
+        // --- 4. Закрытие оставшегося ---
+        while(callStack.Count > 0)
+        {
+            var toClose = callStack.Pop();
+            if(pendingActivation == toClose)
+            {
+                pendingActivation = null; // не активировали — ничего не закрываем
+            }
+            else
+            {
+                diagram.Deactivate(toClose);
             }
         }
 

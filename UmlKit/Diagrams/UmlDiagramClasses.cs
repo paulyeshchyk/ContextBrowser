@@ -101,4 +101,10 @@ public class UmlDiagramClasses : UmlDiagram
             element.WriteTo(writer);
         }
     }
+
+    public override IUmlElement AddLine(string line)
+    {
+        var result = new UmlLine(line);
+        return result;
+    }
 }

@@ -23,6 +23,15 @@ public abstract class UmlDiagram
     // context: create, uml
     public abstract IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, bool isAsync = false, string? label = null);
 
+    public virtual IUmlElement AddComment(string line)
+    {
+        var result = new UmlComment(line);
+        Add(result);
+        return result;
+    }
+
+    public abstract IUmlElement AddLine(string line);
+
     // context: share, uml
     public abstract IUmlElement? Activate(string from, bool isSystemCall);
 
