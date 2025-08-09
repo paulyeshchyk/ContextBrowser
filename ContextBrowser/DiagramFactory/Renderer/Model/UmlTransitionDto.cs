@@ -45,16 +45,6 @@ public readonly record struct UmlTransitionDto
 
     public Guid? Uid { get; init; }
 
-    public string Id
-    {
-        get
-        {
-            var list = new List<string?>() { CallerId, CalleeId, Domain }.Where(s => !string.IsNullOrEmpty(s)).Select(s => s!);
-            return list == null
-                ? string.Empty
-                : string.Join(".", list);
-        }
-    }
 
     public override int GetHashCode()
     {
@@ -66,5 +56,16 @@ public readonly record struct UmlTransitionDto
         return string.Equals(CallerId, other.CallerId, StringComparison.OrdinalIgnoreCase) &&
                string.Equals(CalleeId, other.CalleeId, StringComparison.OrdinalIgnoreCase) &&
                string.Equals(Domain, other.Domain, StringComparison.OrdinalIgnoreCase);
+    }
+}
+
+public static class UmlTransitionDtoExt
+{
+    public static string GetId(this UmlTransitionDto dto)
+    {
+        var list = new List<string?>() { dto.CallerId, dto.CalleeId, dto.Domain }.Where(s => !string.IsNullOrEmpty(s)).Select(s => s!);
+        return list == null
+            ? string.Empty
+            : string.Join(".", list);
     }
 }

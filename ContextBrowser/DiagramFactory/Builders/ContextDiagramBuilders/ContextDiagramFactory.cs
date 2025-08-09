@@ -32,7 +32,7 @@ public static class ContextDiagramFactory
     // Статический конструктор для инициализации фабрики
     static ContextDiagramFactory()
     {
-        RegisterBuilder(DiagramBuilderKeys.Transition,(options, onWriteLog) => new ContextTransitionDiagramBuilder(options.contextTransitionDiagramBuilderOptions, DefaultDirectionBuilders(options, onWriteLog), onWriteLog));
+        RegisterBuilder(DiagramBuilderKeys.Transition,(options, onWriteLog) => new ContextTransitionDiagramBuilder(options, DefaultDirectionBuilders(options, onWriteLog), onWriteLog));
         RegisterBuilder(DiagramBuilderKeys.MethodFlow,(options, onWriteLog) => new MethodFlowDiagramBuilder());
         RegisterBuilder(DiagramBuilderKeys.Dependencies,(options, onWriteLog) => new DependencyDiagramBuilder());
     }

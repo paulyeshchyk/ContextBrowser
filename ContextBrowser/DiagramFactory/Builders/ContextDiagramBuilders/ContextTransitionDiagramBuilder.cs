@@ -1,9 +1,9 @@
 ﻿using ContextBrowser.DiagramFactory.Builders.TransitionDirectionBuilder;
+using ContextBrowser.Infrastructure;
 using ContextKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
 using System.Collections.Concurrent;
-using UmlKit.Model.Options;
 
 namespace ContextBrowser.DiagramFactory.Builders.ContextDiagramBuilders;
 
@@ -12,10 +12,12 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     private readonly List<ITransitionBuilder> _transitionBuilders;
     private readonly OnWriteLog? _onWriteLog = null;
     private readonly ContextTransitionDiagramBuilderCache _cache;
+    private readonly AppOptions _options;
 
-    public ContextTransitionDiagramBuilder(ContextTransitionDiagramBuilderOptions options, IEnumerable<ITransitionBuilder> transitionBuilders, OnWriteLog? onWriteLog = null)
+    public ContextTransitionDiagramBuilder(AppOptions options, IEnumerable<ITransitionBuilder> transitionBuilders, OnWriteLog? onWriteLog = null)
     {
-        _transitionBuilders = transitionBuilders.Where(b => b.Direction == options.Direction).ToList();
+        _options = options;
+        _transitionBuilders = transitionBuilders.Where(b => b.Direction == options.contextTransitionDiagramBuilderOptions.Direction).ToList();
         _onWriteLog = onWriteLog;
         _cache = new ContextTransitionDiagramBuilderCache(onWriteLog);
     }
