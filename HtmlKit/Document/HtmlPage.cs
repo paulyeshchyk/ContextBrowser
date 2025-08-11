@@ -4,7 +4,7 @@ using HtmlKit.Page;
 namespace HtmlKit.Document;
 
 // context: html, model
-internal abstract class HtmlPage
+public abstract class HtmlPage
 {
     public string Title { get; set; } = string.Empty;
 

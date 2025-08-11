@@ -1,13 +1,13 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ContextBrowser.Infrastructure.Extensions;
+namespace UmlKit.Extensions;
 
-internal static class StringExts
+public static class StringExts
 {
-    public static string AlphanumericOnly(this string s) => Regex.Replace(s, "[^a-zA-Z0-9]", "_");
+    public static string AlphanumericOnly(this string s, string replaceBy = "_") => Regex.Replace(s, "[^a-zA-Z0-9]", replaceBy);
 }
 
-internal static class EnumExts
+public static class EnumExts
 {
     public static string ConvertToString(this Enum eff)
     {

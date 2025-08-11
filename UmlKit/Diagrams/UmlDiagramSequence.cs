@@ -1,15 +1,15 @@
-﻿using UmlKit.Model;
-using UmlKit.Model.Options;
+﻿using UmlKit.Infrastructure.Options;
+using UmlKit.Model;
 
 namespace UmlKit.Diagrams;
 
 // context: model, uml
 // pattern: Template method
 // pattern note: subclassing
-public class UmlDiagramSequence : UmlDiagram
+public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
 {
     private readonly Dictionary<string, UmlParticipant> _participants = new();
-    private readonly List<UmlSequence> _transitions = new();
+    private readonly List<UmlTransitionParticipant> _transitions = new();
     private readonly List<UmlActivate> _activations = new();
     private readonly List<UmlDeactivate> _deactivations = new();
 
@@ -18,23 +18,28 @@ public class UmlDiagramSequence : UmlDiagram
     {
     }
 
-    public override void AddSelfCallBreak(string name)
+    public override void AddCallbreakNote(string name)
     {
         Add(new UmlNote(name, UmlNotePosition.Left, $"{name} -> {name}:"));
     }
 
-    public override void AddSelfCallContinuation(string name)
+    public void AddAnonymousCallContinuation(string name)
     {
         var from = new UmlParticipant(name);
         var to = from;
-        var selfTransition = new UmlSequence(from, to, new UmlArrow());
+        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
         Add(selfTransition);
-
-        if(_options.UseActivation)
-            Activate(name);
     }
 
-    public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public override void AddSelfCallContinuation(string name, string methodName)
+    {
+        var from = new UmlParticipant(string.Empty);
+        var to = new UmlParticipant(name);
+        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), methodName);
+        Add(selfTransition);
+    }
+
+    public override UmlParticipant AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
         if(string.IsNullOrWhiteSpace(name))
             throw new ArgumentNullException(nameof(name));
@@ -42,52 +47,80 @@ public class UmlDiagramSequence : UmlDiagram
         if(_participants.ContainsKey(name))
             return _participants[name];
 
-        var result = new UmlParticipant(name, keyword);
+        var result = new UmlParticipant(name, alias, keyword);
         _participants[name] = result;
         Add(result);
         return result;
     }
 
-    public override UmlDiagram AddParticipant(IUmlElement participant)
+    public override UmlDiagram<UmlParticipant> AddParticipant(UmlParticipant participant, string alias)
     {
-        if(participant is UmlParticipant p && !_participants.ContainsKey(p.ShortName))
+        if(participant is UmlParticipant p && !_participants.ContainsKey(p.Alias))
         {
-            _participants[p.ShortName] = p;
+            _participants[p.Alias] = p;
             Add(p);
         }
         return this;
     }
 
-    public override IUmlElement AddTransition(string? from, string? to, string? label = null)
+    public override IUmlElement AddTransition(IUmlTransition<UmlParticipant> transition)
     {
-        if(string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
-            throw new ArgumentException($"From({from ?? string.Empty}) and To({to ?? string.Empty}) must not be null or empty");
-
-        var f = AddParticipant(from);
-        var t = AddParticipant(to);
-        return AddTransition((IUmlDeclarable)f, (IUmlDeclarable)t, label);
+        _transitions.Add((UmlTransitionParticipant)transition);
+        Add(transition);
+        return transition;
     }
 
-    public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null)
+    //public override IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null)
+    //{
+    //    if(string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
+    //        throw new ArgumentException($"From({from ?? string.Empty}) and To({to ?? string.Empty}) must not be null or empty");
+
+    //    var f = AddParticipant(from);
+    //    var t = AddParticipant(to);
+    //    return AddTransition(f, t, isAsync, label);
+    //}
+
+    public override IUmlElement AddTransition(UmlParticipant from, UmlParticipant to, bool isAsync = false, string? label = null)
     {
-        var transition = new UmlSequence(from, to, new UmlArrow(), label);
+        var transition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: isAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), label);
         _transitions.Add(transition);
         Add(transition);
         return transition;
     }
 
-    public override IUmlElement? Activate(string from) =>
-        Activate(new UmlDeclarableDto("activation", from));
-
-    public override IUmlElement? Deactivate(string from) =>
-        Deactivate(new UmlDeclarableDto("deactivation", from));
-
-    public override IUmlElement? Activate(IUmlDeclarable from)
+    public override IUmlElement? Activate(string source, string destination, string reason, bool softActivation)
     {
         if(!_options.UseActivation)
             return null;
 
-        var act = new UmlActivate(from.ShortName);
+        var sourceParticipant = new UmlParticipant(source);
+        var destinationParticipant = new UmlParticipant(destination);
+
+        var act = new UmlActivate(source, destination, reason: reason, softActivation);
+        _activations.Add(act);
+        Add(act);
+        return act;
+    }
+
+    public override IUmlElement? Activate(string destination, string reason, bool softActivation)
+    {
+        var destinationParticipant = new UmlParticipant(destination);
+        return Activate(destinationParticipant, reason, softActivation);
+    }
+
+    public override IUmlElement? Deactivate(string from)
+    {
+        return Deactivate(new UmlParticipant(from));
+    }
+
+    public override IUmlElement? Activate(IUmlDeclarable from, string reason, bool softActivation)
+    {
+        if(!_options.UseActivation)
+            return null;
+
+        //AddAnonymousCallContinuation(from.Alias);
+
+        var act = new UmlActivate(null, from.Alias, reason, softActivation);
         _activations.Add(act);
         Add(act);
         return act;
@@ -97,8 +130,7 @@ public class UmlDiagramSequence : UmlDiagram
     {
         if(!_options.UseActivation)
             return null;
-
-        var deact = new UmlDeactivate(from.ShortName);
+        var deact = new UmlDeactivate(from.Alias);
         _deactivations.Add(deact);
         Add(deact);
         return deact;
@@ -113,5 +145,12 @@ public class UmlDiagramSequence : UmlDiagram
         {
             element.WriteTo(writer);
         }
+    }
+
+    public override IUmlElement AddLine(string line)
+    {
+        var result = new UmlLine(line);
+        Add(result);
+        return result;
     }
 }

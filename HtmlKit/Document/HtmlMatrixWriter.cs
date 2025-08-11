@@ -1,6 +1,7 @@
-﻿using ContextKit.Matrix;
+﻿using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
+using HtmlKit.Extensions;
 using HtmlKit.Helpers;
 using HtmlKit.Model;
 using HtmlKit.Page;

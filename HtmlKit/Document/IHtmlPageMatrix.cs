@@ -1,4 +1,4 @@
-﻿using ContextKit.Matrix;
+﻿using ContextBrowserKit.Matrix;
 using ContextKit.Model;
 using HtmlKit.Document.Coverage;
 using HtmlKit.Model;

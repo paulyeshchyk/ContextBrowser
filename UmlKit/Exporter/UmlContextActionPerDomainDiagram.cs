@@ -1,7 +1,7 @@
 ﻿using ContextKit.Model;
 using UmlKit.Diagrams;
+using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
-using UmlKit.Model.Options;
 
 namespace UmlKit.Exporter;
 

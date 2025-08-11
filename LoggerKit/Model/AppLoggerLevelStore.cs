@@ -1,4 +1,6 @@
-﻿namespace LoggerKit.Model;
+﻿using ContextBrowserKit.Log.Options;
+
+namespace LoggerKit.Model;
 
 // context: log, share
 public class AppLoggerLevelStore<T>

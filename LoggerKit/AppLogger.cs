@@ -1,4 +1,5 @@
-﻿using LoggerKit.Model;
+﻿using ContextBrowserKit.Log.Options;
+using LoggerKit.Model;
 
 namespace LoggerKit;
 
@@ -78,9 +79,3 @@ public class AppLogger<T>
         _writer.Write(formattedMessage);
     }
 }
-
-// context: log, share
-public delegate void LogWriter(string message);
-
-// context: log, share
-public delegate void OnWriteLog(AppLevel al, LogLevel ll, string message, LogLevelNode levelNode = LogLevelNode.None);

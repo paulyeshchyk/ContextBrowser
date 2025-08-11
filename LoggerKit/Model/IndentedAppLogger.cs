@@ -1,4 +1,6 @@
-﻿namespace LoggerKit.Model;
+﻿using ContextBrowserKit.Log.Options;
+
+namespace LoggerKit.Model;
 
 public static class IndentedAppLoggerHelpers1
 {
@@ -52,8 +54,9 @@ public class IndentedAppLogger<T> : AppLogger<T>
                     bool canPrintStartNode = (!string.IsNullOrWhiteSpace(message)) || _printEmptyNodes;
                     if(canPrintStartNode)
                     {
-                        var startformattedMessage = FormatIndentedMessage(message, logKey);
-                        _writer.Write(FormattedText(appLevel, logLevel, startformattedMessage));
+                        var startformattedMessage = FormatIndentedLines(message, logKey);
+                        foreach(var l in startformattedMessage)
+                            _writer.Write(FormattedText(appLevel, logLevel, l));
                     }
 
                     // Увеличиваем отступ
@@ -76,39 +79,38 @@ public class IndentedAppLogger<T> : AppLogger<T>
                     bool canPrintEndNode = (!string.IsNullOrWhiteSpace(message)) || _printEmptyNodes;
                     if(canPrintEndNode)
                     {
-                        var endformattedMessage = FormatIndentedMessage(message, logKey);
-                        _writer.Write(FormattedText(appLevel, logLevel, endformattedMessage));
+                        var endformattedMessage = FormatIndentedLines(message, logKey);
+                        foreach(var l in endformattedMessage)
+                        {
+                            _writer.Write(FormattedText(appLevel, logLevel, l));
+                        }
                     }
                 }
                 break;
 
             default:
-                var formattedMessage = FormatIndentedMessage(message, logKey);
-                _writer.Write(FormattedText(appLevel, logLevel, formattedMessage));
+                var formattedMessage = FormatIndentedLines(message, logKey);
+                foreach(var l in formattedMessage)
+                    _writer.Write(FormattedText(appLevel, logLevel, l));
                 break;
         }
     }
 
     // context: log, share
-    protected string FormatIndentedMessage(string message, object logKey)
+    protected string[] FormatIndentedLines(string message, object logKey)
     {
-        // Форматируем сообщение с отступом
         var currentIndentation = 0;
         lock(_indentationLock)
         {
-            // Проверяем, существует ли ключ в словаре уровней.
-            // Если да, получаем его значение.
             if(_indentationLevels.TryGetValue(logKey, out var currentLevel))
             {
                 currentIndentation = currentLevel;
             }
 
-            // Если словарь зависимостей не пуст, добавляем отступы родительских уровней
             if(_dependencies.Any())
             {
                 if(logKey is T appLevel)
                 {
-                    // Рекурсивно поднимаемся по цепочке зависимостей
                     var parentAppLevel = appLevel;
                     while(_dependencies.TryGetValue(parentAppLevel, out var nextParent))
                     {
@@ -123,8 +125,17 @@ public class IndentedAppLogger<T> : AppLogger<T>
         }
 
         var indentation = new string(_indentedBy, currentIndentation * _indenterSize);
-        var formattedMessage = $"{indentation}{message}";
-        return formattedMessage;
+
+        // 1. Создаем массив строк-разделителей.
+        string[] separators = { "\r\n", "\n\r", "\n", "\r" };
+
+        // 2. Разбиваем сообщение. StringSplitOptions.None сохраняет пустые строки.
+        var lines = message.Split(separators, StringSplitOptions.None);
+
+        // 3. Добавляем отступ к каждой строке.
+        var indentedLines = lines.Select(line => indentation + line).ToArray();
+
+        return indentedLines;
     }
 
     // context: log, share

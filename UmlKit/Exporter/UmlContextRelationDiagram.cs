@@ -1,6 +1,6 @@
 ﻿using UmlKit.Diagrams;
+using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
-using UmlKit.Model.Options;
 
 namespace UmlKit.Exporter;
 
@@ -16,7 +16,7 @@ public static class UmlContextRelationDiagram
 
         foreach (var (from, to) in links)
         {
-            diagram.Add(new UmlRelation(from, to));
+            diagram.Add(new UmlRelation(from, to, new UmlArrow(flowType: options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync)));
         }
 
         diagram.WriteToFile(outputPath);

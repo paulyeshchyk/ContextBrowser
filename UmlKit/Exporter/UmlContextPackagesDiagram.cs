@@ -1,8 +1,8 @@
 ﻿using ContextKit.Model;
 using System.Text.RegularExpressions;
 using UmlKit.Diagrams;
+using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
-using UmlKit.Model.Options;
 
 namespace UmlKit.Exporter;
 
@@ -18,7 +18,7 @@ public static class UmlContextPackagesDiagram
         var classes = elements.Where(e => e.ElementType == ContextInfoElementType.@class).ToList();
         var methods = elements.Where(e => e.ElementType == ContextInfoElementType.method).ToList();
 
-        var grouped = classes.GroupBy(c => c.Namespace ?? "Global");
+        var grouped = classes.GroupBy(c => c.Namespace);
 
         foreach(var nsGroup in grouped)
         {

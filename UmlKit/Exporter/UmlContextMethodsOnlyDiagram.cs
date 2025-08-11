@@ -1,7 +1,8 @@
 ﻿using ContextKit.Model;
+using ContextKit.Model.Service;
 using UmlKit.Diagrams;
+using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
-using UmlKit.Model.Options;
 
 namespace UmlKit.Exporter;
 
@@ -23,10 +24,11 @@ public static class UmlContextMethodsOnlyDiagram
 
         foreach(var method in methods)
         {
-            foreach(var callee in method.References)
+            var references = ContextInfoService.GetReferencesSortedByInvocation(method);
+            foreach(var callee in references)
             {
                 if(methods.Any(m => m.Name == callee.Name))
-                    diagram.Add(new UmlTransition(new UmlState(method.Name ?? "<unknown method>"), new UmlState(callee?.Name ?? "<unknown callee>"), new UmlArrow()));
+                    diagram.Add(new UmlTransitionState(new UmlState(method.Name ?? "<unknown method>", null), new UmlState(callee?.Name ?? "<unknown callee>", null), new UmlArrow()));
             }
         }
 

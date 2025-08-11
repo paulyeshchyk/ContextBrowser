@@ -1,39 +1,38 @@
-﻿using UmlKit.Model;
-using UmlKit.Model.Options;
+﻿using UmlKit.Infrastructure.Options;
+using UmlKit.Model;
 
 namespace UmlKit.Diagrams;
 
 // context: uml, model
-public class UmlDiagramClasses : UmlDiagram
+public class UmlDiagramClasses : UmlDiagram<UmlState>
 {
     private readonly HashSet<UmlState> _states = new();
-    private readonly List<UmlTransition> _transitions = new();
+    private readonly List<UmlTransitionState> _transitions = new();
 
     public UmlDiagramClasses(ContextTransitionDiagramBuilderOptions options) : base(options)
     {
     }
 
-    public override void AddSelfCallBreak(string name)
+    public override void AddCallbreakNote(string name)
     {
 #warning that is not correct for Class diagram
         Add(new UmlNote(name, UmlNotePosition.Left, $"{name} -> {name}:"));
     }
 
-    public override void AddSelfCallContinuation(string name)
+    public override void AddSelfCallContinuation(string name, string methodName)
     {
 #warning not working
-        //throw new NotImplementedException();
     }
 
     // context: uml, create
-    public override IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public override UmlState AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
-        var result = new UmlState(name);
+        var result = new UmlState(name, alias);
         _states.Add(result);
         return result;
     }
 
-    public override UmlDiagram AddParticipant(IUmlElement participant)
+    public override UmlDiagram<UmlState> AddParticipant(UmlState participant, string alias)
     {
         if(participant is UmlState state)
         {
@@ -44,15 +43,16 @@ public class UmlDiagramClasses : UmlDiagram
         throw new ArgumentException($"UmlState is supported only {nameof(participant)}");
     }
 
-    // context: uml, create
-    public override IUmlElement AddTransition(string? from, string? to, string? label = null)
-    {
-        var theFrom = new UmlState(from);
-        var theTo = new UmlState(to);
-        return AddTransition(theFrom, theTo, label);
-    }
 
-    public override IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null)
+    // context: uml, create
+    //public override IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null)
+    //{
+    //    var theFrom = new UmlState(from);
+    //    var theTo = new UmlState(to);
+    //    return AddTransition(theFrom, theTo, isAsync, label);
+    //}
+
+    public override IUmlElement AddTransition(UmlState from, UmlState to, bool isAsync = false, string? label = null)
     {
         if(from is not UmlState theFrom)
         {
@@ -64,15 +64,27 @@ public class UmlDiagramClasses : UmlDiagram
             throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
         }
 
-        var result = new UmlTransition(theFrom, theTo, new UmlArrow(), label);
-        _transitions.Add(result);
-        return result;
+        var result = new UmlTransitionState(theFrom, theTo, new UmlArrow(), label);
+        return AddTransition(result);
     }
 
-    public override IUmlElement Activate(string from)
+
+    public override IUmlElement AddTransition(IUmlTransition<UmlState> transition)
+    {
+        _transitions.Add((UmlTransitionState)transition);
+        Add(transition);
+        return transition;
+    }
+
+    public override IUmlElement? Activate(string source, string destination, string reason, bool softActivation)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override IUmlElement Activate(string from, string reason, bool softActivation)
     {
         var dto = new UmlDeclarableDto("empty declaration", from);
-        return Activate(dto);
+        return Activate(dto, reason, softActivation);
     }
 
     public override IUmlElement Deactivate(string from)
@@ -81,14 +93,14 @@ public class UmlDiagramClasses : UmlDiagram
         return Deactivate(dto);
     }
 
-    public override IUmlElement Activate(IUmlDeclarable from)
+    public override IUmlElement Activate(IUmlDeclarable from, string reason, bool softActivation)
     {
-        return new UmlActivate(from.ShortName);
+        return new UmlActivate(null, from.Alias, reason, softActivation);
     }
 
     public override IUmlElement Deactivate(IUmlDeclarable from)
     {
-        return new UmlDeactivate(from.ShortName);
+        return new UmlDeactivate(from.Alias);
     }
 
     // context: uml, share
@@ -100,5 +112,11 @@ public class UmlDiagramClasses : UmlDiagram
         {
             element.WriteTo(writer);
         }
+    }
+
+    public override IUmlElement AddLine(string line)
+    {
+        var result = new UmlLine(line);
+        return result;
     }
 }

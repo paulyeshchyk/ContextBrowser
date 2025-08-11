@@ -1,10 +1,11 @@
 ﻿using CommandlineKit.Polyfills;
-using ContextKit.Matrix;
-using ContextKit.Model;
+using ContextBrowserKit.Log.Options;
+using ContextBrowserKit.Options;
+using ExporterKit.Options;
 using HtmlKit.Model;
 using LoggerKit.Model;
 using RoslynKit.Model;
-using UmlKit.Model.Options;
+using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser.Infrastructure;
 
@@ -20,66 +21,78 @@ public class AppOptions
     {
         LogLevels =
         {
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Err },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Dbg },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Dbg },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Dbg },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Parse, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Tran, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err }
         }
     };
 
-    [CommandLineArgument("source-path", "The source code path.")]
-    public string theSourcePath { get; set; } = ".\\..\\..\\..\\..\\";
 
-    //".\\..\\..\\..\\..\\"
-    //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs"
-    //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\AlphaClass.cs";
+    [CommandLineArgument("roslyn-options", "The source code path.")]
 
-    [CommandLineArgument("output-dir", "The output directory for reports.")]
-    public string outputDirectory { get; set; } = ".\\output\\";
-
-    [CommandLineArgument("unclassified-priority", "Priority for unclassified items.")]
-    public UnclassifiedPriority unclassifiedPriority { get; set; } = UnclassifiedPriority.Highest;
-
-    internal static IEnumerable<string> AssembliesPaths { get; set; } = new List<string>() { "." };
-
-    public IEnumerable<string> assemblyPaths { get; set; } = AssembliesPaths;
-
-    public bool includeAllStandardActions { get; set; } = true;
-
-    public RoslynCodeParserOptions roslynCodeparserOptions
+    public RoslynOptions roslynOptions
     {
         get;
         set;
     } = new(
 
-        MethodModifierTypes: new()
-        {
-            RoslynCodeParserAccessorModifierType.@public,
-            RoslynCodeParserAccessorModifierType.@protected,
-            RoslynCodeParserAccessorModifierType.@internal
-        },
-        ClassModifierTypes: new()
-        {
-            RoslynCodeParserAccessorModifierType.@public,
-            RoslynCodeParserAccessorModifierType.@protected,
-            RoslynCodeParserAccessorModifierType.@internal
-        },
-        MemberTypes: new()
-        {
-            RoslynCodeParserMemberType.@enum,
-            RoslynCodeParserMemberType.@class,
-            RoslynCodeParserMemberType.@interface,
-            RoslynCodeParserMemberType.@record,
-            RoslynCodeParserMemberType.@struct
-        },
-        CustomAssembliesPaths: AssembliesPaths ?? Enumerable.Empty<string>(),
-        CreateFailedCallees: true,
-        ShowForeignInstancies: false
+    //".\\..\\..\\..\\..\\"
+    //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs"
+    //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\AlphaClass.cs";
+        theSourcePath: ".\\..\\..\\..\\..\\",
+        roslynCodeparserOptions: new(
+
+            MethodModifierTypes: new()
+            {
+                RoslynCodeParserAccessorModifierType.@public,
+                RoslynCodeParserAccessorModifierType.@protected,
+                RoslynCodeParserAccessorModifierType.@private,
+                RoslynCodeParserAccessorModifierType.@internal
+            },
+            ClassModifierTypes: new()
+            {
+                RoslynCodeParserAccessorModifierType.@public,
+                RoslynCodeParserAccessorModifierType.@protected,
+                RoslynCodeParserAccessorModifierType.@private,
+                RoslynCodeParserAccessorModifierType.@internal
+            },
+            MemberTypes: new()
+            {
+                //RoslynCodeParserMemberType.@enum,
+                RoslynCodeParserMemberType.@class,
+                //RoslynCodeParserMemberType.@interface,
+                RoslynCodeParserMemberType.@delegate,
+                //RoslynCodeParserMemberType.@record,
+                //RoslynCodeParserMemberType.@struct
+            },
+            ExternalNamespaceName: "ExternalNS",
+            FakeOwnerName: "privateTYPE",
+            FakeMethodName: "privateMETHOD",
+            CustomAssembliesPaths: AssembliesPaths ?? Enumerable.Empty<string>(),
+            CreateFailedCallees: true
+        )
     );
 
-    public DiagramBuilderKeys diagramType { get; set; } = DiagramBuilderKeys.Transition;
+    public ExportMatrixOptions matrixOptions
+    {
+        get;
+        set;
+    } = new(
+        unclassifiedPriority: UnclassifiedPriority.Highest,
+        includeAllStandardActions: true
+        );
+
+
+    [CommandLineArgument("output-dir", "The output directory for reports.")]
+    public string outputDirectory { get; set; } = ".\\output\\";
+
+
+    internal static IEnumerable<string> AssembliesPaths { get; set; } = new List<string>() { "." };
 
     public SummaryPlacement summaryPlacement { get; set; } = SummaryPlacement.AfterFirst;
 
@@ -91,9 +104,12 @@ public class AppOptions
         get;
         set;
     } = new ContextTransitionDiagramBuilderOptions(
-                detailLevel: DiagramDetailLevel.Summary,
-                direction: DiagramDirection.BiDirectional,
-                useMethodAsParticipant: true,
-                useActivation: true,
-                useSelfCallContinuation: true);
+                                        detailLevel: DiagramDetailLevel.Summary,
+                                          direction: DiagramDirection.Outgoing,
+                                      useActivation: false,
+                                          useReturn: false,
+                                           useAsync: false,
+                            useSelfCallContinuation: false,
+                useContextTransitionTreeBuilderMode: ContextTransitionTreeBuilderMode.FromParentToChild,
+                                        diagramType: DiagramBuilderKeys.Transition);
 }

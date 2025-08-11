@@ -1,19 +1,19 @@
-﻿using ContextBrowser.Infrastructure.Extensions;
+﻿using UmlKit.Extensions;
 
 namespace UmlKit.Model;
 
-public class UmlState : IUmlElement, IUmlDeclarable
+public class UmlState : IUmlParticipant
 {
     private const string SUnknownState = "unknown_state";
     protected readonly string _raw;
 
-    public string ShortName => _raw.AlphanumericOnly();
+    public string Alias => _raw.AlphanumericOnly();
 
     public string FullName => $"\"{_raw}\" as {_raw.AlphanumericOnly()}";
 
     public string Declaration => $"state {this.FullName}";
 
-    public UmlState(string? raw)
+    public UmlState(string? raw, string? alias)
     {
         _raw = string.IsNullOrWhiteSpace(raw) ? SUnknownState : raw;
     }
@@ -48,5 +48,5 @@ public class UmlState : IUmlElement, IUmlDeclarable
 
 public static class UmlStateFactory
 {
-    public static UmlState AsterixState = new UmlState("[*]");
+    public static UmlState AsterixState = new UmlState("[*]", null);
 }

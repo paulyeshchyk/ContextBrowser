@@ -1,27 +1,34 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Text.RegularExpressions;
-
-namespace ContextKit.Model;
+﻿namespace ContextKit.Model;
 
 // coverage: 255
 // context: ContextInfo, model
-public class ContextInfo : IContextWithReferences<ContextInfo>
+public record ContextInfo : IContextWithReferences<ContextInfo>
 {
-    private static readonly Regex InvalidCharsRegex = new("[^a-zA-Z0-9_]", RegexOptions.Compiled);
-
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
 
-    public string? Name { get; set; }
+    public string Name { get; set; } = "unknown_context_info_name";
 
     public string SymbolName { get; set; } = string.Empty;
 
     public HashSet<string> Contexts { get; set; } = new();
 
-    public string? Namespace { get; set; }
+    public string Namespace { get; set; } = "Global";
 
-    public ContextInfo? ClassOwner { get; set; }
+    private ContextInfo? _classOwner { get; set; }
 
-    public ContextInfo? MethodOwner { get; set; }
+    public ContextInfo? ClassOwner
+    {
+        get { return _classOwner; }
+        set { _classOwner = value; }
+    }
+
+    private ContextInfo? _methodOwner;
+
+    public ContextInfo? MethodOwner
+    {
+        get { return _methodOwner; }
+        set { _methodOwner = value; }
+    }
 
     public string? Action { get; set; }
 
@@ -33,17 +40,17 @@ public class ContextInfo : IContextWithReferences<ContextInfo>
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 
-    public string PlantUmlId => InvalidCharsRegex.Replace(SymbolName, "_");
-
     public int SpanStart { get; set; } = 0;
 
     public int SpanEnd { get; set; } = 0;
 
-    public SyntaxNode? SyntaxNode { get; set; }
+    public Guid Uid { get; } = Guid.NewGuid();
 
-    public bool IsForeignInstance { get; set; } = false;
+    public ISymbolInfo? Symbol { get; set; }
+
+    public ISyntaxNodeInfo? SyntaxNode { get; set; }
 
     public override int GetHashCode() => SymbolName.GetHashCode();
 
-    public override bool Equals(object? obj) => obj is ContextInfo other && SymbolName.Equals(other.SymbolName);
+    public virtual bool Equals(ContextInfo? obj) => obj is ContextInfo other && SymbolName.Equals(other.SymbolName);
 }

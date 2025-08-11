@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlKit", "HtmlKit\HtmlKit.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandlineKit", "CommandlineKit\CommandlineKit.csproj", "{5E7103E3-D472-46F2-B7B9-3A9F31AEE594}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContextBrowserKit", "ContextBrowserKit\ContextBrowserKit.csproj", "{11511FDB-E6D8-AAB9-5286-FBBF7D6CDBC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExporterKit", "ExporterKit\ExporterKit.csproj", "{7525EB09-CC4A-43DA-8C88-BA3331DEA5F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{5E7103E3-D472-46F2-B7B9-3A9F31AEE594}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E7103E3-D472-46F2-B7B9-3A9F31AEE594}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E7103E3-D472-46F2-B7B9-3A9F31AEE594}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11511FDB-E6D8-AAB9-5286-FBBF7D6CDBC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11511FDB-E6D8-AAB9-5286-FBBF7D6CDBC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11511FDB-E6D8-AAB9-5286-FBBF7D6CDBC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11511FDB-E6D8-AAB9-5286-FBBF7D6CDBC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7525EB09-CC4A-43DA-8C88-BA3331DEA5F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7525EB09-CC4A-43DA-8C88-BA3331DEA5F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7525EB09-CC4A-43DA-8C88-BA3331DEA5F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7525EB09-CC4A-43DA-8C88-BA3331DEA5F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

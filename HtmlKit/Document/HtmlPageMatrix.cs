@@ -1,4 +1,4 @@
-﻿using ContextKit.Matrix;
+﻿using ContextBrowserKit.Matrix;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Document.Coverage;
@@ -8,7 +8,7 @@ using HtmlKit.Writer;
 
 namespace HtmlKit.Document;
 
-internal class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
+public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
 {
     public Dictionary<string, ContextInfo> ContextsLookup { get; }
 

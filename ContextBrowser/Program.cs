@@ -1,9 +1,10 @@
 ﻿using CommandlineKit;
 using CommandlineKit.Model;
-using ContextBrowser.ExporterKit;
 using ContextBrowser.Infrastructure;
-using ContextBrowser.Infrastructure.Extensions;
-using ContextBrowser.Infrastructure.Samples;
+using ContextBrowser.Samples.HtmlPages;
+using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Options;
+using ExporterKit.Uml;
 using LoggerKit;
 using LoggerKit.Model;
 
@@ -38,14 +39,22 @@ public static class Program
         dependencies[AppLevel.P_Bld] = AppLevel.P_Cpl;
         dependencies[AppLevel.P_Rnd] = AppLevel.P_Cpl;
 
+        var contextClassifier = new ContextClassifier(
+            emptyAction: "NoAction",
+            emptyDomain: "NoDomain",
+            fakeAction: "_fakeAction",
+            fakeDomain: "_fakeDomain",
+            standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute" },
+            metaItems: new[] { "Action;Domain;Elements" }
+            );
 
         var appLogger = new IndentedAppLogger<AppLevel>(appLogLevelStorage, defaultCW, dependencies: dependencies);
 
-        DirectoryUtils.Prepare(options, appLogger.WriteLog);
+        DirectoryUtils.Prepare(options.outputDirectory, appLogger.WriteLog);
 
-        var contextBuilderModel = ContextModelBuildBuilder.Build(options, appLogger.WriteLog, CancellationToken.None);
+        var contextBuilderModel = ContextModelBuildBuilder.Build(options.roslynOptions, options.matrixOptions, contextClassifier, appLogger.WriteLog, CancellationToken.None);
 
-        ExtraDiagramsBuilder.Build(contextBuilderModel, options, appLogger.WriteLog);
+        ExtraDiagramsBuilder.Build(contextBuilderModel, options, contextClassifier, appLogger.WriteLog);
 
         ComponentDiagram.Build(contextBuilderModel, options, appLogger.WriteLog);
 
@@ -53,8 +62,8 @@ public static class Program
 
         ContentHtmlBuilder.Build(contextBuilderModel, options, appLogger.WriteLog);
 
-        IndexHtmlBuilder.Build(contextBuilderModel, options, appLogger.WriteLog);
+        IndexHtmlBuilder.Build(contextBuilderModel, options, contextClassifier, appLogger.WriteLog);
 
-        DimensionBuilder.Build(contextBuilderModel, options, appLogger.WriteLog);
+        DimensionBuilder.Build(contextBuilderModel, options, contextClassifier, appLogger.WriteLog);
     }
 }

@@ -12,13 +12,16 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CommandlineKit\CommandlineKit.csproj" />
       <ProjectReference Include="..\ContextKit\ContextKit.csproj" />
+      <ProjectReference Include="..\ExporterKit\ExporterKit.csproj" />
       <ProjectReference Include="..\GraphKit\GraphKit.csproj" />
       <ProjectReference Include="..\HtmlKit\HtmlKit.csproj" />
       <ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
       <ProjectReference Include="..\RoslynKit\RoslynKit.csproj" />
       <ProjectReference Include="..\UmlKit\UmlKit.csproj" />
-    </ItemGroup>
+      <ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
+	</ItemGroup>
 
     <ItemGroup>
       <Compile Update="Resources.Designer.cs">

@@ -1,29 +1,29 @@
-﻿using ContextBrowser.Infrastructure.Extensions;
+﻿using UmlKit.Extensions;
 
 namespace UmlKit.Model;
 
-public class UmlParticipant : IUmlElement, IUmlDeclarable
+public class UmlParticipant : IUmlParticipant
 {
-    private const string SUnknownParticipant = "unknown_participant";
     protected readonly string _raw;
 
     public UmlParticipantKeyword Keyword { get; set; }
 
-    public string ShortName => _raw.AlphanumericOnly();
+    public string Alias { get; }
 
-    public string FullName => $"\"{_raw}\" as {_raw.AlphanumericOnly()}";
+    public string FullName => $"\"{_raw}\" as {Alias}";
 
     public string Declaration => $"{Keyword.ConvertToString()} {this.FullName}";
 
-    public UmlParticipant(string? raw, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public UmlParticipant(string raw, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
-        _raw = string.IsNullOrWhiteSpace(raw) ? SUnknownParticipant : raw;
+        _raw = string.IsNullOrWhiteSpace(raw) ? " " : raw;
+        var theAlias = string.IsNullOrWhiteSpace(alias) ? _raw : alias;
+        Alias = string.IsNullOrWhiteSpace(theAlias) ? theAlias : theAlias.AlphanumericOnly(replaceBy: "_");
         Keyword = keyword;
     }
 
     public void WriteTo(TextWriter writer)
     {
-        writer.WriteLine();
         writer.WriteLine(Declaration);
     }
 

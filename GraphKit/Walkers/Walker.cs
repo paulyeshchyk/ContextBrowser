@@ -1,4 +1,5 @@
 ﻿using ContextKit.Model;
+using ContextKit.Model.Service;
 
 namespace GraphKit.Walkers;
 
@@ -6,7 +7,7 @@ namespace GraphKit.Walkers;
 // pattern: Visitor
 // pattern note: weak
 public class Walker<T>
-    where T : IContextWithReferences<T>
+    where T : ContextInfo, IContextWithReferences<T>
 {
     public readonly HashSet<T> Visited = new();
 
@@ -26,8 +27,8 @@ public class Walker<T>
             return false;
 
         VisitCallback?.Invoke(item);
-
-        foreach(var reference in item.References)
+        var references = ContextInfoService.GetReferencesSortedByInvocation(item);
+        foreach(var reference in references.OfType<T>())
             AddToVisited(reference, visited);
         return true;
     }

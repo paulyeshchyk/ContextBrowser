@@ -1,36 +1,52 @@
-﻿using UmlKit.Model;
-using UmlKit.Model.Options;
+﻿using UmlKit.Infrastructure.Options;
+using UmlKit.Model;
 
 namespace UmlKit.Diagrams;
 
 // context: model, uml
 // pattern: Template method
-public abstract class UmlDiagram
+public abstract class UmlDiagram<P>
+    where P : IUmlParticipant
 {
     // context: create, uml
-    public abstract IUmlElement AddParticipant(string? name, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
+    public abstract P AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
 
     // context: create, uml
-    public abstract UmlDiagram AddParticipant(IUmlElement participant);
+    public abstract UmlDiagram<P> AddParticipant(P participant, string alias);
 
-    public abstract void AddSelfCallBreak(string name);
+    public abstract void AddCallbreakNote(string name);
 
-    public abstract void AddSelfCallContinuation(string name);
-
-    // context: create, uml
-    public abstract IUmlElement AddTransition(string? from, string? to, string? label = null);
+    public abstract void AddSelfCallContinuation(string name, string methodName);
 
     // context: create, uml
-    public abstract IUmlElement AddTransition(IUmlDeclarable from, IUmlDeclarable to, string? label = null);
+    public abstract IUmlElement AddTransition(IUmlTransition<P> transition);
+
+    // context: create, uml
+    public abstract IUmlElement AddTransition(P from, P to, bool isAsync = false, string? label = null);
+
+    // context: create, uml
+    //public abstract IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null);
+
+    public virtual IUmlElement AddComment(string line)
+    {
+        var result = new UmlComment(line);
+        Add(result);
+        return result;
+    }
+
+    public abstract IUmlElement AddLine(string line);
 
     // context: share, uml
-    public abstract IUmlElement? Activate(string from);
+    public abstract IUmlElement? Activate(string destination, string reason, bool softActivation);
+
+    // context: share, uml
+    public abstract IUmlElement? Activate(string source, string destination, string reason, bool softActivation);
 
     // context: share, uml
     public abstract IUmlElement? Deactivate(string from);
 
     // context: share, uml
-    public abstract IUmlElement? Activate(IUmlDeclarable from);
+    public abstract IUmlElement? Activate(IUmlDeclarable from, string reason, bool softActivation);
 
     // context: share, uml
     public abstract IUmlElement? Deactivate(IUmlDeclarable from);

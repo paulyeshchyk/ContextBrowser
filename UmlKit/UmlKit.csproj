@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
     <ProjectReference Include="..\ContextKit\ContextKit.csproj" />
+    <ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
   </ItemGroup>
 
 </Project>

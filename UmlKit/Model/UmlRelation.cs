@@ -10,16 +10,21 @@ public class UmlRelation : IUmlElement
 
     public string To { get; }
 
-    public UmlRelation(string? from, string to)
+    public UmlArrow Arrow { get; }
+
+    public UmlRelation(string? from, string to, UmlArrow arrow)
     {
         From = from ?? SFakeRelationName;
         To = to;
+        Arrow = arrow;
     }
 
     // context: uml, share
     public void WriteTo(TextWriter writer)
     {
         writer.WriteLine();
-        writer.WriteLine($"{From} --> {To}");
+        writer.Write($"{From}");
+        Arrow.WriteTo(writer);
+        writer.Write($"{To}");
     }
 }

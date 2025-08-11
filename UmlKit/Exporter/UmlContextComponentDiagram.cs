@@ -1,7 +1,7 @@
 ﻿using ContextKit.Model;
 using UmlKit.Diagrams;
+using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
-using UmlKit.Model.Options;
 
 namespace UmlKit.Exporter;
 
@@ -17,7 +17,7 @@ public static class UmlContextComponentDiagram
         var fileName = Path.Combine(targetDirectory, $"composite_{action}_{domain}.puml");
 
         var diagram = new UmlDiagramClasses(options);
-        diagram.SetTitle($"{action.ToUpper()} → {domain}");
+        diagram.SetTitle($"{action.ToUpper()} -> {domain}");
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach(var method in methods)

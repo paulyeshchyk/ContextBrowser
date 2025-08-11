@@ -1,17 +1,21 @@
-﻿using Microsoft.CodeAnalysis;
-
-namespace ContextKit.Model;
+﻿namespace ContextKit.Model;
 
 public interface IContextWithReferences<T>
     where T : IContextWithReferences<T>
 {
-    string? Name { get; set; }
+    Guid Uid { get; }
+
+    string Name { get; set; }
 
     string? Action { get; set; }
 
     string SymbolName { get; set; }
 
+    T? ClassOwner { get; set; }
+
     int SpanStart { get; set; }
+
+    public string Namespace { get; set; }
 
     HashSet<string> Domains { get; }
 
@@ -23,7 +27,7 @@ public interface IContextWithReferences<T>
 
     T? MethodOwner { get; set; }
 
-    SyntaxNode? SyntaxNode { get; set; }
+    public ISymbolInfo? Symbol { get; set; }
 
-    bool IsForeignInstance { get; set; }
+    public ISyntaxNodeInfo? SyntaxNode { get; set; }
 }

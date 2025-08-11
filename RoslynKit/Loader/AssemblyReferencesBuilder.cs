@@ -33,20 +33,21 @@ public static class AssemblyReferencesBuilder
         }
     }
 
-    // context: csharp, build
-    public static void AddExtraAssemblies(List<PortableExecutableReference> references)
+    public static void FetchAllLoadedAssemblies(List<PortableExecutableReference> references)
     {
-        // Дополнительные, часто используемые ссылки, если их нет в runtimeDirectory
-        // (иногда некоторые сборки находятся в других местах или их нужно явно добавить)
-        references.Add(MetadataReference.CreateFromFile(typeof(StringWriter).Assembly.Location));
-        references.Add(MetadataReference.CreateFromFile(typeof(TextWriter).Assembly.Location));
-        references.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
-        references.Add(MetadataReference.CreateFromFile(typeof(List<>).Assembly.Location));
-        references.Add(MetadataReference.CreateFromFile(typeof(HttpClient).Assembly.Location)); // Для HTTP-запросов
-        references.Add(MetadataReference.CreateFromFile(typeof(System.Text.RegularExpressions.Regex).Assembly.Location)); // Для Regex
-        references.Add(MetadataReference.CreateFromFile(typeof(System.Text.Json.JsonSerializer).Assembly.Location)); // Для System.Text.Json
-        references.Add(MetadataReference.CreateFromFile(typeof(System.Xml.Linq.XDocument).Assembly.Location)); // Для XML LINQ
-        references.Add(MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)); // Для LINQ
-        references.Add(MetadataReference.CreateFromFile(typeof(System.Net.WebUtility).Assembly.Location)); // Для WebUtility
+        foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            try
+            {
+                if(!assembly.IsDynamic)
+                {
+                    references.Add(MetadataReference.CreateFromFile(assembly.Location));
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Ошибка при загрузке сборки {assembly.FullName}: {ex.Message}");
+            }
+        }
     }
 }
