@@ -1,12 +1,12 @@
 ﻿using ContextBrowserKit.Options;
-using HtmlKit.Model;
+using HtmlKit.Options;
 
 namespace HtmlKit.Helpers;
 
 internal static class FixedDataManager
 {
     public static string TopLeftCell(HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientation.ActionRows
+        _options.Orientation == MatrixOrientationType.ActionRows
             ? "Action \\ Domain"
             : "Domain \\ Action";
 

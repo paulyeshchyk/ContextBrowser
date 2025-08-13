@@ -21,15 +21,15 @@ public class ContextInfoCollector<TContext> : IContextCollector<TContext>
     public void Add(TContext info)
     {
         Collection.Add(info);
-        if(!string.IsNullOrWhiteSpace(info.SymbolName))
-            BySymbolDisplayName[info.SymbolName] = info;
+        if(!string.IsNullOrWhiteSpace(info.FullName))
+            BySymbolDisplayName[info.FullName] = info;
     }
 
     public void Append(TContext info)
     {
         FakeCollection.Add(info);
-        if(!string.IsNullOrWhiteSpace(info.SymbolName))
-            BySymbolDisplayName[info.SymbolName] = info;
+        if(!string.IsNullOrWhiteSpace(info.FullName))
+            BySymbolDisplayName[info.FullName] = info;
     }
 
     public void MergeFakeItems()
@@ -56,8 +56,8 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
         _existing = existing.ToList();
 
         BySymbolDisplayName = _existing
-            .Where(x => !string.IsNullOrWhiteSpace(x.SymbolName))
-            .GroupBy(x => x.SymbolName!)
+            .Where(x => !string.IsNullOrWhiteSpace(x.FullName))
+            .GroupBy(x => x.FullName!)
             .ToDictionary(
                 g => g.Key,
                 g => g.First(),
@@ -74,8 +74,8 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     public void Append(TContext info)
     {
         FakeCollection.Add(info);
-        if(!string.IsNullOrWhiteSpace(info.SymbolName))
-            BySymbolDisplayName[info.SymbolName] = info;
+        if(!string.IsNullOrWhiteSpace(info.FullName))
+            BySymbolDisplayName[info.FullName] = info;
     }
 
 

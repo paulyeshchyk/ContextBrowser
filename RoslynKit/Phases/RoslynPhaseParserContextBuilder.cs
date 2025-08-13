@@ -14,7 +14,7 @@ namespace RoslynKit.Phases;
 public class RoslynPhaseParserContextBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    protected readonly ISemanticModelBuilder _semanticModelBuilder;
+    protected readonly ISemanticModelBuilder<SyntaxTree, SemanticModel> _semanticModelBuilder;
     protected readonly IContextCollector<TContext> _collector;
     private readonly OnWriteLog? _onWriteLog;
     private readonly SyntaxRouter<TContext> _router;
@@ -22,7 +22,7 @@ public class RoslynPhaseParserContextBuilder<TContext>
 
     public RoslynPhaseParserContextBuilder(
         IContextCollector<TContext> collector,
-        ISemanticModelBuilder modelBuilder,
+        ISemanticModelBuilder<SyntaxTree, SemanticModel> modelBuilder,
         OnWriteLog? onWriteLog,
         RoslynCodeParserOptions options,
         SyntaxRouter<TContext> router)

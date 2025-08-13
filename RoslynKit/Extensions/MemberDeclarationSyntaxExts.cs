@@ -1,5 +1,4 @@
-﻿using ContextKit.Model;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Model;
@@ -10,18 +9,6 @@ internal static class MemberDeclarationSyntaxExts
 {
     private const string SFakeDeclaration = "FakeDeclaration";
 
-    public static ContextInfoElementType GetContextInfoElementType(this MemberDeclarationSyntax? syntax)
-    {
-        return syntax switch
-        {
-            ClassDeclarationSyntax => ContextInfoElementType.@class,
-            StructDeclarationSyntax => ContextInfoElementType.@struct,
-            RecordDeclarationSyntax => ContextInfoElementType.@record,
-            EnumDeclarationSyntax => ContextInfoElementType.@enum,
-            _ => ContextInfoElementType.none
-        };
-    }
-
     public static string GetDeclarationName(this MemberDeclarationSyntax member) =>
         member switch
         {
@@ -29,6 +16,7 @@ internal static class MemberDeclarationSyntaxExts
             StructDeclarationSyntax s => s.Identifier.Text,
             RecordDeclarationSyntax r => r.Identifier.Text,
             EnumDeclarationSyntax e => e.Identifier.Text,
+            MethodDeclarationSyntax m => m.Identifier.Text,
             BaseNamespaceDeclarationSyntax nn => nn.Name.ToFullString(),
             _ => SFakeDeclaration
         };

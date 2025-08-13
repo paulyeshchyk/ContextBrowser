@@ -9,7 +9,7 @@ public interface IContextWithReferences<T>
 
     string? Action { get; set; }
 
-    string SymbolName { get; set; }
+    string FullName { get; set; }
 
     T? ClassOwner { get; set; }
 

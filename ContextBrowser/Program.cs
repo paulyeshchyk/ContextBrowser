@@ -39,22 +39,13 @@ public static class Program
         dependencies[AppLevel.P_Bld] = AppLevel.P_Cpl;
         dependencies[AppLevel.P_Rnd] = AppLevel.P_Cpl;
 
-        var contextClassifier = new ContextClassifier(
-            emptyAction: "NoAction",
-            emptyDomain: "NoDomain",
-            fakeAction: "_fakeAction",
-            fakeDomain: "_fakeDomain",
-            standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute" },
-            metaItems: new[] { "Action;Domain;Elements" }
-            );
-
         var appLogger = new IndentedAppLogger<AppLevel>(appLogLevelStorage, defaultCW, dependencies: dependencies);
 
-        DirectoryUtils.Prepare(options.outputDirectory, appLogger.WriteLog);
+        DirectoryUtils.Prepare(options.Export.OutputDirectory, appLogger.WriteLog);
 
-        var contextBuilderModel = ContextModelBuildBuilder.Build(options.roslynOptions, options.matrixOptions, contextClassifier, appLogger.WriteLog, CancellationToken.None);
+        var contextBuilderModel = ContextModelBuildBuilder.Build(options.Roslyn, options.Export.ExportMatrix, options.Classifier, appLogger.WriteLog, CancellationToken.None);
 
-        ExtraDiagramsBuilder.Build(contextBuilderModel, options, contextClassifier, appLogger.WriteLog);
+        ExtraDiagramsBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
 
         ComponentDiagram.Build(contextBuilderModel, options, appLogger.WriteLog);
 
@@ -62,8 +53,8 @@ public static class Program
 
         ContentHtmlBuilder.Build(contextBuilderModel, options, appLogger.WriteLog);
 
-        IndexHtmlBuilder.Build(contextBuilderModel, options, contextClassifier, appLogger.WriteLog);
+        IndexHtmlBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
 
-        DimensionBuilder.Build(contextBuilderModel, options, contextClassifier, appLogger.WriteLog);
+        DimensionBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
     }
 }

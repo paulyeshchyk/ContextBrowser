@@ -8,10 +8,10 @@ using HtmlKit.Builders.Core;
 using HtmlKit.Page;
 using System.Text;
 using UmlKit.Builders;
+using UmlKit.Builders.TransitionFactory;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 using UmlKit.Renderer;
-using UmlKit.Renderer.TransitionFactory;
 
 namespace ExporterKit.HtmlPageSamples;
 
@@ -21,13 +21,13 @@ public class HtmlContextDimensionBuilder
     private readonly Dictionary<ContextContainer, List<string>> _matrix;
     private readonly List<ContextInfo> _allContexts;
     private readonly string _outputDirectory;
-    private readonly ContextTransitionDiagramBuilderOptions _options;
+    private readonly DiagramBuilderOptions _options;
     private readonly OnWriteLog? _onWriteLog;
     private Dictionary<string, bool> _renderedSequenceDomains = new Dictionary<string, bool>();
     private Dictionary<string, bool> _renderedStateDomains = new Dictionary<string, bool>();
     private IContextClassifier _contextClassifier;
 
-    public HtmlContextDimensionBuilder(Dictionary<ContextContainer, List<string>> matrix, List<ContextInfo> allContexts, IContextClassifier contextClassifier, string outputDirectory, ContextTransitionDiagramBuilderOptions options, OnWriteLog? onWriteLog)
+    public HtmlContextDimensionBuilder(Dictionary<ContextContainer, List<string>> matrix, List<ContextInfo> allContexts, IContextClassifier contextClassifier, string outputDirectory, DiagramBuilderOptions options, OnWriteLog? onWriteLog)
     {
         _matrix = matrix;
         _allContexts = allContexts;
@@ -47,7 +47,7 @@ public class HtmlContextDimensionBuilder
     // context: html, build
     internal void GenerateDomainDiagrams()
     {
-        foreach(var domain in _matrix.Select(k => k.Key.Domain).Distinct())
+        foreach (var domain in _matrix.Select(k => k.Key.Domain).Distinct())
         {
             CompileDomain(_contextClassifier, domain);
         }
@@ -79,7 +79,7 @@ public class HtmlContextDimensionBuilder
         var allDomains = _matrix.Keys.Select(k => k.Domain).Distinct();
 
         // --- ACTIONS ---
-        foreach(var action in allActions)
+        foreach (var action in allActions)
         {
             var methods = _matrix
                 .Where(kvp => kvp.Key.Action == action)
@@ -90,7 +90,7 @@ public class HtmlContextDimensionBuilder
             string embeddedScript = string.Empty;
             string embeddedContent = string.Empty;
 
-            if(_renderedStateDomains.TryGetValue(action, out var rendered_sequence) && rendered_sequence == true)
+            if (_renderedStateDomains.TryGetValue(action, out var rendered_sequence) && rendered_sequence == true)
             {
                 var puml = PumlInjector.InjectDomainEmbeddedHtml(action, _outputDirectory);
                 embeddedScript = puml.EmbeddedScript;
@@ -101,33 +101,33 @@ public class HtmlContextDimensionBuilder
 
             using var writer = new StreamWriter(path, false, Encoding.UTF8);
 
-            HtmlBuilderFactory.Html.With(writer,() =>
+            HtmlBuilderFactory.Html.With(writer, () =>
             {
-                HtmlBuilderFactory.Head.With(writer,() =>
+                HtmlBuilderFactory.Head.With(writer, () =>
                 {
                     HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
                     HtmlBuilderFactory.Title.Cell(writer, $"Action: {action}");
                 });
 
-                HtmlBuilderFactory.Body.With(writer,() =>
+                HtmlBuilderFactory.Body.With(writer, () =>
                 {
                     HtmlBuilderFactory.H1.Cell(writer, $"Action: {action}");
                     HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methods.Count}");
 
-                    HtmlBuilderFactory.Ul.With(writer,() =>
+                    HtmlBuilderFactory.Ul.With(writer, () =>
                     {
-                        foreach(var method in methods)
+                        foreach (var method in methods)
                             HtmlBuilderFactory.Li.Cell(writer, method);
                     });
 
-                    if(!string.IsNullOrWhiteSpace(embeddedContent))
+                    if (!string.IsNullOrWhiteSpace(embeddedContent))
                         HtmlBuilderFactory.Raw.Cell(writer, embeddedContent);
                 });
             });
         }
 
         // --- DOMAINS ---
-        foreach(var domain in allDomains)
+        foreach (var domain in allDomains)
         {
             var methods = _matrix
                 .Where(kvp => kvp.Key.Domain == domain)
@@ -138,7 +138,7 @@ public class HtmlContextDimensionBuilder
             string embeddedScript = string.Empty;
             string embeddedContent = string.Empty;
 
-            if(_renderedSequenceDomains.TryGetValue(domain, out var rendered_sequence) && rendered_sequence == true)
+            if (_renderedSequenceDomains.TryGetValue(domain, out var rendered_sequence) && rendered_sequence == true)
             {
                 var puml = PumlInjector.InjectDomainEmbeddedHtml(domain, _outputDirectory);
                 embeddedScript = puml.EmbeddedScript;
@@ -149,29 +149,29 @@ public class HtmlContextDimensionBuilder
 
             using var writer = new StreamWriter(path, false, Encoding.UTF8);
 
-            HtmlBuilderFactory.Html.With(writer,() =>
+            HtmlBuilderFactory.Html.With(writer, () =>
             {
-                HtmlBuilderFactory.Head.With(writer,() =>
+                HtmlBuilderFactory.Head.With(writer, () =>
                 {
                     HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
                     HtmlBuilderFactory.Title.Cell(writer, $"Domain: {domain}");
 
-                    if(!string.IsNullOrWhiteSpace(embeddedScript))
+                    if (!string.IsNullOrWhiteSpace(embeddedScript))
                         HtmlBuilderFactory.Raw.Cell(writer, embeddedScript);
                 });
 
-                HtmlBuilderFactory.Body.With(writer,() =>
+                HtmlBuilderFactory.Body.With(writer, () =>
                 {
                     HtmlBuilderFactory.H1.Cell(writer, $"Domain: {domain}");
                     HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methods.Count}");
 
-                    HtmlBuilderFactory.Ul.With(writer,() =>
+                    HtmlBuilderFactory.Ul.With(writer, () =>
                     {
-                        foreach(var method in methods)
+                        foreach (var method in methods)
                             HtmlBuilderFactory.Li.Cell(writer, method);
                     });
 
-                    if(!string.IsNullOrWhiteSpace(embeddedContent))
+                    if (!string.IsNullOrWhiteSpace(embeddedContent))
                         HtmlBuilderFactory.Raw.Cell(writer, embeddedContent);
                 });
             });

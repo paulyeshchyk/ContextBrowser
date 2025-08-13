@@ -4,7 +4,6 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Extensions;
 using RoslynKit.Model;
 using RoslynKit.Semantic.Builder;
 
@@ -13,14 +12,14 @@ namespace RoslynKit.Syntax.Parser;
 public class CSharpRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly RecordContextInfoBuilder<TContext> _recordContextInfoBuilder;
+    private readonly CSharpRecordContextInfoBuilder<TContext> _recordContextInfoBuilder;
     private readonly RoslynCodeParserOptions _options;
     private readonly CSharpCommentTriviaSyntaxParser<TContext> _triviaCommentParser;
     private readonly CSharpTypePropertyParser<TContext> _propertyDeclarationParser;
 
     public CSharpRecordSyntaxParser(
         IContextCollector<TContext> collector,
-        RecordContextInfoBuilder<TContext> typeContextInfoBuilder,
+        CSharpRecordContextInfoBuilder<TContext> typeContextInfoBuilder,
         CSharpTypePropertyParser<TContext> propertyDeclarationParser,
         CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser,
         RoslynCodeParserOptions options,
@@ -34,30 +33,28 @@ public class CSharpRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 
     public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is RecordDeclarationSyntax;
 
-    public override void Parse(MemberDeclarationSyntax syntax, SemanticModel model)
+    public override void Parse(TContext? parent, MemberDeclarationSyntax syntax, SemanticModel model)
     {
-        if(syntax is not RecordDeclarationSyntax typeSyntax)
+        if(syntax is not RecordDeclarationSyntax recordSyntax)
         {
             throw new ArgumentException($"Syntax ({nameof(syntax)}) is not RecordDeclarationSyntax");
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - record syntax");
 
-        var symbol = model.GetDeclaredSymbol(typeSyntax);
-        var nsName = typeSyntax.GetNamespaceName();
-        var typeContext = _recordContextInfoBuilder.BuildContextInfoForRecord(typeSyntax, model, nsName, symbol);
-        if(typeContext == null)
+        var recordContext = _recordContextInfoBuilder.BuildContextInfo(parent, recordSyntax, model);
+        if(recordContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {nsName}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Syntax \"{recordSyntax}\" was not resolved");
             return;
         }
 
-        var propertySyntaxes = typeSyntax.Members.OfType<PropertyDeclarationSyntax>();
+        var propertySyntaxes = recordSyntax.Members.OfType<PropertyDeclarationSyntax>();
         foreach(var propertySyntax in propertySyntaxes)
         {
-            _propertyDeclarationParser.Parse(propertySyntax, model);
+            _propertyDeclarationParser.Parse(recordContext, propertySyntax, model);
         }
 
-        _triviaCommentParser.Parse(typeSyntax, typeContext);
+        _triviaCommentParser.Parse(recordContext, recordSyntax, model);
     }
 }

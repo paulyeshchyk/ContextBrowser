@@ -17,5 +17,5 @@ public abstract class BaseSyntaxParser<TContext> : ISyntaxParser<TContext>
 
     public abstract bool CanParse(MemberDeclarationSyntax syntax);
 
-    public abstract void Parse(MemberDeclarationSyntax syntax, SemanticModel model);
+    public abstract void Parse(TContext? parent, MemberDeclarationSyntax syntax, SemanticModel model);
 }

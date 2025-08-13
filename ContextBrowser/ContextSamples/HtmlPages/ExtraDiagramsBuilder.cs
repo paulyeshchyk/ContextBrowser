@@ -19,11 +19,11 @@ public static class ExtraDiagramsBuilder
         //ContextMatrixUmlExporter.GenerateCsv(matrix, $"{theOutputPath}matrix.csv");
         //HeatmapExporter.GenerateHeatmapCsv(matrix, $"{theOutputPath}heatmap.csv", unclassifiedPriority);
 
-        UmlContextPackagesDiagram.Build(model.contextsList, $"{options.outputDirectory}uml.packages.domains.puml", options.contextTransitionDiagramBuilderOptions);
-        UmlContextMethodsOnlyDiagram.Build(model.contextsList, $"{options.outputDirectory}methodlinks.puml", options.contextTransitionDiagramBuilderOptions);
-        UmlContextMethodPerActionDomainDiagram.Build(model.matrix, $"{options.outputDirectory}uml.packages.actions.puml", options.contextTransitionDiagramBuilderOptions);
+        UmlContextPackagesDiagram.Build(model.contextsList, $"{options.Export.OutputDirectory}uml.packages.domains.puml", options.DiagramBuilder);
+        UmlContextMethodsOnlyDiagram.Build(model.contextsList, $"{options.Export.OutputDirectory}methodlinks.puml", options.DiagramBuilder);
+        UmlContextMethodPerActionDomainDiagram.Build(model.matrix, $"{options.Export.OutputDirectory}uml.packages.actions.puml", options.DiagramBuilder);
 
         var links = ContextMatrixUmlExporter.GenerateMethodLinks(model.contextsList, contextClassifier);
-        UmlContextRelationDiagram.GenerateLinksUml(links, $"{options.outputDirectory}uml.4.links.puml", options.contextTransitionDiagramBuilderOptions);
+        UmlContextRelationDiagram.GenerateLinksUml(links, $"{options.Export.OutputDirectory}uml.4.links.puml", options.DiagramBuilder);
     }
 }

@@ -2,7 +2,7 @@
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ExporterKit.Options;
-using HtmlKit.Model;
+using HtmlKit.Options;
 using LoggerKit.Model;
 using RoslynKit.Model;
 using UmlKit.Infrastructure.Options;
@@ -13,11 +13,7 @@ namespace ContextBrowser.Infrastructure;
 public class AppOptions
 {
     [CommandLineArgument("log-config", "JSON configuration for log levels.")]
-    public LogConfiguration<AppLevel, LogLevel> LogConfiguration
-    {
-        get;
-        set;
-    } = new()
+    public LogConfiguration<AppLevel, LogLevel> LogConfiguration { get; set; } = new()
     {
         LogLevels =
         {
@@ -32,84 +28,79 @@ public class AppOptions
         }
     };
 
-
     [CommandLineArgument("roslyn-options", "The source code path.")]
-
-    public RoslynOptions roslynOptions
-    {
-        get;
-        set;
-    } = new(
+    public RoslynOptions Roslyn { get; set; } = new(
 
     //".\\..\\..\\..\\..\\"
-    //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\Orchestra\\FourContextsSample.cs"
-    //".\\..\\..\\..\\..\\ContextBrowser\\Samples\\AlphaClass.cs";
-        theSourcePath: ".\\..\\..\\..\\..\\",
-        roslynCodeparserOptions: new(
+    //".\\..\\..\\..\\..\\ContextBrowser\\ContextSamples\\Orchestra\\FourContextsSample.cs"
+    //".\\..\\..\\..\\..\\ContextBrowser\\ContextSamples\\AlphaClass.cs";
+        sourcePath: ".\\..\\..\\..\\..\\",
+        roslynCodeParser: new(
 
-            MethodModifierTypes: new()
+            methodModifierTypes: new()
             {
                 RoslynCodeParserAccessorModifierType.@public,
                 RoslynCodeParserAccessorModifierType.@protected,
                 RoslynCodeParserAccessorModifierType.@private,
                 RoslynCodeParserAccessorModifierType.@internal
             },
-            ClassModifierTypes: new()
+            classModifierTypes: new()
             {
                 RoslynCodeParserAccessorModifierType.@public,
                 RoslynCodeParserAccessorModifierType.@protected,
                 RoslynCodeParserAccessorModifierType.@private,
                 RoslynCodeParserAccessorModifierType.@internal
             },
-            MemberTypes: new()
+            memberTypes: new()
             {
                 //RoslynCodeParserMemberType.@enum,
                 RoslynCodeParserMemberType.@class,
-                //RoslynCodeParserMemberType.@interface,
+                RoslynCodeParserMemberType.@interface,
                 RoslynCodeParserMemberType.@delegate,
                 //RoslynCodeParserMemberType.@record,
                 //RoslynCodeParserMemberType.@struct
             },
-            ExternalNamespaceName: "ExternalNS",
-            FakeOwnerName: "privateTYPE",
-            FakeMethodName: "privateMETHOD",
-            CustomAssembliesPaths: AssembliesPaths ?? Enumerable.Empty<string>(),
-            CreateFailedCallees: true
+            externalNamespaceName: "ExternalNS",
+            fakeOwnerName: "privateTYPE",
+            fakeMethodName: "privateMETHOD",
+            customAssembliesPaths: new List<string>() { "." },
+            createFailedCallees: true
         )
     );
 
-    public ExportMatrixOptions matrixOptions
-    {
-        get;
-        set;
-    } = new(
-        unclassifiedPriority: UnclassifiedPriority.Highest,
-        includeAllStandardActions: true
-        );
+    [CommandLineArgument("export-options", "Параметры экспорта")]
+    public ExportOptions Export { get; set; } = new(
+        exportMatrix: new ExportMatrixOptions(
+                 unclassifiedPriority: UnclassifiedPriorityType.Highest,
+            includeAllStandardActions: true,
+                            htmlTable: new HtmlTableOptions(
+                                summaryPlacement: SummaryPlacementType.AfterFirst,
+                                     orientation: MatrixOrientationType.DomainRows
+                                )
+        ),
+        outputDirectory: ".\\output\\"
+    );
 
-
-    [CommandLineArgument("output-dir", "The output directory for reports.")]
-    public string outputDirectory { get; set; } = ".\\output\\";
-
-
-    internal static IEnumerable<string> AssembliesPaths { get; set; } = new List<string>() { "." };
-
-    public SummaryPlacement summaryPlacement { get; set; } = SummaryPlacement.AfterFirst;
-
-    public MatrixOrientation matrixOrientation { get; set; } = MatrixOrientation.DomainRows;
 
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
-    public ContextTransitionDiagramBuilderOptions contextTransitionDiagramBuilderOptions
-    {
-        get;
-        set;
-    } = new ContextTransitionDiagramBuilderOptions(
+    public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
                                         detailLevel: DiagramDetailLevel.Summary,
                                           direction: DiagramDirection.Outgoing,
                                       useActivation: false,
                                           useReturn: false,
                                            useAsync: false,
                             useSelfCallContinuation: false,
-                useContextTransitionTreeBuilderMode: ContextTransitionTreeBuilderMode.FromParentToChild,
+                useContextTransitionTreeBuilderMode: DiagramBuilderOptions.TreeBuilderMode.FromParentToChild,
                                         diagramType: DiagramBuilderKeys.Transition);
+
+    [CommandLineArgument("context-classifier", "Определение контекста представления")]
+    public ContextClassifier Classifier { get; set; } = new(
+            emptyAction: "NoAction",
+            emptyDomain: "NoDomain",
+             fakeAction: "_fakeAction",
+             fakeDomain: "_fakeDomain",
+        standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute" },
+              metaItems: new[] { "Action;Domain;Elements" }
+        )
+    { };
 }

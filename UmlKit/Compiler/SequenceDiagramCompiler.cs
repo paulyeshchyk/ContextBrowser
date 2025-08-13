@@ -2,12 +2,12 @@
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using UmlKit.Diagrams;
+using UmlKit.Builders;
+using UmlKit.Builders.TransitionFactory;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
+using UmlKit.PlantUmlSpecification;
 using UmlKit.Renderer;
-using UmlKit.Renderer.Builder;
-using UmlKit.Renderer.TransitionFactory;
 
 namespace ContextBrowser.Infrastructure.Compiler;
 
@@ -20,7 +20,7 @@ public class SequenceDiagramCompiler
     private readonly IContextClassifier _classifier;
     private readonly string _outputPath;
     private readonly OnWriteLog? _onWriteLog;
-    private readonly ContextTransitionDiagramBuilderOptions _options;
+    private readonly DiagramBuilderOptions _options;
     private readonly IContextDiagramBuilder _diagramBuilder;
 
     /// <summary>
@@ -35,7 +35,7 @@ public class SequenceDiagramCompiler
         IContextClassifier classifier,
         string outputPath,
         OnWriteLog? onWriteLog,
-        ContextTransitionDiagramBuilderOptions options,
+        DiagramBuilderOptions options,
         IContextDiagramBuilder diagramBuilder)
     {
         _classifier = classifier;
@@ -72,7 +72,7 @@ public class SequenceDiagramCompiler
         var _renderer = new SequenceRenderer<UmlParticipant>(_options, _onWriteLog, _factory);
         var result = _renderer.RenderDiagramTransitions(diagram, transitions, domain);
 
-        if(result)
+        if (result)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
             var path = Path.Combine(_outputPath, $"sequence_domain_{domain}.puml");

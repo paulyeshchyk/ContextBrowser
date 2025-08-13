@@ -8,7 +8,7 @@ namespace ExporterKit.Csv;
 public static class CsvGenerator
 {
     //context: build, csv, heatmap
-    public static void GenerateHeatmapCsv(IContextClassifier contextClassifier, Dictionary<ContextContainer, List<string>> matrix, string outputPath, UnclassifiedPriority unclassifiedPriority = UnclassifiedPriority.None)
+    public static void GenerateHeatmapCsv(IContextClassifier contextClassifier, Dictionary<ContextContainer, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 
@@ -36,7 +36,7 @@ public static class CsvGenerator
             lines.Add(string.Join(";", row));
         }
 
-        var includeUnclassified = unclassifiedPriority != UnclassifiedPriority.None;
+        var includeUnclassified = unclassifiedPriority != UnclassifiedPriorityType.None;
         // Добавим строку для нераспознанных, если нужно
         if(includeUnclassified && matrix.ContainsKey((contextClassifier.EmptyAction, contextClassifier.EmptyDomain)))
         {

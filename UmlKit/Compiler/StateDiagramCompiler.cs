@@ -2,11 +2,11 @@
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using UmlKit.Diagrams;
+using UmlKit.Builders;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
+using UmlKit.PlantUmlSpecification;
 using UmlKit.Renderer;
-using UmlKit.Renderer.Builder;
 
 namespace ContextBrowser.Infrastructure.Compiler;
 
@@ -14,7 +14,7 @@ public class StateDiagramCompiler
 {
     // Свойства класса, инициализируемые в конструкторе
     private readonly IContextClassifier _classifier;
-    private readonly ContextTransitionDiagramBuilderOptions _options;
+    private readonly DiagramBuilderOptions _options;
     private readonly IContextDiagramBuilder _builder;
     private readonly string _outputDirectory;
     private readonly SequenceRenderer<UmlState> _renderer;
@@ -31,7 +31,7 @@ public class StateDiagramCompiler
     /// <param name="onWriteLog">Делегат для записи логов.</param>
     public StateDiagramCompiler(
         IContextClassifier classifier,
-        ContextTransitionDiagramBuilderOptions options,
+        DiagramBuilderOptions options,
         IContextDiagramBuilder builder,
         string outputDirectory,
         SequenceRenderer<UmlState> renderer,

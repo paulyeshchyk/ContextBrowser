@@ -20,8 +20,8 @@ public static class DimensionBuilder
             model.matrix,
             model.contextsList,
             contextClassifier,
-            options.outputDirectory,
-            options.contextTransitionDiagramBuilderOptions,
+            options.Export.OutputDirectory,
+            options.DiagramBuilder,
             onWriteLog);
 
         builder.BuildDimension();

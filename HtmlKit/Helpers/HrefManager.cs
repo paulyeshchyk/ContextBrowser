@@ -1,33 +1,33 @@
 ﻿using ContextBrowserKit.Options;
 using ContextKit.Model;
-using HtmlKit.Model;
+using HtmlKit.Options;
 
 namespace HtmlKit.Helpers;
 
 internal static class HrefManager
 {
     public static string GetHrefColSummary(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientation.ActionRows
+        _options.Orientation == MatrixOrientationType.ActionRows
             ? $"sequence_domain_{key}.html"
             : $"action_{key}.html";
 
     public static string GetHrefRowSummary(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientation.ActionRows
+        _options.Orientation == MatrixOrientationType.ActionRows
             ? $"action_{key}.html"
             : $"sequence_domain_{key}.html";
 
     public static string GetHRefRow(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientation.ActionRows
+        _options.Orientation == MatrixOrientationType.ActionRows
             ? $"action_{key}.html"
             : $"sequence_domain_{key}.html";
 
     public static string GetHRefRowMeta(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientation.ActionRows
+        _options.Orientation == MatrixOrientationType.ActionRows
             ? $"sequence_domain_{key}.html"
             : $"action_{key}.html";
 
     public static string GetHRefRowHeader(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientation.ActionRows
+        _options.Orientation == MatrixOrientationType.ActionRows
             ? $"action_{key}.html"
             : $"sequence_domain_{key}.html";
 
@@ -41,12 +41,12 @@ internal static class HrefManager
     {
         return _options.SummaryPlacement switch
         {
-            SummaryPlacement.AfterFirst =>
-            _options.Orientation == MatrixOrientation.ActionRows
+            SummaryPlacementType.AfterFirst =>
+            _options.Orientation == MatrixOrientationType.ActionRows
                 ? "domain_summary.html"
                 : "action_summary.html",
-            SummaryPlacement.AfterLast =>
-            _options.Orientation == MatrixOrientation.ActionRows
+            SummaryPlacementType.AfterLast =>
+            _options.Orientation == MatrixOrientationType.ActionRows
                 ? "domain_summary.html"
                 : "action_summary.html",
             _ => string.Empty
@@ -57,12 +57,12 @@ internal static class HrefManager
     {
         return _options.SummaryPlacement switch
         {
-            SummaryPlacement.AfterFirst =>
-            _options.Orientation == MatrixOrientation.ActionRows
+            SummaryPlacementType.AfterFirst =>
+            _options.Orientation == MatrixOrientationType.ActionRows
                 ? "action_summary.html"
                 : "domain_summary.html",
-            SummaryPlacement.AfterLast =>
-            _options.Orientation == MatrixOrientation.ActionRows
+            SummaryPlacementType.AfterLast =>
+            _options.Orientation == MatrixOrientationType.ActionRows
                 ? "action_summary.html"
                 : "domain_summary.html",
             _ => string.Empty
@@ -70,7 +70,7 @@ internal static class HrefManager
     }
 
     public static string GetHrefColHeaderSummary(HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientation.ActionRows
+        _options.Orientation == MatrixOrientationType.ActionRows
             ? "domain_summary.html"
             : "action_summary.html";
 }

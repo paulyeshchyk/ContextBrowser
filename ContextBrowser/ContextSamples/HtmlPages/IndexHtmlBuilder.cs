@@ -16,13 +16,11 @@ public static class IndexHtmlBuilder
     {
         onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
         IndexGenerator.GenerateContextIndexHtml(
-            contextClassifier,
-            model.matrix,
-            model.contextLookup,
-            outputFile: $"{options.outputDirectory}index.html",
-            priority: options.matrixOptions.unclassifiedPriority,
-            orientation: options.matrixOrientation,
-            summaryPlacement: options.summaryPlacement
+            contextClassifier: contextClassifier,
+                       matrix: model.matrix,
+               allContextInfo: model.contextLookup,
+                   outputFile: $"{options.Export.OutputDirectory}index.html",
+                matrixOptions: options.Export.ExportMatrix
             );
     }
 }

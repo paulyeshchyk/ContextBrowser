@@ -1,0 +1,27 @@
+﻿using RoslynKit.Syntax.Parser.Wrappers;
+
+namespace RoslynKit.Syntax.Parser.LookupHandler;
+
+/// <summary>
+/// Определяет интерфейс для обработчиков в цепочке поиска символов.
+/// </summary>
+/// <typeparam name="TContext">Тип возвращаемого контекста.</typeparam>
+public interface ISymbolLookupHandler<TContext, TSyntaxNode, TSemanticModel>
+    where TContext : class
+    where TSyntaxNode : class
+    where TSemanticModel : class
+{
+    /// <summary>
+    /// Устанавливает следующий обработчик в цепочке.
+    /// </summary>
+    /// <param name="handler">Следующий обработчик.</param>
+    /// <returns>Следующий обработчик для удобства построения цепочки.</returns>
+    ISymbolLookupHandler<TContext, TSyntaxNode, TSemanticModel> SetNext(ISymbolLookupHandler<TContext, TSyntaxNode, TSemanticModel> handler);
+
+    /// <summary>
+    /// Обрабатывает запрос на поиск контекстной информации для символа.
+    /// </summary>
+    /// <param name="symbolDto">Обертка над синтаксическим узлом вызова.</param>
+    /// <returns>Найденный контекст или null, если обработчик не смог обработать запрос.</returns>
+    TContext? Handle(CSharpInvocationSyntaxWrapper symbolDto);
+}

@@ -28,14 +28,14 @@ public static class ContextMatrixUmlExporter
             .ToList();
 
         // Расширим список действий, если нужно
-        if(matrixOptions.includeAllStandardActions)
+        if (matrixOptions.IncludeAllStandardActions)
         {
             allVerbs = contextClassifier.GetCombinedVerbs(allVerbs).ToList();
         }
 
-        bool includeUnclassified = matrixOptions.unclassifiedPriority != UnclassifiedPriority.None;
+        bool includeUnclassified = matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
 
-        foreach(var item in elements)
+        foreach (var item in elements)
         {
             var verbs = item.Contexts.Where(contextClassifier.IsVerb).Distinct().ToList();
             var nouns = item.Contexts.Where(contextClassifier.IsNoun).Distinct().ToList();
@@ -44,47 +44,47 @@ public static class ContextMatrixUmlExporter
                 ? $"{item.ClassOwner}.{item.Name}"
                 : item.Name;
 
-            if(string.IsNullOrWhiteSpace(label))
+            if (string.IsNullOrWhiteSpace(label))
                 continue;
 
-            if(verbs.Any() && nouns.Any())
+            if (verbs.Any() && nouns.Any())
             {
-                foreach(var verb in verbs)
-                    foreach(var noun in nouns)
+                foreach (var verb in verbs)
+                    foreach (var noun in nouns)
                     {
                         var key = (verb, noun);
-                        if(!matrix.ContainsKey(key))
+                        if (!matrix.ContainsKey(key))
                             matrix[key] = new List<string>();
 
                         matrix[key].Add(label);
                     }
             }
-            else if(verbs.Any()) // Только действия
+            else if (verbs.Any()) // Только действия
             {
-                foreach(var verb in verbs)
+                foreach (var verb in verbs)
                 {
                     var key = (verb, contextClassifier.EmptyDomain);
-                    if(!matrix.ContainsKey(key))
+                    if (!matrix.ContainsKey(key))
                         matrix[key] = new List<string>();
 
                     matrix[key].Add(label);
                 }
             }
-            else if(nouns.Any() && includeUnclassified) // Только домены, но разрешено
+            else if (nouns.Any() && includeUnclassified) // Только домены, но разрешено
             {
-                foreach(var noun in nouns)
+                foreach (var noun in nouns)
                 {
                     var key = (contextClassifier.EmptyAction, noun);
-                    if(!matrix.ContainsKey(key))
+                    if (!matrix.ContainsKey(key))
                         matrix[key] = new List<string>();
 
                     matrix[key].Add(label);
                 }
             }
-            else if(includeUnclassified) // Полностью без контекста
+            else if (includeUnclassified) // Полностью без контекста
             {
                 var key = (contextClassifier.EmptyAction, contextClassifier.EmptyDomain);
-                if(!matrix.ContainsKey(key))
+                if (!matrix.ContainsKey(key))
                     matrix[key] = new List<string>();
 
                 matrix[key].Add(label);
@@ -92,34 +92,34 @@ public static class ContextMatrixUmlExporter
         }
 
         // Добавим пустые ячейки для всех стандартных действий
-        if(matrixOptions.includeAllStandardActions)
+        if (matrixOptions.IncludeAllStandardActions)
         {
-            foreach(var verb in allVerbs)
+            foreach (var verb in allVerbs)
             {
                 // Добавляем только если разрешено
                 var nounsToUse = includeUnclassified
                     ? allNouns.Append(contextClassifier.EmptyDomain)
                     : allNouns;
 
-                foreach(var noun in nounsToUse)
+                foreach (var noun in nounsToUse)
                 {
                     var key = (verb, noun);
-                    if(!matrix.ContainsKey(key))
+                    if (!matrix.ContainsKey(key))
                         matrix[key] = new List<string>();
                 }
             }
 
-            if(includeUnclassified)
+            if (includeUnclassified)
             {
-                foreach(var noun in allNouns)
+                foreach (var noun in allNouns)
                 {
                     var key = (contextClassifier.EmptyAction, noun);
-                    if(!matrix.ContainsKey(key))
+                    if (!matrix.ContainsKey(key))
                         matrix[key] = new List<string>();
                 }
 
                 var keyEmpty = (contextClassifier.EmptyAction, contextClassifier.EmptyDomain);
-                if(!matrix.ContainsKey(keyEmpty))
+                if (!matrix.ContainsKey(keyEmpty))
                     matrix[keyEmpty] = new List<string>();
             }
         }
@@ -131,15 +131,15 @@ public static class ContextMatrixUmlExporter
     {
         var methodToCell = new Dictionary<string, string>();
 
-        foreach(var item in elements.Where(e => e.ElementType == ContextInfoElementType.method))
+        foreach (var item in elements.Where(e => e.ElementType == ContextInfoElementType.method))
         {
             string? a = item.Contexts.FirstOrDefault(c => contextClassifier.IsVerb(c));
             string? d = item.Contexts.FirstOrDefault(c => contextClassifier.IsNoun(c));
 
-            if(a != null && d != null)
+            if (a != null && d != null)
             {
                 var methodId = item.ClassOwner != null ? $"{item.ClassOwner}.{item.Name}" : item.Name;
-                if(methodId != null)
+                if (methodId != null)
                 {
                     var cellId = $"{a}_{d}";
                     methodToCell[methodId] = cellId;
@@ -150,41 +150,41 @@ public static class ContextMatrixUmlExporter
         var theMethods = elements.Where(e => e.ElementType == ContextInfoElementType.method);
         var links = new HashSet<(string From, string To)>();
 
-        foreach(var callerMethod in theMethods)
+        foreach (var callerMethod in theMethods)
         {
             // Собираем идентификатор вызывающего метода
             var callerId = callerMethod.ClassOwner != null
                 ? $"{callerMethod.ClassOwner}.{callerMethod.Name}"
                 : callerMethod.Name;
 
-            if(string.IsNullOrWhiteSpace(callerId))
+            if (string.IsNullOrWhiteSpace(callerId))
                 continue;
 
             // Пропускаем, если метод не сопоставлен с контекстной ячейкой
-            if(!methodToCell.TryGetValue(callerId, out var fromCell))
+            if (!methodToCell.TryGetValue(callerId, out var fromCell))
                 continue;
 
             var references = ContextInfoService.GetReferencesSortedByInvocation(callerMethod);
-            foreach(var calledName in references)
+            foreach (var calledName in references)
             {
                 // Ищем вызываемый метод среди всех методов
                 var calleeMethod = theMethods.FirstOrDefault(m =>
                     string.Equals(m.Name, calledName.Name, StringComparison.OrdinalIgnoreCase));
 
-                if(calleeMethod == null)
+                if (calleeMethod == null)
                     continue;
 
                 var calleeId = calleeMethod.ClassOwner != null
                     ? $"{calleeMethod.ClassOwner}.{calleeMethod.Name}"
                     : calleeMethod.Name;
-                if(string.IsNullOrWhiteSpace(calleeId))
+                if (string.IsNullOrWhiteSpace(calleeId))
                     continue;
                 // Пропускаем, если вызываемый метод не сопоставлен
-                if(!methodToCell.TryGetValue(calleeId, out var toCell))
+                if (!methodToCell.TryGetValue(calleeId, out var toCell))
                     continue;
 
                 // Добавляем направленную связь, если ячейки разные
-                if(fromCell != toCell)
+                if (fromCell != toCell)
                     links.Add((fromCell, toCell));
             }
         }

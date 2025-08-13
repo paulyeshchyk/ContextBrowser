@@ -1,8 +1,7 @@
-﻿using ContextBrowserKit.Options;
-using ContextKit.Model;
+﻿using ContextKit.Model;
 using ExporterKit.Matrix;
+using ExporterKit.Options;
 using HtmlKit.Document;
-using HtmlKit.Model;
 
 namespace ExporterKit.HtmlPageSamples;
 
@@ -10,11 +9,10 @@ namespace ExporterKit.HtmlPageSamples;
 public static partial class IndexGenerator
 {
     //context: build, html
-    public static void GenerateContextIndexHtml(IContextClassifier contextClassifier, Dictionary<ContextContainer, List<string>> matrix, Dictionary<string, ContextInfo> allContextInfo, string outputFile, UnclassifiedPriority priority = UnclassifiedPriority.None, MatrixOrientation orientation = MatrixOrientation.DomainRows, SummaryPlacement summaryPlacement = SummaryPlacement.AfterFirst)
+    public static void GenerateContextIndexHtml(IContextClassifier contextClassifier, Dictionary<ContextContainer, List<string>> matrix, Dictionary<string, ContextInfo> allContextInfo, string outputFile, ExportMatrixOptions matrixOptions)
     {
-        var uiMatrix = UiMatrixGenerator.Generate(contextClassifier, matrix, orientation, priority);
-        var options = new HtmlTableOptions { SummaryPlacement = summaryPlacement, Orientation = orientation };
-        var producer = new HtmlPageMatrix(uiMatrix, matrix, options, allContextInfo);
+        var uiMatrix = UiMatrixGenerator.Generate(contextClassifier, matrix, matrixOptions.HtmlTable.Orientation, matrixOptions.UnclassifiedPriority);
+        var producer = new HtmlPageMatrix(uiMatrix, matrix, matrixOptions.HtmlTable, allContextInfo);
         producer.Title = "Контекстная матрица";
         var result = producer.ToHtmlString();
 

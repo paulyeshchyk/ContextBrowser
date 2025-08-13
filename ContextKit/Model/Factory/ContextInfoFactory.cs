@@ -23,7 +23,7 @@ public class ContextInfoFactory<T> : IContextFactory<T>
             ElementType = elementType,
             Name = name,
             Namespace = nsName,
-            SymbolName = fullName ?? SUnknownSymbolName,
+            FullName = fullName ?? SUnknownSymbolName,
             SpanStart = spanStart,
             SpanEnd = spanEnd,
             Symbol = symbol, // Используем уже готовую обёртку
@@ -35,6 +35,11 @@ public class ContextInfoFactory<T> : IContextFactory<T>
         {
             result.ClassOwner = owner;
             result.MethodOwner = result;
+        }
+        else if(elementType == ContextInfoElementType.property)
+        {
+            result.ClassOwner = owner;
+            result.MethodOwner = null;
         }
         else
         {

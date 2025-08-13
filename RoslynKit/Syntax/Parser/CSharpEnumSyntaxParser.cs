@@ -17,7 +17,7 @@ public class CSharpEnumSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 
     public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is EnumDeclarationSyntax;
 
-    public override void Parse(MemberDeclarationSyntax syntax, SemanticModel model)
+    public override void Parse(TContext? parent, MemberDeclarationSyntax syntax, SemanticModel model)
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"Syntax type is not parsed yet: {syntax.GetType()}");
     }

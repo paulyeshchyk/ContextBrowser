@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
 using RoslynKit.Model;
 using RoslynKit.Semantic.Builder;
+using RoslynKit.Syntax.Parser.Extractor;
 
 namespace RoslynKit.Syntax.Parser;
 
@@ -15,10 +16,10 @@ public class CSharpTypeMethodSyntaxParser<TContext>
 {
     private RoslynCodeParserOptions _options;
     private OnWriteLog? _onWriteLog;
-    private MethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
+    private CSharpMethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
     private CSharpCommentTriviaSyntaxParser<TContext> _triviaCommentParser;
 
-    public CSharpTypeMethodSyntaxParser(MethodContextInfoBuilder<TContext> methodContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, RoslynCodeParserOptions options, OnWriteLog? onWriteLog)
+    public CSharpTypeMethodSyntaxParser(CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, RoslynCodeParserOptions options, OnWriteLog? onWriteLog)
     {
         _options = options;
         _onWriteLog = onWriteLog;
@@ -27,7 +28,7 @@ public class CSharpTypeMethodSyntaxParser<TContext>
     }
 
     //context: csharp, build
-    public void ParseMethodSyntax(MemberDeclarationSyntax availableSyntax, SemanticModel semanticModel, string nsName, TContext typeContext)
+    public void ParseMethodSyntax(MemberDeclarationSyntax availableSyntax, SemanticModel semanticModel, TContext typeContext)
     {
         if(availableSyntax is not TypeDeclarationSyntax typeSyntax)
         {
@@ -45,12 +46,38 @@ public class CSharpTypeMethodSyntaxParser<TContext>
             return;
         }
 
-        var buildItems = _methodContextInfoBuilder.BuildContextInfoForMethods(semanticModel, nsName, typeContext, methodDeclarationSyntaxies);
+        var buildItems = ParseMethodSyntax(typeContext, methodDeclarationSyntaxies, semanticModel);
 
         foreach(var item in buildItems)
         {
-            _triviaCommentParser.Parse(item.Item2, item.Item1);
+            _triviaCommentParser.Parse(item.Item1, item.Item2, semanticModel);
         }
+    }
+
+
+    public List<(TContext context, MethodDeclarationSyntax syntax)> ParseMethodSyntax(TContext parent, IEnumerable<MethodDeclarationSyntax> methods, SemanticModel semanticModel)
+    {
+        var result = new List<(TContext, MethodDeclarationSyntax)>();
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Iterating methods [{parent.Name}]", LogLevelNode.Start);
+
+        foreach(var method in methods)
+        {
+            var methodModel = CSharpMethodSyntaxExtractor.Extract(method, semanticModel);
+            if(methodModel == null)
+            {
+                _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Warn, $"[{parent.Name}]: Модель для метода не найдена [{method}]", LogLevelNode.Start);
+                continue;
+            }
+
+            var context = _methodContextInfoBuilder.BuildContextInfo(parent, method, semanticModel);
+            if(context != null)
+            {
+                result.Add((context, method));
+            }
+        }
+
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        return result;
     }
 }
 

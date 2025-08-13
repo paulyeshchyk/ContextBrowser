@@ -12,10 +12,10 @@ namespace RoslynKit.Syntax.Parser;
 public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly DelegateContextInfoBuilder<TContext> _delegateContextInfoBuilder;
+    private readonly CSharpDelegateContextInfoBuilder<TContext> _delegateContextInfoBuilder;
     private readonly CSharpCommentTriviaSyntaxParser<TContext> _triviaCommentParser;
 
-    public CSharpDelegateSyntaxParser(DelegateContextInfoBuilder<TContext> delegateContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, OnWriteLog? onWriteLog)
+    public CSharpDelegateSyntaxParser(CSharpDelegateContextInfoBuilder<TContext> delegateContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, OnWriteLog? onWriteLog)
         : base(onWriteLog)
     {
         _delegateContextInfoBuilder = delegateContextInfoBuilder;
@@ -25,7 +25,7 @@ public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is DelegateDeclarationSyntax;
 
     // context: csharp, build
-    public override void Parse(MemberDeclarationSyntax syntax, SemanticModel model)
+    public override void Parse(TContext? parent, MemberDeclarationSyntax syntax, SemanticModel model)
     {
         if(syntax is not DelegateDeclarationSyntax delegateSyntax)
         {
@@ -35,13 +35,13 @@ public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, $"Parsing files: phase 1 - delegate syntax");
 
-        var delegateContext = _delegateContextInfoBuilder.BuildContextInfoForDelegate(delegateSyntax, model);
+        var delegateContext = _delegateContextInfoBuilder.BuildContextInfo(default, delegateSyntax, model);
         if(delegateContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{delegateSyntax}\" was not resolved");
             return;
         }
 
-        _triviaCommentParser.Parse(delegateSyntax, delegateContext);
+        _triviaCommentParser.Parse(delegateContext, delegateSyntax, model);
     }
 }

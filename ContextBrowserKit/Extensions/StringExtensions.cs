@@ -24,4 +24,6 @@ public static class StringExtensions
             return string.Empty;
         return Regex.Replace(input, @"[^\p{L}\p{Nd}]", "_");
     }
+
+    public static string AlphanumericOnly(this string s, string replaceBy = "_") => Regex.Replace(s, "[^a-zA-Z0-9]", replaceBy);
 }

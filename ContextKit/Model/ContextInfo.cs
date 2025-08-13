@@ -8,7 +8,7 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public string Name { get; set; } = "unknown_context_info_name";
 
-    public string SymbolName { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
 
     public HashSet<string> Contexts { get; set; } = new();
 
@@ -50,7 +50,7 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public ISyntaxNodeInfo? SyntaxNode { get; set; }
 
-    public override int GetHashCode() => SymbolName.GetHashCode();
+    public override int GetHashCode() => FullName.GetHashCode();
 
-    public virtual bool Equals(ContextInfo? obj) => obj is ContextInfo other && SymbolName.Equals(other.SymbolName);
+    public virtual bool Equals(ContextInfo? obj) => obj is ContextInfo other && FullName.Equals(other.FullName);
 }

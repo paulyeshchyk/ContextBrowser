@@ -5,9 +5,9 @@ using ContextKit.Extensions;
 using ContextKit.Model;
 using ContextKit.Model.Service;
 using RoslynKit.Model;
-using RoslynKit.Parser.Phases;
-using RoslynKit.Phases.SymbolLookupHandler;
 using RoslynKit.Semantic.Builder;
+using RoslynKit.Syntax.Parser.LookupHandler;
+using RoslynKit.Syntax.Parser.Wrappers;
 
 namespace RoslynKit.Phases;
 
@@ -17,10 +17,10 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
 {
     private IContextCollector<TContext> _collector;
     private OnWriteLog? _onWriteLog;
-    private readonly MethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
-    private readonly TypeContextInfoBulder<TContext> _typeContextInfoBuilder;
+    private readonly CSharpMethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
+    private readonly CSharpTypeContextInfoBulder<TContext> _typeContextInfoBuilder;
 
-    public RoslynPhaseParserInvocationLinksBuilder(IContextCollector<TContext> collector, OnWriteLog? onWriteLog, MethodContextInfoBuilder<TContext> methodContextInfoBuilder, TypeContextInfoBulder<TContext> typeContextInfoBuilder)
+    public RoslynPhaseParserInvocationLinksBuilder(IContextCollector<TContext> collector, OnWriteLog? onWriteLog, CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder, CSharpTypeContextInfoBulder<TContext> typeContextInfoBuilder)
     {
         _collector = collector;
         _onWriteLog = onWriteLog;
@@ -29,12 +29,12 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
     }
 
     // context: csharp, update
-    public TContext? LinkInvocation(TContext callerContextInfo, InvocationSyntaxWrapper symbolDto, RoslynCodeParserOptions options)
+    public TContext? LinkInvocation(TContext callerContextInfo, CSharpInvocationSyntaxWrapper symbolDto, RoslynCodeParserOptions options)
     {
         var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, symbolDto, options);
-        if(calleeContextInfo == null)
+        if (calleeContextInfo == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] Linking invocation \ncaller: [{callerContextInfo.SymbolName}]\nwants:  [{symbolDto.FullName}]");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] Linking invocation \ncaller: [{callerContextInfo.FullName}]\nwants:  [{symbolDto.FullName}]");
             return default;
         }
 
@@ -42,14 +42,14 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking reference: [{callerContextInfo.GetDebugSymbolName()}] Reference [{calleeContextInfo.GetDebugSymbolName()}]");
         var addedReference = ContextInfoService.AddToReference(callerContextInfo, calleeContextInfo);
-        if(!addedReference)
+        if (!addedReference)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[FAIL] Linking reference: [{callerContextInfo.GetDebugSymbolName()}] Reference [{calleeContextInfo.GetDebugSymbolName()}]");
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking invokedBy: [{calleeContextInfo.GetDebugSymbolName()}] InvokedBy [{callerContextInfo.GetDebugSymbolName()}]");
         var addedInvokedBy = calleeContextInfo.InvokedBy.Add(callerContextInfo);
-        if(!addedInvokedBy)
+        if (!addedInvokedBy)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[FAIL] Linking invokedBy: [{callerContextInfo.GetDebugSymbolName()}] InvokedBy [{calleeContextInfo.GetDebugSymbolName()}]");
         }
@@ -61,7 +61,7 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
     }
 
     // Класс: RoslynPhaseParserInvocationLinksBuilder<TContext>
-    private TContext? FindOrCreateCalleeNode(TContext callerContextInfo, InvocationSyntaxWrapper symbolDto, RoslynCodeParserOptions options)
+    private TContext? FindOrCreateCalleeNode(TContext callerContextInfo, CSharpInvocationSyntaxWrapper symbolDto, RoslynCodeParserOptions options)
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Looking for callee by symbol [{symbolDto.FullName}]");
 

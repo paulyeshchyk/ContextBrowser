@@ -2,7 +2,7 @@
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using RoslynKit.Syntax.Parser.Comment;
+using RoslynKit.Basics.Comment;
 
 namespace RoslynKit.Phases.Validation;
 
@@ -22,9 +22,15 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
     }
 
     // context: csharp, contextInfo, build
-    public void Execute(string comment, T container)
+    public void Execute(T? container, string comment)
     {
-        _strategy.Execute(comment, container);
+        if(!(container != null && container is T))
+        {
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, "Comment container is null");
+            return;
+        }
+
+        _strategy.Execute(container, comment);
 
         if(string.IsNullOrEmpty(container.Action))
         {

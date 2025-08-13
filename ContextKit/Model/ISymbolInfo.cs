@@ -5,6 +5,10 @@ public interface ISymbolInfo
     string ToDisplayString();
 
     string GetShortestName();
+
+    string GetName();
+
+    string GetFullName();
 }
 
 

@@ -1,12 +1,12 @@
-﻿using ContextBrowserKit.Log;
+﻿using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using UmlKit.Diagrams;
-using UmlKit.Extensions;
+using UmlKit.Builders;
+using UmlKit.Builders.Model;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
-using UmlKit.Renderer.Builder;
-using UmlKit.Renderer.Model;
+using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Renderer;
 
@@ -14,10 +14,10 @@ public class SequenceRenderer<P>
     where P : IUmlParticipant
 {
     protected readonly OnWriteLog? _onWriteLog;
-    private readonly ContextTransitionDiagramBuilderOptions _options;
+    private readonly DiagramBuilderOptions _options;
     private readonly IUmlTransitionFactory<P> _factory;
 
-    public SequenceRenderer(ContextTransitionDiagramBuilderOptions options, OnWriteLog? onWriteLog, IUmlTransitionFactory<P> factory)
+    public SequenceRenderer(DiagramBuilderOptions options, OnWriteLog? onWriteLog, IUmlTransitionFactory<P> factory)
     {
         _options = options;
         _onWriteLog = onWriteLog;
@@ -246,8 +246,8 @@ public class SequenceRenderer<P>
     private static bool RenderDeactivateCallee<T>(RenderContext<T> ctx, string reason = "done")
         where T : IUmlParticipant
     {
-        string? from = ctx.Step1;
-        string? to = ctx.Caller;
+        var from = ctx.Step1;
+        var to = ctx.Caller;
 
         //ctx.Diagram.Activate(from, to, reason: reason, true);
 

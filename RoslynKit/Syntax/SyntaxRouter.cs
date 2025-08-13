@@ -33,7 +33,7 @@ public class SyntaxRouter<TContext>
                 continue;
             }
 
-            parser.Parse(syntax, model);
+            parser.Parse(default, syntax, model);
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);

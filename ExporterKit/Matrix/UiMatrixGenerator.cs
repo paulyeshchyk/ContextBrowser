@@ -8,19 +8,19 @@ namespace ExporterKit.Matrix;
 public static class UiMatrixGenerator
 {
     // context: build, matrix
-    public static UiMatrix Generate(IContextClassifier contextClassifier, Dictionary<ContextContainer, List<string>> matrix, MatrixOrientation matrixOrientation = MatrixOrientation.DomainRows, UnclassifiedPriority priority = UnclassifiedPriority.None)
+    public static UiMatrix Generate(IContextClassifier contextClassifier, Dictionary<ContextContainer, List<string>> matrix, MatrixOrientationType matrixOrientation = MatrixOrientationType.DomainRows, UnclassifiedPriorityType priority = UnclassifiedPriorityType.None)
     {
         var matrix2d = DoSort(contextClassifier, matrix, priority);
 
         return matrixOrientation switch
         {
-            MatrixOrientation.ActionRows => new UiMatrix() { cols = matrix2d.domains, rows = matrix2d.actions },
-            MatrixOrientation.DomainRows => new UiMatrix() { cols = matrix2d.actions, rows = matrix2d.domains },
+            MatrixOrientationType.ActionRows => new UiMatrix() { cols = matrix2d.domains, rows = matrix2d.actions },
+            MatrixOrientationType.DomainRows => new UiMatrix() { cols = matrix2d.actions, rows = matrix2d.domains },
             _ => throw new NotImplementedException()
         };
     }
 
-    private static Matrix2D DoSort(IContextClassifier contextClassifier, Dictionary<ContextContainer, List<string>> matrix, UnclassifiedPriority priority)
+    private static Matrix2D DoSort(IContextClassifier contextClassifier, Dictionary<ContextContainer, List<string>> matrix, UnclassifiedPriorityType priority)
     {
         var actions = matrix.Keys.Select(k => k.Action).Distinct().ToList();
         var domains = matrix.Keys.Select(k => k.Domain).Distinct().ToList();
@@ -32,15 +32,15 @@ public static class UiMatrixGenerator
     }
 
     // Вспомогательный метод SortList
-    private static List<string> SortList(List<string> list, string emptyValue, UnclassifiedPriority priority)
+    private static List<string> SortList(List<string> list, string emptyValue, UnclassifiedPriorityType priority)
     {
         return priority switch
         {
-            UnclassifiedPriority.Highest => list
+            UnclassifiedPriorityType.Highest => list
                 .OrderBy(v => v != emptyValue)
                 .ThenBy(v => v)
                 .ToList(),
-            UnclassifiedPriority.Lowest => list
+            UnclassifiedPriorityType.Lowest => list
                 .OrderBy(v => v == emptyValue)
                 .ThenBy(v => v)
                 .ToList(),

@@ -2,7 +2,7 @@
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Document.Coverage;
-using HtmlKit.Model;
+using HtmlKit.Options;
 using HtmlKit.Page;
 using HtmlKit.Writer;
 
@@ -12,7 +12,7 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
 {
     public Dictionary<string, ContextInfo> ContextsLookup { get; }
 
-    public HtmlTableOptions Options { get; }
+    private HtmlTableOptions _options { get; }
 
     public UiMatrix UiMatrix { get; }
 
@@ -26,7 +26,7 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
     {
         UiMatrix = uiMatrix;
         ContextsMatrix = matrix;
-        Options = options;
+        _options = options;
         ContextsLookup = contextLookup;
     }
 
@@ -41,11 +41,11 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
     {
         HtmlBuilderFactory.Table.With(tw,() =>
         {
-            new HtmlMatrixWriter(this)
+            new HtmlMatrixWriter(this, _options)
                 .WriteHeaderRow(tw)
-                .WriteSummaryRowIf(tw, SummaryPlacement.AfterFirst)
+                .WriteSummaryRowIf(tw, SummaryPlacementType.AfterFirst)
                 .WriteAllDataRows(tw)
-                .WriteSummaryRowIf(tw, SummaryPlacement.AfterLast);
+                .WriteSummaryRowIf(tw, SummaryPlacementType.AfterLast);
         });
     }
 

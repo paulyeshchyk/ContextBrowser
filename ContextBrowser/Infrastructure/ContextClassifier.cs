@@ -4,7 +4,7 @@ namespace ContextBrowser.Infrastructure;
 
 // context: model, ContextInfo
 // pattern: Strategy
-public class ContextClassifier : IContextClassifier
+public record ContextClassifier : IContextClassifier
 {
     public string EmptyAction { get; }
 
@@ -63,7 +63,6 @@ public class ContextClassifier : IContextClassifier
 
     public IEnumerable<string> GetCombinedVerbs(IEnumerable<string> verbs)
     {
-        // Используем LINQ, чтобы объединить списки без дубликатов
         return verbs
             .Union(StandardActions)
             .ToList();

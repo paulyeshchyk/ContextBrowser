@@ -1,4 +1,4 @@
-﻿using UmlKit.Renderer.Model;
+﻿using UmlKit.Builders.Model;
 
 namespace ExporterKit.DotDiagram;
 
