@@ -32,7 +32,7 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
     public TContext? LinkInvocation(TContext callerContextInfo, CSharpInvocationSyntaxWrapper symbolDto, RoslynCodeParserOptions options)
     {
         var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, symbolDto, options);
-        if (calleeContextInfo == null)
+        if(calleeContextInfo == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] Linking invocation \ncaller: [{callerContextInfo.FullName}]\nwants:  [{symbolDto.FullName}]");
             return default;
@@ -42,14 +42,14 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking reference: [{callerContextInfo.GetDebugSymbolName()}] Reference [{calleeContextInfo.GetDebugSymbolName()}]");
         var addedReference = ContextInfoService.AddToReference(callerContextInfo, calleeContextInfo);
-        if (!addedReference)
+        if(!addedReference)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[FAIL] Linking reference: [{callerContextInfo.GetDebugSymbolName()}] Reference [{calleeContextInfo.GetDebugSymbolName()}]");
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking invokedBy: [{calleeContextInfo.GetDebugSymbolName()}] InvokedBy [{callerContextInfo.GetDebugSymbolName()}]");
-        var addedInvokedBy = calleeContextInfo.InvokedBy.Add(callerContextInfo);
-        if (!addedInvokedBy)
+        var addedInvokedBy = ContextInfoService.AddToInvokedBy(callerContextInfo, calleeContextInfo);
+        if(!addedInvokedBy)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[FAIL] Linking invokedBy: [{callerContextInfo.GetDebugSymbolName()}] InvokedBy [{calleeContextInfo.GetDebugSymbolName()}]");
         }
@@ -67,7 +67,7 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext>
 
         var fullNameHandler = new FullNameLookupHandler<TContext>(_collector, _onWriteLog);
         var methodSymbolHandler = new MethodSymbolLookupHandler<TContext>(_collector, _onWriteLog);
-        var fakeNodeHandler = new FakeNodeCreationHandler<TContext>(_collector, _onWriteLog, options, _typeContextInfoBuilder, _methodContextInfoBuilder);
+        var fakeNodeHandler = new InvocationLookupHandler<TContext>(_collector, _onWriteLog, options, _typeContextInfoBuilder, _methodContextInfoBuilder);
 
         // Сначала FullName, затем MethodSymbol, затем FakeNode
         fullNameHandler

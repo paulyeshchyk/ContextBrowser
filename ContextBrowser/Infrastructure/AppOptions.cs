@@ -9,10 +9,11 @@ using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser.Infrastructure;
 
-// context: model, appoptions, app
+// context: model, appoptions
 public class AppOptions
 {
     [CommandLineArgument("log-config", "JSON configuration for log levels.")]
+    // context: build, appoptions
     public LogConfiguration<AppLevel, LogLevel> LogConfiguration { get; set; } = new()
     {
         LogLevels =
@@ -57,7 +58,7 @@ public class AppOptions
                 RoslynCodeParserMemberType.@class,
                 RoslynCodeParserMemberType.@interface,
                 RoslynCodeParserMemberType.@delegate,
-                //RoslynCodeParserMemberType.@record,
+                RoslynCodeParserMemberType.@record,
                 //RoslynCodeParserMemberType.@struct
             },
             externalNamespaceName: "ExternalNS",
@@ -86,10 +87,15 @@ public class AppOptions
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
                                         detailLevel: DiagramDetailLevel.Summary,
                                           direction: DiagramDirection.Outgoing,
-                                      useActivation: false,
-                                          useReturn: false,
-                                           useAsync: false,
-                            useSelfCallContinuation: false,
+                                      useActivation: true,
+                                      indication: new DiagramBuilderIndication(
+                                          useReturn: true,
+                                            useDone: true,
+                                           useAsync: true,
+                            useSelfCallContinuation: true,
+                                useCalleeInvocation: true,
+                                useCalleeActivation: true
+                                          ),
                 useContextTransitionTreeBuilderMode: DiagramBuilderOptions.TreeBuilderMode.FromParentToChild,
                                         diagramType: DiagramBuilderKeys.Transition);
 

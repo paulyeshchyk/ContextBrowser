@@ -1,5 +1,6 @@
 ﻿namespace UmlKit.Infrastructure.Options;
 
+// parsing: error
 public record DiagramBuilderOptions
 {
     public DiagramDetailLevel DetailLevel { get; set; }
@@ -8,11 +9,7 @@ public record DiagramBuilderOptions
 
     public bool UseActivation { get; set; }
 
-    public bool UseSelfCallContinuation { get; set; }
-
-    public bool UseReturn { get; set; }
-
-    public bool UseAsync { get; set; }
+    public DiagramBuilderIndication Indication { get; set; }
 
     public TreeBuilderMode Mode { get; set; }
 
@@ -22,18 +19,14 @@ public record DiagramBuilderOptions
         DiagramDetailLevel detailLevel,
         DiagramDirection direction,
         bool useActivation,
-        bool useReturn,
-        bool useAsync,
-        bool useSelfCallContinuation,
+        DiagramBuilderIndication indication,
         TreeBuilderMode useContextTransitionTreeBuilderMode,
         DiagramBuilderKeys diagramType)
     {
         DetailLevel = detailLevel;
         Direction = direction;
         UseActivation = useActivation;
-        UseReturn = useReturn;
-        UseAsync = useAsync;
-        UseSelfCallContinuation = useSelfCallContinuation;
+        Indication = indication;
         Mode = useContextTransitionTreeBuilderMode;
         DiagramType = diagramType;
     }
@@ -44,4 +37,29 @@ public record DiagramBuilderOptions
         FromChildToParent,
         BiDirectional
     }
+}
+
+public record DiagramBuilderIndication
+{
+    public DiagramBuilderIndication(bool useReturn, bool useDone, bool useAsync, bool useSelfCallContinuation, bool useCalleeInvocation, bool useCalleeActivation)
+    {
+        UseSelfCallContinuation = useSelfCallContinuation;
+        UseCalleeInvocation = useCalleeInvocation;
+        UseReturn = useReturn;
+        UseDone = useDone;
+        UseAsync = useAsync;
+        UseCalleeActivation = useCalleeActivation;
+    }
+
+    public bool UseSelfCallContinuation { get; set; }
+
+    public bool UseCalleeInvocation { get; set; }
+
+    public bool UseReturn { get; set; }
+
+    public bool UseDone { get; set; }
+
+    public bool UseAsync { get; set; }
+
+    public bool UseCalleeActivation { get; set; }
 }

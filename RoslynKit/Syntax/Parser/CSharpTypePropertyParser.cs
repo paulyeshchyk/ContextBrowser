@@ -16,6 +16,7 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
     private readonly CSharpRecordContextInfoBuilder<TContext> _recordSyntaxBuilder;
     private readonly CSharpTypeContextInfoBulder<TContext> _typeSyntaxBuilder;
     private readonly CSharpEnumContextInfoBuilder<TContext> _enumSyntaxBuilder;
+    private readonly CSharpInterfaceContextInfoBuilder<TContext> _interfaceSyntaxBuilder;
     private readonly IContextCollector<TContext> _collector;
 
     public CSharpTypePropertyParser(
@@ -25,6 +26,7 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
         CSharpTypeContextInfoBulder<TContext> typeSyntaxBuilder,
         CSharpRecordContextInfoBuilder<TContext> recordSyntaxBuilder,
         CSharpEnumContextInfoBuilder<TContext> enumSyntaxBuilder,
+        CSharpInterfaceContextInfoBuilder<TContext> interfaceSyntaxBuilder,
         OnWriteLog? onWriteLog)
         : base(onWriteLog)
     {
@@ -34,6 +36,7 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
         _typeSyntaxBuilder = typeSyntaxBuilder;
         _recordSyntaxBuilder = recordSyntaxBuilder;
         _enumSyntaxBuilder = enumSyntaxBuilder;
+        _interfaceSyntaxBuilder = interfaceSyntaxBuilder;
     }
 
     public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is PropertyDeclarationSyntax;
@@ -46,7 +49,7 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
             return;
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, $"Parsing files: phase 1 - property syntax");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - property syntax");
 
         //1.Создание контекста для самого свойства
         var propertyContext = _propertyContextInfoBuilder.BuildContextInfo(parent, propertySyntax, model);
@@ -55,6 +58,11 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, "Failed to build context for property.", LogLevelNode.End);
             return;
         }
+
+
+        parent?.Properties.Add(propertyContext);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"{parent?.Name}.{propertyContext.Name} added");
+
 
         // 2. Парсинг комментариев
         _triviaCommentParser.Parse(propertyContext, propertySyntax, model);
@@ -80,29 +88,37 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
             return;
         }
 
-        var typeDeclarationSyntax = typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+        var declarationSyntax = typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
 
-        if(typeDeclarationSyntax == null)
+        if(declarationSyntax == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"Symbol has no declared syntax: {typeSymbol} ");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[{typeSymbol}] Symbol has no declared syntax");
             return;
         }
 
-        if(typeDeclarationSyntax is ClassDeclarationSyntax tds)
+        if(declarationSyntax is ClassDeclarationSyntax tds)
         {
             _typeSyntaxBuilder.BuildContextInfo(default, tds, model);
         }
-        else if(typeDeclarationSyntax is RecordDeclarationSyntax rds)
+        else if(declarationSyntax is RecordDeclarationSyntax rds)
         {
             _recordSyntaxBuilder.BuildContextInfo(default, rds, model);
         }
-        else if(typeDeclarationSyntax is EnumDeclarationSyntax eds)
+        else if(declarationSyntax is EnumDeclarationSyntax eds)
         {
             _enumSyntaxBuilder.BuildContextInfo(default, eds, model);
         }
+        else if(declarationSyntax is InterfaceDeclarationSyntax ids)
+        {
+            _interfaceSyntaxBuilder.BuildContextInfo(default, ids, model);
+        }
+        else if(declarationSyntax is TypeParameterSyntax tps)
+        {
+            //skip
+        }
         else
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax was not parsed: {typeDeclarationSyntax} ");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax was not parsed: {declarationSyntax} ");
         }
     }
 }

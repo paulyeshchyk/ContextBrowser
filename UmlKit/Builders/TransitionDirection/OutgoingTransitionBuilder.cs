@@ -26,7 +26,7 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, "Iterating domain methods", LogLevelNode.Start);
         foreach(var ctx in domainMethods.OrderBy(m => m.SpanStart))
         {
-            var theKey = ctx.Uid;
+            var theKey = ctx.Identifier;
 
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Getting references for method [{ctx.Name}]", LogLevelNode.Start);
             var references = ContextInfoService.GetReferencesSortedByInvocation(ctx);
@@ -38,10 +38,13 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
                     continue;
                 }
                 var result = UmlTransitionDtoBuilder.CreateTransition(ctx, callee, _onWriteLog, theKey);
-                if(result != null)
+                if(result == null)
                 {
-                    resultList.Add((UmlTransitionDto)result, theKey.ToString());
+                    _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Err, "Объект UmlTransitionDto не создан");
+                    continue;
                 }
+
+                resultList.Add(result, theKey.ToString());
             }
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         }

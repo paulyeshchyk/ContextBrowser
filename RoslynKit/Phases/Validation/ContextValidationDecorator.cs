@@ -35,13 +35,13 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
         if(string.IsNullOrEmpty(container.Action))
         {
             container.Action = _contextClassifier.FakeAction;
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{container.Name}]: No action found");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{container.Name}]: No action found");
         }
 
         if(container.Domains.Count == 0)
         {
             container.Domains.Add(_contextClassifier.FakeDomain);
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{container.Name}]: No domains found");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{container.Name}]: No domains found");
         }
     }
 }

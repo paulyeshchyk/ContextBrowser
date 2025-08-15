@@ -1,11 +1,11 @@
 ﻿namespace LoggerKit.Model;
 
 // context: log, model
-public class LogConfigEntry<A, L>
-    where A : notnull
-    where L : notnull
+public class LogConfigEntry<TAppLevel, TLogLevel>
+    where TAppLevel : notnull
+    where TLogLevel : notnull
 {
-    public A? AppLevel { get; set; }
+    public TAppLevel? AppLevel { get; set; }
 
-    public L? LogLevel { get; set; }
+    public TLogLevel? LogLevel { get; set; }
 }

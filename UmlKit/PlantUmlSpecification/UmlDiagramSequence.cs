@@ -27,7 +27,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
     {
         var from = new UmlParticipant(name);
         var to = from;
-        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
+        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
         Add(selfTransition);
     }
 
@@ -35,16 +35,16 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
     {
         var from = new UmlParticipant(string.Empty);
         var to = new UmlParticipant(name);
-        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), methodName);
+        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), methodName);
         Add(selfTransition);
     }
 
     public override UmlParticipant AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if(string.IsNullOrWhiteSpace(name))
             throw new ArgumentNullException(nameof(name));
 
-        if (_participants.ContainsKey(name))
+        if(_participants.ContainsKey(name))
             return _participants[name];
 
         var result = new UmlParticipant(name, alias, keyword);
@@ -55,7 +55,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
 
     public override UmlDiagram<UmlParticipant> AddParticipant(UmlParticipant participant, string alias)
     {
-        if (participant is UmlParticipant p && !_participants.ContainsKey(p.Alias))
+        if(participant is UmlParticipant p && !_participants.ContainsKey(p.Alias))
         {
             _participants[p.Alias] = p;
             Add(p);
@@ -90,7 +90,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
 
     public override IUmlElement? Activate(string source, string destination, string reason, bool softActivation)
     {
-        if (!_options.UseActivation)
+        if(!_options.UseActivation)
             return null;
 
         var sourceParticipant = new UmlParticipant(source);
@@ -115,7 +115,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
 
     public override IUmlElement? Activate(IUmlDeclarable from, string reason, bool softActivation)
     {
-        if (!_options.UseActivation)
+        if(!_options.UseActivation)
             return null;
 
         //AddAnonymousCallContinuation(from.Alias);
@@ -128,7 +128,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
 
     public override IUmlElement? Deactivate(IUmlDeclarable from)
     {
-        if (!_options.UseActivation)
+        if(!_options.UseActivation)
             return null;
         var deact = new UmlDeactivate(from.Alias);
         _deactivations.Add(deact);
@@ -141,7 +141,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
         writer.WriteLine("autonumber");
 
         // Уже отсортировано при добавлении
-        foreach (var element in _elements.OrderBy(e => e.Key).Select(e => e.Value))
+        foreach(var element in _elements.OrderBy(e => e.Key).Select(e => e.Value))
         {
             element.WriteTo(writer);
         }

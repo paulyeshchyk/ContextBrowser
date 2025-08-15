@@ -1,7 +1,7 @@
 ﻿namespace ContextKit.Model;
 
 // coverage: 255
-// context: ContextInfo, model
+// context: ContextInfo, model, IContextWithReferences
 public record ContextInfo : IContextWithReferences<ContextInfo>
 {
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
@@ -14,21 +14,9 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public string Namespace { get; set; } = "Global";
 
-    private ContextInfo? _classOwner { get; set; }
+    public IContextInfo? ClassOwner { get; set; }
 
-    public ContextInfo? ClassOwner
-    {
-        get { return _classOwner; }
-        set { _classOwner = value; }
-    }
-
-    private ContextInfo? _methodOwner;
-
-    public ContextInfo? MethodOwner
-    {
-        get { return _methodOwner; }
-        set { _methodOwner = value; }
-    }
+    public IContextInfo? MethodOwner { get; set; }
 
     public string? Action { get; set; }
 
@@ -38,13 +26,15 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public HashSet<ContextInfo> InvokedBy { get; set; } = new();
 
+    public HashSet<ContextInfo> Properties { get; set; } = new();
+
     public Dictionary<string, string> Dimensions { get; set; } = new();
 
     public int SpanStart { get; set; } = 0;
 
     public int SpanEnd { get; set; } = 0;
 
-    public Guid Uid { get; } = Guid.NewGuid();
+    public string Identifier { get; } = Guid.NewGuid().ToString();
 
     public ISymbolInfo? Symbol { get; set; }
 
@@ -53,4 +43,19 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
     public override int GetHashCode() => FullName.GetHashCode();
 
     public virtual bool Equals(ContextInfo? obj) => obj is ContextInfo other && FullName.Equals(other.FullName);
+
+    public ContextInfo(ContextInfoElementType elementType, string identifier, string name, string fullName, string nameSpace, int spanStart, int spanEnd, ISymbolInfo? symbol, ISyntaxNodeInfo? syntaxNode, IContextInfo? classOwner, IContextInfo? methodOwner)
+    {
+        ElementType = elementType;
+        Identifier = identifier;
+        Name = name;
+        FullName = fullName;
+        Namespace = nameSpace;
+        SpanStart = spanStart;
+        SpanEnd = spanEnd;
+        Symbol = symbol;
+        SyntaxNode = syntaxNode;
+        ClassOwner = classOwner;
+        MethodOwner = methodOwner;
+    }
 }

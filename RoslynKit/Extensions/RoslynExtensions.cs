@@ -6,28 +6,6 @@ namespace RoslynKit.Extensions;
 // context: csharp, read
 public static class RoslynExtensions
 {
-    /// <summary>
-    /// Пример получения полного имени для NamedTypeDeclarationSyntax (Class, Struct, Interface, Record, Enum).
-    /// </summary>
-    // context: csharp, read
-    public static string? GetFullTypeName(this TypeDeclarationSyntax typeDeclaration, SemanticModel semanticModel)
-    {
-        if(typeDeclaration == null || semanticModel == null)
-        {
-            return null;
-        }
-
-        INamedTypeSymbol? typeSymbol = semanticModel.GetDeclaredSymbol(typeDeclaration) as INamedTypeSymbol;
-
-        if(typeSymbol == null)
-        {
-            return null;
-        }
-
-        // Получаем полное имя, включая пространство имен и вложенные типы
-        return typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-    }
-
     // Вспомогательный метод для получения NamespaceDeclarationSyntax
     // Может быть полезен, если вам нужно только имя пространства имен, а не полное имя символа
     // context: csharp, read

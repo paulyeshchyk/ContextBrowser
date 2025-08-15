@@ -3,8 +3,8 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Basics.ContextKit;
-using RoslynKit.Basics.Semantic;
 using RoslynKit.Extensions;
+using RoslynKit.Syntax.AssemblyLoader;
 using RoslynKit.Syntax.Parser.Wrappers;
 
 namespace RoslynKit.Semantic.Builder;
@@ -17,38 +17,30 @@ public class CSharpInterfaceContextInfoBuilder<TContext> : BaseContextInfoBuilde
     {
     }
 
-    protected override ISymInfoLoader BuildSymInfoDto(TContext? ownerContext, InterfaceDeclarationSyntax interfaceSyntax, SemanticModel model)
+    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, InterfaceDeclarationSyntax syntax, SemanticModel model)
     {
-        ISymbol? symbol = null;
-        try
-        {
-            symbol = model.GetDeclaredSymbol(interfaceSyntax);
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, CancellationToken.None);
 
-        var NodeInfo = new CSharpSyntaxNodeWrapper(interfaceSyntax);
-        var SymInfo = new CSharpISymbolWrapper(symbol);
+        var syntaxNodeWrap = new CSharpSyntaxNodeWrapper(syntax);
+        var symbolWrap = new CSharpISymbolWrapper(symbol);
 
-        var Namespace = interfaceSyntax.GetNamespaceName();
-        var SpanStart = interfaceSyntax.Span.Start;
-        var SpanEnd = interfaceSyntax.Span.End;
-        var Identifier = interfaceSyntax.GetDeclarationName();
+        var nameSpace = syntax.GetNamespaceName();
+        var spanStart = syntax.Span.Start;
+        var spanEnd = syntax.Span.End;
+        var identifier = syntax.GetDeclarationName();
 
-        string FullName;
-        string Name;
+        string fullName;
+        string name;
         if(symbol != null)
         {
-            FullName = symbol.ToDisplayString();
-            Name = SymInfo.GetName();
+            fullName = symbol.ToDisplayString();
+            name = symbolWrap.GetName();
         }
         else
         {
-            FullName = $"{Namespace}.{Identifier}";
-            Name = Identifier;
+            fullName = $"{nameSpace}.{identifier}";
+            name = identifier;
         }
-        return new SymInfoDto(ContextInfoElementType.@interface, FullName, Name, Namespace, Identifier, SpanStart, SpanEnd, SymInfo, NodeInfo);
+        return new ContextInfoDto(ContextInfoElementType.@interface, fullName, name, nameSpace, identifier, spanStart, spanEnd, symbol: symbolWrap, syntaxNode: syntaxNodeWrap);
     }
 }

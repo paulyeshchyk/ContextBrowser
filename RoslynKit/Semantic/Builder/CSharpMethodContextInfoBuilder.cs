@@ -3,8 +3,8 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Basics.ContextKit;
-using RoslynKit.Basics.Semantic;
 using RoslynKit.Extensions;
+using RoslynKit.Syntax.AssemblyLoader;
 using RoslynKit.Syntax.Parser.Wrappers;
 
 namespace RoslynKit.Semantic.Builder;
@@ -18,45 +18,48 @@ public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<T
     {
     }
 
-    public TContext? BuildContextInfo(TContext? ownerContext, CSharpMethodSyntaxWrapper wrapper)
+    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, MethodDeclarationSyntax syntax, SemanticModel model)
     {
-        var symInfo = wrapper.GetSymInfoDto();
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, CancellationToken.None);
 
-        return BuildContextInfo(ownerContext, symInfo);
-    }
+        var syntaxWrap = new CSharpSyntaxNodeWrapper(syntax);
+        var symbolWrap = new CSharpISymbolWrapper(symbol);
 
-    protected override ISymInfoLoader BuildSymInfoDto(TContext? ownerContext, MethodDeclarationSyntax syntaxNode, SemanticModel model)
-    {
-        ISymbol? symbol = null;
-        try
-        {
-            symbol = model.GetDeclaredSymbol(syntaxNode);
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
+        var nameSpace = syntax.GetNamespaceName();
+        var spanStart = syntax.Span.Start;
+        var spanEnd = syntax.Span.End;
+        var identifier = syntax.Identifier.Text;
 
-        var NodeInfo = new CSharpSyntaxNodeWrapper(syntaxNode);
-        var SymInfo = new CSharpISymbolWrapper(symbol);
-
-        var Name = SymInfo.GetName();
-        var Namespace = syntaxNode.GetNamespaceName();
-        var SpanStart = syntaxNode.Span.Start;
-        var SpanEnd = syntaxNode.Span.End;
-        var Identifier = syntaxNode.Identifier.Text;
-
-        string FullName;
+        string fullName;
+        string name;
         if(symbol != null)
         {
-            FullName = symbol.ToDisplayString();
-            Name = SymInfo.GetName();
+            fullName = symbol.ToDisplayString();
+            name = symbolWrap.GetName();
         }
         else
         {
-            FullName = $"{Namespace}.{Identifier}";
-            Name = Identifier;
+            fullName = $"{nameSpace}.{identifier}";
+            name = identifier;
         }
-        return new SymInfoDto(ContextInfoElementType.method, FullName, Name, Namespace, Identifier, SpanStart, SpanEnd, SymInfo, NodeInfo);
+        var result = new ContextInfoDto(ContextInfoElementType.method, fullName, name, nameSpace, identifier, spanStart, spanEnd, classOwner: ownerContext, symbol: symbolWrap, syntaxNode: syntaxWrap);
+
+        result.MethodOwner = result; // делаем себя же владельцем метода
+
+        return result;
+    }
+
+    public TContext? BuildInvocationContextInfo(TContext? ownerContext, CSharpMethodSyntaxWrapper wrapper)
+    {
+        var contextInfoDto = wrapper.GetContextInfoDto();
+        if(contextInfoDto == null)
+        {
+            return default;
+        }
+
+        contextInfoDto.ClassOwner = ownerContext;
+        contextInfoDto.MethodOwner = contextInfoDto;// делаем себя же владельцем метода
+
+        return BuildContextInfo(ownerContext, contextInfoDto);
     }
 }

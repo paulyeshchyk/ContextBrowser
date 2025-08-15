@@ -28,7 +28,7 @@ public class SequenceRenderer<P>
     {
         if(allTransitions == null || !allTransitions.HasTransitions())
         {
-            _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Err, $"No transitions provided for [{domain}]");
+            _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Warn, $"No transitions provided for [{domain}]");
             return false;
         }
 
@@ -166,7 +166,7 @@ public class SequenceRenderer<P>
 
         _ = RenderDeactivateCalleeInvocation(ctx);
 
-        _ = RenderDeactivateCallee(ctx);
+        _ = RenderDeactivateCallee(ctx, "done");
 
         _ = RenderDeactivateCaller(ctx);
     }
@@ -179,15 +179,17 @@ public class SequenceRenderer<P>
         string? to = ctx.Step1?.AlphanumericOnly();
         string? label = ctx.CalleeMethod;
 
-        //if (from?.Equals(to) ?? false)
-        //    ctx.Diagram.AddCallbreakNote(from);
 
+        if(!ctx.Options.Indication.UseCalleeActivation)
+        {
+            return true;
+        }
 
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Render CallerToStep1 transition [{from} -> {to}]:<{label}>");
 
         var fromParticipant = ctx.Diagram.AddParticipant(from);
         var toParticipant = ctx.Diagram.AddParticipant(to);
-        ctx.Diagram.AddTransition(fromParticipant, toParticipant, isAsync: ctx.Options.UseAsync, label);
+        ctx.Diagram.AddTransition(fromParticipant, toParticipant, isAsync: ctx.Options.Indication.UseAsync, label);
 
         ctx.Diagram.Activate(from, to, reason: "act1vate callee", true);
 
@@ -203,17 +205,22 @@ public class SequenceRenderer<P>
         string? from = ctx.Step1;
         string? to = ctx.Step2;
         string? label = ctx.CalleeMethod;
-
         if(string.IsNullOrWhiteSpace(to))
             return false;
 
+
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Render transition S1S2 [{from} -> {to}]:<{label}>");
 
-        ctx.Diagram.Activate(from, to, reason: "act1vate invocation", true);
+        if(ctx.Options.Indication.UseCalleeInvocation)
+        {
+            ctx.Diagram.Activate(from, to, reason: "act1vate invocation", true);
+        }
+
 
         var fromParticipant = ctx.Diagram.AddParticipant(from);
         var toParticipant = ctx.Diagram.AddParticipant(from);
-        ctx.Diagram.AddTransition(fromParticipant, toParticipant, isAsync: ctx.Options.UseAsync, label);
+
+        ctx.Diagram.AddTransition(fromParticipant, toParticipant, isAsync: ctx.Options.Indication.UseAsync, label);
         var pushed = TryActivate(ctx, source: from, destination: to, "Callee invocation");
         return pushed;
     }
@@ -229,33 +236,38 @@ public class SequenceRenderer<P>
             return false;
         }
 
-        ctx.Diagram.Activate(from, to, reason: "deact1vate invocation", true);
+        if(ctx.Options.Indication.UseCalleeInvocation)
+        {
+            ctx.Diagram.Activate(from, to, reason: "deact1vate invocation", true);
+        }
 
-        if(ctx.Options.UseReturn)
+
+        if(ctx.Options.Indication.UseReturn)
         {
             ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Render transition S2S1 [{from} -> {to}]:<return>");
             var fromParticipant = ctx.Diagram.AddParticipant(from);
             var toParticipant = ctx.Diagram.AddParticipant(from);
-            ctx.Diagram.AddTransition(fromParticipant, toParticipant, isAsync: ctx.Options.UseAsync, "return");
+            ctx.Diagram.AddTransition(fromParticipant, toParticipant, isAsync: ctx.Options.Indication.UseAsync, "return");
         }
 
         var poped = TryDeactivate(ctx, from);
         return poped;
     }
 
-    private static bool RenderDeactivateCallee<T>(RenderContext<T> ctx, string reason = "done")
+    private static bool RenderDeactivateCallee<T>(RenderContext<T> ctx, string reason)
         where T : IUmlParticipant
     {
         var from = ctx.Step1;
         var to = ctx.Caller;
+        if(ctx.Options.Indication.UseDone)
+        {
+            //ctx.Diagram.Activate(from, to, reason: reason, true);
 
-        //ctx.Diagram.Activate(from, to, reason: reason, true);
+            var fromParticipant = ctx.Diagram.AddParticipant(from);
+            var toParticipant = ctx.Diagram.AddParticipant(to);
 
-        var fromParticipant = ctx.Diagram.AddParticipant(from);
-        var toParticipant = ctx.Diagram.AddParticipant(to);
-
-        ctx.Diagram.AddTransition(fromParticipant, toParticipant, isAsync: ctx.Options.UseAsync, reason);
-
+            ctx.Diagram.AddTransition(fromParticipant, toParticipant, isAsync: ctx.Options.Indication.UseAsync, reason);
+        }
         var poped = TryDeactivate(ctx, from);
         return poped;
     }
@@ -264,6 +276,7 @@ public class SequenceRenderer<P>
         where T : IUmlParticipant
     {
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Adding paticipants for context: {ctx.RunContext}", LogLevelNode.Start);
+
         var participants = new[] { ctx.Transition.CallerClassName, ctx.Transition.CalleeClassName, ctx.Transition.RunContext }.Where(x => !string.IsNullOrWhiteSpace(x)).Select(s => s!);
         foreach(var p in participants)
         {
@@ -271,18 +284,19 @@ public class SequenceRenderer<P>
 
             ctx.Diagram.AddParticipant(p, keyword: defaultParticipantKeyword);
         }
+
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     private static bool RenderActivateCaller<T>(RenderContext<T> ctx)
         where T : IUmlParticipant
     {
-        if(ctx.Options.UseSelfCallContinuation)
+        if(ctx.Options.Indication.UseSelfCallContinuation)
         {
             ctx.Diagram.AddSelfCallContinuation(ctx.Caller, ctx.CallerMethod ?? "_unknown_caller_method");
         }
 
-        if(ctx.Options.UseSelfCallContinuation && ctx.Options.UseActivation)
+        if(ctx.Options.Indication.UseSelfCallContinuation && ctx.Options.UseActivation)
             ctx.Diagram.Activate(ctx.Caller, reason: string.Empty, softActivation: true);
 
         if(ctx.Options.UseActivation)

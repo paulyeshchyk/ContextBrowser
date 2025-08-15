@@ -50,33 +50,35 @@ public class RoslynPhaseParserDependenciesFactory<TContext>
             typeContextInfoBuilder,
             recordContextInfoBuilder,
             enumContextInfoBuilder,
+            interfaceContextInfoBuilder,
             _onWriteLog);
 
         var enumDeclarationParser = new CSharpEnumSyntaxParser<TContext>(_onWriteLog);
         var delegateDeclarationParser = new CSharpDelegateSyntaxParser<TContext>(delegateContextInfoBuilder, triviaCommentParser, _onWriteLog);
 
-        var methodSyntaxParser = new CSharpTypeMethodSyntaxParser<TContext>(methodContextInfoBuilder, triviaCommentParser, _options, _onWriteLog);
+        var methodSyntaxParser = new CSharpMethodSyntaxParser<TContext>(methodContextInfoBuilder, triviaCommentParser, _options, _onWriteLog);
 
         var interfaceDeclarationParser = new CSharpInterfaceSyntaxParser<TContext>(
             interfaceContextInfoBuilder,
+            propertyDeclarationParser,
             methodSyntaxParser,
             triviaCommentParser,
             _onWriteLog);
 
-        var typeDeclarationParser = new CSharpTypeSyntaxParser<TContext>(
+        var typeDeclarationParser = new CSharpTypeClassSyntaxParser<TContext>(
             _collector,
             typeContextInfoBuilder,
-            methodContextInfoBuilder,
             propertyDeclarationParser,
             methodSyntaxParser,
             triviaCommentParser,
             _options,
             _onWriteLog);
 
-        var recordDeclarationParser = new CSharpRecordSyntaxParser<TContext>(
+        var recordDeclarationParser = new CSharpTypeRecordSyntaxParser<TContext>(
             _collector,
             recordContextInfoBuilder,
             propertyDeclarationParser,
+            methodSyntaxParser,
             triviaCommentParser,
             _options,
             _onWriteLog);

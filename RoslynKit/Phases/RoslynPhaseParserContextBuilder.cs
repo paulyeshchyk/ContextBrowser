@@ -38,7 +38,7 @@ public class RoslynPhaseParserContextBuilder<TContext>
     public void ParseFiles(IEnumerable<string> codeFiles, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, "Parsing files: phase 1", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, "Parsing files: phase 1", LogLevelNode.Start);
 
         var models = _semanticModelBuilder.BuildModels(codeFiles, _options, cancellationToken);
         foreach (var (tree, model) in models)
@@ -46,12 +46,12 @@ public class RoslynPhaseParserContextBuilder<TContext>
             cancellationToken.ThrowIfCancellationRequested();
             ParseDeclarations(_options, tree, model, cancellationToken);
         }
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     private void ParseDeclarations(RoslynCodeParserOptions options, SyntaxTree tree, SemanticModel model, CancellationToken cancellationToken)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, $"Parsing files: phase 1 - {tree.FilePath}", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - {tree.FilePath}", LogLevelNode.Start);
 
         var root = tree.GetCompilationUnitRoot(cancellationToken);
         var availableSyntaxies = root.GetMemberDeclarationSyntaxies(options);
@@ -66,6 +66,6 @@ public class RoslynPhaseParserContextBuilder<TContext>
         }
 
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 }

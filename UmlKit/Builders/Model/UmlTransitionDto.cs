@@ -1,25 +1,8 @@
 ﻿namespace UmlKit.Builders.Model;
 
-public readonly record struct UmlTransitionDto
+// parsing: error
+public record UmlTransitionDto
 {
-    public UmlTransitionDto(string? callerId, string callerName, string callerClassName, string? callerMethod, string? calleeId, string calleeName, string calleeClassName, string? calleeMethod, string? domain, string? runContext, string? ownerClass, string? ownerMethod, Guid uid, Guid? parentUid)
-    {
-        Uid = uid;
-        ParentUid = parentUid;
-        CallerId = callerId;
-        CallerName = callerName;
-        CallerClassName = callerClassName;
-        CallerMethod = callerMethod;
-        CalleeId = calleeId;
-        CalleeName = calleeName;
-        CalleeClassName = calleeClassName;
-        CalleeMethod = calleeMethod;
-        Domain = domain;
-        RunContext = runContext;
-        OwnerClass = ownerClass;
-        OwnerMethod = ownerMethod;
-    }
-
     public string? CallerId { get; init; }
 
     public string CallerName { get; init; }
@@ -44,21 +27,38 @@ public readonly record struct UmlTransitionDto
 
     public string? OwnerMethod { get; init; }
 
-    public Guid Uid { get; init; }
+    public string Uid { get; init; }
 
-    public Guid? ParentUid { get; init; }
+    public string? ParentUid { get; init; }
 
+    public UmlTransitionDto(string? callerId, string callerName, string callerClassName, string? callerMethod, string? calleeId, string calleeName, string calleeClassName, string? calleeMethod, string? domain, string? runContext, string? ownerClass, string? ownerMethod, string uid, string? parentUid)
+    {
+        Uid = uid;
+        ParentUid = parentUid;
+        CallerId = callerId;
+        CallerName = callerName;
+        CallerClassName = callerClassName;
+        CallerMethod = callerMethod;
+        CalleeId = calleeId;
+        CalleeName = calleeName;
+        CalleeClassName = calleeClassName;
+        CalleeMethod = calleeMethod;
+        Domain = domain;
+        RunContext = runContext;
+        OwnerClass = ownerClass;
+        OwnerMethod = ownerMethod;
+    }
 
     public override int GetHashCode()
     {
         return HashCode.Combine(CallerId, CalleeId, Domain);
     }
 
-    public bool Equals(UmlTransitionDto other)
+    public virtual bool Equals(UmlTransitionDto? other)
     {
-        return string.Equals(CallerId, other.CallerId, StringComparison.OrdinalIgnoreCase) &&
-               string.Equals(CalleeId, other.CalleeId, StringComparison.OrdinalIgnoreCase) &&
-               string.Equals(Domain, other.Domain, StringComparison.OrdinalIgnoreCase);
+        return string.Equals(CallerId, other?.CallerId, StringComparison.OrdinalIgnoreCase) &&
+               string.Equals(CalleeId, other?.CalleeId, StringComparison.OrdinalIgnoreCase) &&
+               string.Equals(Domain, other?.Domain, StringComparison.OrdinalIgnoreCase);
     }
 }
 

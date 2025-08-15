@@ -3,6 +3,7 @@
 namespace HtmlKit.Options;
 
 // pattern: Configuration
+// parsing: error
 public record HtmlTableOptions
 {
     public SummaryPlacementType SummaryPlacement { get; set; }

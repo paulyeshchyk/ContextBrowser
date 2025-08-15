@@ -7,23 +7,23 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
 using RoslynKit.Model;
 using RoslynKit.Semantic.Builder;
+using RoslynKit.Syntax.AssemblyLoader;
 
 namespace RoslynKit.Syntax.Parser;
 
-public class CSharpTypeSyntaxParser<TContext> : BaseSyntaxParser<TContext>
+public class CSharpTypeClassSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private readonly CSharpTypeContextInfoBulder<TContext> _typeContextInfoBuilder;
     private readonly CSharpCommentTriviaSyntaxParser<TContext> _triviaCommentParser;
-    private readonly CSharpTypeMethodSyntaxParser<TContext> _methodSyntaxParser;
+    private readonly CSharpMethodSyntaxParser<TContext> _methodSyntaxParser;
     private readonly CSharpTypePropertyParser<TContext> _propertyDeclarationParser;
 
-    public CSharpTypeSyntaxParser(
+    public CSharpTypeClassSyntaxParser(
         IContextCollector<TContext> collector,
         CSharpTypeContextInfoBulder<TContext> typeContextInfoBuilder,
-        CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder,
         CSharpTypePropertyParser<TContext> propertyDeclarationParser,
-        CSharpTypeMethodSyntaxParser<TContext> methodSyntaxParser,
+        CSharpMethodSyntaxParser<TContext> methodSyntaxParser,
         CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser,
         RoslynCodeParserOptions options,
         OnWriteLog? onWriteLog) : base(onWriteLog)
@@ -40,14 +40,15 @@ public class CSharpTypeSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     {
         if(syntax is not ClassDeclarationSyntax typeSyntax)
         {
-            throw new ArgumentException($"Syntax ({nameof(syntax)}) is not TypeDeclarationSyntax");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax ({nameof(syntax)}) is not ClassDeclarationSyntax");
+            return;
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - type syntax");
 
-        var symbol = model.GetDeclaredSymbol(typeSyntax);
+        var symbol = CSharpSymbolLoader.LoadSymbol(typeSyntax, model, _onWriteLog, CancellationToken.None);
 
-        var typeContext = _typeContextInfoBuilder.BuildContextInfo(parent, syntax, model);
+        var typeContext = _typeContextInfoBuilder.BuildContextInfo(parent, typeSyntax, model);
         if(typeContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {typeSyntax.GetNamespaceName()}");

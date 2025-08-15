@@ -24,8 +24,8 @@ public static class CSharpAssemblyLoader
                                   .Select(path => MetadataReference.CreateFromFile(path))
                                   .ToList();
 
-        CSharpAssemblyReferencesBuilder.FetchAllLoadedAssemblies(references);
-        CSharpAssemblyReferencesBuilder.AddTrustedAssemblies(references);
+        CSharpAssemblyReferencesBuilder.FetchAllLoadedAssemblies(references, onWriteLog);
+        CSharpAssemblyReferencesBuilder.AddTrustedAssemblies(references, onWriteLog);
         return references;
     }
 

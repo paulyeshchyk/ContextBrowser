@@ -2,7 +2,6 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using RoslynKit.Basics.Semantic;
 
 namespace RoslynKit.Basics.ContextKit;
 
@@ -25,35 +24,26 @@ public class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticModel>
         _onWriteLog = onWriteLog;
     }
 
-    protected virtual ISymInfoLoader BuildSymInfoDto(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel)
+    protected virtual IContextInfo BuildContextInfoDto(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel)
     {
         throw new NotImplementedException();
     }
 
     public virtual TContext? BuildContextInfo(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel)
     {
-        var symInfo = BuildSymInfoDto(ownerContext, syntaxNode, semanticModel);
-        return BuildContextInfo(ownerContext, symInfo);
+        var dto = BuildContextInfoDto(ownerContext, syntaxNode, semanticModel);
+        return BuildContextInfo(ownerContext, dto);
     }
 
-    public virtual TContext? BuildContextInfo(TContext? ownerContext, ISymInfoLoader symInfoLoader)
+    public virtual TContext? BuildContextInfo(TContext? ownerContext, IContextInfo dto)
     {
-        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Creating method ContextInfo: {symInfoLoader.Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");
 
-        var result = _factory.Create(
-                  owner: ownerContext,
-            elementType: symInfoLoader.Kind,
-                 nsName: symInfoLoader.Namespace,
-                   name: symInfoLoader.Name,
-               fullName: symInfoLoader.FullName,
-             syntaxNode: symInfoLoader.NodeInfo,
-              spanStart: symInfoLoader.SpanStart,
-                spanEnd: symInfoLoader.SpanEnd,
-                 symbol: symInfoLoader.SymInfo);
+        var result = _factory.Create(contextInfo: dto);
 
         if(result == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Creating method ContextInfo failed {symInfoLoader.Name}");
+            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Creating method ContextInfo failed {dto.Name}");
             return default;
         }
 

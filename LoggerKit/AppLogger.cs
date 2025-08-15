@@ -62,6 +62,7 @@ public class AppLogger<T>
     }
 
     // context: log, build
+    // parsing: error
     public void WriteLog(T appLevel, LogLevel logLevel, string message, LogLevelNode logLevelNode = LogLevelNode.None)
     {
         var limitedByAppLevel = _appLogLevelStorage.GetLevel(appLevel);

@@ -1,3 +1,6 @@
+using ContextBrowserKit.Log;
+using ContextBrowserKit.Log.Options;
+using ContextBrowserKit.Options;
 using Microsoft.CodeAnalysis;
 
 namespace RoslynKit.Model.Storage;
@@ -5,14 +8,16 @@ namespace RoslynKit.Model.Storage;
 //context: csharp, read, create, update, delete
 public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<SyntaxTree, SemanticModel>
 {
+    private OnWriteLog? _onWriteLog;
     private readonly Dictionary<string, StorageTreeModelItem> _cache = new();
     private readonly LinkedList<string> _usageOrder = new();
     private readonly int _capacity;
     private readonly object _sync = new();
 
-    public CSharpSemanticTreeModelStorage(int capacity = 0)
+    public CSharpSemanticTreeModelStorage(int capacity, OnWriteLog? onWriteLog)
     {
         _capacity = capacity;
+        _onWriteLog = onWriteLog;
     }
 
     public bool IsInfinite => _capacity <= 0;
@@ -26,7 +31,7 @@ public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<SyntaxTree, 
         string filePath = tree.FilePath;
         if(string.IsNullOrWhiteSpace(filePath))
         {
-            Console.WriteLine($"[WARN] SyntaxTree has no file path; skipping storage");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, "[WARN] SyntaxTree has no file path; skipping storage");
             return;
         }
 
@@ -57,7 +62,7 @@ public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<SyntaxTree, 
     {
         if(tree == null || string.IsNullOrWhiteSpace(tree.FilePath))
         {
-            Console.WriteLine($"[WARN] SyntaxTree has no file path; skipping lookup");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, "[WARN] SyntaxTree has no file path; skipping lookup");
             return null;
         }
 

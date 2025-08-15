@@ -13,13 +13,20 @@ public class CSharpInterfaceSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 {
     private readonly CSharpInterfaceContextInfoBuilder<TContext> _interfaceContextInfoBuilder;
     private readonly CSharpCommentTriviaSyntaxParser<TContext> _triviaCommentParser;
-    private readonly CSharpTypeMethodSyntaxParser<TContext> _methodSyntaxParser;
+    private readonly CSharpTypePropertyParser<TContext> _propertyDeclarationParser;
+    private readonly CSharpMethodSyntaxParser<TContext> _methodSyntaxParser;
 
-    public CSharpInterfaceSyntaxParser(CSharpInterfaceContextInfoBuilder<TContext> interfaceContextInfoBuilder, CSharpTypeMethodSyntaxParser<TContext> methodSyntaxParser, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, OnWriteLog? onWriteLog)
+    public CSharpInterfaceSyntaxParser(
+        CSharpInterfaceContextInfoBuilder<TContext> interfaceContextInfoBuilder,
+        CSharpTypePropertyParser<TContext> propertyDeclarationParser,
+        CSharpMethodSyntaxParser<TContext> methodSyntaxParser,
+        CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser,
+        OnWriteLog? onWriteLog)
         : base(onWriteLog)
     {
         _interfaceContextInfoBuilder = interfaceContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
+        _propertyDeclarationParser = propertyDeclarationParser;
         _methodSyntaxParser = methodSyntaxParser;
     }
 
@@ -33,9 +40,8 @@ public class CSharpInterfaceSyntaxParser<TContext> : BaseSyntaxParser<TContext>
             return;
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, $"Parsing files: phase 1 - interface syntax");
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - interface syntax");
 
-        //TODO: do check parent
         var interfaceContext = _interfaceContextInfoBuilder.BuildContextInfo(default, interfaceSyntax, model);
         if(interfaceContext == null)
         {
@@ -43,14 +49,17 @@ public class CSharpInterfaceSyntaxParser<TContext> : BaseSyntaxParser<TContext>
             return;
         }
 
+
+        var propertySyntaxes = interfaceSyntax.Members.OfType<PropertyDeclarationSyntax>();
+        foreach(var propertySyntax in propertySyntaxes)
+        {
+            _propertyDeclarationParser.Parse(interfaceContext, propertySyntax, model);
+        }
+
         _triviaCommentParser.Parse(interfaceContext, interfaceSyntax, model);
 
         var methodSyntaxes = interfaceSyntax.Members.OfType<MethodDeclarationSyntax>();
 
         _methodSyntaxParser.ParseMethodSyntax(interfaceContext, methodSyntaxes, model);
-
-        // Дополнительно можно добавить парсинг свойств, событий и т.д.
-        // var propertySyntaxes = members.OfType<PropertyDeclarationSyntax>();
-        // var eventSyntaxes = members.OfType<EventDeclarationSyntax>();
     }
 }

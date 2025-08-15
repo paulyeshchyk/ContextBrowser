@@ -5,6 +5,7 @@ namespace UmlKit.PlantUmlSpecification;
 
 // context: model, uml
 // pattern: Template method
+// parsing: error
 public abstract class UmlDiagram<P>
     where P : IUmlParticipant
 {

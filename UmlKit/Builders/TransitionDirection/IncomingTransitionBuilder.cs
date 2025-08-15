@@ -39,7 +39,7 @@ public class IncomingTransitionBuilder : ITransitionBuilder
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] Building invoked by list for callee {callee.FullName}, no invoked by found");
         }
-        var theKey = callee.Uid;
+        var theKey = callee.Identifier;
         foreach(var caller in invokedByList)
         {
             if(caller.ElementType != ContextInfoElementType.method)

@@ -6,52 +6,52 @@ namespace LoggerKit.Model;
 public static class AppLoggerLevelStoreConfigurationLoader
 {
     // context: log, build
-    public static Dictionary<A, L> LoadConfigurationFile<A, L>(string filePath, L defaultValue)
-        where A : notnull
-        where L : notnull
+    public static Dictionary<TAppLevel, TLogLevel> LoadConfigurationFile<TAppLevel, TLogLevel>(string filePath, TLogLevel defaultValue)
+        where TAppLevel : notnull
+        where TLogLevel : notnull
     {
-        if(!File.Exists(filePath))
+        if (!File.Exists(filePath))
         {
-            var defaultConfig = new Dictionary<A, L>();
+            var defaultConfig = new Dictionary<TAppLevel, TLogLevel>();
             SetDefaultLogLevels(defaultConfig, defaultValue);
             return defaultConfig;
         }
 
         string jsonContent = File.ReadAllText(filePath);
-        var result = LoadConfigurationJson<A, L>(jsonContent, defaultValue);
+        var result = LoadConfigurationJson<TAppLevel, TLogLevel>(jsonContent, defaultValue);
         return result;
     }
 
     // context: log, build
-    public static Dictionary<A, L> LoadConfigurationJson<A, L>(string jsonContent, L defaultValue)
-        where A : notnull
-        where L : notnull
+    public static Dictionary<TAppLevel, TLogLevel> LoadConfigurationJson<TAppLevel, TLogLevel>(string jsonContent, TLogLevel defaultValue)
+        where TAppLevel : notnull
+        where TLogLevel : notnull
     {
         try
         {
-            var config = JsonSerializer.Deserialize<LogConfiguration<A, L>>(jsonContent, new JsonSerializerOptions
+            var config = JsonSerializer.Deserialize<LogConfiguration<TAppLevel, TLogLevel>>(jsonContent, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
             return LoadConfiguration(defaultValue, config);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            Console.WriteLine($"Ошибка десериализации конфигурации: {ex.Message}");
-            var defaultConfig = new Dictionary<A, L>();
+            Console.WriteLine($"[EXCEP][APP  ]Ошибка десериализации конфигурации: {ex.Message}");
+            var defaultConfig = new Dictionary<TAppLevel, TLogLevel>();
             SetDefaultLogLevels(defaultConfig, defaultValue);
             return defaultConfig;
         }
     }
 
     // context: log, build
-    public static Dictionary<A, L> LoadConfiguration<A, L>(L defaultValue, LogConfiguration<A, L>? config)
-        where A : notnull
-        where L : notnull
+    public static Dictionary<TAppLevel, TLogLevel> LoadConfiguration<TAppLevel, TLogLevel>(TLogLevel defaultValue, LogConfiguration<TAppLevel, TLogLevel>? config)
+        where TAppLevel : notnull
+        where TLogLevel : notnull
     {
-        if(config == null || config.LogLevels == null)
+        if (config == null || config.LogLevels == null)
         {
-            var defaultConfig = new Dictionary<A, L>();
+            var defaultConfig = new Dictionary<TAppLevel, TLogLevel>();
             SetDefaultLogLevels(defaultConfig, defaultValue);
             return defaultConfig;
         }
@@ -61,11 +61,11 @@ public static class AppLoggerLevelStoreConfigurationLoader
     }
 
     // context: log, build
-    public static Dictionary<A, L> LoadConfiguration<A, L>(LogConfiguration<A, L> data, L defaultValue)
-        where A : notnull
-        where L : notnull
+    public static Dictionary<TAppLevel, TLogLevel> LoadConfiguration<TAppLevel, TLogLevel>(LogConfiguration<TAppLevel, TLogLevel> data, TLogLevel defaultValue)
+        where TAppLevel : notnull
+        where TLogLevel : notnull
     {
-        var finalConfig = new Dictionary<A, L>();
+        var finalConfig = new Dictionary<TAppLevel, TLogLevel>();
 
         // Фильтруем записи с null, если они вдруг возникли
         var validEntries = data.LogLevels.Where(e => e.AppLevel != null && e.LogLevel != null);
@@ -74,7 +74,7 @@ public static class AppLoggerLevelStoreConfigurationLoader
         var groupedEntries = validEntries.GroupBy(e => e.AppLevel!)
                                          .ToDictionary(g => g.Key, g => g.Last().LogLevel!);
 
-        foreach(var entry in groupedEntries)
+        foreach (var entry in groupedEntries)
         {
             finalConfig[entry.Key] = entry.Value;
         }
@@ -84,16 +84,16 @@ public static class AppLoggerLevelStoreConfigurationLoader
     }
 
     // context: log, build
-    internal static void SetDefaultLogLevels<A, L>(Dictionary<A, L> config, L defaultValue)
-        where A : notnull
-        where L : notnull
+    internal static void SetDefaultLogLevels<TAppLevel, TLogLevel>(Dictionary<TAppLevel, TLogLevel> config, TLogLevel defaultValue)
+        where TAppLevel : notnull
+        where TLogLevel : notnull
     {
-        if(!typeof(A).IsEnum)
-            return; // Проверка, что A является enum
+        if (!typeof(TAppLevel).IsEnum)
+            return;
 
-        foreach(A appLevel in Enum.GetValues(typeof(A)))
+        foreach (TAppLevel appLevel in Enum.GetValues(typeof(TAppLevel)))
         {
-            if(!config.ContainsKey(appLevel))
+            if (!config.ContainsKey(appLevel))
             {
                 config[appLevel] = defaultValue;
             }

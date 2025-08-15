@@ -44,16 +44,15 @@ public class HtmlContextDimensionBuilder
         GenerateHtmlPages();
     }
 
-    // context: html, build
     internal void GenerateDomainDiagrams()
     {
-        foreach (var domain in _matrix.Select(k => k.Key.Domain).Distinct())
+        foreach(var domain in _matrix.Select(k => k.Key.Domain).Distinct())
         {
             CompileDomain(_contextClassifier, domain);
         }
     }
 
-    private void CompileDomain(IContextClassifier classifier, string domain)
+    internal void CompileDomain(IContextClassifier classifier, string domain)
     {
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling Domain [{domain}]", LogLevelNode.Start);
 
@@ -72,14 +71,13 @@ public class HtmlContextDimensionBuilder
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
     }
 
-    // context: html, build
     internal void GenerateHtmlPages()
     {
         var allActions = _matrix.Keys.Select(k => k.Action).Distinct();
         var allDomains = _matrix.Keys.Select(k => k.Domain).Distinct();
 
         // --- ACTIONS ---
-        foreach (var action in allActions)
+        foreach(var action in allActions)
         {
             var methods = _matrix
                 .Where(kvp => kvp.Key.Action == action)
@@ -90,7 +88,7 @@ public class HtmlContextDimensionBuilder
             string embeddedScript = string.Empty;
             string embeddedContent = string.Empty;
 
-            if (_renderedStateDomains.TryGetValue(action, out var rendered_sequence) && rendered_sequence == true)
+            if(_renderedStateDomains.TryGetValue(action, out var rendered_sequence) && rendered_sequence == true)
             {
                 var puml = PumlInjector.InjectDomainEmbeddedHtml(action, _outputDirectory);
                 embeddedScript = puml.EmbeddedScript;
@@ -101,33 +99,33 @@ public class HtmlContextDimensionBuilder
 
             using var writer = new StreamWriter(path, false, Encoding.UTF8);
 
-            HtmlBuilderFactory.Html.With(writer, () =>
+            HtmlBuilderFactory.Html.With(writer,() =>
             {
-                HtmlBuilderFactory.Head.With(writer, () =>
+                HtmlBuilderFactory.Head.With(writer,() =>
                 {
                     HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
                     HtmlBuilderFactory.Title.Cell(writer, $"Action: {action}");
                 });
 
-                HtmlBuilderFactory.Body.With(writer, () =>
+                HtmlBuilderFactory.Body.With(writer,() =>
                 {
                     HtmlBuilderFactory.H1.Cell(writer, $"Action: {action}");
                     HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methods.Count}");
 
-                    HtmlBuilderFactory.Ul.With(writer, () =>
+                    HtmlBuilderFactory.Ul.With(writer,() =>
                     {
-                        foreach (var method in methods)
+                        foreach(var method in methods)
                             HtmlBuilderFactory.Li.Cell(writer, method);
                     });
 
-                    if (!string.IsNullOrWhiteSpace(embeddedContent))
+                    if(!string.IsNullOrWhiteSpace(embeddedContent))
                         HtmlBuilderFactory.Raw.Cell(writer, embeddedContent);
                 });
             });
         }
 
         // --- DOMAINS ---
-        foreach (var domain in allDomains)
+        foreach(var domain in allDomains)
         {
             var methods = _matrix
                 .Where(kvp => kvp.Key.Domain == domain)
@@ -138,7 +136,7 @@ public class HtmlContextDimensionBuilder
             string embeddedScript = string.Empty;
             string embeddedContent = string.Empty;
 
-            if (_renderedSequenceDomains.TryGetValue(domain, out var rendered_sequence) && rendered_sequence == true)
+            if(_renderedSequenceDomains.TryGetValue(domain, out var rendered_sequence) && rendered_sequence == true)
             {
                 var puml = PumlInjector.InjectDomainEmbeddedHtml(domain, _outputDirectory);
                 embeddedScript = puml.EmbeddedScript;
@@ -149,29 +147,29 @@ public class HtmlContextDimensionBuilder
 
             using var writer = new StreamWriter(path, false, Encoding.UTF8);
 
-            HtmlBuilderFactory.Html.With(writer, () =>
+            HtmlBuilderFactory.Html.With(writer,() =>
             {
-                HtmlBuilderFactory.Head.With(writer, () =>
+                HtmlBuilderFactory.Head.With(writer,() =>
                 {
                     HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
                     HtmlBuilderFactory.Title.Cell(writer, $"Domain: {domain}");
 
-                    if (!string.IsNullOrWhiteSpace(embeddedScript))
+                    if(!string.IsNullOrWhiteSpace(embeddedScript))
                         HtmlBuilderFactory.Raw.Cell(writer, embeddedScript);
                 });
 
-                HtmlBuilderFactory.Body.With(writer, () =>
+                HtmlBuilderFactory.Body.With(writer,() =>
                 {
                     HtmlBuilderFactory.H1.Cell(writer, $"Domain: {domain}");
                     HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methods.Count}");
 
-                    HtmlBuilderFactory.Ul.With(writer, () =>
+                    HtmlBuilderFactory.Ul.With(writer,() =>
                     {
-                        foreach (var method in methods)
+                        foreach(var method in methods)
                             HtmlBuilderFactory.Li.Cell(writer, method);
                     });
 
-                    if (!string.IsNullOrWhiteSpace(embeddedContent))
+                    if(!string.IsNullOrWhiteSpace(embeddedContent))
                         HtmlBuilderFactory.Raw.Cell(writer, embeddedContent);
                 });
             });

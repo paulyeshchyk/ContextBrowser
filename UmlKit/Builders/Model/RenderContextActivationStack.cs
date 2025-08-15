@@ -4,6 +4,7 @@ using ContextBrowserKit.Options;
 
 namespace UmlKit.Builders.Model;
 
+// parsing: error
 public class RenderContextActivationStack : Stack<string>
 {
     private readonly OnWriteLog? _onWriteLog;

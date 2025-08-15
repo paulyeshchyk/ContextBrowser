@@ -17,7 +17,7 @@ using RoslynKit.Syntax.Parser.Invocation;
 
 namespace RoslynKit.Phases;
 
-// context: csharp, parser, directory, contextInfo, build
+// context: csharp, directory, contextInfo, build
 public sealed class RoslynContextParser
 {
     private const string TargetExtension = ".cs";
@@ -47,12 +47,12 @@ public sealed class RoslynContextParser
     // context: read, directory, csharp, contextInfo
     internal static List<ContextInfo> ParseFilesList(RoslynCodeParserOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, string[] files, CancellationToken cancellationToken)
     {
-        var semanticModelStorage = new CSharpSemanticTreeModelStorage();
+        var semanticModelStorage = new CSharpSemanticTreeModelStorage(0, onWriteLog);
 
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, "Parsing files", LogLevelNode.Start);
 
         var contextCollector = new ContextInfoCollector<ContextInfo>();
-        var modelBuilder = new CSharpSemanticTreeModelBuilder(semanticModelStorage);
+        var modelBuilder = new CSharpSemanticTreeModelBuilder(semanticModelStorage, onWriteLog);
 
         Phase1(options, contextClassifier, onWriteLog, files, semanticModelStorage, modelBuilder, contextCollector, cancellationToken);
 

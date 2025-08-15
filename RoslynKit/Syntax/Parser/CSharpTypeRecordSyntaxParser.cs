@@ -9,18 +9,20 @@ using RoslynKit.Semantic.Builder;
 
 namespace RoslynKit.Syntax.Parser;
 
-public class CSharpRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
+public class CSharpTypeRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private readonly CSharpRecordContextInfoBuilder<TContext> _recordContextInfoBuilder;
     private readonly RoslynCodeParserOptions _options;
     private readonly CSharpCommentTriviaSyntaxParser<TContext> _triviaCommentParser;
     private readonly CSharpTypePropertyParser<TContext> _propertyDeclarationParser;
+    private readonly CSharpMethodSyntaxParser<TContext> _methodSyntaxParser;
 
-    public CSharpRecordSyntaxParser(
+    public CSharpTypeRecordSyntaxParser(
         IContextCollector<TContext> collector,
         CSharpRecordContextInfoBuilder<TContext> typeContextInfoBuilder,
         CSharpTypePropertyParser<TContext> propertyDeclarationParser,
+        CSharpMethodSyntaxParser<TContext> methodSyntaxParser,
         CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser,
         RoslynCodeParserOptions options,
         OnWriteLog? onWriteLog) : base(onWriteLog)
@@ -29,6 +31,7 @@ public class CSharpRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         _options = options;
         _triviaCommentParser = triviaCommentParser;
         _propertyDeclarationParser = propertyDeclarationParser;
+        _methodSyntaxParser = methodSyntaxParser;
     }
 
     public override bool CanParse(MemberDeclarationSyntax syntax) => syntax is RecordDeclarationSyntax;
@@ -56,5 +59,7 @@ public class CSharpRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         }
 
         _triviaCommentParser.Parse(recordContext, recordSyntax, model);
+
+        _methodSyntaxParser.ParseMethodSyntax(recordSyntax, model, recordContext);
     }
 }

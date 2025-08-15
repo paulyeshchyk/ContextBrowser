@@ -10,7 +10,7 @@ using RoslynKit.Syntax.Parser.Wrappers;
 
 namespace RoslynKit.Syntax.Parser.LookupHandler;
 
-public class FakeNodeCreationHandler<TContext> : BaseSymbolLookupHandler<TContext, SyntaxNode, SemanticModel>
+public class InvocationLookupHandler<TContext> : BaseSymbolLookupHandler<TContext, SyntaxNode, SemanticModel>
     where TContext : ContextInfo, IContextWithReferences<TContext>
 {
     private readonly RoslynCodeParserOptions _options;
@@ -18,7 +18,7 @@ public class FakeNodeCreationHandler<TContext> : BaseSymbolLookupHandler<TContex
     private readonly CSharpMethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
     private readonly CSharpTypeContextInfoBulder<TContext> _typeContextInfoBuilder;
 
-    public FakeNodeCreationHandler(IContextCollector<TContext> collector, OnWriteLog? onWriteLog, RoslynCodeParserOptions options, CSharpTypeContextInfoBulder<TContext> typeContextInfoBuilder, CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder) : base(onWriteLog)
+    public InvocationLookupHandler(IContextCollector<TContext> collector, OnWriteLog? onWriteLog, RoslynCodeParserOptions options, CSharpTypeContextInfoBulder<TContext> typeContextInfoBuilder, CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder) : base(onWriteLog)
     {
         _options = options;
         _typeContextInfoBuilder = typeContextInfoBuilder;
@@ -54,7 +54,7 @@ public class FakeNodeCreationHandler<TContext> : BaseSymbolLookupHandler<TContex
 
 
         var methodmodel = new CSharpMethodSyntaxWrapper(symbol: symbolDto.Symbol, name: symbolDto.ShortName, symbolDto.SpanStart, symbolDto.SpanEnd, _options.ExternalNamespaceName);
-        var methodContext = _methodContextInfoBuilder.BuildContextInfo(typeContext, methodmodel);
+        var methodContext = _methodContextInfoBuilder.BuildInvocationContextInfo(typeContext, methodmodel);
 
         if(methodContext == null)
         {

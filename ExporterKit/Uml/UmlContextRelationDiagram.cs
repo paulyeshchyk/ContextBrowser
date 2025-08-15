@@ -16,7 +16,7 @@ public static class UmlContextRelationDiagram
 
         foreach (var (from, to) in links)
         {
-            diagram.Add(new UmlRelation(from, to, new UmlArrow(flowType: options.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync)));
+            diagram.Add(new UmlRelation(from, to, new UmlArrow(flowType: options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync)));
         }
 
         diagram.WriteToFile(outputPath);

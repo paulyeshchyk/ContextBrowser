@@ -4,6 +4,7 @@ namespace ContextBrowser.Infrastructure;
 
 // context: model, ContextInfo
 // pattern: Strategy
+// parsing: error
 public record ContextClassifier : IContextClassifier
 {
     public string EmptyAction { get; }

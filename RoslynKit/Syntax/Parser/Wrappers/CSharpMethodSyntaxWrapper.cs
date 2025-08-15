@@ -1,7 +1,6 @@
 using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Basics.Semantic;
 using RoslynKit.Extensions;
 
 namespace RoslynKit.Syntax.Parser.Wrappers;
@@ -47,8 +46,8 @@ public record CSharpMethodSyntaxWrapper
         Namespace = nameSpace;
     }
 
-    public ISymInfoLoader GetSymInfoDto()
+    public IContextInfo GetContextInfoDto()
     {
-        return new SymInfoDto(ContextInfoElementType.method, FullName, Name, Namespace, $"{FullName}", SpanStart, SpanEnd, null, null);
+        return new ContextInfoDto(ContextInfoElementType.method, FullName, Name, Namespace, $"{FullName}", SpanStart, SpanEnd, null, null);
     }
 }

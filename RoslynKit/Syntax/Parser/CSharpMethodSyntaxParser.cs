@@ -7,11 +7,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
 using RoslynKit.Model;
 using RoslynKit.Semantic.Builder;
-using RoslynKit.Syntax.Parser.Extractor;
+using RoslynKit.Syntax.AssemblyLoader;
+using RoslynKit.Syntax.Parser.Wrappers;
 
 namespace RoslynKit.Syntax.Parser;
 
-public class CSharpTypeMethodSyntaxParser<TContext>
+public class CSharpMethodSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private RoslynCodeParserOptions _options;
@@ -19,7 +20,7 @@ public class CSharpTypeMethodSyntaxParser<TContext>
     private CSharpMethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
     private CSharpCommentTriviaSyntaxParser<TContext> _triviaCommentParser;
 
-    public CSharpTypeMethodSyntaxParser(CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, RoslynCodeParserOptions options, OnWriteLog? onWriteLog)
+    public CSharpMethodSyntaxParser(CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, RoslynCodeParserOptions options, OnWriteLog? onWriteLog)
     {
         _options = options;
         _onWriteLog = onWriteLog;
@@ -62,7 +63,12 @@ public class CSharpTypeMethodSyntaxParser<TContext>
 
         foreach(var method in methods)
         {
-            var methodModel = CSharpMethodSyntaxExtractor.Extract(method, semanticModel);
+            if(method is not MethodDeclarationSyntax methodDeclaration)
+            {
+                _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"[{parent.Name}]: Списко методов содержит ПУСТОТУ");
+                continue;
+            }
+            var methodModel = BuildWrapper(method, semanticModel);
             if(methodModel == null)
             {
                 _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Warn, $"[{parent.Name}]: Модель для метода не найдена [{method}]", LogLevelNode.Start);
@@ -78,6 +84,17 @@ public class CSharpTypeMethodSyntaxParser<TContext>
 
         _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return result;
+    }
+
+    private CSharpMethodSyntaxWrapper? BuildWrapper(MethodDeclarationSyntax syntax, SemanticModel model)
+    {
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, CancellationToken.None);
+        if(symbol == null)
+        {
+            return default;
+        }
+
+        return new CSharpMethodSyntaxWrapper(symbol: symbol, syntax: syntax);
     }
 }
 

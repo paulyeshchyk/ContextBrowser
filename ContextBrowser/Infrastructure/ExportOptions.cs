@@ -1,5 +1,6 @@
 ﻿namespace ExporterKit.Options;
 
+// parsing: error
 public record ExportOptions
 {
     public ExportMatrixOptions ExportMatrix { get; set; }

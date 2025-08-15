@@ -12,7 +12,7 @@ public class UmlTransitionDtoBuilder
 {
     public const string SUnknownDomainName = "unknown";
 
-    public static UmlTransitionDto? CreateTransition(ContextInfo? caller, ContextInfo? callee, OnWriteLog? log, Guid? parentUid)
+    public static UmlTransitionDto? CreateTransition(ContextInfo? caller, ContextInfo? callee, OnWriteLog? log, string? parentUid)
     {
         // Метод -> Метод
         if(!(caller?.MethodOwner != null && callee?.MethodOwner != null))
@@ -24,7 +24,7 @@ public class UmlTransitionDtoBuilder
         return CreateTransitionFromMethodCall(caller, callee, log, parentUid);
     }
 
-    private static UmlTransitionDto CreateTransitionFromMethodCall(ContextInfo caller, ContextInfo callee, OnWriteLog? log, Guid? parentUid)
+    private static UmlTransitionDto CreateTransitionFromMethodCall(ContextInfo caller, ContextInfo callee, OnWriteLog? log, string? parentUid)
     {
         var callerInfo = ExtractParticipantInfo(caller);
         var calleeInfo = ExtractParticipantInfo(callee);
@@ -36,7 +36,7 @@ public class UmlTransitionDtoBuilder
         log?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[ADD] method call: {caller.GetDebugSymbolName()} -> {callee.GetDebugSymbolName()}");
 
         return new UmlTransitionDto(
-            uid: callee.Uid,
+            uid: callee.Identifier,
             parentUid: parentUid,
             callerId: callerInfo.Id,
             calleeId: calleeInfo.Id,

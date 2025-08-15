@@ -1,6 +1,6 @@
-﻿using ContextBrowserKit.Log.Options;
+﻿using ContextBrowserKit.Log;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using ContextBrowserKit.Log;
 
 namespace ContextBrowserKit.Extensions;
 
@@ -125,7 +125,7 @@ public static class FileUtils
     {
         if(!Directory.Exists(path))
         {
-            Console.WriteLine(string.Format(SFolderExistsTemplate, path));
+            onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SFolderExistsTemplate, path));
             return;
         }
 

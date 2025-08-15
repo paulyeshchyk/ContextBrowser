@@ -69,13 +69,10 @@ public class CSharpInvocationParser<TContext>
 
     public void ParseFiles(string[] filePaths, CancellationToken cancellationToken)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, $"Parsing files: phase 2", LogLevelNode.Start);
-
         foreach(var file in filePaths)
         {
             ParseFile(file, cancellationToken);
         }
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, string.Empty, LogLevelNode.End);
     }
 
     // context: csharp, read

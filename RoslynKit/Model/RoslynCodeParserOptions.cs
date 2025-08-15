@@ -33,6 +33,7 @@ public record RoslynCodeParserOptions
     }
 }
 
+// parsing: error
 public record RoslynOptions
 {
     public string SourcePath { get; set; }

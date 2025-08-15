@@ -48,7 +48,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         if(!methods.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[MISS] Fetch Не найдено методов для [{domainName}]");
+            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[MISS] Fetch Не найдено методов для [{domainName}]");
             return null;
         }
 
@@ -130,7 +130,7 @@ internal class ContextTransitionDiagramBuilderCache
     {
         if(result == null || !result.HasTransitions())
         {
-            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[CACHE] Nothing to cache for [{cacheKey}]");
+            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[CACHE] Nothing to cache for [{cacheKey}]");
             return;
         }
 

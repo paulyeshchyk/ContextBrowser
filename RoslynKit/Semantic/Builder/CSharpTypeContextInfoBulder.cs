@@ -3,8 +3,8 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Basics.ContextKit;
-using RoslynKit.Basics.Semantic;
 using RoslynKit.Extensions;
+using RoslynKit.Syntax.AssemblyLoader;
 using RoslynKit.Syntax.Parser.Wrappers;
 
 namespace RoslynKit.Semantic.Builder;
@@ -19,43 +19,35 @@ public class CSharpTypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TCon
 
     public TContext? BuildContextInfo(TContext? ownerContext, CSharpTypeSyntaxWrapper wrapper)
     {
-        var symInfo = wrapper.GetSymInfoDto();
+        var symInfo = wrapper.GetContextInfoDto();
 
         return BuildContextInfo(ownerContext, symInfo);
     }
 
-    protected override ISymInfoLoader BuildSymInfoDto(TContext? ownerContext, MemberDeclarationSyntax typeSyntax, SemanticModel model)
+    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, MemberDeclarationSyntax syntax, SemanticModel model)
     {
-        ISymbol? symbol = null;
-        try
-        {
-            symbol = model.GetDeclaredSymbol(typeSyntax);
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, CancellationToken.None);
 
-        var NodeInfo = new CSharpSyntaxNodeWrapper(typeSyntax);
-        var SymInfo = new CSharpISymbolWrapper(symbol);
+        var syntaxWrap = new CSharpSyntaxNodeWrapper(syntax);
+        var symbolWrap = new CSharpISymbolWrapper(symbol);
 
-        var Namespace = typeSyntax.GetNamespaceName();
-        var SpanStart = typeSyntax.Span.Start;
-        var SpanEnd = typeSyntax.Span.End;
-        var Identifier = typeSyntax.GetDeclarationName();
+        var nameSpace = syntax.GetNamespaceName();
+        var spanStart = syntax.Span.Start;
+        var spanEnd = syntax.Span.End;
+        var identifier = syntax.GetDeclarationName();
 
-        string FullName;
-        string Name;
-        if(symbol != null)
+        string fullName;
+        string name;
+        if (symbol != null)
         {
-            FullName = symbol.ToDisplayString();
-            Name = SymInfo.GetName();
+            fullName = symbol.ToDisplayString();
+            name = symbolWrap.GetName();
         }
         else
         {
-            FullName = $"{Namespace}.{Identifier}";
-            Name = Identifier;
+            fullName = $"{nameSpace}.{identifier}";
+            name = identifier;
         }
-        return new SymInfoDto(ContextInfoElementType.@class, FullName, Name, Namespace, Identifier, SpanStart, SpanEnd, SymInfo, NodeInfo);
+        return new ContextInfoDto(ContextInfoElementType.@class, fullName, name, nameSpace, identifier, spanStart, spanEnd, symbol: symbolWrap, syntaxNode: syntaxWrap);
     }
 }

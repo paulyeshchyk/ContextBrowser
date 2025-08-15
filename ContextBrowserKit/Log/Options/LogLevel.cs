@@ -8,6 +8,8 @@ public enum LogLevel
 {
     None,
     Cntx,
+    Exception,
+    VIP,
     Err,
     Warn,
     Dbg,

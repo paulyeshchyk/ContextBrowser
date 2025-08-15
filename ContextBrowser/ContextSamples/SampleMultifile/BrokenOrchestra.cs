@@ -5,7 +5,7 @@ public class BrokenOrchestra
 {
     public readonly BrokenContextReader Reader = new BrokenContextReader();
 
-    // context: validate, test.broken
+    // context: build, test.broken
     public bool ValidateInput(string raw)
     {
         return !string.IsNullOrWhiteSpace(raw);

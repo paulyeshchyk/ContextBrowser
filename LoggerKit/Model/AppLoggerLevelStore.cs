@@ -3,32 +3,32 @@
 namespace LoggerKit.Model;
 
 // context: log, share
-public class AppLoggerLevelStore<T>
-    where T : notnull
+public class AppLoggerLevelStore<TAppLevel>
+    where TAppLevel : notnull
 {
-    private readonly Dictionary<T, LogLevel> _levels = new();
+    private readonly Dictionary<TAppLevel, LogLevel> _levels = new();
 
     // Объект для синхронизации доступа к словарю из разных потоков.
     private readonly object _lock = new();
 
     // context: log, update
-    public void SetLevel(T sectionId, LogLevel level)
+    public void SetLevel(TAppLevel sectionId, LogLevel level)
     {
-        lock(_lock)
+        lock (_lock)
         {
             _levels[sectionId] = level;
         }
     }
 
-    public void SetLevels(List<LogConfigEntry<T, LogLevel>> newLevels)
+    public void SetLevels(List<LogConfigEntry<TAppLevel, LogLevel>> newLevels)
     {
-        lock(_lock)
+        lock (_lock)
         {
             _levels.Clear();
 
-            foreach(var entry in newLevels)
+            foreach (var entry in newLevels)
             {
-                if(entry.AppLevel is T appLevel)
+                if (entry.AppLevel is TAppLevel appLevel)
                 {
                     _levels[appLevel] = entry.LogLevel;
                 }
@@ -37,18 +37,18 @@ public class AppLoggerLevelStore<T>
     }
 
     // context: log, update
-    public void SetLevels(Dictionary<T, LogLevel> newLevels)
+    public void SetLevels(Dictionary<TAppLevel, LogLevel> newLevels)
     {
-        if(newLevels == null)
+        if (newLevels == null)
         {
             return;
         }
 
-        lock(_lock)
+        lock (_lock)
         {
             _levels.Clear();
 
-            foreach(var entry in newLevels)
+            foreach (var entry in newLevels)
             {
                 _levels[entry.Key] = entry.Value;
             }
@@ -56,27 +56,27 @@ public class AppLoggerLevelStore<T>
     }
 
     // context: log, read
-    public LogLevel GetLevel(T sectionId)
+    public LogLevel GetLevel(TAppLevel sectionId)
     {
-        lock(_lock)
+        lock (_lock)
         {
             return _levels.TryGetValue(sectionId, out var level) ? level : LogLevel.None;
         }
     }
 
     // context: log, read
-    public void LoadFromDictionary(Dictionary<T, LogLevel> newLevels)
+    public void LoadFromDictionary(Dictionary<TAppLevel, LogLevel> newLevels)
     {
-        if(newLevels == null)
+        if (newLevels == null)
         {
             return;
         }
 
-        lock(_lock)
+        lock (_lock)
         {
             _levels.Clear();
 
-            foreach(var entry in newLevels)
+            foreach (var entry in newLevels)
             {
                 _levels[entry.Key] = entry.Value;
             }
