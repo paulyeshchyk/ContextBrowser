@@ -11,7 +11,7 @@ using UmlKit.Builders;
 using UmlKit.Builders.TransitionFactory;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
-using UmlKit.Renderer;
+using UmlKit.Renderer.Sequence;
 
 namespace ExporterKit.HtmlPageSamples;
 
@@ -62,7 +62,7 @@ public class HtmlContextDimensionBuilder
         _renderedSequenceDomains[domain] = rendered_sequence;
 
         var _factory = new UmlTransitionStateFactory();
-        var _renderer = new SequenceRenderer<UmlState>(_options, _onWriteLog, _factory);
+        var _renderer = new SequenceDiagramGenerator<UmlState>(_options, _onWriteLog, _factory);
         var bf2 = ContextDiagramFactory.Custom(_options.DiagramType, _options, _onWriteLog);
         var diagramCompilerState = new StateDiagramCompiler(classifier, _options, bf2, _outputDirectory, _renderer, _onWriteLog);
         var rendered_state = diagramCompilerState.Compile(domain, _allContexts);

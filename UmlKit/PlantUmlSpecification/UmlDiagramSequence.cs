@@ -35,7 +35,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
     {
         var from = new UmlParticipant(string.Empty);
         var to = new UmlParticipant(name);
-        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), methodName);
+        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), $"{methodName} - SelfC");
         Add(selfTransition);
     }
 

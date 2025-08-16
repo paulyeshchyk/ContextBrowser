@@ -7,7 +7,7 @@ using UmlKit.Builders.TransitionFactory;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
-using UmlKit.Renderer;
+using UmlKit.Renderer.Sequence;
 
 namespace ContextBrowser.Infrastructure.Compiler;
 
@@ -69,10 +69,10 @@ public class SequenceDiagramCompiler
 
         // Используем рендерер для отрисовки переходов
         var _factory = new UmlTransitionParticipantFactory();
-        var _renderer = new SequenceRenderer<UmlParticipant>(_options, _onWriteLog, _factory);
+        var _renderer = new SequenceDiagramGenerator<UmlParticipant>(_options, _onWriteLog, _factory);
         var result = _renderer.RenderDiagramTransitions(diagram, transitions, domain);
 
-        if (result)
+        if(result)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
             var path = Path.Combine(_outputPath, $"sequence_domain_{domain}.puml");

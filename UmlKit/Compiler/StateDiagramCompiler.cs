@@ -6,7 +6,7 @@ using UmlKit.Builders;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
-using UmlKit.Renderer;
+using UmlKit.Renderer.Sequence;
 
 namespace ContextBrowser.Infrastructure.Compiler;
 
@@ -17,7 +17,7 @@ public class StateDiagramCompiler
     private readonly DiagramBuilderOptions _options;
     private readonly IContextDiagramBuilder _builder;
     private readonly string _outputDirectory;
-    private readonly SequenceRenderer<UmlState> _renderer;
+    private readonly SequenceDiagramGenerator<UmlState> _renderer;
     private readonly OnWriteLog? _onWriteLog;
 
     /// <summary>
@@ -34,7 +34,7 @@ public class StateDiagramCompiler
         DiagramBuilderOptions options,
         IContextDiagramBuilder builder,
         string outputDirectory,
-        SequenceRenderer<UmlState> renderer,
+        SequenceDiagramGenerator<UmlState> renderer,
         OnWriteLog? onWriteLog)
     {
         _classifier = classifier;
@@ -65,7 +65,7 @@ public class StateDiagramCompiler
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Render domain [{domain}]", LogLevelNode.Start);
         var rendered = _renderer.RenderDiagramTransitions(diagram, transitions, domain);
 
-        if (rendered)
+        if(rendered)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
             var path = Path.Combine(_outputDirectory, $"state_domain_{domain}.puml");

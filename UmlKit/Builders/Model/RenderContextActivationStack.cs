@@ -15,7 +15,7 @@ public class RenderContextActivationStack : Stack<string>
 
     public void TryPush(string? value)
     {
-        if(string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
             _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, "[PUSH_FAIL]: item is empty");
             return;
@@ -25,10 +25,10 @@ public class RenderContextActivationStack : Stack<string>
         Push(value);
     }
 
-    public bool TryPeek2(out string? result)
+    public bool TryPeekThenLog(out string? result)
     {
         var isSuccess = TryPeek(out result);
-        if(isSuccess)
+        if (isSuccess)
         {
             _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"[PEEK_OK]: {result}");
         }

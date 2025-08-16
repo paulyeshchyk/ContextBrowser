@@ -19,15 +19,15 @@ public static class UmlContextMethodsOnlyDiagram
 
         var diagram = new UmlDiagramClasses(options);
 
-        foreach (var method in methods)
+        foreach(var method in methods)
             diagram.Add(new UmlComponent(method.Name));
 
-        foreach (var method in methods)
+        foreach(var method in methods)
         {
             var references = ContextInfoService.GetReferencesSortedByInvocation(method);
-            foreach (var callee in references)
+            foreach(var callee in references)
             {
-                if (methods.Any(m => m.Name == callee.Name))
+                if(methods.Any(m => m.Name == callee.Name))
                     diagram.Add(new UmlTransitionState(new UmlState(method.Name ?? "<unknown method>", null), new UmlState(callee?.Name ?? "<unknown callee>", null), new UmlArrow()));
             }
         }

@@ -45,7 +45,7 @@ public static class Program
 
         var contextBuilderModel = ContextModelBuildBuilder.Build(options.Roslyn, options.Export.ExportMatrix, options.Classifier, appLogger.WriteLog, CancellationToken.None);
 
-        ExtraDiagramsBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
+        //ExtraDiagramsBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
 
         ComponentDiagram.Build(contextBuilderModel, options, appLogger.WriteLog);
 

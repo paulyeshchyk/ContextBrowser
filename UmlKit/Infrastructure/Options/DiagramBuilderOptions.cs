@@ -3,6 +3,8 @@
 // parsing: error
 public record DiagramBuilderOptions
 {
+    public bool Debug { get; set; }
+
     public DiagramDetailLevel DetailLevel { get; set; }
 
     public DiagramDirection Direction { get; set; }
@@ -16,6 +18,7 @@ public record DiagramBuilderOptions
     public DiagramBuilderKeys DiagramType { get; set; }
 
     public DiagramBuilderOptions(
+        bool debug,
         DiagramDetailLevel detailLevel,
         DiagramDirection direction,
         bool useActivation,
@@ -29,6 +32,7 @@ public record DiagramBuilderOptions
         Indication = indication;
         Mode = useContextTransitionTreeBuilderMode;
         DiagramType = diagramType;
+        Debug = debug;
     }
 
     public enum TreeBuilderMode
@@ -41,16 +45,6 @@ public record DiagramBuilderOptions
 
 public record DiagramBuilderIndication
 {
-    public DiagramBuilderIndication(bool useReturn, bool useDone, bool useAsync, bool useSelfCallContinuation, bool useCalleeInvocation, bool useCalleeActivation)
-    {
-        UseSelfCallContinuation = useSelfCallContinuation;
-        UseCalleeInvocation = useCalleeInvocation;
-        UseReturn = useReturn;
-        UseDone = useDone;
-        UseAsync = useAsync;
-        UseCalleeActivation = useCalleeActivation;
-    }
-
     public bool UseSelfCallContinuation { get; set; }
 
     public bool UseCalleeInvocation { get; set; }
@@ -62,4 +56,17 @@ public record DiagramBuilderIndication
     public bool UseAsync { get; set; }
 
     public bool UseCalleeActivation { get; set; }
+
+    public bool PushAnnotation { get; set; }
+
+    public DiagramBuilderIndication(bool useReturn, bool useDone, bool useAsync, bool useSelfCallContinuation, bool useCalleeInvocation, bool useCalleeActivation, bool pushAnnotation)
+    {
+        UseSelfCallContinuation = useSelfCallContinuation;
+        UseCalleeInvocation = useCalleeInvocation;
+        UseReturn = useReturn;
+        UseDone = useDone;
+        UseAsync = useAsync;
+        UseCalleeActivation = useCalleeActivation;
+        PushAnnotation = pushAnnotation;
+    }
 }

@@ -52,7 +52,7 @@ public class ReferenceBuilderValidator<TContext, TInvocationExpressionSyntax>
             return null;
         }
 
-        var canRaiseNoInvocationError = !(callerContext.ClassOwner?.ElementType == ContextInfoElementType.@class || callerContext.ClassOwner?.ElementType == ContextInfoElementType.@interface);
+        var canRaiseNoInvocationError = !(callerContext.ClassOwner?.ElementType == ContextInfoElementType.@class || callerContext.ClassOwner?.ElementType == ContextInfoElementType.@interface || callerContext.ClassOwner?.ElementType == ContextInfoElementType.@record);
         var invocationList = callerSyntaxNode.DescendantNodes<TInvocationExpressionSyntax>();
         if(!invocationList.Any() && canRaiseNoInvocationError)
         {

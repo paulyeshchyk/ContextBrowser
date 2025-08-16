@@ -32,10 +32,10 @@ public class AppOptions
     [CommandLineArgument("roslyn-options", "The source code path.")]
     public RoslynOptions Roslyn { get; set; } = new(
 
-    //".\\..\\..\\..\\..\\"
+    //".\\..\\..\\..\\..\\ContextBrowser\\Program.cs"
     //".\\..\\..\\..\\..\\ContextBrowser\\ContextSamples\\Orchestra\\FourContextsSample.cs"
     //".\\..\\..\\..\\..\\ContextBrowser\\ContextSamples\\AlphaClass.cs";
-        sourcePath: ".\\..\\..\\..\\..\\",
+        sourcePath: ".\\..\\..\\..\\..\\ContextBrowser\\ContextSamples\\Orchestra\\FourContextsSample.cs",
         roslynCodeParser: new(
 
             methodModifierTypes: new()
@@ -85,16 +85,19 @@ public class AppOptions
 
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
+                                              debug: true,
                                         detailLevel: DiagramDetailLevel.Summary,
                                           direction: DiagramDirection.Outgoing,
                                       useActivation: true,
                                       indication: new DiagramBuilderIndication(
                                           useReturn: true,
-                                            useDone: true,
                                            useAsync: true,
                             useSelfCallContinuation: true,
+                                useCalleeActivation: true,
+
                                 useCalleeInvocation: true,
-                                useCalleeActivation: true
+                                            useDone: true,
+                                pushAnnotation: false
                                           ),
                 useContextTransitionTreeBuilderMode: DiagramBuilderOptions.TreeBuilderMode.FromParentToChild,
                                         diagramType: DiagramBuilderKeys.Transition);
