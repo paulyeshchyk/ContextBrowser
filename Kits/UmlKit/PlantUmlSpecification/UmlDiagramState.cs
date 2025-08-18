@@ -11,7 +11,7 @@ public class UmlDiagramState : UmlDiagram<UmlState>
     private readonly HashSet<UmlState> _states = new();
     private readonly HashSet<UmlTransitionState> _transitions = new();
 
-    public UmlDiagramState(DiagramBuilderOptions options) : base(options)
+    public UmlDiagramState(DiagramBuilderOptions options, string diagramId) : base(options, diagramId)
     {
     }
 

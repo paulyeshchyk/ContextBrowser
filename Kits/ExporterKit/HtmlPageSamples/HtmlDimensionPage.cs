@@ -4,6 +4,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Matrix;
 using ExporterKit.Puml;
 using HtmlKit.Builders.Core;
 using HtmlKit.Page;
@@ -20,7 +21,7 @@ namespace ExporterKit.HtmlPageSamples;
 // context: html, build
 public class HtmlContextDimensionBuilder
 {
-    private readonly Dictionary<ContextContainer, List<string>> _matrix;
+    private readonly IContextInfoMatrix _matrix;
     private readonly List<ContextInfo> _allContexts;
     private readonly ExportOptions _exportOptions;
     private readonly DiagramBuilderOptions _options;
@@ -29,7 +30,7 @@ public class HtmlContextDimensionBuilder
     private Dictionary<string, bool> _renderedStateDomains = new Dictionary<string, bool>();
     private IContextClassifier _contextClassifier;
 
-    public HtmlContextDimensionBuilder(Dictionary<ContextContainer, List<string>> matrix, List<ContextInfo> allContexts, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options, OnWriteLog? onWriteLog)
+    public HtmlContextDimensionBuilder(IContextInfoMatrix matrix, List<ContextInfo> allContexts, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options, OnWriteLog? onWriteLog)
     {
         _matrix = matrix;
         _allContexts = allContexts;
@@ -46,9 +47,11 @@ public class HtmlContextDimensionBuilder
         GenerateHtmlPages();
     }
 
+    // context: html, build
     internal void GenerateDomainDiagrams()
     {
-        foreach(var domain in _matrix.Select(k => k.Key.Domain).Distinct())
+        var domains = _matrix.GetDomains();
+        foreach(var domain in domains.Distinct())
         {
             CompileDomain(_contextClassifier, domain);
         }
@@ -76,17 +79,13 @@ public class HtmlContextDimensionBuilder
 
     internal void GenerateHtmlPages()
     {
-        var allActions = _matrix.Keys.Select(k => k.Action).Distinct();
-        var allDomains = _matrix.Keys.Select(k => k.Domain).Distinct();
+        var allActions = _matrix.GetActions().Distinct();
+        var allDomains = _matrix.GetDomains().Distinct();
 
         // --- ACTIONS ---
         foreach(var action in allActions)
         {
-            var methods = _matrix
-                .Where(kvp => kvp.Key.Action == action)
-                .SelectMany(kvp => kvp.Value)
-                .Distinct()
-                .ToList();
+            var methods = _matrix.GetMethodsByAction(action: action).ToList();
 
             string embeddedScript = string.Empty;
             string embeddedContent = string.Empty;
@@ -118,7 +117,7 @@ public class HtmlContextDimensionBuilder
                     HtmlBuilderFactory.Ul.With(writer,() =>
                     {
                         foreach(var method in methods)
-                            HtmlBuilderFactory.Li.Cell(writer, method);
+                            HtmlBuilderFactory.Li.Cell(writer, method.FullName);
                     });
 
                     if(!string.IsNullOrWhiteSpace(embeddedContent))
@@ -130,11 +129,7 @@ public class HtmlContextDimensionBuilder
         // --- DOMAINS ---
         foreach(var domain in allDomains)
         {
-            var methods = _matrix
-                .Where(kvp => kvp.Key.Domain == domain)
-                .SelectMany(kvp => kvp.Value)
-                .Distinct()
-                .ToList();
+            var methods = _matrix.GetMethodsByDomain(domain);
 
             string embeddedScript = string.Empty;
             string embeddedContent = string.Empty;
@@ -169,7 +164,7 @@ public class HtmlContextDimensionBuilder
                     HtmlBuilderFactory.Ul.With(writer,() =>
                     {
                         foreach(var method in methods)
-                            HtmlBuilderFactory.Li.Cell(writer, method);
+                            HtmlBuilderFactory.Li.Cell(writer, method.FullName);
                     });
 
                     if(!string.IsNullOrWhiteSpace(embeddedContent))

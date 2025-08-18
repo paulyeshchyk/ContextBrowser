@@ -24,7 +24,9 @@ public static class ExtraDiagramsBuilder
         UmlContextMethodsOnlyDiagram.Build(model.contextsList, ExportPathBuilder.BuildPath(options.Export.Paths, ExportPathType.pumlExtra, "methodlinks.puml"), options.DiagramBuilder);
         UmlContextMethodPerActionDomainDiagram.Build(model.matrix, ExportPathBuilder.BuildPath(options.Export.Paths, ExportPathType.pumlExtra, "uml.packages.actions.puml"), options.DiagramBuilder);
 
-        var links = ContextMatrixUmlExporter.GenerateMethodLinks(model.contextsList, contextClassifier);
+        var linkGenerator = new ContextMatrixLinkGenerator(contextClassifier, model.contextsList);
+        var links = linkGenerator.GenerateMethodLinks();
+
         UmlContextRelationDiagram.GenerateLinksUml(links, ExportPathBuilder.BuildPath(options.Export.Paths, ExportPathType.pumlExtra, "uml.4.links.puml"), options.DiagramBuilder);
     }
 }

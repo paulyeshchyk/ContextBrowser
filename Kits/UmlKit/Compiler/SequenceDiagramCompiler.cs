@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Log;
+﻿using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -58,8 +59,8 @@ public class SequenceDiagramCompiler
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile sequence for [{domain}]", LogLevelNode.Start);
 
 
-        // Создаем новую диаграмму UML-последовательности
-        var diagram = new UmlDiagramSequence(_options);
+        var diagramId = $"sequence_domain_{domain}".AlphanumericOnly();
+        var diagram = new UmlDiagramSequence(_options, diagramId: diagramId);
         diagram.SetTitle($"Domain: {domain}");
         diagram.SetSkinParam("componentStyle", "rectangle");
 

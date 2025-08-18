@@ -9,7 +9,7 @@ public class UmlDiagramClasses : UmlDiagram<UmlState>
     private readonly HashSet<UmlState> _states = new();
     private readonly List<UmlTransitionState> _transitions = new();
 
-    public UmlDiagramClasses(DiagramBuilderOptions options) : base(options)
+    public UmlDiagramClasses(DiagramBuilderOptions options, string diagramId) : base(options, diagramId)
     {
     }
 
@@ -34,7 +34,7 @@ public class UmlDiagramClasses : UmlDiagram<UmlState>
 
     public override UmlDiagram<UmlState> AddParticipant(UmlState participant, string alias)
     {
-        if (participant is UmlState state)
+        if(participant is UmlState state)
         {
             _states.Add(state);
             return this;
@@ -54,12 +54,12 @@ public class UmlDiagramClasses : UmlDiagram<UmlState>
 
     public override IUmlElement AddTransition(UmlState from, UmlState to, bool isAsync = false, string? label = null)
     {
-        if (from is not UmlState theFrom)
+        if(from is not UmlState theFrom)
         {
             throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
         }
 
-        if (to is not UmlState theTo)
+        if(to is not UmlState theTo)
         {
             throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
         }
@@ -108,7 +108,7 @@ public class UmlDiagramClasses : UmlDiagram<UmlState>
     {
         writer.WriteLine();
 
-        foreach (var element in _elements.Values)
+        foreach(var element in _elements.Values)
         {
             element.WriteTo(writer);
         }

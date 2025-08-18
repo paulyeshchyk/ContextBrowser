@@ -48,9 +48,9 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
     {
         ElementType = elementType;
         Identifier = identifier;
-        Name = name;
-        FullName = fullName;
-        Namespace = nameSpace;
+        Name = symbol?.GetShortestName() ?? name;
+        FullName = symbol?.GetFullName() ?? fullName;
+        Namespace = symbol?.GetNameSpace() ?? nameSpace;
         SpanStart = spanStart;
         SpanEnd = spanEnd;
         Symbol = symbol;

@@ -46,12 +46,13 @@ public static class CustomEnvironment
         var httpServerPath = Path.GetFullPath(outputFolderPath);
         var customServer = NewServer();
         if(!customServer.IsPortInUse(SLocalHttpServerPort))
-            customServer.StartServer("cmd.exe", $"/c cd /d \"{httpServerPath}\" && start http-server -p {SLocalHttpServerPort}");
+            customServer.StartServer("cmd.exe", $"/c cd /d \"{httpServerPath}\" && start http-server -p {SLocalHttpServerPort} --no-cache");
         if(!customServer.IsJvmPlantUmlProcessRunning(SPlantumlJarFilename))
             customServer.StartServer("cmd.exe", $"/c cd /d \"{httpServerPath}\" && start java -jar {SPlantumlJarFilename} {SPicowebJvmArgument}");
 
         System.Threading.Thread.Sleep(5000);
 
-        customServer.StartServer("cmd.exe", $"/c start http://localhost:{SLocalHttpServerPort}/index.html");
+        long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        customServer.StartServer("cmd.exe", $"/c start http://localhost:{SLocalHttpServerPort}/index.html?v={timestamp}");
     }
 }

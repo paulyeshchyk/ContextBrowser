@@ -1,16 +1,16 @@
 ﻿using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
-using ContextKit.Model;
+using ContextKit.Model.Matrix;
 
 namespace HtmlKit.Extensions;
 
-// context: matrix, build
+// context: htmlmatrix, build
 // pattern: DTO
 // pattern note: utility
 public static class UiMatrixExtensions
 {
-    // context: matrix, build
-    public static Dictionary<string, int>? RowsSummary(this UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix, MatrixOrientationType orientation)
+    // context: htmlmatrix, read
+    public static Dictionary<string, int>? RowsSummary(this HtmlMatrix uiMatrix, IContextInfoMatrix matrix, MatrixOrientationType orientation)
     {
         return uiMatrix.rows.ToDictionary(row => row, row => uiMatrix.cols.Sum(col =>
         {
@@ -19,8 +19,8 @@ public static class UiMatrixExtensions
         }));
     }
 
-    // context: matrix, build
-    public static Dictionary<string, int>? ColsSummary(this UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix, MatrixOrientationType orientation)
+    // context: htmlmatrix, read
+    public static Dictionary<string, int>? ColsSummary(this HtmlMatrix uiMatrix, IContextInfoMatrix matrix, MatrixOrientationType orientation)
     {
         return uiMatrix.cols.ToDictionary(col => col, col => uiMatrix.rows.Sum(row =>
         {

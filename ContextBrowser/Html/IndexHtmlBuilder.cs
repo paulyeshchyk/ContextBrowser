@@ -16,7 +16,7 @@ public static class IndexHtmlBuilder
     public static void Build(ContextBuilderModel model, AppOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
-        IndexGenerator.GenerateContextIndexHtml(
+        HtmlIndexGenerator.GenerateContextIndexHtml(
             contextClassifier: contextClassifier,
                        matrix: model.matrix,
                allContextInfo: model.contextLookup,

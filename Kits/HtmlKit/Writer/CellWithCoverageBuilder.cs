@@ -1,4 +1,4 @@
-﻿using ContextKit.Model;
+﻿using ContextKit.Model.Matrix;
 using HtmlKit.Builders.Core;
 using HtmlKit.Page;
 
@@ -7,7 +7,7 @@ namespace HtmlKit.Writer;
 // pattern: Builder
 internal class CellWithCoverageBuilder
 {
-    public static string Build(ContextContainer container, int cnt)
+    public static string Build(ContextInfoMatrixCell container, int cnt)
     {
         if(cnt == 0)
         {

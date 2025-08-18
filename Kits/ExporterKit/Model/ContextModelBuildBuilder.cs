@@ -1,26 +1,27 @@
-﻿using ContextBrowser.DiagramFactory.Exporters;
-using ContextBrowserKit.Log;
+﻿using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Matrix;
 using ExporterKit.Model;
 using RoslynKit.Model;
 using RoslynKit.Phases;
 
 namespace ExporterKit.Uml;
 
-// context: ContextInfo, build
+// context: ContextInfo, csharp, build
 public static class ContextModelBuildBuilder
 {
-    // context: ContextInfo, build
+    // context: ContextInfo, csharp, build
     public static ContextBuilderModel Build(RoslynOptions roslynOptions, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, CancellationToken cancellationToken)
     {
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, "--- ContextModelBuildBuilder.Build ---");
 
         var contextsList = RoslynContextParser.Parse(roslynOptions, contextClassifier, onWriteLog, cancellationToken);
 
-        var matrix = ContextMatrixUmlExporter.GenerateMatrix(contextsList, contextClassifier, matrixOptions);
+        var matrixBuilder = new ContextMatrixBuilder(contextClassifier, matrixOptions);
+        var matrix = matrixBuilder.BuildMatrix(contextsList);
 
         var contextLookup = GenerateContextLookup(contextsList);
         return new ContextBuilderModel(contextsList, matrix, contextLookup);

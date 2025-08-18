@@ -69,9 +69,12 @@ public abstract class UmlDiagram<P>
         return result;
     }
 
-    public UmlDiagram(DiagramBuilderOptions options)
+    public string DiagramId { get; private set; }
+
+    public UmlDiagram(DiagramBuilderOptions options, string diagramId)
     {
         _options = options;
+        DiagramId = diagramId;
     }
 
     protected virtual string SUmlStartTag { get => "@startuml"; }
@@ -113,7 +116,8 @@ public abstract class UmlDiagram<P>
     // context: uml, update
     protected virtual void WriteStart(TextWriter writer)
     {
-        writer.WriteLine(SUmlStartTag);
+        writer.Write(SUmlStartTag);
+        writer.WriteLine($" {{id={DiagramId}}}");
     }
 
     // context: uml, update

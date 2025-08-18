@@ -1,4 +1,5 @@
-﻿using ContextKit.Model;
+﻿using ContextBrowserKit.Extensions;
+using ContextKit.Model;
 using ContextKit.Model.Service;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
@@ -17,7 +18,8 @@ public static class UmlContextMethodsOnlyDiagram
                 .Where(e => e.ElementType == ContextInfoElementType.method)
                 .ToList();
 
-        var diagram = new UmlDiagramClasses(options);
+        var diagramId = $"methods_only_{outputPath}".AlphanumericOnly();
+        var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
 
         foreach(var method in methods)
             diagram.Add(new UmlComponent(method.Name));
@@ -27,11 +29,22 @@ public static class UmlContextMethodsOnlyDiagram
             var references = ContextInfoService.GetReferencesSortedByInvocation(method);
             foreach(var callee in references)
             {
-                if(methods.Any(m => m.Name == callee.Name))
-                    diagram.Add(new UmlTransitionState(new UmlState(method.Name ?? "<unknown method>", null), new UmlState(callee?.Name ?? "<unknown callee>", null), new UmlArrow()));
+                if(!methods.Any(m => m.Name == callee.Name))
+                    continue;
+
+                AddTransitionState(diagram, method, callee);
             }
         }
 
         diagram.WriteToFile(outputPath);
+    }
+
+    private static void AddTransitionState(UmlDiagramClasses diagram, ContextInfo method, ContextInfo callee)
+    {
+        var state1 = new UmlState(method.Name ?? "<unknown method>", null);
+        var state2 = new UmlState(callee?.Name ?? "<unknown callee>", null);
+        var arrow = new UmlArrow();
+        var transitionState = new UmlTransitionState(state1, state2, arrow);
+        diagram.Add(transitionState);
     }
 }

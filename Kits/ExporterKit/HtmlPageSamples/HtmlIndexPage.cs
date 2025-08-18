@@ -1,5 +1,5 @@
 ﻿using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
+using ContextKit.Model.Matrix;
 using ExporterKit.Puml;
 using HtmlKit.Builders.Core;
 using HtmlKit.Page;
@@ -11,7 +11,7 @@ namespace ExporterKit.HtmlPageSamples;
 public static class HtmlIndexPage
 {
     //context: build, html, page, directory
-    public static void GenerateContextHtmlPages(Dictionary<ContextContainer, List<string>> matrix, ExportOptions exportOptions)
+    public static void GenerateContextHtmlPages(IContextInfoMatrix matrix, ExportOptions exportOptions)
     {
         foreach(var cell in matrix)
         {
@@ -46,7 +46,7 @@ public static class HtmlIndexPage
                     HtmlBuilderFactory.Ul.With(writer,() =>
                     {
                         foreach(var method in distinctMethods)
-                            HtmlBuilderFactory.Li.Cell(writer, method);
+                            HtmlBuilderFactory.Li.Cell(writer, method.FullName);
                     });
 
                     if(!string.IsNullOrWhiteSpace(injection.EmbeddedContent))

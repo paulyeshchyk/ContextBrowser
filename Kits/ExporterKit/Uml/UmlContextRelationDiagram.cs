@@ -1,4 +1,5 @@
-﻿using UmlKit.Infrastructure.Options;
+﻿using ContextBrowserKit.Extensions;
+using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
@@ -11,14 +12,22 @@ public static class UmlContextRelationDiagram
     //context: build, uml, links
     public static void GenerateLinksUml(HashSet<(string From, string To)> links, string outputPath, DiagramBuilderOptions options)
     {
-        var diagram = new UmlDiagramClasses(options);
+        var diagramId = $"relation_{outputPath}".AlphanumericOnly();
+        var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach (var (from, to) in links)
         {
-            diagram.Add(new UmlRelation(from, to, new UmlArrow(flowType: options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync)));
+            AddRelation(options, diagram, from, to);
         }
 
         diagram.WriteToFile(outputPath);
+    }
+
+    private static void AddRelation(DiagramBuilderOptions options, UmlDiagramClasses diagram, string from, string to)
+    {
+        var arrow = new UmlArrow(flowType: options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync);
+        var relation = new UmlRelation(from, to, arrow);
+        diagram.Add(relation);
     }
 }

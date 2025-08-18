@@ -13,6 +13,8 @@ public class CSharpISymbolWrapper : ISymbolInfo
         _symbol = symbol;
     }
 
+    public string GetNameSpace() => _symbol?.GetNameSpace() ?? "not_defined_name";
+
     public string GetName() => _symbol?.Name ?? "not_defined_name";
 
     public string GetFullName() => _symbol?.ToDisplayString() ?? "not_defined_fullname";

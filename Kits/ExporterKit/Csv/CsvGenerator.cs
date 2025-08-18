@@ -1,5 +1,6 @@
 ﻿using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Matrix;
 
 namespace ExporterKit.Csv;
 
@@ -8,7 +9,7 @@ namespace ExporterKit.Csv;
 public static class CsvGenerator
 {
     //context: build, csv, heatmap
-    public static void GenerateHeatmapCsv(IContextClassifier contextClassifier, Dictionary<ContextContainer, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
+    public static void GenerateHeatmapCsv(IContextClassifier contextClassifier, Dictionary<ContextInfoMatrixCell, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 

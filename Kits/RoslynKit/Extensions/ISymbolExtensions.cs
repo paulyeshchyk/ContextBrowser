@@ -19,6 +19,12 @@ public static class ISymbolExtensions
         return symbol.ToDisplayString(format);
     }
 
+    public static string GetNameSpace(this ISymbol symbol)
+    {
+        INamespaceSymbol containingNamespace = symbol.ContainingNamespace;
+        return containingNamespace.ToDisplayString();
+    }
+
     public static string GetShortestName(this ISymbol symbol)
     {
         // если это метод Invoke у делегата

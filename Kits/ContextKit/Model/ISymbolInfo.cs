@@ -6,6 +6,8 @@ public interface ISymbolInfo
 
     string GetShortestName();
 
+    string GetNameSpace();
+
     string GetName();
 
     string GetFullName();

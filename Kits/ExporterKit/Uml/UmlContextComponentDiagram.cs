@@ -1,5 +1,7 @@
-﻿using ContextBrowserKit.Options.Export;
+﻿using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Matrix;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
@@ -11,26 +13,30 @@ namespace UmlKit.Exporter;
 public static class UmlContextComponentDiagram
 {
     //context: uml, build, heatmap, directory
-    public static void Build(ExportOptions exportOptions, KeyValuePair<ContextContainer, List<string>> cell, DiagramBuilderOptions options)
+    public static void Build(ExportOptions exportOptions, KeyValuePair<ContextInfoMatrixCell, List<ContextInfo>> cell, DiagramBuilderOptions options)
     {
         var (action, domain) = cell.Key;
         var methods = cell.Value.Distinct().ToList();
         var fileName = ExportPathBuilder.BuildPath(exportOptions.Paths, ExportPathType.puml, $"composite_{action}_{domain}.puml");
 
-        var diagram = new UmlDiagramClasses(options);
-        diagram.SetTitle($"{action.ToUpper()} -> {domain}");
+        var diagramId = $"composite_{action}_{domain}".AlphanumericOnly();
+        var diagramTitle = $"{action.ToUpper()} -> {domain}";
+
+        var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
+        diagram.SetTitle(diagramTitle);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach(var method in methods)
         {
-            diagram.Add(new UmlComponent(method));
+            var component = new UmlComponent(method.FullName);
+            diagram.Add(component);
         }
 
         diagram.WriteToFile(fileName);
     }
 
     //context: uml, build, heatmap, directory
-    public static void Build(Dictionary<ContextContainer, List<string>> matrix, ExportOptions exportOptions, DiagramBuilderOptions options)
+    public static void Build(IContextInfoMatrix matrix, ExportOptions exportOptions, DiagramBuilderOptions options)
     {
         foreach(var cell in matrix)
         {

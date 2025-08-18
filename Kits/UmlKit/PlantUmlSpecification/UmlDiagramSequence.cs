@@ -13,8 +13,8 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
     private readonly List<UmlActivate> _activations = new();
     private readonly List<UmlDeactivate> _deactivations = new();
 
-    public UmlDiagramSequence(DiagramBuilderOptions options)
-        : base(options)
+    public UmlDiagramSequence(DiagramBuilderOptions options, string diagramId)
+        : base(options, diagramId)
     {
     }
 
@@ -139,6 +139,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
     public override void WriteBody(TextWriter writer)
     {
         writer.WriteLine("autonumber");
+
 
         // Уже отсортировано при добавлении
         foreach(var element in _elements.OrderBy(e => e.Key).Select(e => e.Value))

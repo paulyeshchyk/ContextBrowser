@@ -1,16 +1,17 @@
 ﻿using ContextKit.Model;
+using ContextKit.Model.Matrix;
 
 namespace HtmlKit.Helpers;
 
 public static class CoverageExts
 {
     //context: color, ContextInfo, build
-    public static string? GetCoverageColorForCell(ContextContainer cell, List<string>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
+    public static string? GetCoverageColorForCell(ContextInfoMatrixCell cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
     {
         if(methods != null && methods.Count > 0)
         {
             var covs = methods
-                .Select(name => contextLookup.TryGetValue(name, out var ctx)
+                .Select(method => contextLookup.TryGetValue(method.FullName, out var ctx)
                     ? DimensionValueExtractor(ctx)
                     : 0)
                 .ToList();

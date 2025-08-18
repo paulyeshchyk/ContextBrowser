@@ -38,7 +38,7 @@ public class AppOptions
         //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\"
         //".\\..\\..\\..\\ContextSamples\\ContextSamples\\S3\\FourContextsSample.cs"
         //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\ContextBrowserKit\\Extensions\\FileUtils.cs"
-        sourcePath: ".\\..\\..\\..\\..\\ContextBrowser\\Kits\\",
+        sourcePath: ".\\..\\..\\..\\",
         roslynCodeParser: new(
 
             methodModifierTypes: new()
@@ -95,8 +95,8 @@ public class AppOptions
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
                                               debug: false,
-                                        detailLevel: DiagramDetailLevel.Summary,
-                                          direction: DiagramDirection.Outgoing,
+                                        detailLevel: DiagramDetailLevel.Full,
+                                          direction: DiagramDirection.Incoming,
                                          activation: new DiagramActivationOptions(useActivation: true, useActivationCall: true),
                                   transitionOptions: new DiagramTransitionOptions(useCall: true, useDone: true),
                                    invocationOption: new DiagramInvocationOption(useInvocation: true, useReturn: true),

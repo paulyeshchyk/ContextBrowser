@@ -1,6 +1,7 @@
 ﻿using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Matrix;
 using HtmlKit.Builders.Core;
 using HtmlKit.Document.Coverage;
 using HtmlKit.Options;
@@ -9,21 +10,22 @@ using HtmlKit.Writer;
 
 namespace HtmlKit.Document;
 
+//context: htmlmatrix, model
 public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
 {
     public Dictionary<string, ContextInfo> ContextsLookup { get; }
 
     private HtmlTableOptions _options { get; }
 
-    public UiMatrix UiMatrix { get; }
+    public HtmlMatrix UiMatrix { get; }
 
-    public Dictionary<ContextContainer, List<string>> ContextsMatrix { get; }
+    public IContextInfoMatrix ContextsMatrix { get; }
 
     private CoverManager _coverManager = new CoverManager();
 
     public ICoverageManager CoverageManager => _coverManager;
 
-    public HtmlPageMatrix(UiMatrix uiMatrix, Dictionary<ContextContainer, List<string>> matrix, HtmlTableOptions options, Dictionary<string, ContextInfo> contextLookup) : base()
+    public HtmlPageMatrix(HtmlMatrix uiMatrix, IContextInfoMatrix matrix, HtmlTableOptions options, Dictionary<string, ContextInfo> contextLookup) : base()
     {
         UiMatrix = uiMatrix;
         ContextsMatrix = matrix;
@@ -38,9 +40,10 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
         yield return Resources.ScriptAutoFontShrink;
     }
 
+    //context: htmlmatrix, build
     protected override void WriteContent(TextWriter tw)
     {
-        HtmlBuilderFactory.Table.With(tw, () =>
+        HtmlBuilderFactory.Table.With(tw,() =>
         {
             new HtmlMatrixWriter(this, _options)
                 .WriteHeaderRow(tw)
@@ -50,7 +53,8 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
         });
     }
 
-    public string ProduceData(ContextContainer container)
+    //context: ContextInfoMatrix, build
+    public string ProduceData(ContextInfoMatrixCell container)
     {
         ContextsMatrix.TryGetValue(container, out var methods);
         var cnt = methods?.Count ?? 0;
