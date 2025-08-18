@@ -35,8 +35,10 @@ public class AppOptions
     public RoslynOptions Roslyn { get; set; } = new(
 
         //".\\..\\..\\..\\ContextBrowser\\Program.cs"
+        //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\"
         //".\\..\\..\\..\\ContextSamples\\ContextSamples\\S3\\FourContextsSample.cs"
-        sourcePath: ".\\..\\..\\..\\",
+        //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\ContextBrowserKit\\Extensions\\FileUtils.cs"
+        sourcePath: ".\\..\\..\\..\\..\\ContextBrowser\\Kits\\",
         roslynCodeParser: new(
 
             methodModifierTypes: new()

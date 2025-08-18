@@ -58,5 +58,8 @@ public static class Program
         DimensionBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
 
         ExtraDiagramsBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
+
+        CustomEnvironment.CopyResources(".\\output");
+        CustomEnvironment.RunServers(".\\output");
     }
 }

@@ -24,15 +24,13 @@ public static class PumlInjector
     {
         var pumlFilePath = ExportPathBuilder.BuildPath(exportOptions.Paths, ExportPathType.puml, $"composite_{action}_{domain}.puml");
         var pumlFileContent = ReadPumlContent(pumlFilePath);
-        var pumlEmbeddedScript = "<script type=\"module\">import enableElement from \"https://cdn.pika.dev/render-plantuml\";enableElement();</script>";
-        return new HtmlInjection() { EmbeddedContent = $"<render-plantuml renderMode=\"svg\">{pumlFileContent}</render-plantuml>", EmbeddedScript = pumlEmbeddedScript };
+        return new HtmlInjection() { EmbeddedContent = $"<render-plantuml renderMode=\"svg\">{pumlFileContent}</render-plantuml>", EmbeddedScript = Resources.PlantUmlInjectScript };
     }
 
     public static HtmlInjection InjectDomainEmbeddedHtml(string domain, ExportOptions exportOptions)
     {
         var pumlFilePath = ExportPathBuilder.BuildPath(exportOptions.Paths, ExportPathType.puml, $"sequence_domain_{domain}.puml");
         var pumlFileContent = ReadPumlContent(pumlFilePath);
-        var pumlEmbeddedScript = "<script type=\"module\">import enableElement from \"https://cdn.pika.dev/render-plantuml\";enableElement();</script>";
-        return new HtmlInjection() { EmbeddedContent = $"<render-plantuml renderMode=\"svg\">{pumlFileContent}</render-plantuml>", EmbeddedScript = pumlEmbeddedScript };
+        return new HtmlInjection() { EmbeddedContent = $"<render-plantuml renderMode=\"svg\">{pumlFileContent}</render-plantuml>", EmbeddedScript = Resources.PlantUmlInjectScript };
     }
 }

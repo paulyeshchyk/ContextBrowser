@@ -38,7 +38,7 @@ public class CSharpInvocationSyntaxExtractor
             return byInvocation.GetMethodInfoFromSyntax(null, _options, _onWriteLog);
         }
 
-        var symbol = GetMethodSymbol(byInvocation, invocationSemanticModel, cancellationToken);
+        var symbol = SymbolExtractor.GetMethodSymbol(byInvocation, invocationSemanticModel, _onWriteLog, cancellationToken);
         if(symbol == null)
         {
             //TODO: warn
@@ -48,27 +48,8 @@ public class CSharpInvocationSyntaxExtractor
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[OK] Resolved symbol [{symbol.GetFullMemberName()}]");
 
-        return Extract(byInvocation, invocationSemanticModel);
+        return SyntaxWrapperExtractor.Extract(byInvocation, symbol, _onWriteLog);
     }
-
-    internal CSharpInvocationSyntaxWrapper? Extract(ExpressionSyntax? resultSyntax, SemanticModel model)
-    {
-        if(resultSyntax == null)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERR]: Syntax not found");
-            return default;
-        }
-
-        var symbol = model.GetSymbolInfo(resultSyntax).Symbol;
-        if(symbol == null)
-        {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"[ERR]: Symbol not resolved for {resultSyntax}");
-            return default;
-        }
-
-        return new CSharpInvocationSyntaxWrapper(symbol: symbol, syntax: resultSyntax);
-    }
-
 
     // context: csharp, read
     internal SemanticModel? FindSemanticModel(InvocationExpressionSyntax invocation)
@@ -83,9 +64,12 @@ public class CSharpInvocationSyntaxExtractor
 
         return _semanticInvocationResolver.Resolve(syntaxTree);
     }
+}
 
+internal static class SymbolExtractor
+{
     // context: csharp, read
-    internal IMethodSymbol? GetMethodSymbol(InvocationExpressionSyntax invocation, SemanticModel semanticModel, CancellationToken cancellationToken)
+    internal static IMethodSymbol? GetMethodSymbol(InvocationExpressionSyntax invocation, SemanticModel semanticModel, OnWriteLog? _onWriteLog, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -108,5 +92,31 @@ public class CSharpInvocationSyntaxExtractor
         // TODO: warn
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[MISS]: No symbol for expression: {invocation.Expression}");
         return null;
+    }
+}
+
+internal static class SyntaxWrapperExtractor
+{
+    public static CSharpInvocationSyntaxWrapper? Extract(ExpressionSyntax? resultSyntax, SemanticModel model, OnWriteLog? onWriteLog)
+    {
+        if(resultSyntax == null)
+        {
+            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[ERR]: Syntax not found");
+            return default;
+        }
+
+        var symbol = model.GetSymbolInfo(resultSyntax).Symbol;
+        return Extract(resultSyntax, symbol, onWriteLog);
+    }
+
+    public static CSharpInvocationSyntaxWrapper? Extract(ExpressionSyntax resultSyntax, ISymbol? symbol, OnWriteLog? onWriteLog)
+    {
+        if(symbol == null)
+        {
+            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"[ERR]: Symbol not resolved for {resultSyntax}");
+            return default;
+        }
+
+        return new CSharpInvocationSyntaxWrapper(symbol: symbol, syntax: resultSyntax);
     }
 }

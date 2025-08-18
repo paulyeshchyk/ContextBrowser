@@ -20,12 +20,14 @@ internal static class InvocationExts
     {
         string methodName;
         string ownerName;
+        string nameSpace;
         bool isPartial;
         var expression = invocationExpression.Expression;
 
         if(expression is MemberAccessExpressionSyntax memberAccess)
         {
             isPartial = false;
+            nameSpace = options.ExternalNamespaceName;
             methodName = memberAccess.Name.Identifier.Text;
             ownerName = memberAccess.Expression.ToString();
             onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Found new owner and methodname for invocation [{invocationExpression}]: [{ownerName}.{methodName}]");
@@ -33,6 +35,7 @@ internal static class InvocationExts
         else if(expression is IdentifierNameSyntax identifierName)
         {
             isPartial = true;
+            nameSpace = options.ExternalNamespaceName;
             methodName = identifierName.Identifier.Text;
             ownerName = options.FakeOwnerName;
             onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Composed new owner and methodname for invocation [{invocationExpression}]: [{ownerName}.{methodName}]");
@@ -40,11 +43,12 @@ internal static class InvocationExts
         else
         {
             isPartial = true;
+            nameSpace = options.ExternalNamespaceName;
             methodName = options.FakeMethodName;
             ownerName = options.FakeOwnerName;
             onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Invocation was not identified [{invocationExpression}]");
         }
 
-        return new CSharpInvocationSyntaxWrapper(isPartial: isPartial, fullName: $"{ownerName}.{methodName}", shortName: methodName, spanStart: invocationExpression.Span.Start, spanEnd: invocationExpression.Span.End);
+        return new CSharpInvocationSyntaxWrapper(isPartial: isPartial, fullName: $"{nameSpace}.{ownerName}.{methodName}", shortName: methodName, spanStart: invocationExpression.Span.Start, spanEnd: invocationExpression.Span.End);
     }
 }

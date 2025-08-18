@@ -4,15 +4,24 @@ namespace ContextBrowserKit.Extensions;
 
 public static class StringExtensions
 {
-    /// <summary>
-    /// Возвращает подстроку до первой точки или всю строку, если точка не найдена.
-    /// </summary>
-    public static string BeforeFirstDot(this string input)
+    public static string BeforeDot(this string input, int byGroupId = 1, int groupsCountToJoin = 1)
     {
-        if(input == null)
+        if(string.IsNullOrEmpty(input))
             return string.Empty;
-        var match = Regex.Match(input, @"^[^\.]+");
-        return match.Success ? match.Value : input;
+
+        var parts = input.Split('.');
+        if(byGroupId <= 0 || groupsCountToJoin <= 0)
+            return string.Empty;
+
+        // индекс в массиве (byGroupId начинается с 1, поэтому -1)
+        int startIndex = byGroupId - 1;
+        if(startIndex >= parts.Length)
+            return string.Join(".", parts); // вернуть всю строку
+
+        // ограничим количество элементов
+        int count = Math.Min(groupsCountToJoin, parts.Length - startIndex);
+
+        return string.Join(".", parts.Skip(startIndex).Take(count));
     }
 
     /// <summary>

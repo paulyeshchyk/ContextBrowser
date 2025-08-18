@@ -39,11 +39,12 @@ public class InvocationLookupHandler<TContext> : BaseSymbolLookupHandler<TContex
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"[CREATE] Fallback fake callee created for: {symbolDto.FullName}");
 
         // Логика создания искусственного узла
-        var className = symbolDto.FullName.BeforeFirstDot().ToAlphanumericUnderscore();
-        var ns = _options.ExternalNamespaceName;
-        var fullname = string.Join(".", new string[] { ns, className });
 
-        var typeModel = new CSharpTypeSyntaxWrapper(name: className, fullName: fullname, symbolDto.SpanStart, symbolDto.SpanEnd, ns);
+        var nameSpace = symbolDto.FullName.BeforeDot(1, 1).ToAlphanumericUnderscore();
+        var className = symbolDto.FullName.BeforeDot(2, 1).ToAlphanumericUnderscore();
+        var fullname = $"{nameSpace}.{className}";//symbolDto.FullName.BeforeDot(1, 2);
+
+        var typeModel = new CSharpTypeSyntaxWrapper(name: className, fullName: fullname, symbolDto.SpanStart, symbolDto.SpanEnd, nameSpace);
         var typeContext = _typeContextInfoBuilder.BuildContextInfo(default, typeModel);
         if(typeContext == null)
         {

@@ -68,5 +68,35 @@ namespace ContextBrowser {
                 return ResourceManager.GetString("DefaultLogLevelConfigJson", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] favicon {
+            get {
+                object obj = ResourceManager.GetObject("favicon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] plantuml_1_2025_4 {
+            get {
+                object obj = ResourceManager.GetObject("plantuml_1_2025_4", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] render_plantuml {
+            get {
+                object obj = ResourceManager.GetObject("render_plantuml", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
