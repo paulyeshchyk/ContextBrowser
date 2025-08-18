@@ -1,11 +1,13 @@
 ﻿using CommandlineKit.Polyfills;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using ExporterKit.Options;
+using ContextBrowserKit.Options.Export;
 using HtmlKit.Options;
 using LoggerKit.Model;
 using RoslynKit.Model;
 using UmlKit.Infrastructure.Options;
+using UmlKit.Infrastructure.Options.Activation;
+using UmlKit.Infrastructure.Options.Indication;
 
 namespace ContextBrowser.Infrastructure;
 
@@ -32,10 +34,9 @@ public class AppOptions
     [CommandLineArgument("roslyn-options", "The source code path.")]
     public RoslynOptions Roslyn { get; set; } = new(
 
-    //".\\..\\..\\..\\..\\ContextBrowser\\Program.cs"
-    //".\\..\\..\\..\\..\\ContextBrowser\\ContextSamples\\Orchestra\\FourContextsSample.cs"
-    //".\\..\\..\\..\\..\\ContextBrowser\\ContextSamples\\AlphaClass.cs";
-        sourcePath: ".\\..\\..\\..\\..\\ContextBrowser\\ContextSamples\\Orchestra\\FourContextsSample.cs",
+        //".\\..\\..\\..\\ContextBrowser\\Program.cs"
+        //".\\..\\..\\..\\ContextSamples\\ContextSamples\\S3\\FourContextsSample.cs"
+        sourcePath: ".\\..\\..\\..\\",
         roslynCodeParser: new(
 
             methodModifierTypes: new()
@@ -79,27 +80,26 @@ public class AppOptions
                                      orientation: MatrixOrientationType.DomainRows
                                 )
         ),
-        outputDirectory: ".\\output\\"
+        paths: new ExportPaths(
+            outputDirectory: ".\\output",
+            new ExportPathItem(ExportPathType.index, "."),
+            new ExportPathItem(ExportPathType.puml, "puml"),
+            new ExportPathItem(ExportPathType.pages, "pages"),
+            new ExportPathItem(ExportPathType.pumlExtra, "puml\\extra")
+        ).BuildFullPath()
     );
 
 
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
-                                              debug: true,
+                                              debug: false,
                                         detailLevel: DiagramDetailLevel.Summary,
                                           direction: DiagramDirection.Outgoing,
-                                      useActivation: true,
-                                      indication: new DiagramBuilderIndication(
-                                          useReturn: true,
-                                           useAsync: true,
-                            useSelfCallContinuation: true,
-                                useCalleeActivation: true,
-
-                                useCalleeInvocation: true,
-                                            useDone: true,
-                                pushAnnotation: false
-                                          ),
-                useContextTransitionTreeBuilderMode: DiagramBuilderOptions.TreeBuilderMode.FromParentToChild,
+                                         activation: new DiagramActivationOptions(useActivation: true, useActivationCall: true),
+                                  transitionOptions: new DiagramTransitionOptions(useCall: true, useDone: true),
+                                   invocationOption: new DiagramInvocationOption(useInvocation: true, useReturn: true),
+                                         indication: new DiagramIndicationOption(useAsync: true),
+                                           treeMode: DiagramBuilderTreeMode.FromParentToChild,
                                         diagramType: DiagramBuilderKeys.Transition);
 
     [CommandLineArgument("context-classifier", "Определение контекста представления")]

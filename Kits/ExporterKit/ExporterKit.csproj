@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<BaseOutputPath>../../bin</BaseOutputPath>
+		<OutputType>library</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Options\ExportMatrixOptions1.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CommandlineKit\CommandlineKit.csproj" />
+		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
+		<ProjectReference Include="..\ContextKit\ContextKit.csproj" />
+		<ProjectReference Include="..\GraphKit\GraphKit.csproj" />
+		<ProjectReference Include="..\HtmlKit\HtmlKit.csproj" />
+		<ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
+		<ProjectReference Include="..\RoslynKit\RoslynKit.csproj" />
+		<ProjectReference Include="..\UmlKit\UmlKit.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Options\" />
+	</ItemGroup>
+
+</Project>

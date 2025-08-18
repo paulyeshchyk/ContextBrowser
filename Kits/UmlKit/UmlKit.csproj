@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	
+	<PropertyGroup>
+		<BaseOutputPath>../../bin</BaseOutputPath>
+		<OutputType>library</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
+		<ProjectReference Include="..\ContextKit\ContextKit.csproj" />
+		<ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
+	</ItemGroup>
+	
+</Project>

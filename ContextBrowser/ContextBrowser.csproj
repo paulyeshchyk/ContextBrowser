@@ -1,41 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<BaseOutputPath>../bin</BaseOutputPath>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\CommandlineKit\CommandlineKit.csproj" />
-      <ProjectReference Include="..\ContextKit\ContextKit.csproj" />
-      <ProjectReference Include="..\ExporterKit\ExporterKit.csproj" />
-      <ProjectReference Include="..\GraphKit\GraphKit.csproj" />
-      <ProjectReference Include="..\HtmlKit\HtmlKit.csproj" />
-      <ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
-      <ProjectReference Include="..\RoslynKit\RoslynKit.csproj" />
-      <ProjectReference Include="..\UmlKit\UmlKit.csproj" />
-      <ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
 	</ItemGroup>
 
-    <ItemGroup>
-      <Compile Update="Resources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Resources.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Kits\CommandlineKit\CommandlineKit.csproj" />
+		<ProjectReference Include="..\Kits\ContextBrowserKit\ContextBrowserKit.csproj" />
+		<ProjectReference Include="..\Kits\ContextKit\ContextKit.csproj" />
+		<ProjectReference Include="..\Kits\ExporterKit\ExporterKit.csproj" />
+		<ProjectReference Include="..\Kits\GraphKit\GraphKit.csproj" />
+		<ProjectReference Include="..\Kits\HtmlKit\HtmlKit.csproj" />
+		<ProjectReference Include="..\Kits\LoggerKit\LoggerKit.csproj" />
+		<ProjectReference Include="..\Kits\RoslynKit\RoslynKit.csproj" />
+		<ProjectReference Include="..\Kits\UmlKit\UmlKit.csproj" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <EmbeddedResource Update="Resources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-    </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
 </Project>

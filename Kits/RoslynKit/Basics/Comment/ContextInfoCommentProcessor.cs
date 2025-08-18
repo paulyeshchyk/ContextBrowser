@@ -1,0 +1,24 @@
+﻿using ContextKit.Model;
+
+namespace RoslynKit.Basics.Comment;
+
+// context: contextInfo, comment, build
+public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
+    where T : ContextInfo
+{
+    private readonly List<ICommentParsingStrategy<T>> _strategies = new();
+
+    public ContextInfoCommentProcessor(IEnumerable<ICommentParsingStrategy<T>> strategies)
+    {
+        _strategies.AddRange(strategies);
+    }
+
+    // context: contextInfo, comment, build
+    public void Process(T? target, string comment)
+    {
+        foreach(var strategy in _strategies)
+        {
+            strategy.Execute(target, comment);
+        }
+    }
+}

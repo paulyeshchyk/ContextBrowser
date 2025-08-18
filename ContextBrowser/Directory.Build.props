@@ -1,0 +1,6 @@
+<Project>
+	<PropertyGroup>
+		<MSBUildProjectExtensionsPath>..\obj\ContentBrowser\</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>..\obj\ContentBrowser\</BaseIntermediateOutputPath>
+	</PropertyGroup>
+</Project>

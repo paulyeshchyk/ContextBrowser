@@ -1,8 +1,0 @@
-﻿namespace UmlKit.Infrastructure.Options;
-
-public enum DiagramDetailLevel
-{
-    Summary,    // Показываем только взаимодействия между контекстами
-    Method,     // Показываем имена вызываемых методов
-    Full        // Показываем "Run()", возвраты, возможно параметры
-}

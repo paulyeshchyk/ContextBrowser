@@ -1,0 +1,6 @@
+<Project>
+	<PropertyGroup>
+		<MSBUildProjectExtensionsPath>..\obj\ContentSamples\</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>..\obj\ContentSamples\</BaseIntermediateOutputPath>
+	</PropertyGroup>
+</Project>

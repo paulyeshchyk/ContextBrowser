@@ -1,0 +1,6 @@
+<Project>
+	<PropertyGroup>
+		<MSBUildProjectExtensionsPath>..\..\obj\LoggerKit\</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>..\..\obj\LoggerKit\</BaseIntermediateOutputPath>
+	</PropertyGroup>
+</Project>

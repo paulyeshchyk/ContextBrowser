@@ -1,0 +1,6 @@
+<Project>
+	<PropertyGroup>
+		<MSBUildProjectExtensionsPath>..\..\obj\ExporterKit\</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>..\..\obj\ExporterKit\</BaseIntermediateOutputPath>
+	</PropertyGroup>
+</Project>

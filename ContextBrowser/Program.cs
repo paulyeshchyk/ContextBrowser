@@ -2,8 +2,8 @@
 using CommandlineKit.Model;
 using ContextBrowser.Infrastructure;
 using ContextBrowser.Samples.HtmlPages;
-using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Export;
 using ExporterKit.Uml;
 using LoggerKit;
 using LoggerKit.Model;
@@ -41,7 +41,7 @@ public static class Program
 
         var appLogger = new IndentedAppLogger<AppLevel>(appLogLevelStorage, defaultCW, dependencies: dependencies);
 
-        DirectoryUtils.Prepare(options.Export.OutputDirectory, appLogger.WriteLog);
+        ExportPathDirectoryPreparer.Prepare(options.Export.Paths);
 
         var contextBuilderModel = ContextModelBuildBuilder.Build(options.Roslyn, options.Export.ExportMatrix, options.Classifier, appLogger.WriteLog, CancellationToken.None);
 
@@ -51,10 +51,12 @@ public static class Program
 
         ActionPerDomainDiagramBuilder.Build(contextBuilderModel, options, appLogger.WriteLog);
 
-        ContentHtmlBuilder.Build(contextBuilderModel, options, appLogger.WriteLog);
+        ContentHtmlBuilder.Build(contextBuilderModel, options, appLogger.WriteLogObject);
 
         IndexHtmlBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
 
         DimensionBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
+
+        ExtraDiagramsBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
     }
 }
