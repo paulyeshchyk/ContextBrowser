@@ -10,8 +10,10 @@ public static class ExportPathBuilder
         var outputDirectory = Path.GetFullPath(config.OutputDirectory);
 
         var finalPaths = new Dictionary<ExportPathType, string>();
+        var outputPath = string.IsNullOrEmpty(config.CacheModel.Output) ? string.Empty : Path.GetFullPath(config.CacheModel.Output);
+        var inputPath = string.IsNullOrEmpty(config.CacheModel.Input) ? string.Empty : Path.GetFullPath(config.CacheModel.Input);
 
-        var finalCache = new CacheJsonModel(output: Path.GetFullPath(config.CacheModel.Output), input: Path.GetFullPath(config.CacheModel.Input));
+        var finalCache = new CacheJsonModel(output: outputPath, input: inputPath);
 
         foreach (var (type, relativePath) in config.RelativePaths)
         {

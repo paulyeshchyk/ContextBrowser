@@ -8,6 +8,7 @@ namespace ContextBrowser.ContextCommentsParser;
 /// Управляет сохранением и чтением списка объектов ContextInfo, 
 /// используя промежуточную модель для обхода проблем сериализации.
 /// </summary>
+// context: roslyncache, build
 public static class ContextListFileManager
 {
     private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
@@ -15,6 +16,7 @@ public static class ContextListFileManager
     /// <summary>
     /// Асинхронно сохраняет список контекстов в файл.
     /// </summary>
+    // context: roslyncache, write
     public static async Task SaveContextsToCacheAsync(CacheJsonModel cacheModel, List<ContextInfo> contextsList, CancellationToken cancellationToken)
     {
         if(File.Exists(cacheModel.Output))
@@ -56,6 +58,7 @@ public static class ContextListFileManager
     /// <summary>
     /// Читает список контекстов из файла и восстанавливает связи.
     /// </summary>
+    // context: roslyncache, read
     public static List<ContextInfo> ReadContextsFromCache(CacheJsonModel cacheModel, Func<List<ContextInfo>> fallback, CancellationToken cancellationToken)
     {
         if(!File.Exists(cacheModel.Input))
@@ -86,17 +89,20 @@ public static class ContextListFileManager
     }
 }
 
+// context: roslyncache, convert
 internal static class ContextInfoSerializableModelAdapter
 {
+    // context: roslyncache, convert
     public static List<ContextInfo> ConvertToContextInfo(List<ContextInfoSerializableModel> serializableList)
     {
         var contexts = serializableList.Select(s => Adapt(s)).ToList();
 
-        BuildReferences(serializableList, contexts);
+        BuildRelations(serializableList, contexts);
 
         return contexts;
     }
 
+    // context: roslyncache, convert
     public static ContextInfo Adapt(ContextInfoSerializableModel model)
     {
         return new ContextInfo(
@@ -111,37 +117,42 @@ internal static class ContextInfoSerializableModelAdapter
             action: model.Action,
             domains: model.Domains,
             dimensions: model.Dimensions)
-        {
-        };
+        { };
     }
 
+    // context: roslyncache, convert
     public static List<ContextInfoSerializableModel> Adapt(List<ContextInfo> contextsList)
     {
-        return contextsList.Select(c => new ContextInfoSerializableModel
-        (
-                    elementType: c.ElementType,
-                           name: c.Name,
-                       fullName: c.FullName,
-                       contexts: c.Contexts,
-                     @namespace: c.Namespace,
-             classOwnerFullName: c.ClassOwner?.FullName,
-            methodOwnerFullName: c.MethodOwner?.FullName,
-                         action: c.Action,
-                        domains: c.Domains,
-            referencesFullNames: c.References.Select(r => r.FullName).ToHashSet(),
-             invokedByFullNames: c.InvokedBy.Select(i => i.FullName).ToHashSet(),
-            propertiesFullNames: c.Properties.Select(p => p.FullName).ToHashSet(),
-                     dimensions: c.Dimensions,
-                      spanStart: c.SpanStart,
-                        spanEnd: c.SpanEnd,
-                     identifier: c.Identifier
-        )
-        { }
-        ).ToList();
+        return contextsList.Select(c => Adapt(c)).ToList();
     }
 
 
-    public static void BuildReferences(List<ContextInfoSerializableModel> serializableList, List<ContextInfo> contexts)
+    // context: roslyncache, convert
+    public static ContextInfoSerializableModel Adapt(ContextInfo contextInfo)
+    {
+        return new ContextInfoSerializableModel
+            (
+                        elementType: contextInfo.ElementType,
+                               name: contextInfo.Name,
+                           fullName: contextInfo.FullName,
+                           contexts: contextInfo.Contexts,
+                         @namespace: contextInfo.Namespace,
+                 classOwnerFullName: contextInfo.ClassOwner?.FullName,
+                methodOwnerFullName: contextInfo.MethodOwner?.FullName,
+                             action: contextInfo.Action,
+                            domains: contextInfo.Domains,
+                referencesFullNames: contextInfo.References.Select(r => r.FullName).ToHashSet(),
+                 invokedByFullNames: contextInfo.InvokedBy.Select(i => i.FullName).ToHashSet(),
+                propertiesFullNames: contextInfo.Properties.Select(p => p.FullName).ToHashSet(),
+                         dimensions: contextInfo.Dimensions,
+                          spanStart: contextInfo.SpanStart,
+                            spanEnd: contextInfo.SpanEnd,
+                         identifier: contextInfo.Identifier
+            );
+    }
+
+    // context: roslyncache, build
+    public static void BuildRelations(List<ContextInfoSerializableModel> serializableList, List<ContextInfo> contexts)
     {
         var lookupDictionary = contexts.ToDictionary(c => c.FullName);
 
@@ -191,6 +202,7 @@ internal static class ContextInfoSerializableModelAdapter
 /// Упрощенная модель данных для сериализации.
 /// Сохраняет только необходимые данные и строковые идентификаторы ссылок.
 /// </summary>
+// context: roslyncache, model
 public record ContextInfoSerializableModel
 {
     public ContextInfoElementType ElementType { get; set; }

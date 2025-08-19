@@ -44,10 +44,14 @@ public static class Program
 
         ExportPathDirectoryPreparer.Prepare(options.Export.Paths);
 
+
+        var semanticParser = new RoslynContextParser(options.Roslyn, options.Classifier, appLogger.WriteLog);
+
+
         var cacheModel = options.Export.Paths.CacheModel;
         var contextsList = ContextListFileManager.ReadContextsFromCache(cacheModel,() =>
         {
-            return RoslynContextParser.Parse(options.Roslyn, options.Classifier, appLogger.WriteLog, CancellationToken.None);
+            return semanticParser.Parse(CancellationToken.None);
         }, CancellationToken.None);
 
         _ = Task.Run(async () =>

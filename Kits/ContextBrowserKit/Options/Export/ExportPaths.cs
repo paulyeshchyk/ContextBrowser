@@ -52,10 +52,10 @@ public class CacheJsonModel
 
     public string Input { get; set; }
 
-    public CacheJsonModel(string output, string input)
+    public CacheJsonModel(string? output, string? input)
     {
-        Output = output;
-        Input = input;
+        Output = output ?? string.Empty;
+        Input = input ?? string.Empty;
     }
 }
 

@@ -111,7 +111,7 @@ public class AppOptions
             emptyDomain: "NoDomain",
              fakeAction: "_fakeAction",
              fakeDomain: "_fakeDomain",
-        standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute" },
+        standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert" },
               metaItems: new[] { "Action;Domain;Elements" }
         )
     { };

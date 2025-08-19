@@ -22,16 +22,28 @@ public sealed class RoslynContextParser
 {
     private const string TargetExtension = ".cs";
 
+    private readonly RoslynOptions _options;
+    private readonly IContextClassifier _contextClassifier;
+    private readonly OnWriteLog? _onWriteLog;
+
+    public RoslynContextParser(RoslynOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog)
+    {
+        _options = options;
+        _contextClassifier = contextClassifier;
+        _onWriteLog = onWriteLog;
+    }
+
+
     // context: csharp, read, directory, contextInfo
     // layer: 900
-    public static List<ContextInfo> Parse(RoslynOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, CancellationToken cancellationToken)
+    public List<ContextInfo> Parse(CancellationToken cancellationToken)
     {
-        var pathType = PathAnalyzer.GetPathType(options.SourcePath);
+        var pathType = PathAnalyzer.GetPathType(_options.SourcePath);
         return pathType switch
         {
-            PathAnalyzer.PathType.File => ParseFile(options.SourcePath, options.RoslynCodeParser, contextClassifier, onWriteLog, cancellationToken),
-            PathAnalyzer.PathType.Directory => ParseDirectory(options.SourcePath, options.RoslynCodeParser, contextClassifier, onWriteLog, cancellationToken),
-            PathAnalyzer.PathType.NonExistentPath => throw new ArgumentException($"File not found {nameof(options.SourcePath)}"),
+            PathAnalyzer.PathType.File => ParseFile(_options.SourcePath, _options.RoslynCodeParser, _contextClassifier, _onWriteLog, cancellationToken),
+            PathAnalyzer.PathType.Directory => ParseDirectory(_options.SourcePath, _options.RoslynCodeParser, _contextClassifier, _onWriteLog, cancellationToken),
+            PathAnalyzer.PathType.NonExistentPath => throw new ArgumentException($"File not found {nameof(_options.SourcePath)}"),
             _ => throw new NotImplementedException()
         };
     }
