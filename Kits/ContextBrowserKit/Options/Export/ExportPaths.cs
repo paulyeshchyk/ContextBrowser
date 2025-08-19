@@ -1,20 +1,25 @@
-﻿namespace ContextBrowserKit.Options.Export;
+﻿
+namespace ContextBrowserKit.Options.Export;
 
 public record ExportPaths
 {
     public string OutputDirectory { get; set; }
 
+    public CacheJsonModel CacheModel { get; set; }
+
     public IReadOnlyDictionary<ExportPathType, string> RelativePaths { get; set; }
 
-    public ExportPaths(string outputDirectory, IReadOnlyDictionary<ExportPathType, string> paths)
+    public ExportPaths(string outputDirectory, CacheJsonModel cacheModel, IReadOnlyDictionary<ExportPathType, string> paths)
     {
         OutputDirectory = outputDirectory;
+        CacheModel = cacheModel;
         RelativePaths = paths;
     }
 
-    public ExportPaths(string outputDirectory, params ExportPathItem[] paths)
+    public ExportPaths(string outputDirectory, CacheJsonModel cacheModel, params ExportPathItem[] paths)
     {
         OutputDirectory = outputDirectory;
+        CacheModel = cacheModel;
 
         var d = new Dictionary<ExportPathType, string>();
         foreach(var pathItem in paths)
@@ -38,6 +43,19 @@ public record ExportPaths
     public string[] GetPaths()
     {
         return RelativePaths.Values.ToArray();
+    }
+}
+
+public class CacheJsonModel
+{
+    public string Output { get; set; }
+
+    public string Input { get; set; }
+
+    public CacheJsonModel(string output, string input)
+    {
+        Output = output;
+        Input = input;
     }
 }
 

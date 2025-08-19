@@ -1,4 +1,6 @@
-﻿namespace ContextKit.Model;
+﻿using System.Text.Json.Serialization;
+
+namespace ContextKit.Model;
 
 // coverage: 255
 // context: ContextInfo, model, IContextWithReferences
@@ -20,12 +22,15 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public string? Action { get; set; }
 
-    public HashSet<string> Domains { get; } = new();
+    public HashSet<string> Domains { get; set; } = new();
 
+    [JsonIgnore]
     public HashSet<ContextInfo> References { get; set; } = new();
 
+    [JsonIgnore]
     public HashSet<ContextInfo> InvokedBy { get; set; } = new();
 
+    [JsonIgnore]
     public HashSet<ContextInfo> Properties { get; set; } = new();
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
@@ -36,15 +41,32 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public string Identifier { get; } = Guid.NewGuid().ToString();
 
+    [JsonIgnore]
     public ISymbolInfo? Symbol { get; set; }
 
+    [JsonIgnore]
     public ISyntaxNodeInfo? SyntaxNode { get; set; }
 
     public override int GetHashCode() => FullName.GetHashCode();
 
     public virtual bool Equals(ContextInfo? obj) => obj is ContextInfo other && FullName.Equals(other.FullName);
 
-    public ContextInfo(ContextInfoElementType elementType, string identifier, string name, string fullName, string nameSpace, int spanStart, int spanEnd, ISymbolInfo? symbol, ISyntaxNodeInfo? syntaxNode, IContextInfo? classOwner, IContextInfo? methodOwner)
+    public ContextInfo(
+        ContextInfoElementType elementType,
+        string identifier,
+        string name,
+        string fullName,
+        string nameSpace,
+        int spanStart,
+        int spanEnd,
+        string? action = null,
+        HashSet<string>? domains = null,
+        Dictionary<string, string>? dimensions = null,
+        HashSet<string>? contexts = null,
+        ISymbolInfo? symbol = null,
+        ISyntaxNodeInfo? syntaxNode = null,
+        IContextInfo? classOwner = null,
+        IContextInfo? methodOwner = null)
     {
         ElementType = elementType;
         Identifier = identifier;
@@ -57,5 +79,9 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
         SyntaxNode = syntaxNode;
         ClassOwner = classOwner;
         MethodOwner = methodOwner;
+        Contexts = contexts ?? new();
+        Action = action;
+        Domains = domains ?? new();
+        Dimensions = dimensions ?? new();
     }
 }

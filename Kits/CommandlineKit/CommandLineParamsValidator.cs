@@ -1,4 +1,4 @@
-﻿using CommandlineKit.Polyfills;
+﻿using ContextBrowserKit.Commandline.Polyfills;
 using System.Reflection;
 
 namespace CommandlineKit;

@@ -1,4 +1,4 @@
-﻿using CommandlineKit.Polyfills;
+﻿using ContextBrowserKit.Commandline.Polyfills;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -84,6 +84,7 @@ public class AppOptions
         ),
         paths: new ExportPaths(
             outputDirectory: ".\\output",
+            cacheModel: new CacheJsonModel(output: ".\\cache\\roslyn.json", input: ".\\cache\\roslyn.json"),
             new ExportPathItem(ExportPathType.index, "."),
             new ExportPathItem(ExportPathType.puml, "puml"),
             new ExportPathItem(ExportPathType.pages, "pages"),

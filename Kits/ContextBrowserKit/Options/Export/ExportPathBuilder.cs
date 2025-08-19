@@ -11,12 +11,14 @@ public static class ExportPathBuilder
 
         var finalPaths = new Dictionary<ExportPathType, string>();
 
+        var finalCache = new CacheJsonModel(output: Path.GetFullPath(config.CacheModel.Output), input: Path.GetFullPath(config.CacheModel.Input));
+
         foreach (var (type, relativePath) in config.RelativePaths)
         {
             finalPaths[type] = Path.Combine(outputDirectory, relativePath);
         }
 
-        return new ExportPaths(outputDirectory, finalPaths);
+        return new ExportPaths(outputDirectory, config.CacheModel, finalPaths);
     }
 
     public static string GetPath(this ExportPaths config, ExportPathType pathType)
@@ -39,7 +41,7 @@ public static class ExportPathDirectoryPreparer
     {
         DirectoryUtils.Prepare(config.OutputDirectory, onWriteLog);
 
-        foreach (var path in config.GetPaths())
+        foreach(var path in config.GetPaths())
         {
             DirectoryUtils.Prepare(path, onWriteLog);
         }

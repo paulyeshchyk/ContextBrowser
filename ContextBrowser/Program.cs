@@ -7,6 +7,7 @@ using ContextBrowserKit.Options.Export;
 using ExporterKit.Uml;
 using LoggerKit;
 using LoggerKit.Model;
+using RoslynKit.Phases;
 
 namespace ContextBrowser.ContextCommentsParser;
 
@@ -43,7 +44,19 @@ public static class Program
 
         ExportPathDirectoryPreparer.Prepare(options.Export.Paths);
 
-        var contextBuilderModel = ContextModelBuildBuilder.Build(options.Roslyn, options.Export.ExportMatrix, options.Classifier, appLogger.WriteLog, CancellationToken.None);
+        var cacheModel = options.Export.Paths.CacheModel;
+        var contextsList = ContextListFileManager.ReadContextsFromCache(cacheModel,() =>
+        {
+            return RoslynContextParser.Parse(options.Roslyn, options.Classifier, appLogger.WriteLog, CancellationToken.None);
+        }, CancellationToken.None);
+
+        _ = Task.Run(async () =>
+        {
+            await ContextListFileManager.SaveContextsToCacheAsync(cacheModel, contextsList, CancellationToken.None).ConfigureAwait(false);
+        });
+
+
+        var contextBuilderModel = ContextModelBuildBuilder.Build(contextsList, options.Export.ExportMatrix, options.Classifier, appLogger.WriteLog);
 
         //ExtraDiagramsBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
 

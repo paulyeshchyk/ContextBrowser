@@ -19,5 +19,5 @@ public interface IContextInfoMatrix : IEnumerable<KeyValuePair<ContextInfoMatrix
     void Add(ContextInfo? item, ContextInfoMatrixCell toCell);
 
     // context: ContextInfoMatrix, read
-    bool TryGetValue(ContextInfoMatrixCell key, out List<ContextInfo>? value);
+    bool TryGetValue(ContextInfoMatrixCell key, out List<ContextInfo> value);
 }

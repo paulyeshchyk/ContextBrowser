@@ -31,10 +31,13 @@ public partial class ContextInfoMatrix : IContextInfoMatrix
     }
 
     // context: ContextInfoMatrix, read
-    public bool TryGetValue(ContextInfoMatrixCell key, out List<ContextInfo>? value)
+    public bool TryGetValue(ContextInfoMatrixCell key, out List<ContextInfo> value)
     {
-        // Делегируем вызов внутреннему словарю
-        return _data.TryGetValue(key, out value);
+        var extracted = _data.TryGetValue(key, out var theValue);
+        value = extracted
+            ? theValue!
+            : new List<ContextInfo>();
+        return extracted;
     }
 
     // context: ContextInfoMatrix, read

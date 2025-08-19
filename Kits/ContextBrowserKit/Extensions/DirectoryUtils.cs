@@ -9,6 +9,6 @@ public static class DirectoryUtils
     public static void Prepare(string outputDirectory, OnWriteLog? onWriteLog = default)
     {
         FileUtils.CreateDirectoryIfNotExists(outputDirectory, onWriteLog: onWriteLog);
-        FileUtils.WipeDirectory(outputDirectory, onWriteLog: onWriteLog);
+        FileUtils.WipeDirectory(outputDirectory, shouldClearContentOnly: true, onWriteLog: onWriteLog);
     }
 }
