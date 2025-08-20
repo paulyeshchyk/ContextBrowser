@@ -34,10 +34,10 @@ public class AppOptions
     [CommandLineArgument("roslyn-options", "The source code path.")]
     public CodeParsingOptions Semantic { get; set; } = new(
 
-        //".\\..\\..\\..\\ContextBrowser\\Program.cs"
-        //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\"
-        //".\\..\\..\\..\\ContextSamples\\ContextSamples\\S3\\FourContextsSample.cs"
-        //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\ContextBrowserKit\\Extensions\\FileUtils.cs"
+        //".//..//..//..//ContextBrowser//Program.cs"
+        //".//..//..//..//..//ContextBrowser//Kits//"
+        //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
+        //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         sourcePath: ".//..//..//..//",
         semanticOptions: new(
 

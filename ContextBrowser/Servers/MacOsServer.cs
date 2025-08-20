@@ -199,10 +199,11 @@ public static class MacOsProcessInfoFactory
 
     public static ProcessStartInfo HttpServerProcessInfo(int port, string folder)
     {
+        //var http_module_path = "/usr/local/lib/node_modules/node/lib";
         var startInfo = new ProcessStartInfo
         {
             FileName = "npx",
-            Arguments = $" http-server -p {port} --no-cache",
+            Arguments = $"http-server -p {port} --no-cache",
             WorkingDirectory = folder, // Важно: устанавливаем рабочую директорию
             RedirectStandardOutput = true,
             RedirectStandardError = true,

@@ -45,20 +45,20 @@ public static class CustomEnvironment
     public static void RunServers(string outputFolderPath)
     {
         var httpServerPath = Path.GetFullPath(outputFolderPath);
-        System.Threading.Thread.Sleep(100);
 
         var customServer = NewServer();
         if (!customServer.IsPortInUse(SLocalHttpServerPort))
         {
             customServer.StartHttpServer(port: SLocalHttpServerPort, folder: httpServerPath);
+            System.Threading.Thread.Sleep(1000);
         }
 
         if (!customServer.IsJvmPlantUmlProcessRunning(SPlantumlJarFilename))
         {
             customServer.StartJar(folder: httpServerPath, jarName: SPlantumlJarFilename, args: SPicowebJvmArgument);
+            System.Threading.Thread.Sleep(1000);
         }
 
-        System.Threading.Thread.Sleep(5000);
 
         long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         customServer.OpenHtmlPage($"http://localhost:{SLocalHttpServerPort}/index.html?v={timestamp}");
