@@ -20,7 +20,7 @@ public abstract class CSharpCommentSyntaxParser<TContext> : ISyntaxParser<TConte
         _onWriteLog = onWriteLog;
     }
 
-    public abstract void Parse(TContext? parent, object node, ISemanticModelWrapper model);
+    public abstract void Parse(TContext? parent, object node, ISemanticModelWrapper model, CancellationToken cancellationToken);
 
     internal string ExtractComment(SyntaxTrivia trivia)
     {

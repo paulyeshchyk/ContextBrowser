@@ -25,7 +25,7 @@ public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     public override bool CanParse(object syntax) => syntax is DelegateDeclarationSyntax;
 
     // context: roslyn, build
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model)
+    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
         if (syntax is not DelegateDeclarationSyntax delegateSyntax)
         {
@@ -33,15 +33,17 @@ public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
             return;
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, $"Parsing files: phase 1 - delegate syntax");
 
-        var delegateContext = _delegateContextInfoBuilder.BuildContextInfo(default, delegateSyntax, model);
+        var delegateContext = _delegateContextInfoBuilder.BuildContextInfo(default, delegateSyntax, model, cancellationToken);
         if (delegateContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{delegateSyntax}\" was not resolved");
             return;
         }
 
-        _triviaCommentParser.Parse(delegateContext, delegateSyntax, model);
+        _triviaCommentParser.Parse(delegateContext, delegateSyntax, model, cancellationToken);
     }
 }

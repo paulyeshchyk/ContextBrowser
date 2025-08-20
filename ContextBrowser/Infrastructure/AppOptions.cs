@@ -78,7 +78,7 @@ public class AppOptions
         //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
-        searchPaths: new[] { "/Users/paul/projects/ContextBrowser/Kits/UmlKit/", "/Users/paul/projects/ContextBrowser/" }
+        searchPaths: new[] { ".//..//..//..//" }
     );
 
     [CommandLineArgument("export-options", "Параметры экспорта")]

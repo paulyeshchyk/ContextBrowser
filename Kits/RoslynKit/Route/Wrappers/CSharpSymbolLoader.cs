@@ -9,17 +9,19 @@ namespace RoslynKit.Route.Wrappers;
 
 public static class CSharpSymbolLoader
 {
-    public static ISymbol? LoadSymbol(MemberDeclarationSyntax? syntax, ISemanticModelWrapper model, OnWriteLog? onWriteLog, CancellationToken cancellationToken = default)
+    public static ISymbol? LoadSymbol(MemberDeclarationSyntax? syntax, ISemanticModelWrapper model, OnWriteLog? onWriteLog, CancellationToken cancellationToken)
     {
-        if(syntax == null)
+        if (syntax == null)
         {
             return default;
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         try
         {
             var declaredSymbol = model.GetDeclaredSymbol(syntax, cancellationToken);
-            if(declaredSymbol is ISymbol isymbol)
+            if (declaredSymbol is ISymbol isymbol)
             {
                 return isymbol;
             }
@@ -28,7 +30,7 @@ public static class CSharpSymbolLoader
                 throw new Exception("Symbol was not loaded for syntax");
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Exception, $"[CSharpSymbolLoader] {ex.Message}");
             onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"{syntax.ToString()}");

@@ -17,8 +17,10 @@ public class CSharpEnumSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 
     public override bool CanParse(object syntax) => syntax is EnumDeclarationSyntax;
 
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model)
+    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"Syntax type is not parsed yet: {syntax.GetType()}");
     }
 }

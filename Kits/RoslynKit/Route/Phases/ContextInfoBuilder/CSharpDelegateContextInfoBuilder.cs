@@ -16,9 +16,11 @@ public class CSharpDelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder
     {
     }
 
-    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, DelegateDeclarationSyntax syntax, ISemanticModelWrapper model)
+    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, DelegateDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, CancellationToken.None);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, cancellationToken);
 
         var syntaxWrap = new CSharpSyntaxNodeWrapper(syntax);
         var symbolWrap = new CSharpISymbolWrapper(symbol);
@@ -30,7 +32,7 @@ public class CSharpDelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder
 
         string name;
         string fullName;
-        if(symbol != null)
+        if (symbol != null)
         {
             fullName = symbolWrap.ToDisplayString();
             name = symbolWrap.GetName();

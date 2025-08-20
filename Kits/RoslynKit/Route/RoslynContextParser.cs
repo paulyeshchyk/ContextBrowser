@@ -40,7 +40,7 @@ public sealed class RoslynContextParser
 
     // context: roslyn, read, directory, contextInfo
     // layer: 900
-    public List<ContextInfo> Parse(string[] filePaths, CancellationToken cancellationToken)
+    public Task<List<ContextInfo>> ParseAsync(string[] filePaths, CancellationToken cancellationToken)
     {
         var semanticModelStorage = new CSharpSemanticTreeModelStorage(0, _onWriteLog);
 
@@ -56,7 +56,8 @@ public sealed class RoslynContextParser
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, string.Empty, LogLevelNode.End);
 
-        return contextCollector.Collection.ToList();
+        var result = contextCollector.Collection.ToList();
+        return Task.FromResult(result);
     }
 
     // context: build, directory, roslyn, contextInfo

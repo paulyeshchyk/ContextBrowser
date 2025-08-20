@@ -20,26 +20,28 @@ public class SyntaxRouter<TContext>
         _parsers = parsers;
     }
 
-    public void Route(IEnumerable<object> availableSyntaxies, ISemanticModelWrapper model)
+    public void Route(IEnumerable<object> availableSyntaxies, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Routing syntaxies - ({availableSyntaxies.Count()})", LogLevelNode.Start);
 
-        foreach(var item in availableSyntaxies)
+        foreach (var item in availableSyntaxies)
         {
-            if(item is not MemberDeclarationSyntax syntax)
+            if (item is not MemberDeclarationSyntax syntax)
             {
                 throw new Exception("syntax is not MemberDeclarationSyntax");
             }
 
             var parser = _parsers.FirstOrDefault(p => p.CanParse(syntax));
 
-            if(parser == null)
+            if (parser == null)
             {
                 _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS]: No parser found for syntax type: {syntax.GetType()}");
                 continue;
             }
 
-            parser.Parse(default, syntax, model);
+            parser.Parse(default, syntax, model, cancellationToken);
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);

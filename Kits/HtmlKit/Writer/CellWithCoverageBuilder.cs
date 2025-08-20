@@ -9,14 +9,14 @@ internal class CellWithCoverageBuilder
 {
     public static string Build(ContextInfoMatrixCell container, int cnt)
     {
-        if(cnt == 0)
+        if (cnt == 0)
         {
             return string.Empty;
         }
 
         using var sw = new StringWriter();
 
-        Page.HtmlBuilderFactory.Table.With(sw,() =>
+        Page.HtmlBuilderFactory.Table.With(sw, () =>
         {
             WriteRow(sw, cnt.ToString());
         }, className: "embedded-table");
@@ -26,9 +26,9 @@ internal class CellWithCoverageBuilder
 
     private static void WriteRow(TextWriter writer, string label)
     {
-        HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(writer,() =>
+        HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(writer, () =>
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(writer, label);
+            HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(writer, plainText: true, label);
         });
     }
 }

@@ -13,7 +13,7 @@ public static class HtmlIndexPage
     //context: build, html, page, directory
     public static void GenerateContextHtmlPages(IContextInfoMatrix matrix, ExportOptions exportOptions)
     {
-        foreach(var cell in matrix)
+        foreach (var cell in matrix)
         {
             var (action, domain) = cell.Key;
             var filePath = ExportPathBuilder.BuildPath(exportOptions.Paths, ExportPathType.pages, $"composite_{action}_{domain}.html");
@@ -26,31 +26,31 @@ public static class HtmlIndexPage
 
             using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
 
-            HtmlBuilderFactory.Raw.Cell(writer, "<!DOCTYPE html>");
-            HtmlBuilderFactory.Html.With(writer,() =>
+            HtmlBuilderFactory.Raw.Cell(writer, plainText: false, "<!DOCTYPE html>");
+            HtmlBuilderFactory.Html.With(writer, () =>
             {
-                HtmlBuilderFactory.Head.With(writer,() =>
+                HtmlBuilderFactory.Head.With(writer, () =>
                 {
-                    HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
-                    HtmlBuilderFactory.Title.Cell(writer, title);
+                    HtmlBuilderFactory.Meta.Cell(writer, plainText: false, style: "charset=\"UTF-8\"");
+                    HtmlBuilderFactory.Title.Cell(writer, plainText: true, title);
 
-                    if(!string.IsNullOrWhiteSpace(injection.EmbeddedScript))
-                        HtmlBuilderFactory.Raw.Cell(writer, injection.EmbeddedScript);
+                    if (!string.IsNullOrWhiteSpace(injection.EmbeddedScript))
+                        HtmlBuilderFactory.Raw.Cell(writer, plainText: false, injection.EmbeddedScript);
                 });
 
-                HtmlBuilderFactory.Body.With(writer,() =>
+                HtmlBuilderFactory.Body.With(writer, () =>
                 {
-                    HtmlBuilderFactory.H1.Cell(writer, $"{action.ToUpper()} -> {domain}");
-                    HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methodCount}");
+                    HtmlBuilderFactory.H1.Cell(writer, plainText: true, $"{action.ToUpper()} -> {domain}");
+                    HtmlBuilderFactory.Paragraph.Cell(writer, plainText: true, $"Methods: {methodCount}");
 
-                    HtmlBuilderFactory.Ul.With(writer,() =>
+                    HtmlBuilderFactory.Ul.With(writer, () =>
                     {
-                        foreach(var method in distinctMethods)
-                            HtmlBuilderFactory.Li.Cell(writer, method.FullName);
+                        foreach (var method in distinctMethods)
+                            HtmlBuilderFactory.Li.Cell(writer, plainText: true, method.FullName);
                     });
 
-                    if(!string.IsNullOrWhiteSpace(injection.EmbeddedContent))
-                        HtmlBuilderFactory.Raw.Cell(writer, injection.EmbeddedContent);
+                    if (!string.IsNullOrWhiteSpace(injection.EmbeddedContent))
+                        HtmlBuilderFactory.Raw.Cell(writer, plainText: false, injection.EmbeddedContent);
                 });
             });
         }

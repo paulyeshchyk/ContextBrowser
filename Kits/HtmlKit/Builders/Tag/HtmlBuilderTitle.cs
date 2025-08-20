@@ -20,8 +20,8 @@ public class HtmlBuilderTitle : HtmlBuilder, IHtmlCellBuilder
         sb.WriteLine($"</{Tag}>");
     }
 
-    public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
+    public override void Cell(TextWriter sb, bool plainText, string? innerHtml = "", string? href = null, string? style = null)
     {
-        WriteContentTag(sb, WebUtility.HtmlEncode(innerHtml), style);
+        WriteContentTag(sb, plainText, WebUtility.HtmlEncode(innerHtml), style);
     }
 }

@@ -15,25 +15,27 @@ public class RoslynSemanticModelWrapper : ISemanticModelWrapper
 
     public object? GetSymbolInfo(object node, CancellationToken cancellationToken)
     {
-        if(node is SyntaxNode syntaxNode)
+        if (node is SyntaxNode syntaxNode)
         {
-            return _semanticModel.GetSymbolInfo(syntaxNode, cancellationToken);
+            var symbolInfo = _semanticModel.GetSymbolInfo(syntaxNode, cancellationToken);
+            return symbolInfo;
         }
         return null;
     }
 
     public object? GetDeclaredSymbol(object syntax, CancellationToken cancellationToken)
     {
-        if(syntax is MemberDeclarationSyntax syntaxNode)
+        if (syntax is MemberDeclarationSyntax syntaxNode)
         {
-            return _semanticModel.GetDeclaredSymbol(syntaxNode, cancellationToken);
+            var declaredSymbol = _semanticModel.GetDeclaredSymbol(syntaxNode, cancellationToken);
+            return declaredSymbol;
         }
         throw new NotImplementedException("unknown syntax");
     }
 
     public object? GetSymbolForInvocation(object invocationNode)
     {
-        if(invocationNode is SyntaxNode syntaxNode)
+        if (invocationNode is SyntaxNode syntaxNode)
         {
             var symbolInfo = _semanticModel.GetSymbolInfo(syntaxNode);
             return symbolInfo.Symbol;
@@ -43,7 +45,7 @@ public class RoslynSemanticModelWrapper : ISemanticModelWrapper
 
     public object? GetTypeInfo(object syntax)
     {
-        if(syntax is TypeSyntax syntaxNode)
+        if (syntax is TypeSyntax syntaxNode)
         {
             return _semanticModel.GetTypeInfo(syntaxNode).Type;
         }

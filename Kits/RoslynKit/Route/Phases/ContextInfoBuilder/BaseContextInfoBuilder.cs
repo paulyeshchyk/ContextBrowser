@@ -25,14 +25,14 @@ public class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticModel>
         _onWriteLog = onWriteLog;
     }
 
-    protected virtual IContextInfo BuildContextInfoDto(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel)
+    protected virtual IContextInfo BuildContextInfoDto(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public virtual TContext? BuildContextInfo(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel)
+    public virtual TContext? BuildContextInfo(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel, CancellationToken cancellationToken)
     {
-        var dto = BuildContextInfoDto(ownerContext, syntaxNode, semanticModel);
+        var dto = BuildContextInfoDto(ownerContext, syntaxNode, semanticModel, cancellationToken);
         return BuildContextInfo(ownerContext, dto);
     }
 

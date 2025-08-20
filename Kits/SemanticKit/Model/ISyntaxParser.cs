@@ -9,5 +9,5 @@ public interface ISyntaxParser<TContext>
     bool CanParse(object syntax);
 
     // Выполняет парсинг синтаксического узла.
-    void Parse(TContext? parent, object syntax, ISemanticModelWrapper model);
+    void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken);
 }
