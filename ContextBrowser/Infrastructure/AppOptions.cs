@@ -2,6 +2,7 @@
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextBrowserKit.Options.Import;
 using HtmlKit.Options;
 using LoggerKit.Model;
 using SemanticKit.Model.Options;
@@ -34,11 +35,6 @@ public class AppOptions
     [CommandLineArgument("roslyn-options", "The source code path.")]
     public CodeParsingOptions Semantic { get; set; } = new(
 
-        //".\\..\\..\\..\\ContextBrowser\\Program.cs"
-        //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\"
-        //".\\..\\..\\..\\ContextSamples\\ContextSamples\\S3\\FourContextsSample.cs"
-        //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\ContextBrowserKit\\Extensions\\FileUtils.cs"
-        sourcePath: ".\\..\\..\\..\\",
         semanticOptions: new(
 
             methodModifierTypes: new()
@@ -68,9 +64,21 @@ public class AppOptions
             fakeOwnerName: "privateTYPE",
             fakeMethodName: "privateMETHOD",
             customAssembliesPaths: new List<string>() { "." },
-            createFailedCallees: true,
-            targetExtension: ".cs"
+            createFailedCallees: true
         )
+    );
+
+    [CommandLineArgument("import-options", "Параметры импорта")]
+    public ImportOptions Import { get; set; } = new(
+        fileExtensions: ".cs",
+
+        //".//..//..//..//"
+        //".//..//..//..//ContextBrowser//Program.cs"
+        //".//..//..//..//..//ContextBrowser//Kits//"
+        //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
+        //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
+        //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
+        searchPaths: new[] { "/Users/paul/projects/ContextBrowser/Kits/UmlKit/", "/Users/paul/projects/ContextBrowser/" }
     );
 
     [CommandLineArgument("export-options", "Параметры экспорта")]
@@ -84,24 +92,24 @@ public class AppOptions
                                 )
         ),
         paths: new ExportPaths(
-            outputDirectory: ".\\output",
-            cacheModel: new CacheJsonModel(
-                input: null,//".\\cache\\roslyn.json",
-                output: ".\\cache\\roslyn.json"
+            outputDirectory: ".//output",
+                 cacheModel: new CacheJsonModel(
+                    renewCache: true,
+                         input: ".//cache//roslyn.json",
+                        output: ".//cache//roslyn.json"
                 ),
             new ExportPathItem(ExportPathType.index, "."),
             new ExportPathItem(ExportPathType.puml, "puml"),
             new ExportPathItem(ExportPathType.pages, "pages"),
-            new ExportPathItem(ExportPathType.pumlExtra, "puml\\extra")
+            new ExportPathItem(ExportPathType.pumlExtra, "puml/extra")
         ).BuildFullPath()
     );
-
 
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
                                               debug: false,
                                         detailLevel: DiagramDetailLevel.Full,
-                                          direction: DiagramDirection.Incoming,
+                                          direction: DiagramDirection.Outgoing,
                                          activation: new DiagramActivationOptions(useActivation: true, useActivationCall: true),
                                   transitionOptions: new DiagramTransitionOptions(useCall: true, useDone: true),
                                    invocationOption: new DiagramInvocationOption(useInvocation: true, useReturn: true),
@@ -115,7 +123,7 @@ public class AppOptions
             emptyDomain: "NoDomain",
              fakeAction: "_fakeAction",
              fakeDomain: "_fakeDomain",
-        standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert" },
+        standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" },
               metaItems: new[] { "Action;Domain;Elements" }
         )
     { };

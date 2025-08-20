@@ -1,4 +1,7 @@
-﻿using ContextBrowserKit.Log;
+﻿using System.Text.RegularExpressions;
+using ContextBrowserKit.Log;
+using ContextBrowserKit.Log.Options;
+using ContextBrowserKit.Options;
 
 namespace ContextBrowserKit.Extensions;
 
@@ -14,6 +17,95 @@ public class PathAnalyzer
         SymbolicLink, // Может быть файлом или папкой
         NonExistentPath,
         PlainText // Не является путем в файловой системе или не существует
+    }
+
+    // context: file, directory, read
+    public static string[] GetFilePaths(string[] paths, string searchPattern, OnWriteLog? onWriteLog = null)
+    {
+        var filePaths = new HashSet<string>();
+
+        // 1. Разделяем строку с паттернами на массив
+        var patterns = searchPattern.Split(';');
+
+        foreach (var path in paths)
+        {
+            try
+            {
+                // 2. Проверяем, является ли путь папкой
+                if (Directory.Exists(path))
+                {
+                    // 3. Перебираем каждый паттерн
+                    foreach (var pattern in patterns)
+                    {
+                        var validatedPattern = ValidatePattern(pattern);
+                        if (string.IsNullOrWhiteSpace(validatedPattern))
+                            continue;
+
+                        var filesInDirectory = Directory.GetFiles(path, validatedPattern, SearchOption.AllDirectories);
+                        foreach (var file in filesInDirectory)
+                        {
+                            filePaths.Add(file);
+                        }
+                    }
+                }
+                // 4. Добавляем путь, если это файл
+                else if (File.Exists(path))
+                {
+                    if (patterns.Any(p => IsFileMatch(path, p)))
+                    {
+                        filePaths.Add(path);
+                    }
+                }
+                else
+                {
+                    onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, $"Путь не найден: {path}");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Обрабатываем возможные ошибки
+                onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, $"Ошибка при обработке пути '{path}': {ex.Message}");
+            }
+        }
+
+        return filePaths.ToArray();
+    }
+
+    /// <summary>
+    /// Проверяет и корректирует шаблон поиска, добавляя '*' и '.' при необходимости.
+    /// </summary>
+    /// <param name="pattern">Исходный шаблон из командной строки.</param>
+    /// <returns>Валидированный шаблон для Directory.GetFiles.</returns>
+    private static string ValidatePattern(string pattern)
+    {
+        if (string.IsNullOrWhiteSpace(pattern))
+        {
+            return string.Empty;
+        }
+
+        // Удаляем пробелы, чтобы избежать ошибок
+        pattern = pattern.Trim();
+
+        // Если шаблон уже содержит '*', считаем, что он введён корректно
+        if (pattern.Contains('*'))
+        {
+            return pattern;
+        }
+
+        // Добавляем точку и звёздочку для расширений файлов, например, "cs" -> "*.cs"
+        if (!pattern.StartsWith("."))
+        {
+            pattern = "." + pattern;
+        }
+
+        // Если шаблон не начинается со звёздочки, добавляем её
+        return "*" + pattern;
+    }
+    private static bool IsFileMatch(string filePath, string pattern)
+    {
+        var fileName = Path.GetFileName(filePath);
+        var regexPattern = "^" + Regex.Escape(pattern).Replace("\\*", ".*").Replace("\\?", ".") + "$";
+        return Regex.IsMatch(fileName, regexPattern, RegexOptions.IgnoreCase);
     }
 
     // context: directory, read

@@ -29,10 +29,10 @@ public class CSharpMethodSyntaxParser<TContext>
         _triviaCommentParser = triviaCommentParser;
     }
 
-    //context: csharp, build
+    //context: roslyn, build
     public void ParseMethodSyntax(MemberDeclarationSyntax availableSyntax, ISemanticModelWrapper semanticModel, TContext typeContext)
     {
-        if(availableSyntax is not TypeDeclarationSyntax typeSyntax)
+        if (availableSyntax is not TypeDeclarationSyntax typeSyntax)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"[{typeContext.Name}]:Syntax is not TypeDeclaration syntax");
 
@@ -42,7 +42,7 @@ public class CSharpMethodSyntaxParser<TContext>
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - method syntax");
 
         var methodDeclarationSyntaxies = typeSyntax.FilteredMethodsList(_options);
-        if(!methodDeclarationSyntaxies.Any())
+        if (!methodDeclarationSyntaxies.Any())
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{typeContext.Name}]:Syntax has no methods in List");
             return;
@@ -50,7 +50,7 @@ public class CSharpMethodSyntaxParser<TContext>
 
         var buildItems = ParseMethodSyntax(typeContext, methodDeclarationSyntaxies, semanticModel);
 
-        foreach(var item in buildItems)
+        foreach (var item in buildItems)
         {
             _triviaCommentParser.Parse(item.Item1, item.Item2, semanticModel);
         }
@@ -62,22 +62,22 @@ public class CSharpMethodSyntaxParser<TContext>
         var result = new List<(TContext, MethodDeclarationSyntax)>();
         _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Iterating methods [{parent.Name}]", LogLevelNode.Start);
 
-        foreach(var method in methods)
+        foreach (var method in methods)
         {
-            if(method is not MethodDeclarationSyntax methodDeclaration)
+            if (method is not MethodDeclarationSyntax methodDeclaration)
             {
-                _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"[{parent.Name}]: Списко методов содержит ПУСТОТУ");
+                _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"[{parent.Name}]: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
                 continue;
             }
             var methodModel = BuildWrapper(method, semanticModel);
-            if(methodModel == null)
+            if (methodModel == null)
             {
-                _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Warn, $"[{parent.Name}]: Модель для метода не найдена [{method}]", LogLevelNode.Start);
+                _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Warn, $"[{parent.Name}]: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ [{method}]", LogLevelNode.Start);
                 continue;
             }
 
             var context = _methodContextInfoBuilder.BuildContextInfo(parent, method, semanticModel);
-            if(context != null)
+            if (context != null)
             {
                 result.Add((context, method));
             }
@@ -90,7 +90,7 @@ public class CSharpMethodSyntaxParser<TContext>
     private CSharpMethodSyntaxWrapper? BuildWrapper(MethodDeclarationSyntax syntax, ISemanticModelWrapper model)
     {
         var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, CancellationToken.None);
-        if(symbol == null)
+        if (symbol == null)
         {
             return default;
         }

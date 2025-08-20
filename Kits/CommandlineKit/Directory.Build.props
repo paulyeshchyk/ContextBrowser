@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<MSBUildProjectExtensionsPath>..\..\obj\CommandlineKit\</MSBUildProjectExtensionsPath>
-		<BaseIntermediateOutputPath>..\..\obj\CommandlineKit\</BaseIntermediateOutputPath>
+		<MSBUildProjectExtensionsPath>../../obj/CommandlineKit/</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>../../obj/CommandlineKit/</BaseIntermediateOutputPath>
 	</PropertyGroup>
 </Project>

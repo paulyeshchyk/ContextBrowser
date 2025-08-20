@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<MSBUildProjectExtensionsPath>..\..\obj\ContextKit\</MSBUildProjectExtensionsPath>
-		<BaseIntermediateOutputPath>..\..\obj\ContextKit\</BaseIntermediateOutputPath>
+		<MSBUildProjectExtensionsPath>../../obj/ContextKit/</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>../../obj/ContextKit/</BaseIntermediateOutputPath>
 	</PropertyGroup>
 </Project>

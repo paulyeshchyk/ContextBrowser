@@ -6,7 +6,7 @@ using RoslynKit.ContextData.Comment;
 
 namespace RoslynKit.ContextData;
 
-// context: csharp, contextInfo, build
+// context: roslyn, contextInfo, build
 public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
     where T : ContextInfo
 {
@@ -21,10 +21,10 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
         _contextClassifier = contextClassifier;
     }
 
-    // context: csharp, contextInfo, build
+    // context: roslyn, contextInfo, build
     public void Execute(T? container, string comment)
     {
-        if(!(container != null && container is T))
+        if (!(container != null && container is T))
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, "Comment container is null");
             return;
@@ -32,13 +32,13 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
 
         _strategy.Execute(container, comment);
 
-        if(string.IsNullOrEmpty(container.Action))
+        if (string.IsNullOrEmpty(container.Action))
         {
             container.Action = _contextClassifier.FakeAction;
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{container.Name}]: No action found");
         }
 
-        if(container.Domains.Count == 0)
+        if (container.Domains.Count == 0)
         {
             container.Domains.Add(_contextClassifier.FakeDomain);
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{container.Name}]: No domains found");

@@ -1,17 +1,17 @@
 namespace SemanticKit.Model;
 
-// context: csharp, model
+// context: semantic, model
 public interface ISemanticModelStorage<ISyntaxTreeWrapper, TSemanticModel>
 {
-    // context: csharp, create
+    // context: semantic, create
     void Add(ISyntaxTreeWrapper syntaxTree, TSemanticModel? model);
 
-    // context: csharp, create
+    // context: semantic, create
     void AddRange(IEnumerable<KeyValuePair<ISyntaxTreeWrapper, TSemanticModel>> models);
 
-    // context: csharp, read
+    // context: semantic, read
     TSemanticModel? GetModel(ISyntaxTreeWrapper syntaxTree);
 
-    // context: csharp, read
+    // context: semantic, read
     IEnumerable<ISyntaxTreeWrapper> GetAllSyntaxTrees();
 }

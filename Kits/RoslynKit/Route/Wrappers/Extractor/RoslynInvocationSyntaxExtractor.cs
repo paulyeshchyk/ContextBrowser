@@ -10,7 +10,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Route.Wrappers.Extractor;
 
-//context csharp, builder
+//context roslyn, builder
 public class RoslynInvocationSyntaxExtractor
 {
     private OnWriteLog? _onWriteLog;
@@ -24,14 +24,14 @@ public class RoslynInvocationSyntaxExtractor
         _options = options;
     }
 
-    // context: csharp, read
+    // context: roslyn, read
     public IInvocationSyntaxWrapper? ResolveSymbol(InvocationExpressionSyntax byInvocation, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var invocationWrapper = new RoslynInvocationExpressionWrapper(byInvocation, _semanticInvocationResolver);
         var invocationSemanticModel = FindSemanticModel(invocationWrapper);
-        if(invocationSemanticModel == null)
+        if (invocationSemanticModel == null)
         {
             //TODO: warn
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[MISS] Semantic model was not defined for [{byInvocation}]");
@@ -39,7 +39,7 @@ public class RoslynInvocationSyntaxExtractor
         }
 
         var symbol = RoslynMethodSymbolExtractor.GetMethodSymbol(invocationWrapper, invocationSemanticModel, _onWriteLog, cancellationToken);
-        if(symbol == null)
+        if (symbol == null)
         {
             //TODO: warn
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[MISS] Symbol was not resolved for invocation [{byInvocation}]");
@@ -51,11 +51,11 @@ public class RoslynInvocationSyntaxExtractor
         return RoslynSyntaxWrapperExtractor.Extract(byInvocation, symbol, _onWriteLog);
     }
 
-    // context: csharp, read
+    // context: roslyn, read
     internal ISemanticModelWrapper? FindSemanticModel(IInvocationNodeWrapper wrapper)
     {
         var treeWrapper = wrapper.GetTree();
-        if(treeWrapper == null)
+        if (treeWrapper == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS]: Tree was not provided for invocation [{wrapper}]");
 

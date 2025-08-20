@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using ContextBrowser.Servers;
+using System.Runtime.InteropServices;
 
 namespace ContextBrowser.ContextCommentsParser;
 
@@ -15,11 +16,11 @@ public static class CustomEnvironment
         CustomServer customServer;
         var osPlatform = CustomServerDetector.GetOSPlatform();
 
-        if(osPlatform == OSPlatform.Windows)
+        if (osPlatform == OSPlatform.Windows)
         {
             customServer = new WindowsServer();
         }
-        else if(osPlatform == OSPlatform.OSX)
+        else if (osPlatform == OSPlatform.OSX)
         {
             customServer = new MacOsServer();
         }
@@ -44,15 +45,22 @@ public static class CustomEnvironment
     public static void RunServers(string outputFolderPath)
     {
         var httpServerPath = Path.GetFullPath(outputFolderPath);
-        var customServer = NewServer();
-        if(!customServer.IsPortInUse(SLocalHttpServerPort))
-            customServer.StartServer("cmd.exe", $"/c cd /d \"{httpServerPath}\" && start http-server -p {SLocalHttpServerPort} --no-cache");
-        if(!customServer.IsJvmPlantUmlProcessRunning(SPlantumlJarFilename))
-            customServer.StartServer("cmd.exe", $"/c cd /d \"{httpServerPath}\" && start java -jar {SPlantumlJarFilename} {SPicowebJvmArgument}");
 
-        System.Threading.Thread.Sleep(5000);
+        var customServer = NewServer();
+        if (!customServer.IsPortInUse(SLocalHttpServerPort))
+        {
+            customServer.StartHttpServer(port: SLocalHttpServerPort, folder: httpServerPath);
+            System.Threading.Thread.Sleep(1000);
+        }
+
+        if (!customServer.IsJvmPlantUmlProcessRunning(SPlantumlJarFilename))
+        {
+            customServer.StartJar(folder: httpServerPath, jarName: SPlantumlJarFilename, args: SPicowebJvmArgument);
+            System.Threading.Thread.Sleep(1000);
+        }
+
 
         long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        customServer.StartServer("cmd.exe", $"/c start http://localhost:{SLocalHttpServerPort}/index.html?v={timestamp}");
+        customServer.OpenHtmlPage($"http://localhost:{SLocalHttpServerPort}/index.html?v={timestamp}");
     }
 }

@@ -13,7 +13,7 @@ public static class ExportPathBuilder
         var outputPath = string.IsNullOrEmpty(config.CacheModel.Output) ? string.Empty : Path.GetFullPath(config.CacheModel.Output);
         var inputPath = string.IsNullOrEmpty(config.CacheModel.Input) ? string.Empty : Path.GetFullPath(config.CacheModel.Input);
 
-        var finalCache = new CacheJsonModel(output: outputPath, input: inputPath);
+        var finalCache = new CacheJsonModel(output: outputPath, input: inputPath, renewCache: config.CacheModel.RenewCache);
 
         foreach (var (type, relativePath) in config.RelativePaths)
         {
@@ -43,7 +43,7 @@ public static class ExportPathDirectoryPreparer
     {
         DirectoryUtils.Prepare(config.OutputDirectory, onWriteLog);
 
-        foreach(var path in config.GetPaths())
+        foreach (var path in config.GetPaths())
         {
             DirectoryUtils.Prepare(path, onWriteLog);
         }

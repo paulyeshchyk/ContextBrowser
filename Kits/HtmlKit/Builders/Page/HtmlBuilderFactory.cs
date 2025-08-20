@@ -24,7 +24,7 @@ public static class HtmlBuilderFactory
     public static readonly IHtmlBuilder H1 = new HtmlBuilderH1("h1");
     public static readonly IHtmlBuilder Paragraph = new HtmlBuilderP("p");
     public static readonly IHtmlBuilder Ul = new HtmlBuilderUl("ul");
-    public static readonly IHtmlBuilder Li = new HtmlBuilderLi("li");
+    public static readonly IHtmlBuilder Li = new HtmlBuilderLi("li", "nowrap");
     public static readonly IHtmlCellBuilder Raw = new RawBuilder();
 
     // pattern: Abstract Factory
@@ -134,7 +134,7 @@ public static class HtmlBuilderFactory
 
     private class HtmlBuilderLi : HtmlBuilder
     {
-        public HtmlBuilderLi(string tag) : base(tag, string.Empty)
+        public HtmlBuilderLi(string tag, string className) : base(tag, className)
         {
         }
     }
@@ -159,7 +159,7 @@ public static class HtmlBuilderFactory
         // context: html, build
         public void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
         {
-            if(!string.IsNullOrWhiteSpace(innerHtml))
+            if (!string.IsNullOrWhiteSpace(innerHtml))
                 sb.WriteLine(innerHtml);
         }
 

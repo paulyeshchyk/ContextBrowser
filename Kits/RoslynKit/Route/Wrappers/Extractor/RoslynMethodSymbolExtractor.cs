@@ -8,7 +8,7 @@ namespace RoslynKit.Route.Wrappers.Extractor;
 
 internal static class RoslynMethodSymbolExtractor
 {
-    // context: csharp, read
+    // context: roslyn, read
     internal static IMethodSymbol? GetMethodSymbol(IInvocationNodeWrapper invocation, ISemanticModelWrapper semanticModel, OnWriteLog? _onWriteLog, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -16,18 +16,18 @@ internal static class RoslynMethodSymbolExtractor
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"Looking IMethodSymbol for expression: {invocation.Expression}");
 
         var si = semanticModel.GetSymbolInfo(invocation.Expression, cancellationToken);
-        if(si is not SymbolInfo symbolInfo)
+        if (si is not SymbolInfo symbolInfo)
         {
             throw new Exception("si is not SymbolInfo");
         }
 
-        if(symbolInfo.Symbol is IMethodSymbol method)
+        if (symbolInfo.Symbol is IMethodSymbol method)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"Found IMethodSymbol for expression: {invocation.Expression}");
             return method;
         }
 
-        if(symbolInfo.CandidateSymbols.Length > 0)
+        if (symbolInfo.CandidateSymbols.Length > 0)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"Found Candidate of IMethodSymbol for expression: {invocation.Expression}");
             return symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();

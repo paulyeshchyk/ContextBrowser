@@ -1,6 +1,6 @@
 namespace SemanticKit.Model;
 
-//context: csharp, model
+//context: semantic, model
 public record struct RoslynCompilationView(ISemanticModelWrapper model, ISyntaxTreeWrapper tree, object/*CompilationUnitSyntax*/ unitSyntax)
 {
     public static implicit operator (ISemanticModelWrapper model, ISyntaxTreeWrapper tree, object unitSyntax)(RoslynCompilationView value)

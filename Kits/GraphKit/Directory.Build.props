@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<MSBUildProjectExtensionsPath>..\..\obj\GraphKit\</MSBUildProjectExtensionsPath>
-		<BaseIntermediateOutputPath>..\..\obj\GraphKit\</BaseIntermediateOutputPath>
+		<MSBUildProjectExtensionsPath>../../obj/GraphKit/</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>../../obj/GraphKit/</BaseIntermediateOutputPath>
 	</PropertyGroup>
 </Project>

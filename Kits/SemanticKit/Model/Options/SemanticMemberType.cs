@@ -1,6 +1,6 @@
 namespace SemanticKit.Model.Options;
 
-//context: csharp, model
+//context: semantic, model
 public enum SemanticMemberType
 {
     @class,

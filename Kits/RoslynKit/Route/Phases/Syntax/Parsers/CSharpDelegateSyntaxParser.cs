@@ -8,7 +8,7 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Route.Phases.Syntax.Parsers;
 
-// context: csharp, build
+// context: roslyn, build
 public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
@@ -24,10 +24,10 @@ public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 
     public override bool CanParse(object syntax) => syntax is DelegateDeclarationSyntax;
 
-    // context: csharp, build
+    // context: roslyn, build
     public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model)
     {
-        if(syntax is not DelegateDeclarationSyntax delegateSyntax)
+        if (syntax is not DelegateDeclarationSyntax delegateSyntax)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax is not DelegateDeclarationSyntax");
             return;
@@ -36,7 +36,7 @@ public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, $"Parsing files: phase 1 - delegate syntax");
 
         var delegateContext = _delegateContextInfoBuilder.BuildContextInfo(default, delegateSyntax, model);
-        if(delegateContext == null)
+        if (delegateContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{delegateSyntax}\" was not resolved");
             return;

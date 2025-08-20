@@ -8,7 +8,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Route.Phases.Syntax;
 
-// context: csharp, build, contextInfo
+// context: roslyn, build, contextInfo
 public class CSharpPhaseParserContextBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
@@ -29,7 +29,7 @@ public class CSharpPhaseParserContextBuilder<TContext>
         _router = router;
     }
 
-    // context: csharp, build
+    // context: roslyn, build
     public void ParseFiles(IEnumerable<string> codeFiles, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -50,7 +50,7 @@ public class CSharpPhaseParserContextBuilder<TContext>
 
         var availableSyntaxies = tree.GetAvailableSyntaxies(options, cancellationToken);
 
-        if(availableSyntaxies.Any())
+        if (availableSyntaxies.Any())
         {
             _router.Route(availableSyntaxies, model);
         }

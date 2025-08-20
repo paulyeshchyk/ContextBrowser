@@ -2,12 +2,14 @@
 using CommandlineKit.Model;
 using ContextBrowser.Infrastructure;
 using ContextBrowser.Samples.HtmlPages;
+using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ExporterKit.Uml;
 using LoggerKit;
 using LoggerKit.Model;
 using RoslynKit.Route;
+using RoslynKit.Route.Tree;
 using RoslynKit.Route.Wrappers.Meta;
 
 namespace ContextBrowser.ContextCommentsParser;
@@ -20,12 +22,12 @@ public static class Program
     {
         var parser = new CommandLineParser();
 
-        if(!parser.TryParse<AppOptions>(args, out var options, out var errorMessage))
+        if (!parser.TryParse<AppOptions>(args, out var options, out var errorMessage))
         {
             Console.WriteLine(errorMessage);
             return;
         }
-        if(options == null)
+        if (options == null)
         {
             Console.WriteLine("Что то пошло не так))");
             Console.WriteLine(CommandLineHelpProducer.GenerateHelpText<AppOptions>(CommandLineDefaults.SArgumentPrefix));
@@ -51,9 +53,12 @@ public static class Program
 
 
         var cacheModel = options.Export.Paths.CacheModel;
-        var contextsList = ContextListFileManager.ReadContextsFromCache(cacheModel,() =>
+        var contextsList = ContextListFileManager.ReadContextsFromCache(cacheModel, () =>
         {
-            return semanticParser.Parse(CancellationToken.None);
+            var sourcePaths = options.Import.SearchPaths;
+            var filePaths = PathAnalyzer.GetFilePaths(sourcePaths, options.Import.FileExtensions, appLogger.WriteLog);
+
+            return semanticParser.Parse(filePaths, CancellationToken.None);
         }, CancellationToken.None);
 
         _ = Task.Run(async () =>
@@ -78,7 +83,7 @@ public static class Program
 
         ExtraDiagramsBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
 
-        CustomEnvironment.CopyResources(".\\output");
-        CustomEnvironment.RunServers(".\\output");
+        CustomEnvironment.CopyResources(".//output");
+        CustomEnvironment.RunServers(".//output");
     }
 }

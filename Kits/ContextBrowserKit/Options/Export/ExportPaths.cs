@@ -22,7 +22,7 @@ public record ExportPaths
         CacheModel = cacheModel;
 
         var d = new Dictionary<ExportPathType, string>();
-        foreach(var pathItem in paths)
+        foreach (var pathItem in paths)
         {
             d[pathItem.Type] = pathItem.Path;
         }
@@ -31,7 +31,7 @@ public record ExportPaths
 
     public string GetPath(ExportPathType type)
     {
-        if(RelativePaths.TryGetValue(type, out var path)) return path;
+        if (RelativePaths.TryGetValue(type, out var path)) return path;
         throw new InvalidOperationException($"Export path not found for {type}");
     }
 
@@ -52,10 +52,13 @@ public class CacheJsonModel
 
     public string Input { get; set; }
 
-    public CacheJsonModel(string? output, string? input)
+    public bool RenewCache { get; set; }
+
+    public CacheJsonModel(string? output, string? input, bool renewCache)
     {
         Output = output ?? string.Empty;
         Input = input ?? string.Empty;
+        RenewCache = renewCache;
     }
 }
 

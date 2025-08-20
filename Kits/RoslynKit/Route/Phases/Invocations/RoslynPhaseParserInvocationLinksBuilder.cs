@@ -12,7 +12,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Route.Phases.Invocations;
 
-// context: csharp, build
+// context: roslyn, build
 public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLinksBuilder<TContext>
     where TContext : ContextInfo, IContextWithReferences<TContext>
 {
@@ -29,11 +29,11 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
         _typeContextInfoBuilder = typeContextInfoBuilder;
     }
 
-    // context: csharp, update
+    // context: roslyn, update
     public TContext? LinkInvocation(TContext callerContextInfo, IInvocationSyntaxWrapper symbolDto, SemanticOptions options)
     {
         var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, symbolDto, options);
-        if(calleeContextInfo == null)
+        if (calleeContextInfo == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS] Linking invocation \ncaller: [{callerContextInfo.FullName}]\nwants:  [{symbolDto.FullName}]");
             return default;
@@ -43,14 +43,14 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking reference: [{callerContextInfo.GetDebugSymbolName()}] Reference [{calleeContextInfo.GetDebugSymbolName()}]");
         var addedReference = ContextInfoService.AddToReference(callerContextInfo, calleeContextInfo);
-        if(!addedReference)
+        if (!addedReference)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[FAIL] Linking reference: [{callerContextInfo.GetDebugSymbolName()}] Reference [{calleeContextInfo.GetDebugSymbolName()}]");
         }
 
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Linking invokedBy: [{calleeContextInfo.GetDebugSymbolName()}] InvokedBy [{callerContextInfo.GetDebugSymbolName()}]");
         var addedInvokedBy = ContextInfoService.AddToInvokedBy(callerContextInfo, calleeContextInfo);
-        if(!addedInvokedBy)
+        if (!addedInvokedBy)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[FAIL] Linking invokedBy: [{callerContextInfo.GetDebugSymbolName()}] InvokedBy [{calleeContextInfo.GetDebugSymbolName()}]");
         }
