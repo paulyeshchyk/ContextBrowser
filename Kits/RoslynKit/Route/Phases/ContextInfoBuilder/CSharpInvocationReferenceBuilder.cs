@@ -28,7 +28,7 @@ public class CSharpInvocationReferenceBuilder<TContext>
         _invocationSyntaxExtractor = invocationSyntaxExtractor;
     }
 
-    // context: csharp, read
+    // context: roslyn, read
     public void BuildReferences(TContext callerContext, CancellationToken cancellationToken)
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Build references for [{callerContext.GetDebugName()}]");
@@ -36,7 +36,7 @@ public class CSharpInvocationReferenceBuilder<TContext>
         var validator = new ReferenceBuilderValidator<TContext, InvocationExpressionSyntax>(_onWriteLog);
 
         var validationResult = validator.Validate(callerContext, _collector);
-        if(validationResult == null)
+        if (validationResult == null)
         {
             return;
         }

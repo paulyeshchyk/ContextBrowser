@@ -34,6 +34,7 @@ public class AppOptions
     [CommandLineArgument("roslyn-options", "The source code path.")]
     public CodeParsingOptions Semantic { get; set; } = new(
 
+        //".//..//..//..//"
         //".//..//..//..//ContextBrowser//Program.cs"
         //".//..//..//..//..//ContextBrowser//Kits//"
         //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
@@ -86,8 +87,9 @@ public class AppOptions
         paths: new ExportPaths(
             outputDirectory: ".//output",
             cacheModel: new CacheJsonModel(
-                input: ".//cache//roslyn.json",
-                output: ".//cache//roslyn.json"
+                renewCache: true,
+                     input: ".//cache//roslyn.json",
+                    output: ".//cache//roslyn.json"
                 ),
             new ExportPathItem(ExportPathType.index, "."),
             new ExportPathItem(ExportPathType.puml, "puml"),
@@ -115,7 +117,7 @@ public class AppOptions
             emptyDomain: "NoDomain",
              fakeAction: "_fakeAction",
              fakeDomain: "_fakeDomain",
-        standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert" },
+        standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" },
               metaItems: new[] { "Action;Domain;Elements" }
         )
     { };

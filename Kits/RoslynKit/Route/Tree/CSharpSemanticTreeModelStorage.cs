@@ -5,7 +5,7 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Route.Tree;
 
-//context: csharp, read, create, update, delete
+//context: roslyn, read, create, update, delete
 public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper>
 {
     private OnWriteLog? _onWriteLog;
@@ -22,25 +22,25 @@ public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<ISyntaxTreeW
 
     public bool IsInfinite => _capacity <= 0;
 
-    //context: csharp, create
+    //context: roslyn, create
     public void Add(ISyntaxTreeWrapper tree, ISemanticModelWrapper? model)
     {
-        if(tree == null || model == null)
+        if (tree == null || model == null)
             return;
 
         string filePath = tree.FilePath;
-        if(string.IsNullOrWhiteSpace(filePath))
+        if (string.IsNullOrWhiteSpace(filePath))
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, "[WARN] SyntaxTree has no file path; skipping storage");
             return;
         }
 
-        lock(_sync)
+        lock (_sync)
         {
-            if(_cache.ContainsKey(filePath))
+            if (_cache.ContainsKey(filePath))
                 return;
 
-            if(!IsInfinite && _cache.Count >= _capacity)
+            if (!IsInfinite && _cache.Count >= _capacity)
                 DisposeOldest_NoLock();
 
             _cache[filePath] = new StorageTreeModelItem(tree, model);
@@ -48,7 +48,7 @@ public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<ISyntaxTreeW
         }
     }
 
-    //context: csharp, create
+    //context: roslyn, create
     public void AddRange(IEnumerable<KeyValuePair<ISyntaxTreeWrapper, ISemanticModelWrapper>> models)
     {
         foreach (var (tree, model) in models)
@@ -57,32 +57,32 @@ public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<ISyntaxTreeW
         }
     }
 
-    //context: csharp, read
+    //context: roslyn, read
     public ISemanticModelWrapper? GetModel(ISyntaxTreeWrapper tree)
     {
-        if(tree == null || string.IsNullOrWhiteSpace(tree.FilePath))
+        if (tree == null || string.IsNullOrWhiteSpace(tree.FilePath))
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, "[WARN] SyntaxTree has no file path; skipping lookup");
             return null;
         }
 
         string filePath = tree.FilePath;
-        lock(_sync)
+        lock (_sync)
         {
-            if(!_cache.TryGetValue(filePath, out var item))
+            if (!_cache.TryGetValue(filePath, out var item))
                 return null;
 
-            // делаем добавленный последним
+            // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             _usageOrder.Remove(filePath);
             _usageOrder.AddLast(filePath);
             return item.model;
         }
     }
 
-    //context: csharp, read
+    //context: roslyn, read
     public IEnumerable<ISyntaxTreeWrapper> GetAllSyntaxTrees()
     {
-        lock(_sync)
+        lock (_sync)
         {
             return _cache.Values.Select(v => v.tree).ToList();
         }
@@ -90,7 +90,7 @@ public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<ISyntaxTreeW
 
     public void DisposeOldest()
     {
-        lock(_sync)
+        lock (_sync)
         {
             DisposeOldest_NoLock();
         }
@@ -98,7 +98,7 @@ public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<ISyntaxTreeW
 
     internal void DisposeOldest_NoLock()
     {
-        if(_usageOrder.Count == 0)
+        if (_usageOrder.Count == 0)
             return;
 
         var oldest = _usageOrder.First!.Value;
@@ -106,10 +106,10 @@ public class CSharpSemanticTreeModelStorage : ISemanticModelStorage<ISyntaxTreeW
         _cache.Remove(oldest);
     }
 
-    //context: csharp, delete
+    //context: roslyn, delete
     public void Flush()
     {
-        lock(_sync)
+        lock (_sync)
         {
             _cache.Clear();
             _usageOrder.Clear();

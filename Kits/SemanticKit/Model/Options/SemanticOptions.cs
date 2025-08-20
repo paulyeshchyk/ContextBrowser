@@ -1,7 +1,7 @@
 namespace SemanticKit.Model.Options;
 
 // pattern: configuration
-// context: csharp, model
+// context: semantic, model
 public record SemanticOptions
 {
     public string ExternalNamespaceName { get; set; }

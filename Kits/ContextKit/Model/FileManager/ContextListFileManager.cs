@@ -5,7 +5,7 @@ using System.Text.Json;
 namespace ContextBrowser.ContextCommentsParser;
 
 /// <summary>
-/// Управляет сохранением и чтением списка объектов ContextInfo, 
+/// Управляет сохранением и чтением списка объектов ContextInfo,
 /// используя промежуточную модель для обхода проблем сериализации.
 /// </summary>
 // context: roslyncache, build
@@ -19,10 +19,10 @@ public static class ContextListFileManager
     // context: roslyncache, update
     public static async Task SaveContextsToCacheAsync(CacheJsonModel cacheModel, List<ContextInfo> contextsList, CancellationToken cancellationToken)
     {
-        if(File.Exists(cacheModel.Output))
+        if (File.Exists(cacheModel.Output))
         {
             try { File.Delete(cacheModel.Output); }
-            catch(Exception ex) { throw new Exception($"Cache can't be erased\n{ex}"); }
+            catch (Exception ex) { throw new Exception($"Cache can't be erased\n{ex}"); }
         }
 
         try
@@ -30,18 +30,18 @@ public static class ContextListFileManager
             var serializableList = ContextInfoSerializableModelAdapter.Adapt(contextsList);
 
             var json = JsonSerializer.Serialize(serializableList, _jsonOptions);
-            if(string.IsNullOrEmpty(json))
+            if (string.IsNullOrEmpty(json))
             {
                 throw new Exception("Contexts list has no items");
             }
 
             var directoryPath = Path.GetDirectoryName(cacheModel.Output);
-            if(string.IsNullOrEmpty(directoryPath))
+            if (string.IsNullOrEmpty(directoryPath))
             {
                 throw new Exception($"directoryPath is empty for cache output file ({cacheModel.Output})");
             }
 
-            if(!Directory.Exists(directoryPath))
+            if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
             }
@@ -49,7 +49,7 @@ public static class ContextListFileManager
             await File.WriteAllTextAsync(cacheModel.Output, json, System.Text.Encoding.UTF8, cancellationToken)
                       .ConfigureAwait(false);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw new Exception($"Cache can't be saved\n{ex}");
         }
@@ -61,7 +61,7 @@ public static class ContextListFileManager
     // context: roslyncache, read
     public static List<ContextInfo> ReadContextsFromCache(CacheJsonModel cacheModel, Func<List<ContextInfo>> fallback, CancellationToken cancellationToken)
     {
-        if(!File.Exists(cacheModel.Input))
+        if (!File.Exists(cacheModel.Input) || cacheModel.RenewCache)
         {
             return fallback();
         }
@@ -69,20 +69,20 @@ public static class ContextListFileManager
         try
         {
             var fileContent = File.ReadAllText(cacheModel.Input);
-            if(string.IsNullOrEmpty(fileContent))
+            if (string.IsNullOrEmpty(fileContent))
             {
                 return fallback();
             }
 
             var serializableList = JsonSerializer.Deserialize<List<ContextInfoSerializableModel>>(fileContent, _jsonOptions);
-            if(serializableList == null)
+            if (serializableList == null)
             {
                 return fallback();
             }
 
             return ContextInfoSerializableModelAdapter.ConvertToContextInfo(serializableList);
         }
-        catch(Exception)
+        catch (Exception)
         {
             return fallback();
         }
@@ -157,39 +157,39 @@ internal static class ContextInfoSerializableModelAdapter
         var lookupDictionary = contexts.ToDictionary(c => c.FullName);
 
         // 3. Восстанавливаем связи.
-        for(int i = 0; i < contexts.Count; i++)
+        for (int i = 0; i < contexts.Count; i++)
         {
             var context = contexts[i];
             var serializableContext = serializableList[i];
 
             // Восстанавливаем ClassOwner и MethodOwner.
-            if(serializableContext.ClassOwnerFullName != null && lookupDictionary.ContainsKey(serializableContext.ClassOwnerFullName))
+            if (serializableContext.ClassOwnerFullName != null && lookupDictionary.ContainsKey(serializableContext.ClassOwnerFullName))
             {
                 context.ClassOwner = lookupDictionary[serializableContext.ClassOwnerFullName];
             }
-            if(serializableContext.MethodOwnerFullName != null && lookupDictionary.ContainsKey(serializableContext.MethodOwnerFullName))
+            if (serializableContext.MethodOwnerFullName != null && lookupDictionary.ContainsKey(serializableContext.MethodOwnerFullName))
             {
                 context.MethodOwner = lookupDictionary[serializableContext.MethodOwnerFullName];
             }
 
             // Восстанавливаем References, InvokedBy и Properties.
-            foreach(var fullName in serializableContext.ReferencesFullNames)
+            foreach (var fullName in serializableContext.ReferencesFullNames)
             {
-                if(lookupDictionary.TryGetValue(fullName, out var reference))
+                if (lookupDictionary.TryGetValue(fullName, out var reference))
                 {
                     context.References.Add(reference);
                 }
             }
-            foreach(var fullName in serializableContext.InvokedByFullNames)
+            foreach (var fullName in serializableContext.InvokedByFullNames)
             {
-                if(lookupDictionary.TryGetValue(fullName, out var invokedBy))
+                if (lookupDictionary.TryGetValue(fullName, out var invokedBy))
                 {
                     context.InvokedBy.Add(invokedBy);
                 }
             }
-            foreach(var fullName in serializableContext.PropertiesFullNames)
+            foreach (var fullName in serializableContext.PropertiesFullNames)
             {
-                if(lookupDictionary.TryGetValue(fullName, out var property))
+                if (lookupDictionary.TryGetValue(fullName, out var property))
                 {
                     context.Properties.Add(property);
                 }

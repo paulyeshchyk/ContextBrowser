@@ -8,7 +8,7 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Route.Phases.ContextInfoBuilder;
 
-// context: csharp, build, contextInfo
+// context: roslyn, build, contextInfo
 public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, MethodDeclarationSyntax, ISemanticModelWrapper>
     where TContext : IContextWithReferences<TContext>
 {
@@ -31,7 +31,7 @@ public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<T
 
         string fullName;
         string name;
-        if(symbol != null)
+        if (symbol != null)
         {
             fullName = symbolWrap.ToDisplayString();
             name = symbolWrap.GetName();
@@ -51,7 +51,7 @@ public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<T
     public TContext? BuildInvocationContextInfo(TContext? ownerContext, CSharpMethodSyntaxWrapper wrapper)
     {
         var contextInfoDto = wrapper.GetContextInfoDto();
-        if(contextInfoDto == null)
+        if (contextInfoDto == null)
         {
             return default;
         }

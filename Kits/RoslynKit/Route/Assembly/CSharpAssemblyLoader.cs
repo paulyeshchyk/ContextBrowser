@@ -5,14 +5,14 @@ using Microsoft.CodeAnalysis;
 
 namespace RoslynKit.Route.Assembly;
 
-// context: csharp, build
+// context: roslyn, build
 public static class CSharpAssemblyLoader
 {
-    // context: csharp, build
+    // context: roslyn, build
     public static IEnumerable<MetadataReference> Fetch(OnWriteLog? onWriteLog)
     {
         var runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
-        if(string.IsNullOrWhiteSpace(runtimeDirectory))
+        if (string.IsNullOrWhiteSpace(runtimeDirectory))
         {
             onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, "[MISS]: Не найден путь assembly для typeof(object)");
             return Enumerable.Empty<MetadataReference>();
@@ -29,21 +29,21 @@ public static class CSharpAssemblyLoader
         return references;
     }
 
-    // context: csharp, build
+    // context: roslyn, build
     public static IEnumerable<MetadataReference> Fetch(IEnumerable<string> runtimeDirectory, OnWriteLog? onWriteLog)
     {
         var references = new List<MetadataReference>();
-        foreach(var directory in runtimeDirectory)
+        foreach (var directory in runtimeDirectory)
         {
             references.AddRange(Fetch(directory, onWriteLog));
         }
         return references;
     }
 
-    // context: csharp, build
+    // context: roslyn, build
     public static IEnumerable<MetadataReference> Fetch(string runtimeDirectory, OnWriteLog? onWriteLog)
     {
-        if(string.IsNullOrWhiteSpace(runtimeDirectory) || !Directory.Exists(runtimeDirectory))
+        if (string.IsNullOrWhiteSpace(runtimeDirectory) || !Directory.Exists(runtimeDirectory))
         {
             onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, $"Warning: Custom project bin path not found or invalid: {runtimeDirectory}");
 
@@ -51,13 +51,13 @@ public static class CSharpAssemblyLoader
         }
 
         var references = new List<MetadataReference>();
-        foreach(var file in Directory.EnumerateFiles(runtimeDirectory, "*.dll"))
+        foreach (var file in Directory.EnumerateFiles(runtimeDirectory, "*.dll"))
         {
             try
             {
                 references.Add(MetadataReference.CreateFromFile(file));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Warning: Could not add reference from {file}: {ex.Message}");
             }

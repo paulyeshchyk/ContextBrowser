@@ -9,7 +9,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Route.Assembly;
 
-// context: csharp, build
+// context: roslyn, build
 public class CSharpCompilationBuilder : ICompilationBuilder
 {
     private readonly SemanticOptions _options;
@@ -21,7 +21,7 @@ public class CSharpCompilationBuilder : ICompilationBuilder
         _onWriteLog = onWriteLog;
     }
 
-    // context: csharp, build
+    // context: roslyn, build
     public Dictionary<ISyntaxTreeWrapper, ISemanticModelWrapper> BuildModels(IEnumerable<string> codeFiles, CancellationToken cancellationToken = default)
     {
         // 1. Читаем все файлы и создаём деревья с путями
@@ -45,7 +45,7 @@ public class CSharpCompilationBuilder : ICompilationBuilder
     }
 
 
-    // context: csharp, build
+    // context: roslyn, build
     public ICompilationWrapper BuildCompilation(IEnumerable<ISyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name = "Parser")
     {
         var compilation = CSharpCompilation.Create(name, options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))

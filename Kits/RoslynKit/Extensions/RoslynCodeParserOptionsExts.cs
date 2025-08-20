@@ -5,46 +5,46 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Extensions;
 
-// context: csharp, build
+// context: roslyn, build
 internal static class RoslynCodeParserOptionsExts
 {
-    //context: csharp, read
+    //context: roslyn, read
     public static IEnumerable<MemberDeclarationSyntax> GetMemberDeclarationSyntaxies(this CompilationUnitSyntax root, SemanticOptions options)
     {
         IEnumerable<MemberDeclarationSyntax> typeNodes = Enumerable.Empty<MemberDeclarationSyntax>();
-        if(options.MemberTypes.Contains(SemanticMemberType.@class))
+        if (options.MemberTypes.Contains(SemanticMemberType.@class))
             typeNodes = typeNodes.Concat(FilterByModifier<ClassDeclarationSyntax>(root, options));
-        if(options.MemberTypes.Contains(SemanticMemberType.@record))
+        if (options.MemberTypes.Contains(SemanticMemberType.@record))
             typeNodes = typeNodes.Concat(FilterByModifier<RecordDeclarationSyntax>(root, options));
-        if(options.MemberTypes.Contains(SemanticMemberType.@struct))
+        if (options.MemberTypes.Contains(SemanticMemberType.@struct))
             typeNodes = typeNodes.Concat(FilterByModifier<StructDeclarationSyntax>(root, options));
-        if(options.MemberTypes.Contains(SemanticMemberType.@enum))
+        if (options.MemberTypes.Contains(SemanticMemberType.@enum))
             typeNodes = typeNodes.Concat(FilterByModifier<EnumDeclarationSyntax>(root, options));
-        if(options.MemberTypes.Contains(SemanticMemberType.@interface))
+        if (options.MemberTypes.Contains(SemanticMemberType.@interface))
             typeNodes = typeNodes.Concat(FilterByModifier<InterfaceDeclarationSyntax>(root, options));
-        if(options.MemberTypes.Contains(SemanticMemberType.@delegate))
+        if (options.MemberTypes.Contains(SemanticMemberType.@delegate))
             typeNodes = typeNodes.Concat(FilterByModifier<DelegateDeclarationSyntax>(root, options));
 
         return typeNodes;
     }
 
-    //context: csharp, read
+    //context: roslyn, read
     internal static SemanticAccessorModifierType? GetClassModifierType<T>(T member)
         where T : MemberDeclarationSyntax
     {
-        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
+        if (member.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
             return SemanticAccessorModifierType.@public;
-        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
+        if (member.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
             return SemanticAccessorModifierType.@protected;
-        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
+        if (member.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
             return SemanticAccessorModifierType.@private;
-        if(member.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
+        if (member.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
             return SemanticAccessorModifierType.@internal;
 
         return null;
     }
 
-    //context: csharp, read
+    //context: roslyn, read
     internal static IEnumerable<T> FilterByModifier<T>(SyntaxNode root, SemanticOptions options)
         where T : MemberDeclarationSyntax
     {

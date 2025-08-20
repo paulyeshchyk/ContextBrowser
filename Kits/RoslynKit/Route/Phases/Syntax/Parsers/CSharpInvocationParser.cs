@@ -9,7 +9,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Route.Phases.Syntax.Parsers;
 
-// context: csharp, read
+// context: roslyn, read
 public class CSharpInvocationParser<TContext> : IInvocationParser
     where TContext : ContextInfo, IContextWithReferences<TContext>
 {
@@ -28,7 +28,7 @@ public class CSharpInvocationParser<TContext> : IInvocationParser
         _treeWrapperBuilder = treeWrapperBuilder;
     }
 
-    // context: csharp, read
+    // context: roslyn, read
     public void ParseCode(string code, string filePath, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -76,7 +76,7 @@ public class CSharpInvocationParser<TContext> : IInvocationParser
         }
     }
 
-    // context: csharp, read
+    // context: roslyn, read
     public void ParseFile(string filePath, CancellationToken cancellationToken)
     {
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, $"Parsing files: phase 2 - {filePath}");

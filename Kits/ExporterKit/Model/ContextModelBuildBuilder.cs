@@ -8,10 +8,10 @@ using ExporterKit.Model;
 
 namespace ExporterKit.Uml;
 
-// context: ContextInfo, csharp, build
+// context: ContextInfo, roslyn, build
 public static class ContextModelBuildBuilder
 {
-    // context: ContextInfo, csharp, build
+    // context: ContextInfo, roslyn, build
     public static ContextBuilderModel Build(List<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier, OnWriteLog? onWriteLog)
     {
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");

@@ -21,7 +21,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Route;
 
-// context: csharp, directory, contextInfo, build
+// context: roslyn, directory, contextInfo, build
 public sealed class RoslynContextParser
 {
     private readonly CodeParsingOptions _options;
@@ -37,7 +37,7 @@ public sealed class RoslynContextParser
     }
 
 
-    // context: csharp, read, directory, contextInfo
+    // context: roslyn, read, directory, contextInfo
     // layer: 900
     public List<ContextInfo> Parse(CancellationToken cancellationToken)
     {
@@ -51,7 +51,7 @@ public sealed class RoslynContextParser
         };
     }
 
-    // context: read, directory, csharp, contextInfo
+    // context: read, directory, roslyn, contextInfo
     internal static List<ContextInfo> ParseDirectory(ISyntaxTreeWrapperBuilder _treeWrapBuilder, string rootPath, SemanticOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, CancellationToken cancellationToken)
     {
         var files = Directory.GetFiles(rootPath, $"*{options.TargetExtension}", SearchOption.AllDirectories);
@@ -59,7 +59,7 @@ public sealed class RoslynContextParser
         return ParseFilesList(_treeWrapBuilder, options, contextClassifier, onWriteLog, files, cancellationToken);
     }
 
-    // context: read, directory, csharp, contextInfo
+    // context: read, directory, roslyn, contextInfo
     internal static List<ContextInfo> ParseFilesList(ISyntaxTreeWrapperBuilder _treeWrapBuilder, SemanticOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, string[] files, CancellationToken cancellationToken)
     {
         var semanticModelStorage = new CSharpSemanticTreeModelStorage(0, onWriteLog);
@@ -79,7 +79,7 @@ public sealed class RoslynContextParser
         return contextCollector.Collection.ToList();
     }
 
-    // context: build, directory, csharp, contextInfo
+    // context: build, directory, roslyn, contextInfo
     internal static void Phase2(ISyntaxTreeWrapperBuilder _treeWrapBuilder, SemanticOptions options, OnWriteLog? onWriteLog, string[] files, CSharpSemanticTreeModelStorage semanticModelStorage, BaseTreeModelBuilder modelBuilder, ContextInfoCollector<ContextInfo> contextCollector, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -99,7 +99,7 @@ public sealed class RoslynContextParser
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, string.Empty, LogLevelNode.End);
     }
 
-    // context: build, directory, csharp, contextInfo
+    // context: build, directory, roslyn, contextInfo
     internal static void Phase1(SemanticOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, string[] files, CSharpSemanticTreeModelStorage semanticModelStorage, ISemanticModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper> modelBuilder, ContextInfoCollector<ContextInfo> contextCollector, CancellationToken cancellationToken)
     {
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, "Parsing files: phase 1", LogLevelNode.Start);
@@ -127,7 +127,7 @@ public sealed class RoslynContextParser
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, string.Empty, LogLevelNode.End);
     }
 
-    // context: read, directory, csharp, contextInfo
+    // context: read, directory, roslyn, contextInfo
     internal static List<ContextInfo> ParseFile(ISyntaxTreeWrapperBuilder _treeWrapBuilder, string filePath, SemanticOptions semanticOptions, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, CancellationToken cancellationToken)
     {
         return ParseFilesList(_treeWrapBuilder, semanticOptions, contextClassifier, onWriteLog, new[] { filePath }, cancellationToken);

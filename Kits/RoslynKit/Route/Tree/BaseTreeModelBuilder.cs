@@ -4,7 +4,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Route.Tree;
 
-// context: csharp, build, contextInfo
+// context: roslyn, build, contextInfo
 public class BaseTreeModelBuilder : ISemanticModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper>
 {
     private readonly ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> _modelStorage;
@@ -22,7 +22,7 @@ public class BaseTreeModelBuilder : ISemanticModelBuilder<ISyntaxTreeWrapper, IS
         _compilationBuilder = compilationBuilder;
     }
 
-    // context: csharp, build, contextInfo
+    // context: roslyn, build, contextInfo
     public Dictionary<ISyntaxTreeWrapper, ISemanticModelWrapper> BuildModels(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
     {
         var compilation = _compilationBuilder.BuildModels(codeFiles, cancellationToken);
@@ -30,14 +30,14 @@ public class BaseTreeModelBuilder : ISemanticModelBuilder<ISyntaxTreeWrapper, IS
         return compilation;
     }
 
-    // context: csharp, build, contextInfo
+    // context: roslyn, build, contextInfo
     public RoslynCompilationView BuildModel(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken)
     {
         var wrapper = _treeWrapperBuilder.BuildTree(code, filePath, cancellationToken);
         return BuildModel(wrapper, options, cancellationToken);
     }
 
-    // context: csharp, build, contextInfo
+    // context: roslyn, build, contextInfo
     internal RoslynCompilationView BuildModel(ISyntaxTreeWrapper syntaxTree, SemanticOptions options, CancellationToken cancellationToken)
     {
         var root = syntaxTree.GetCompilationUnitRoot(cancellationToken);
