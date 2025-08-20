@@ -7,7 +7,8 @@ using ContextBrowserKit.Options.Export;
 using ExporterKit.Uml;
 using LoggerKit;
 using LoggerKit.Model;
-using RoslynKit.Phases;
+using RoslynKit.Route;
+using RoslynKit.Route.Wrappers.Meta;
 
 namespace ContextBrowser.ContextCommentsParser;
 
@@ -44,8 +45,9 @@ public static class Program
 
         ExportPathDirectoryPreparer.Prepare(options.Export.Paths);
 
+        var treeWrapBuilder = new RoslynSyntaxTreeWrapperBuilder();
 
-        var semanticParser = new RoslynContextParser(options.Roslyn, options.Classifier, appLogger.WriteLog);
+        var semanticParser = new RoslynContextParser(treeWrapBuilder, options.Semantic, options.Classifier, appLogger.WriteLog);
 
 
         var cacheModel = options.Export.Paths.CacheModel;

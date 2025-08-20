@@ -16,7 +16,7 @@ public static class ContextListFileManager
     /// <summary>
     /// Асинхронно сохраняет список контекстов в файл.
     /// </summary>
-    // context: roslyncache, write
+    // context: roslyncache, update
     public static async Task SaveContextsToCacheAsync(CacheJsonModel cacheModel, List<ContextInfo> contextsList, CancellationToken cancellationToken)
     {
         if(File.Exists(cacheModel.Output))

@@ -1,4 +1,4 @@
-﻿internal static class RoslynKitStartup
+﻿internal static class SemanticKitStartup
 {
     public static void Main(string[] args)
     {

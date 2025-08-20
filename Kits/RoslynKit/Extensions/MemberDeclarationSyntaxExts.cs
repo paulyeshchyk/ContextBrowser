@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Model;
+using SemanticKit.Model.Options;
 
 namespace RoslynKit.Extensions;
 
@@ -21,16 +21,16 @@ internal static class MemberDeclarationSyntaxExts
             _ => SFakeDeclaration
         };
 
-    public static RoslynCodeParserAccessorModifierType? GetModifierType(this MethodDeclarationSyntax method)
+    public static SemanticAccessorModifierType? GetModifierType(this MethodDeclarationSyntax method)
     {
-        if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
-            return RoslynCodeParserAccessorModifierType.@public;
-        if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
-            return RoslynCodeParserAccessorModifierType.@protected;
-        if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
-            return RoslynCodeParserAccessorModifierType.@private;
-        if(method.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
-            return RoslynCodeParserAccessorModifierType.@internal;
+        if (method.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)))
+            return SemanticAccessorModifierType.@public;
+        if (method.Modifiers.Any(m => m.IsKind(SyntaxKind.ProtectedKeyword)))
+            return SemanticAccessorModifierType.@protected;
+        if (method.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)))
+            return SemanticAccessorModifierType.@private;
+        if (method.Modifiers.Any(m => m.IsKind(SyntaxKind.InternalKeyword)))
+            return SemanticAccessorModifierType.@internal;
 
         return null;
     }

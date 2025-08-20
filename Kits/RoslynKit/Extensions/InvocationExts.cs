@@ -3,8 +3,8 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Model;
-using RoslynKit.Syntax.Parser.Wrappers;
+using RoslynKit.Route.Wrappers.Syntax;
+using SemanticKit.Model.Options;
 
 namespace RoslynKit.Extensions;
 
@@ -16,7 +16,7 @@ internal static class InvocationExts
     /// </summary>
     /// <param name="invocationExpression">Синтаксический узел вызова метода.</param>
     /// <returns>Кортеж с именем метода и именем владельца. Имя владельца может быть null.</returns>
-    public static CSharpInvocationSyntaxWrapper GetMethodInfoFromSyntax(this InvocationExpressionSyntax invocationExpression, ISymbol? symbol, RoslynCodeParserOptions options, OnWriteLog? onWriteLog)
+    public static CSharpInvocationSyntaxWrapper GetMethodInfoFromSyntax(this InvocationExpressionSyntax invocationExpression, ISymbol? symbol, SemanticOptions options, OnWriteLog? onWriteLog)
     {
         string methodName;
         string ownerName;

@@ -4,7 +4,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using HtmlKit.Options;
 using LoggerKit.Model;
-using RoslynKit.Model;
+using SemanticKit.Model.Options;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Infrastructure.Options.Activation;
 using UmlKit.Infrastructure.Options.Indication;
@@ -32,43 +32,44 @@ public class AppOptions
     };
 
     [CommandLineArgument("roslyn-options", "The source code path.")]
-    public RoslynOptions Roslyn { get; set; } = new(
+    public CodeParsingOptions Semantic { get; set; } = new(
 
         //".\\..\\..\\..\\ContextBrowser\\Program.cs"
         //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\"
         //".\\..\\..\\..\\ContextSamples\\ContextSamples\\S3\\FourContextsSample.cs"
         //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\ContextBrowserKit\\Extensions\\FileUtils.cs"
         sourcePath: ".\\..\\..\\..\\",
-        roslynCodeParser: new(
+        semanticOptions: new(
 
             methodModifierTypes: new()
             {
-                RoslynCodeParserAccessorModifierType.@public,
-                RoslynCodeParserAccessorModifierType.@protected,
-                RoslynCodeParserAccessorModifierType.@private,
-                RoslynCodeParserAccessorModifierType.@internal
+                SemanticAccessorModifierType.@public,
+                SemanticAccessorModifierType.@protected,
+                SemanticAccessorModifierType.@private,
+                SemanticAccessorModifierType.@internal
             },
             classModifierTypes: new()
             {
-                RoslynCodeParserAccessorModifierType.@public,
-                RoslynCodeParserAccessorModifierType.@protected,
-                RoslynCodeParserAccessorModifierType.@private,
-                RoslynCodeParserAccessorModifierType.@internal
+                SemanticAccessorModifierType.@public,
+                SemanticAccessorModifierType.@protected,
+                SemanticAccessorModifierType.@private,
+                SemanticAccessorModifierType.@internal
             },
             memberTypes: new()
             {
                 //RoslynCodeParserMemberType.@enum,
-                RoslynCodeParserMemberType.@class,
-                RoslynCodeParserMemberType.@interface,
-                RoslynCodeParserMemberType.@delegate,
-                RoslynCodeParserMemberType.@record,
+                SemanticMemberType.@class,
+                SemanticMemberType.@interface,
+                SemanticMemberType.@delegate,
+                SemanticMemberType.@record,
                 //RoslynCodeParserMemberType.@struct
             },
             externalNamespaceName: "ExternalNS",
             fakeOwnerName: "privateTYPE",
             fakeMethodName: "privateMETHOD",
             customAssembliesPaths: new List<string>() { "." },
-            createFailedCallees: true
+            createFailedCallees: true,
+            targetExtension: ".cs"
         )
     );
 
@@ -84,7 +85,10 @@ public class AppOptions
         ),
         paths: new ExportPaths(
             outputDirectory: ".\\output",
-            cacheModel: new CacheJsonModel(output: ".\\cache\\roslyn.json", input: ".\\cache\\roslyn.json"),
+            cacheModel: new CacheJsonModel(
+                input: null,//".\\cache\\roslyn.json",
+                output: ".\\cache\\roslyn.json"
+                ),
             new ExportPathItem(ExportPathType.index, "."),
             new ExportPathItem(ExportPathType.puml, "puml"),
             new ExportPathItem(ExportPathType.pages, "pages"),
