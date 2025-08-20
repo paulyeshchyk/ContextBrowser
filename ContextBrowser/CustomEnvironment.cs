@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using ContextBrowser.Servers;
 using System.Runtime.InteropServices;
 
 namespace ContextBrowser.ContextCommentsParser;
@@ -16,11 +16,11 @@ public static class CustomEnvironment
         CustomServer customServer;
         var osPlatform = CustomServerDetector.GetOSPlatform();
 
-        if (osPlatform == OSPlatform.Windows)
+        if(osPlatform == OSPlatform.Windows)
         {
             customServer = new WindowsServer();
         }
-        else if (osPlatform == OSPlatform.OSX)
+        else if(osPlatform == OSPlatform.OSX)
         {
             customServer = new MacOsServer();
         }
@@ -48,12 +48,12 @@ public static class CustomEnvironment
         System.Threading.Thread.Sleep(100);
 
         var customServer = NewServer();
-        if (!customServer.IsPortInUse(SLocalHttpServerPort))
+        if(!customServer.IsPortInUse(SLocalHttpServerPort))
         {
             customServer.StartHttpServer(port: SLocalHttpServerPort, folder: httpServerPath);
         }
 
-        if (!customServer.IsJvmPlantUmlProcessRunning(SPlantumlJarFilename))
+        if(!customServer.IsJvmPlantUmlProcessRunning(SPlantumlJarFilename))
         {
             customServer.StartJar(folder: httpServerPath, jarName: SPlantumlJarFilename, args: SPicowebJvmArgument);
         }
