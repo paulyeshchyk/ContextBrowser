@@ -10,13 +10,13 @@ public class MacOsServer : CustomServer
     public override Process? StartShell(string arguments, bool autoclose = false)
     {
         var startInfo = MacOsProcessInfoFactory.ZSHProcessInfo(arguments);
-        return StartServer(startInfo, arguments,(process, error1) =>
+        return StartServer(startInfo, arguments, (process, error1) =>
         {
-            if(process != null)
+            if (process != null)
             {
                 string output = process.StandardOutput.ReadToEnd();
                 string error = process.StandardError.ReadToEnd();
-                if(!string.IsNullOrEmpty(output) || !string.IsNullOrEmpty(error))
+                if (!string.IsNullOrEmpty(output) || !string.IsNullOrEmpty(error))
                 {
                     Console.WriteLine($"Output: {output}");
                     Console.WriteLine($"Error: {error}");
@@ -33,9 +33,9 @@ public class MacOsServer : CustomServer
     {
         var shellArguments = $"-a Terminal {filename} --args {arguments}";
         var processInfo = MacOsProcessInfoFactory.OpenProcessInfo(shellArguments);
-        var result = StartServer(processInfo, filename,(process, error) =>
+        var result = StartServer(processInfo, filename, (process, error) =>
         {
-            if(error != null)
+            if (error != null)
             {
                 Console.WriteLine($"Error: {error}");
             }
@@ -47,14 +47,14 @@ public class MacOsServer : CustomServer
 
     public override void StopProcess(Process? process)
     {
-        if(process != null && !process.HasExited)
+        if (process != null && !process.HasExited)
         {
             Console.WriteLine($"Остановка процесса с ID {process.Id}...");
             try
             {
                 process.Kill();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Не удалось завершить процесс: {ex.Message}");
             }
@@ -76,7 +76,7 @@ public class MacOsServer : CustomServer
         var assembly = Assembly.GetExecutingAssembly();
         var fullResourceName = assembly.GetManifestResourceNames().FirstOrDefault(name => name.EndsWith(resourceName));
 
-        if(fullResourceName == null)
+        if (fullResourceName == null)
         {
             Console.WriteLine($"Ресурс '{resourceName}' не найден.");
             return;
@@ -85,15 +85,15 @@ public class MacOsServer : CustomServer
         Directory.CreateDirectory(folderPath);
         string destinationPath = Path.Combine(folderPath, resourceName);
 
-        using(Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName))
+        using (Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName))
         {
-            if(resourceStream == null)
+            if (resourceStream == null)
             {
                 Console.WriteLine($"Не удалось получить поток для ресурса '{fullResourceName}'.");
                 return;
             }
 
-            using(FileStream fileStream = File.Create(destinationPath))
+            using (FileStream fileStream = File.Create(destinationPath))
             {
                 resourceStream.CopyTo(fileStream);
             }
@@ -119,9 +119,9 @@ public class MacOsServer : CustomServer
     public override bool IsJvmPlantUmlProcessRunning(string jarFilename)
     {
         var pgrep = MacOsProcessInfoFactory.JvmIsRunningProcessInfo(jarFilename);
-        using(var process = Process.Start(pgrep))
+        using (var process = Process.Start(pgrep))
         {
-            if(process == null) return false;
+            if (process == null) return false;
 
             string output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
@@ -134,9 +134,9 @@ public class MacOsServer : CustomServer
     public override Process? StartJar(string folder, string jarName, string args)
     {
         var processInfo = MacOsProcessInfoFactory.JavaRunJarProcessInfo(folder, jarName, args);
-        return StartServer(processInfo, jarName,(process, error) =>
+        return StartServer(processInfo, jarName, (process, error) =>
         {
-            if(error != null)
+            if (error != null)
             {
                 Console.WriteLine($"Error: {error}");
             }
@@ -147,9 +147,9 @@ public class MacOsServer : CustomServer
     {
         // Запускаем 'http-server' напрямую
         var processInfo = MacOsProcessInfoFactory.HttpServerProcessInfo(port, folder);
-        return StartServer(processInfo, folder,(process, error) =>
+        return StartServer(processInfo, folder, (process, error) =>
         {
-            if(error != null)
+            if (error != null)
             {
                 Console.WriteLine($"Error: {error}");
             }
@@ -159,9 +159,9 @@ public class MacOsServer : CustomServer
     public override Process? OpenHtmlPage(string page)
     {
         var processInfo = MacOsProcessInfoFactory.OpenProcessInfo(page, true);
-        return StartServer(processInfo, page,(process, error) =>
+        return StartServer(processInfo, page, (process, error) =>
         {
-            if(error != null)
+            if (error != null)
             {
                 Console.WriteLine($"Error: {error}");
             }
@@ -201,8 +201,8 @@ public static class MacOsProcessInfoFactory
     {
         var startInfo = new ProcessStartInfo
         {
-            FileName = "http-server",
-            Arguments = $"-p {port} --no-cache",
+            FileName = "npx",
+            Arguments = $" http-server -p {port} --no-cache",
             WorkingDirectory = folder, // Важно: устанавливаем рабочую директорию
             RedirectStandardOutput = true,
             RedirectStandardError = true,
