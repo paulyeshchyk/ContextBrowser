@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<MSBUildProjectExtensionsPath>..\..\obj\UmlKit\</MSBUildProjectExtensionsPath>
-		<BaseIntermediateOutputPath>..\..\obj\UmlKit\</BaseIntermediateOutputPath>
+		<MSBUildProjectExtensionsPath>../../obj/UmlKit/</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>../../obj/UmlKit/</BaseIntermediateOutputPath>
 	</PropertyGroup>
 </Project>

@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<MSBUildProjectExtensionsPath>..\..\obj\HtmlKit\</MSBUildProjectExtensionsPath>
-		<BaseIntermediateOutputPath>..\..\obj\HtmlKit\</BaseIntermediateOutputPath>
+		<MSBUildProjectExtensionsPath>../../obj/HtmlKit/</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>../../obj/HtmlKit/</BaseIntermediateOutputPath>
 	</PropertyGroup>
 </Project>

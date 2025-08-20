@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<MSBUildProjectExtensionsPath>..\..\obj\ContextBrowserKit\</MSBUildProjectExtensionsPath>
-		<BaseIntermediateOutputPath>..\..\obj\ContextBrowserKit\</BaseIntermediateOutputPath>
+		<MSBUildProjectExtensionsPath>../../obj/ContextBrowserKit/</MSBUildProjectExtensionsPath>
+		<BaseIntermediateOutputPath>../../obj/ContextBrowserKit/</BaseIntermediateOutputPath>
 	</PropertyGroup>
 </Project>

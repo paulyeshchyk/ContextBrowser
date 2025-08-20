@@ -8,6 +8,7 @@ using ExporterKit.Uml;
 using LoggerKit;
 using LoggerKit.Model;
 using RoslynKit.Route;
+using RoslynKit.Route.Tree;
 using RoslynKit.Route.Wrappers.Meta;
 
 namespace ContextBrowser.ContextCommentsParser;
@@ -20,12 +21,12 @@ public static class Program
     {
         var parser = new CommandLineParser();
 
-        if(!parser.TryParse<AppOptions>(args, out var options, out var errorMessage))
+        if (!parser.TryParse<AppOptions>(args, out var options, out var errorMessage))
         {
             Console.WriteLine(errorMessage);
             return;
         }
-        if(options == null)
+        if (options == null)
         {
             Console.WriteLine("Что то пошло не так))");
             Console.WriteLine(CommandLineHelpProducer.GenerateHelpText<AppOptions>(CommandLineDefaults.SArgumentPrefix));
@@ -51,7 +52,7 @@ public static class Program
 
 
         var cacheModel = options.Export.Paths.CacheModel;
-        var contextsList = ContextListFileManager.ReadContextsFromCache(cacheModel,() =>
+        var contextsList = ContextListFileManager.ReadContextsFromCache(cacheModel, () =>
         {
             return semanticParser.Parse(CancellationToken.None);
         }, CancellationToken.None);
