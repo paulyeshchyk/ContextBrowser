@@ -21,8 +21,14 @@ public static class ContextListFileManager
     {
         if (File.Exists(cacheModel.Output))
         {
-            try { File.Delete(cacheModel.Output); }
-            catch (Exception ex) { throw new Exception($"Cache can't be erased\n{ex}"); }
+            try
+            {
+                File.Delete(cacheModel.Output);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Cache can't be erased\n{ex}");
+            }
         }
 
         try
@@ -59,11 +65,11 @@ public static class ContextListFileManager
     /// Читает список контекстов из файла и восстанавливает связи.
     /// </summary>
     // context: roslyncache, read
-    public static List<ContextInfo> ReadContextsFromCache(CacheJsonModel cacheModel, Func<List<ContextInfo>> fallback, CancellationToken cancellationToken)
+    public static async Task<List<ContextInfo>> ReadContextsFromCache(CacheJsonModel cacheModel, Func<CancellationToken,Task<List<ContextInfo>>> fallback, CancellationToken cancellationToken)
     {
         if (!File.Exists(cacheModel.Input) || cacheModel.RenewCache)
         {
-            return fallback();
+            return await fallback(cancellationToken);
         }
 
         try
@@ -71,20 +77,20 @@ public static class ContextListFileManager
             var fileContent = File.ReadAllText(cacheModel.Input);
             if (string.IsNullOrEmpty(fileContent))
             {
-                return fallback();
+                return await fallback(cancellationToken);
             }
 
             var serializableList = JsonSerializer.Deserialize<List<ContextInfoSerializableModel>>(fileContent, _jsonOptions);
             if (serializableList == null)
             {
-                return fallback();
+                return await fallback(cancellationToken);
             }
 
             return ContextInfoSerializableModelAdapter.ConvertToContextInfo(serializableList);
         }
         catch (Exception)
         {
-            return fallback();
+            return await fallback(cancellationToken);
         }
     }
 }

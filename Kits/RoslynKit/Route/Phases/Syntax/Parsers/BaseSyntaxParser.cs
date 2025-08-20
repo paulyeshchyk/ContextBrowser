@@ -16,5 +16,5 @@ public abstract class BaseSyntaxParser<TContext> : ISyntaxParser<TContext>
 
     public abstract bool CanParse(object syntax);
 
-    public abstract void Parse(TContext? parent, object syntax, ISemanticModelWrapper model);
+    public abstract void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken);
 }

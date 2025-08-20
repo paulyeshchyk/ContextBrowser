@@ -36,30 +36,32 @@ public class CSharpTypeRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 
     public override bool CanParse(object syntax) => syntax is RecordDeclarationSyntax;
 
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model)
+    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
-        if(syntax is not RecordDeclarationSyntax recordSyntax)
+        if (syntax is not RecordDeclarationSyntax recordSyntax)
         {
             throw new ArgumentException($"Syntax ({nameof(syntax)}) is not RecordDeclarationSyntax");
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - record syntax");
 
-        var recordContext = _recordContextInfoBuilder.BuildContextInfo(parent, recordSyntax, model);
-        if(recordContext == null)
+        var recordContext = _recordContextInfoBuilder.BuildContextInfo(parent, recordSyntax, model, cancellationToken);
+        if (recordContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Syntax \"{recordSyntax}\" was not resolved");
             return;
         }
 
         var propertySyntaxes = recordSyntax.Members.OfType<PropertyDeclarationSyntax>();
-        foreach(var propertySyntax in propertySyntaxes)
+        foreach (var propertySyntax in propertySyntaxes)
         {
-            _propertyDeclarationParser.Parse(recordContext, propertySyntax, model);
+            _propertyDeclarationParser.Parse(recordContext, propertySyntax, model, cancellationToken);
         }
 
-        _triviaCommentParser.Parse(recordContext, recordSyntax, model);
+        _triviaCommentParser.Parse(recordContext, recordSyntax, model, cancellationToken);
 
-        _methodSyntaxParser.ParseMethodSyntax(recordSyntax, model, recordContext);
+        _methodSyntaxParser.ParseMethodSyntax(recordSyntax, model, recordContext, cancellationToken);
     }
 }

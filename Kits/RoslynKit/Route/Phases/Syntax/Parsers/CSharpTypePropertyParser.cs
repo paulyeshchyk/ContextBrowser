@@ -42,19 +42,21 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
 
     public override bool CanParse(object syntax) => syntax is PropertyDeclarationSyntax;
 
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model)
+    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
-        if(syntax is not PropertyDeclarationSyntax propertySyntax)
+        if (syntax is not PropertyDeclarationSyntax propertySyntax)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax is not PropertyDeclarationSyntax");
             return;
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - property syntax");
 
         //1.Создание контекста для самого свойства
-        var propertyContext = _propertyContextInfoBuilder.BuildContextInfo(parent, propertySyntax, model);
-        if(propertyContext == null)
+        var propertyContext = _propertyContextInfoBuilder.BuildContextInfo(parent, propertySyntax, model, cancellationToken);
+        if (propertyContext == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, "Failed to build context for property.", LogLevelNode.End);
             return;
@@ -66,58 +68,58 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
 
 
         // 2. Парсинг комментариев
-        _triviaCommentParser.Parse(propertyContext, propertySyntax, model);
+        _triviaCommentParser.Parse(propertyContext, propertySyntax, model, cancellationToken);
 
         // 3. Обработка типа свойства (рекурсивный обход)
         var propertyTypeSyntax = propertySyntax.Type;
-        if(propertyTypeSyntax == null)
+        if (propertyTypeSyntax == null)
         {
             return;
         }
 
         var ts = model.GetTypeInfo(propertyTypeSyntax);
-        if(ts is not ITypeSymbol typeSymbol)
+        if (ts is not ITypeSymbol typeSymbol)
         {
             throw new Exception("ITypeSymbol is expected");
         }
 
         // Проверяем, что это не базовый тип (например, int, string, object)
-        if(!(typeSymbol != null && typeSymbol.Locations.Any()))
+        if (!(typeSymbol != null && typeSymbol.Locations.Any()))
         {
             return;
         }
         // Проверяем, существует ли уже контекст для этого типа, чтобы избежать рекурсии
         var cnt = _collector.BySymbolDisplayName.GetValueOrDefault(typeSymbol.ToDisplayString());
-        if(cnt != null)
+        if (cnt != null)
         {
             return;
         }
 
         var declarationSyntax = typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
 
-        if(declarationSyntax == null)
+        if (declarationSyntax == null)
         {
             _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[{typeSymbol}] Symbol has no declared syntax");
             return;
         }
 
-        if(declarationSyntax is ClassDeclarationSyntax tds)
+        if (declarationSyntax is ClassDeclarationSyntax tds)
         {
-            _typeSyntaxBuilder.BuildContextInfo(default, tds, model);
+            _typeSyntaxBuilder.BuildContextInfo(default, tds, model, cancellationToken);
         }
-        else if(declarationSyntax is RecordDeclarationSyntax rds)
+        else if (declarationSyntax is RecordDeclarationSyntax rds)
         {
-            _recordSyntaxBuilder.BuildContextInfo(default, rds, model);
+            _recordSyntaxBuilder.BuildContextInfo(default, rds, model, cancellationToken);
         }
-        else if(declarationSyntax is EnumDeclarationSyntax eds)
+        else if (declarationSyntax is EnumDeclarationSyntax eds)
         {
-            _enumSyntaxBuilder.BuildContextInfo(default, eds, model);
+            _enumSyntaxBuilder.BuildContextInfo(default, eds, model, cancellationToken);
         }
-        else if(declarationSyntax is InterfaceDeclarationSyntax ids)
+        else if (declarationSyntax is InterfaceDeclarationSyntax ids)
         {
-            _interfaceSyntaxBuilder.BuildContextInfo(default, ids, model);
+            _interfaceSyntaxBuilder.BuildContextInfo(default, ids, model, cancellationToken);
         }
-        else if(declarationSyntax is TypeParameterSyntax tps)
+        else if (declarationSyntax is TypeParameterSyntax tps)
         {
             //skip
         }

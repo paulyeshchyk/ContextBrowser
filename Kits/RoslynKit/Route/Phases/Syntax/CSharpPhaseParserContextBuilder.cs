@@ -33,6 +33,7 @@ public class CSharpPhaseParserContextBuilder<TContext>
     public void ParseFiles(IEnumerable<string> codeFiles, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, "Parsing files: phase 1", LogLevelNode.Start);
 
         var models = _semanticModelBuilder.BuildModels(codeFiles, _options, cancellationToken);
@@ -46,13 +47,15 @@ public class CSharpPhaseParserContextBuilder<TContext>
 
     private void ParseDeclarations(SemanticOptions options, ISyntaxTreeWrapper tree, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - {tree.FilePath}", LogLevelNode.Start);
 
         var availableSyntaxies = tree.GetAvailableSyntaxies(options, cancellationToken);
 
         if (availableSyntaxies.Any())
         {
-            _router.Route(availableSyntaxies, model);
+            _router.Route(availableSyntaxies, model, cancellationToken);
         }
         else
         {

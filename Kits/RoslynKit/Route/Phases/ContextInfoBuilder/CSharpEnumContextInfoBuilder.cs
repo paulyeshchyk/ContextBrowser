@@ -16,9 +16,11 @@ public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCo
     {
     }
 
-    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, EnumDeclarationSyntax syntax, ISemanticModelWrapper model)
+    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, EnumDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, CancellationToken.None);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, cancellationToken);
 
         var syntaxWrap = new CSharpSyntaxNodeWrapper(syntax);
         var symbolWrap = new CSharpISymbolWrapper(symbol);
@@ -30,7 +32,7 @@ public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCo
 
         string fullName;
         string name;
-        if(symbol != null)
+        if (symbol != null)
         {
             fullName = symbolWrap.ToDisplayString();
             name = symbolWrap.GetName();

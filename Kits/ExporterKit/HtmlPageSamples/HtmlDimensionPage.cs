@@ -105,24 +105,24 @@ public class HtmlContextDimensionBuilder
             {
                 HtmlBuilderFactory.Head.With(writer, () =>
                 {
-                    HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
-                    HtmlBuilderFactory.Style.Cell(writer, $"#nowrap li {{white-space:nowrap;}}");
-                    HtmlBuilderFactory.Title.Cell(writer, $"Action: {action}");
+                    HtmlBuilderFactory.Meta.Cell(writer, plainText: false, style: "charset=\"UTF-8\"");
+                    HtmlBuilderFactory.Style.Cell(writer, plainText: false, $"#nowrap li {{white-space:nowrap;}}");
+                    HtmlBuilderFactory.Title.Cell(writer, plainText: true, $"Action: {action}");
                 });
 
                 HtmlBuilderFactory.Body.With(writer, () =>
                 {
-                    HtmlBuilderFactory.H1.Cell(writer, $"Action: {action}");
-                    HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methods.Count}");
+                    HtmlBuilderFactory.H1.Cell(writer, plainText: true, $"Action: {action}");
+                    HtmlBuilderFactory.Paragraph.Cell(writer, plainText: true, $"Methods: {methods.Count}");
 
                     HtmlBuilderFactory.Ul.With(writer, () =>
                     {
                         foreach (var method in methods)
-                            HtmlBuilderFactory.Li.Cell(writer, method.FullName);
+                            HtmlBuilderFactory.Li.Cell(writer, plainText: true, method.FullName);
                     });
 
                     if (!string.IsNullOrWhiteSpace(embeddedContent))
-                        HtmlBuilderFactory.Raw.Cell(writer, embeddedContent);
+                        HtmlBuilderFactory.Raw.Cell(writer, plainText: false, embeddedContent);
                 });
             });
         }
@@ -150,26 +150,26 @@ public class HtmlContextDimensionBuilder
             {
                 HtmlBuilderFactory.Head.With(writer, () =>
                 {
-                    HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
-                    HtmlBuilderFactory.Title.Cell(writer, $"Domain: {domain}");
+                    HtmlBuilderFactory.Meta.Cell(writer, plainText: false, style: "charset=\"UTF-8\"");
+                    HtmlBuilderFactory.Title.Cell(writer, plainText: true, $"Domain: {domain}");
 
                     if (!string.IsNullOrWhiteSpace(embeddedScript))
-                        HtmlBuilderFactory.Raw.Cell(writer, embeddedScript);
+                        HtmlBuilderFactory.Raw.Cell(writer, plainText: false, embeddedScript);
                 });
 
                 HtmlBuilderFactory.Body.With(writer, () =>
                 {
-                    HtmlBuilderFactory.H1.Cell(writer, $"Domain: {domain}");
-                    HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methods.Count}");
+                    HtmlBuilderFactory.H1.Cell(writer, plainText: true, $"Domain: {domain}");
+                    HtmlBuilderFactory.Paragraph.Cell(writer, plainText: true, $"Methods: {methods.Count}");
 
                     HtmlBuilderFactory.Ul.With(writer, () =>
                     {
                         foreach (var method in methods)
-                            HtmlBuilderFactory.Li.Cell(writer, method.FullName);
+                            HtmlBuilderFactory.Li.Cell(writer, plainText: true, method.FullName);
                     });
 
                     if (!string.IsNullOrWhiteSpace(embeddedContent))
-                        HtmlBuilderFactory.Raw.Cell(writer, embeddedContent);
+                        HtmlBuilderFactory.Raw.Cell(writer, plainText: false, embeddedContent);
                 });
             });
         }

@@ -1,4 +1,5 @@
-﻿using HtmlKit.Builders.Tag;
+﻿using System.Net;
+using HtmlKit.Builders.Tag;
 
 namespace HtmlKit.Builders.Core;
 
@@ -28,19 +29,22 @@ public abstract class HtmlBuilder : IHtmlBuilder
 
     public virtual void End(TextWriter sb) => sb.WriteLine($"</{Tag}>");
 
-    public virtual void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
+    public virtual void Cell(TextWriter sb, bool plainText, string? innerHtml = "", string? href = null, string? style = null)
     {
         var content = string.IsNullOrWhiteSpace(href)
             ? innerHtml
             : new HtmlBuilderEncodedAnchorSpecial(href, innerHtml).ToString();
 
-        WriteContentTag(sb, content, style);
+        WriteContentTag(sb, plainText, content, style);
     }
 
-    protected void WriteContentTag(TextWriter sb, string? content = "", string? style = null)
+    protected void WriteContentTag(TextWriter sb, bool plainText, string? content = "", string? style = null)
     {
         string classAttr = HtmlBuilderTagAttribute.BuildClassAttribute(ClassName);
         string styleAttr = HtmlBuilderTagAttribute.BuildStyleAttribute(style);
-        sb.WriteLine($"<{Tag}{classAttr}{styleAttr}>{content}</{Tag}>");
+        var htmlEscapedText = plainText
+            ? WebUtility.HtmlEncode(content)
+            : content;
+        sb.WriteLine($"<{Tag}{classAttr}{styleAttr}>{htmlEscapedText}</{Tag}>");
     }
 }

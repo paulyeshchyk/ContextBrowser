@@ -5,6 +5,7 @@ using ContextBrowser.Samples.HtmlPages;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.Model;
 using ExporterKit.Uml;
 using LoggerKit;
 using LoggerKit.Model;
@@ -18,7 +19,7 @@ namespace ContextBrowser.ContextCommentsParser;
 public static class Program
 {
     // context: app, execute
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var parser = new CommandLineParser();
 
@@ -34,6 +35,27 @@ public static class Program
             return;
         }
 
+        using var tokenSource = new CancellationTokenSource();
+
+        Console.CancelKeyPress += (sender, e) =>
+        {
+            e.Cancel = true;
+            tokenSource.Cancel();
+        };
+
+        try
+        {
+
+            await RunAsync(options, tokenSource.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("\nОтмена по требованию");
+        }
+    }
+
+    private static async Task RunAsync(AppOptions options, CancellationToken cancellationToken)
+    {
         var appLogLevelStorage = new AppLoggerLevelStore<AppLevel>();
         appLogLevelStorage.SetLevels(options.LogConfiguration.LogLevels);
 
@@ -53,18 +75,18 @@ public static class Program
 
 
         var cacheModel = options.Export.Paths.CacheModel;
-        var contextsList = ContextListFileManager.ReadContextsFromCache(cacheModel, () =>
+        List<ContextInfo> contextsList = await ContextListFileManager.ReadContextsFromCache(cacheModel, (cancellationToken) =>
         {
             var sourcePaths = options.Import.SearchPaths;
             var filePaths = PathAnalyzer.GetFilePaths(sourcePaths, options.Import.FileExtensions, appLogger.WriteLog);
 
-            return semanticParser.Parse(filePaths, CancellationToken.None);
-        }, CancellationToken.None);
+            return semanticParser.ParseAsync(filePaths, cancellationToken);
+        }, cancellationToken);
 
         _ = Task.Run(async () =>
         {
-            await ContextListFileManager.SaveContextsToCacheAsync(cacheModel, contextsList, CancellationToken.None).ConfigureAwait(false);
-        });
+            await ContextListFileManager.SaveContextsToCacheAsync(cacheModel, contextsList, cancellationToken).ConfigureAwait(false);
+        }, cancellationToken);
 
 
         var contextBuilderModel = ContextModelBuildBuilder.Build(contextsList, options.Export.ExportMatrix, options.Classifier, appLogger.WriteLog);
@@ -85,5 +107,6 @@ public static class Program
 
         CustomEnvironment.CopyResources(".//output");
         CustomEnvironment.RunServers(".//output");
+
     }
 }
