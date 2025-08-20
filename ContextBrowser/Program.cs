@@ -2,6 +2,7 @@
 using CommandlineKit.Model;
 using ContextBrowser.Infrastructure;
 using ContextBrowser.Samples.HtmlPages;
+using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ExporterKit.Uml;
@@ -54,7 +55,10 @@ public static class Program
         var cacheModel = options.Export.Paths.CacheModel;
         var contextsList = ContextListFileManager.ReadContextsFromCache(cacheModel, () =>
         {
-            return semanticParser.Parse(CancellationToken.None);
+            var sourcePaths = options.Import.SearchPaths;
+            var filePaths = PathAnalyzer.GetFilePaths(sourcePaths, options.Import.FileExtensions, appLogger.WriteLog);
+
+            return semanticParser.Parse(filePaths, CancellationToken.None);
         }, CancellationToken.None);
 
         _ = Task.Run(async () =>

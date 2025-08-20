@@ -2,6 +2,7 @@
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Import;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
@@ -34,47 +35,26 @@ public sealed class RoslynContextParser
         _options = options;
         _contextClassifier = contextClassifier;
         _treeWrapBuilder = treeWrapBuilder;
+        _onWriteLog = onWriteLog;
     }
-
 
     // context: roslyn, read, directory, contextInfo
     // layer: 900
-    public List<ContextInfo> Parse(CancellationToken cancellationToken)
+    public List<ContextInfo> Parse(string[] filePaths, CancellationToken cancellationToken)
     {
-        var pathType = PathAnalyzer.GetPathType(_options.SourcePath);
-        return pathType switch
-        {
-            PathAnalyzer.PathType.File => ParseFile(_treeWrapBuilder, _options.SourcePath, _options.Semantic, _contextClassifier, _onWriteLog, cancellationToken),
-            PathAnalyzer.PathType.Directory => ParseDirectory(_treeWrapBuilder, _options.SourcePath, _options.Semantic, _contextClassifier, _onWriteLog, cancellationToken),
-            PathAnalyzer.PathType.NonExistentPath => throw new ArgumentException($"File not found {nameof(_options.SourcePath)}"),
-            _ => throw new NotImplementedException()
-        };
-    }
+        var semanticModelStorage = new CSharpSemanticTreeModelStorage(0, _onWriteLog);
 
-    // context: read, directory, roslyn, contextInfo
-    internal static List<ContextInfo> ParseDirectory(ISyntaxTreeWrapperBuilder _treeWrapBuilder, string rootPath, SemanticOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, CancellationToken cancellationToken)
-    {
-        var files = Directory.GetFiles(rootPath, $"*{options.TargetExtension}", SearchOption.AllDirectories);
-
-        return ParseFilesList(_treeWrapBuilder, options, contextClassifier, onWriteLog, files, cancellationToken);
-    }
-
-    // context: read, directory, roslyn, contextInfo
-    internal static List<ContextInfo> ParseFilesList(ISyntaxTreeWrapperBuilder _treeWrapBuilder, SemanticOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, string[] files, CancellationToken cancellationToken)
-    {
-        var semanticModelStorage = new CSharpSemanticTreeModelStorage(0, onWriteLog);
-
-        onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, "Parsing files", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, "Parsing files", LogLevelNode.Start);
 
         var contextCollector = new ContextInfoCollector<ContextInfo>();
-        var compilationBuilder = new CSharpCompilationBuilder(options, onWriteLog);
-        var modelBuilder = new BaseTreeModelBuilder(compilationBuilder, semanticModelStorage, _treeWrapBuilder, onWriteLog);
+        var compilationBuilder = new CSharpCompilationBuilder(_options.Semantic, _onWriteLog);
+        var modelBuilder = new BaseTreeModelBuilder(compilationBuilder, semanticModelStorage, _treeWrapBuilder, _onWriteLog);
 
-        Phase1(options, contextClassifier, onWriteLog, files, semanticModelStorage, modelBuilder, contextCollector, cancellationToken);
+        Phase1(_options.Semantic, _contextClassifier, _onWriteLog, filePaths, semanticModelStorage, modelBuilder, contextCollector, cancellationToken);
 
-        Phase2(_treeWrapBuilder, options, onWriteLog, files, semanticModelStorage, modelBuilder, contextCollector, cancellationToken);
+        Phase2(_treeWrapBuilder, _options.Semantic, _onWriteLog, filePaths, semanticModelStorage, modelBuilder, contextCollector, cancellationToken);
 
-        onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, string.Empty, LogLevelNode.End);
 
         return contextCollector.Collection.ToList();
     }
@@ -125,11 +105,5 @@ public sealed class RoslynContextParser
 
         phaseParser.ParseFiles(files, cancellationToken);
         onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, string.Empty, LogLevelNode.End);
-    }
-
-    // context: read, directory, roslyn, contextInfo
-    internal static List<ContextInfo> ParseFile(ISyntaxTreeWrapperBuilder _treeWrapBuilder, string filePath, SemanticOptions semanticOptions, IContextClassifier contextClassifier, OnWriteLog? onWriteLog, CancellationToken cancellationToken)
-    {
-        return ParseFilesList(_treeWrapBuilder, semanticOptions, contextClassifier, onWriteLog, new[] { filePath }, cancellationToken);
     }
 }
