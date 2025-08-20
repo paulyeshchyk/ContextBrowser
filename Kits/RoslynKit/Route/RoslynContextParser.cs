@@ -33,7 +33,6 @@ public sealed class RoslynContextParser
     {
         _options = options;
         _contextClassifier = contextClassifier;
-        _onWriteLog = onWriteLog;
         _treeWrapBuilder = treeWrapBuilder;
     }
 

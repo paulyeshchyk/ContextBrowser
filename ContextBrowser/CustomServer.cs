@@ -10,6 +10,14 @@ public abstract class CustomServer
 {
     public abstract Process? StartServer(string filename, string arguments);
 
+    public abstract Process? StartShell(string arguments);
+
+    public abstract Process? StartJar(string jarName, string folder, string args);
+
+    public abstract Process? OpenHtmlPage(string page);
+
+    public abstract Process? StartHttpServer(int port, string folder);
+
     public abstract void StopProcess(Process? process);
 
     public abstract void CopyFile(string sourceFile, string outputDirectory);
@@ -29,24 +37,22 @@ public static class CustomServerDetector
 {
     public static OSPlatform GetOSPlatform()
     {
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             return OSPlatform.Windows;
         }
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             return OSPlatform.OSX;
         }
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             return OSPlatform.Linux;
         }
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD)) // || RuntimeInformation.IsOSPlatform(OSPlatform.OpenBSD) || RuntimeInformation.IsOSPlatform(OSPlatform.NetBSD)
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
         {
             return OSPlatform.FreeBSD;
         }
-
-        // Если операционная система не определена
         throw new NotSupportedException("Операционная система не поддерживается.");
     }
 }
@@ -66,7 +72,7 @@ public class WindowsServer : CustomServer
         var assembly = Assembly.GetExecutingAssembly();
         var fullResourceName = assembly.GetManifestResourceNames().FirstOrDefault(name => name.EndsWith(resourceName));
 
-        if(fullResourceName == null)
+        if (fullResourceName == null)
         {
             Console.WriteLine($"Ресурс '{resourceName}' не найден.");
             return;
@@ -75,15 +81,15 @@ public class WindowsServer : CustomServer
         Directory.CreateDirectory(folderPath);
 
         string destinationPath = Path.Combine(folderPath, resourceName);
-        using(Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName))
+        using (Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName))
         {
-            if(resourceStream == null)
+            if (resourceStream == null)
             {
                 Console.WriteLine($"Не удалось получить поток для ресурса '{fullResourceName}'.");
                 return;
             }
 
-            using(FileStream fileStream = File.Create(destinationPath))
+            using (FileStream fileStream = File.Create(destinationPath))
             {
                 resourceStream.CopyTo(fileStream);
             }
@@ -96,14 +102,19 @@ public class WindowsServer : CustomServer
     {
         string arguments = $"/c copy \"{sourceFile}\" \"{outputDirectory}\"";
 
-        StartServer("cmd.exe", arguments);
+        StartShell(arguments);
     }
 
     public override void MkDir(string outputDirectory)
     {
         string arguments = $"/c md \"{outputDirectory}\"";
 
-        StartServer("cmd.exe", arguments);
+        StartShell(arguments);
+    }
+
+    public override Process? StartShell(string arguments)
+    {
+        return StartServer("cmd.exe", arguments);
     }
 
     public override Process? StartServer(string filename, string arguments)
@@ -120,7 +131,7 @@ public class WindowsServer : CustomServer
             var process = Process.Start(startInfo);
             return process;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine($"Ошибка при запуске процесса {filename}: {ex.Message}");
             return null;
@@ -129,14 +140,14 @@ public class WindowsServer : CustomServer
 
     public override void StopProcess(Process? process)
     {
-        if(process != null && !process.HasExited)
+        if (process != null && !process.HasExited)
         {
             Console.WriteLine($"Остановка процесса с ID {process.Id}...");
             try
             {
                 process.Kill();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Не удалось завершить процесс: {ex.Message}");
             }
@@ -157,40 +168,87 @@ public class WindowsServer : CustomServer
     {
         Process[] javaProcesses = Process.GetProcessesByName("java");
 
-        foreach(var process in javaProcesses)
+        foreach (var process in javaProcesses)
         {
             try
             {
-                if(process.HasExited)
+                if (process.HasExited)
                     continue;
 
                 string? executablePath = process.MainModule?.FileName;
 
-                if(executablePath != null && executablePath.Contains(jarFilename))
+                if (executablePath != null && executablePath.Contains(jarFilename))
                 {
                     return true;
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 // Игнорируем ошибки доступа, если нет прав
             }
         }
         return false;
     }
+
+    public override Process? StartJar(string jarName, string folder, string args)
+    {
+        return StartShell($"/c cd /d \"{folder}\" && start java -jar {jarName} {args}");
+    }
+
+    public override Process? StartHttpServer(int port, string folder)
+    {
+        return StartShell($"/c cd /d \"{folder}\" && start http-server -p {port} --no-cache");
+    }
+
+    public override Process? OpenHtmlPage(string page)
+    {
+        return StartShell($"open {page}");
+    }
 }
 
 public class MacOsServer : CustomServer
 {
-    public override Process? StartServer(string filename, string arguments)
+
+    public override Process? StartJar(string jarName, string folder, string args)
     {
-        // На macOS, чтобы запустить команду в отдельном окне терминала,
-        // мы используем команду `open -a Terminal`.
-        var shellArguments = $"-a Terminal {filename} --args {arguments}";
+        // Запускаем 'java' напрямую, указывая полный путь к файлу
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "java",
+            Arguments = $"-jar \"{Path.Combine(folder, jarName)}\" {args}",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = false,
+        };
+        try { return Process.Start(startInfo); }
+        catch (Exception ex) { Console.WriteLine($"Ошибка при запуске jar-файла: {ex.Message}"); return null; }
+    }
+
+    public override Process? StartHttpServer(int port, string folder)
+    {
+        // Запускаем 'http-server' напрямую
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "http-server",
+            Arguments = $"-p {port} --no-cache",
+            WorkingDirectory = folder, // Важно: устанавливаем рабочую директорию
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = false,
+        };
+        try { return Process.Start(startInfo); }
+        catch (Exception ex) { Console.WriteLine($"Ошибка при запуске http-server: {ex.Message}"); return null; }
+
+    }
+
+    public override Process? OpenHtmlPage(string page)
+    {
         var startInfo = new ProcessStartInfo
         {
             FileName = "open",
-            Arguments = shellArguments,
+            Arguments = page,
             UseShellExecute = true
         };
 
@@ -198,23 +256,99 @@ public class MacOsServer : CustomServer
         {
             return Process.Start(startInfo);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            Console.WriteLine($"Ошибка при запуске процесса {filename}: {ex.Message}");
+            Console.WriteLine($"Ошибка при открытии страницы {page}: {ex.Message}");
             return null;
         }
     }
 
+    private Process? RunInTerminal(string command)
+    {
+        // Заменим " на ' внутри команды, чтобы не путаться с AppleScript кавычками
+        var safeCommand = command.Replace("\"", "'");
+
+        // AppleScript, который запустит команду в новом окне/табе Terminal
+        var script = $"tell application \"Terminal\" to do script \"{safeCommand}\"";
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "osascript",
+            Arguments = $"-e \"{script}\"",
+            UseShellExecute = true
+        };
+
+        try
+        {
+            return Process.Start(startInfo);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при запуске команды в терминале: {ex.Message}");
+            return null;
+        }
+    }
+
+    public override Process? StartShell(string arguments)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "/bin/zsh", // Или /bin/bash, в зависимости от предпочтений
+            Arguments = $"-c \"{arguments}\"",
+            // Важные изменения:
+            UseShellExecute = false, // Не используем shell, чтобы контролировать процесс напрямую
+            CreateNoWindow = true,   // Не создаём новое окно
+            RedirectStandardOutput = true, // Перенаправляем вывод
+            RedirectStandardError = true,  // Перенаправляем ошибки
+        };
+
+        try
+        {
+            // Запускаем процесс и сразу возвращаем его.
+            var process = Process.Start(startInfo);
+            if (process != null)
+            {
+                // Здесь можно прочитать вывод, чтобы увидеть ошибки
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+                if (!string.IsNullOrEmpty(output) || !string.IsNullOrEmpty(error))
+                {
+                    Console.WriteLine($"Output: {output}");
+                    Console.WriteLine($"Error: {error}");
+                }
+            }
+            return process;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при запуске shell-команды: {ex.Message}");
+            return null;
+        }
+    }
+    public override Process? StartServer(string filename, string arguments)
+    {
+        var shellArguments = $"-a Terminal {filename} --args {arguments}";
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "open",
+            Arguments = shellArguments,
+            UseShellExecute = true,
+            CreateNoWindow = false
+        };
+        try { return Process.Start(startInfo); }
+        catch (Exception ex) { Console.WriteLine($"Ошибка при запуске процесса {filename}: {ex.Message}"); return null; }
+    }
+
     public override void StopProcess(Process? process)
     {
-        if(process != null && !process.HasExited)
+        if (process != null && !process.HasExited)
         {
             Console.WriteLine($"Остановка процесса с ID {process.Id}...");
             try
             {
                 process.Kill();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Не удалось завершить процесс: {ex.Message}");
             }
@@ -223,16 +357,12 @@ public class MacOsServer : CustomServer
 
     public override void CopyFile(string sourceFile, string outputDirectory)
     {
-        // Используем команду `cp` для копирования файлов
-        var arguments = $"-c cp \"{sourceFile}\" \"{outputDirectory}\"";
-        StartServer("sh", arguments);
+        StartShell($"cp \"{sourceFile}\" \"{outputDirectory}\"");
     }
 
     public override void MkDir(string outputDirectory)
     {
-        // Используем команду `mkdir` для создания папки
-        var arguments = $"-c mkdir -p \"{outputDirectory}\"";
-        StartServer("sh", arguments);
+        StartShell($"mkdir -p \"{outputDirectory}\"");
     }
 
     public override void CopyResource(string resourceName, string folderPath)
@@ -240,7 +370,7 @@ public class MacOsServer : CustomServer
         var assembly = Assembly.GetExecutingAssembly();
         var fullResourceName = assembly.GetManifestResourceNames().FirstOrDefault(name => name.EndsWith(resourceName));
 
-        if(fullResourceName == null)
+        if (fullResourceName == null)
         {
             Console.WriteLine($"Ресурс '{resourceName}' не найден.");
             return;
@@ -249,15 +379,15 @@ public class MacOsServer : CustomServer
         Directory.CreateDirectory(folderPath);
         string destinationPath = Path.Combine(folderPath, resourceName);
 
-        using(Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName))
+        using (Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName))
         {
-            if(resourceStream == null)
+            if (resourceStream == null)
             {
                 Console.WriteLine($"Не удалось получить поток для ресурса '{fullResourceName}'.");
                 return;
             }
 
-            using(FileStream fileStream = File.Create(destinationPath))
+            using (FileStream fileStream = File.Create(destinationPath))
             {
                 resourceStream.CopyTo(fileStream);
             }
@@ -282,12 +412,6 @@ public class MacOsServer : CustomServer
 
     public override bool IsJvmPlantUmlProcessRunning(string jarFilename)
     {
-        // На macOS, как и на Linux, можно использовать команду `ps -ax`
-        // или более удобную `pgrep` для поиска процессов.
-        // Мы будем искать процесс `java` и проверять его аргументы.
-
-        // `-f` ищет по полному имени и аргументам командной строки.
-        // `-l` выводит имя процесса.
         var pgrep = new ProcessStartInfo
         {
             FileName = "pgrep",
@@ -297,11 +421,10 @@ public class MacOsServer : CustomServer
             CreateNoWindow = true
         };
 
-        using(var process = Process.Start(pgrep))
+        using (var process = Process.Start(pgrep))
         {
-            if(process == null) return false;
+            if (process == null) return false;
 
-            // Читаем вывод команды `pgrep`
             string output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
 

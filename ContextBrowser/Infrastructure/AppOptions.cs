@@ -38,7 +38,7 @@ public class AppOptions
         //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\"
         //".\\..\\..\\..\\ContextSamples\\ContextSamples\\S3\\FourContextsSample.cs"
         //".\\..\\..\\..\\..\\ContextBrowser\\Kits\\ContextBrowserKit\\Extensions\\FileUtils.cs"
-        sourcePath: ".\\..\\..\\..\\",
+        sourcePath: ".//..//..//..//",
         semanticOptions: new(
 
             methodModifierTypes: new()
@@ -84,15 +84,15 @@ public class AppOptions
                                 )
         ),
         paths: new ExportPaths(
-            outputDirectory: ".\\output",
+            outputDirectory: ".//output",
             cacheModel: new CacheJsonModel(
-                input: null,//".\\cache\\roslyn.json",
-                output: ".\\cache\\roslyn.json"
+                input: ".//cache//roslyn.json",
+                output: ".//cache//roslyn.json"
                 ),
             new ExportPathItem(ExportPathType.index, "."),
             new ExportPathItem(ExportPathType.puml, "puml"),
             new ExportPathItem(ExportPathType.pages, "pages"),
-            new ExportPathItem(ExportPathType.pumlExtra, "puml\\extra")
+            new ExportPathItem(ExportPathType.pumlExtra, "puml/extra")
         ).BuildFullPath()
     );
 

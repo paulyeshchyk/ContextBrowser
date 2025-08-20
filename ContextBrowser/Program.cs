@@ -79,7 +79,7 @@ public static class Program
 
         ExtraDiagramsBuilder.Build(contextBuilderModel, options, options.Classifier, appLogger.WriteLog);
 
-        CustomEnvironment.CopyResources(".\\output");
-        CustomEnvironment.RunServers(".\\output");
+        CustomEnvironment.CopyResources(".//output");
+        CustomEnvironment.RunServers(".//output");
     }
 }
