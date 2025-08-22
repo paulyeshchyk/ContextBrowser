@@ -9,7 +9,6 @@ public class BiDirectionalTransitionBuilder : ITransitionBuilder
 {
     public DiagramDirection Direction => DiagramDirection.BiDirectional;
 
-
     private readonly OutgoingTransitionBuilder _outgoing;
     private readonly IncomingTransitionBuilder _incoming;
 

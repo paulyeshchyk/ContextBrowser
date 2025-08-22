@@ -20,7 +20,7 @@ public static partial class SequenceParticipantsManager
             ctx.Transition.RunContext
         }.Where(x => !string.IsNullOrWhiteSpace(x)).Select(s => s!);
 
-        foreach(var p in participants)
+        foreach (var p in participants)
         {
             ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Adding participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");
             ctx.Diagram.AddParticipant(p, keyword: defaultParticipantKeyword);

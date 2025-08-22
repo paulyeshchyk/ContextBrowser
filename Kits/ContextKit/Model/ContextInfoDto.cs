@@ -24,6 +24,16 @@ public record ContextInfoDto : IContextInfo
 
     public IContextInfo? MethodOwner { get; set; }
 
+    public string NameWithClassOwnerName
+    {
+        get
+        {
+            return ElementType == ContextInfoElementType.method && !string.IsNullOrWhiteSpace(ClassOwner?.Name)
+                ? $"{ClassOwner?.Name}.{Name}"
+                : $"{Name}";
+        }
+    }
+
     public ContextInfoDto(
         ContextInfoElementType elementType,
         string fullName,

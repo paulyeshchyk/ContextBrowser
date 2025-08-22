@@ -34,7 +34,7 @@ public class UmlDiagramState : UmlDiagram<UmlState>
 
     public override UmlDiagram<UmlState> AddParticipant(UmlState participant, string alias)
     {
-        if(participant is UmlState theParticipant)
+        if (participant is UmlState theParticipant)
         {
             _states.Add(theParticipant);
             return this;
@@ -52,12 +52,12 @@ public class UmlDiagramState : UmlDiagram<UmlState>
 
     public override IUmlElement AddTransition(UmlState from, UmlState to, bool isAsync = false, string? label = null)
     {
-        if(from is not UmlState theFrom)
+        if (from is not UmlState theFrom)
         {
             throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
         }
 
-        if(to is not UmlState theTo)
+        if (to is not UmlState theTo)
         {
             throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
         }
@@ -97,14 +97,14 @@ public class UmlDiagramState : UmlDiagram<UmlState>
 
     public override void WriteBody(TextWriter writer)
     {
-        if(!_states.Any() || !_transitions.Any())
+        if (!_states.Any() || !_transitions.Any())
         {
             //рисовать нечего
             return;
         }
 
         // 1. Объявляем состояния
-        foreach(var state in _states.Distinct())
+        foreach (var state in _states.Distinct())
             writer.WriteLine(state.Declaration);
 
         writer.WriteLine();
@@ -129,20 +129,20 @@ public class UmlDiagramState : UmlDiagram<UmlState>
             .ToList();
 
         // 3. Старт: от [*] ко всем начальным
-        foreach(var start in possibleStarts)
+        foreach (var start in possibleStarts)
         {
             var startTransition = new UmlTransitionStateStart(new UmlArrow(), new UmlState(start, null));
             startTransition.WriteTo(writer);
         }
 
         // 4. Основные переходы
-        foreach(var transition in _transitions)
+        foreach (var transition in _transitions)
         {
             transition.WriteTo(writer);
         }
 
         // 5. Финиш: от конечных к [*]
-        foreach(var end in possibleEnds)
+        foreach (var end in possibleEnds)
         {
             var startTransition = new UmlTransitionStateEnd(new UmlState(end, null), new UmlArrow());
             startTransition.WriteTo(writer);

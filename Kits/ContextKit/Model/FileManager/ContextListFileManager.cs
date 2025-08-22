@@ -17,7 +17,7 @@ public static class ContextListFileManager
     /// Асинхронно сохраняет список контекстов в файл.
     /// </summary>
     // context: roslyncache, update
-    public static async Task SaveContextsToCacheAsync(CacheJsonModel cacheModel, List<ContextInfo> contextsList, CancellationToken cancellationToken)
+    public static async Task SaveContextsToCacheAsync(CacheJsonModel cacheModel, IEnumerable<ContextInfo> contextsList, CancellationToken cancellationToken)
     {
         if (File.Exists(cacheModel.Output))
         {
@@ -33,7 +33,7 @@ public static class ContextListFileManager
 
         try
         {
-            var serializableList = ContextInfoSerializableModelAdapter.Adapt(contextsList);
+            var serializableList = ContextInfoSerializableModelAdapter.Adapt(contextsList.ToList());
 
             var json = JsonSerializer.Serialize(serializableList, _jsonOptions);
             if (string.IsNullOrEmpty(json))
@@ -65,11 +65,11 @@ public static class ContextListFileManager
     /// Читает список контекстов из файла и восстанавливает связи.
     /// </summary>
     // context: roslyncache, read
-    public static async Task<List<ContextInfo>> ReadContextsFromCache(CacheJsonModel cacheModel, Func<CancellationToken,Task<List<ContextInfo>>> fallback, CancellationToken cancellationToken)
+    public static async Task<IEnumerable<ContextInfo>> ReadContextsFromCache(CacheJsonModel cacheModel, Func<CancellationToken, Task<IEnumerable<ContextInfo>>> fallback, CancellationToken cancellationToken)
     {
         if (!File.Exists(cacheModel.Input) || cacheModel.RenewCache)
         {
-            return await fallback(cancellationToken);
+            return await fallback(cancellationToken).ConfigureAwait(false);
         }
 
         try
@@ -77,20 +77,20 @@ public static class ContextListFileManager
             var fileContent = File.ReadAllText(cacheModel.Input);
             if (string.IsNullOrEmpty(fileContent))
             {
-                return await fallback(cancellationToken);
+                return await fallback(cancellationToken).ConfigureAwait(false);
             }
 
             var serializableList = JsonSerializer.Deserialize<List<ContextInfoSerializableModel>>(fileContent, _jsonOptions);
             if (serializableList == null)
             {
-                return await fallback(cancellationToken);
+                return await fallback(cancellationToken).ConfigureAwait(false);
             }
 
             return ContextInfoSerializableModelAdapter.ConvertToContextInfo(serializableList);
         }
         catch (Exception)
         {
-            return await fallback(cancellationToken);
+            return await fallback(cancellationToken).ConfigureAwait(false);
         }
     }
 }
@@ -132,7 +132,6 @@ internal static class ContextInfoSerializableModelAdapter
         return contextsList.Select(c => Adapt(c)).ToList();
     }
 
-
     // context: roslyncache, convert
     public static ContextInfoSerializableModel Adapt(ContextInfo contextInfo)
     {
@@ -153,8 +152,7 @@ internal static class ContextInfoSerializableModelAdapter
                          dimensions: contextInfo.Dimensions,
                           spanStart: contextInfo.SpanStart,
                             spanEnd: contextInfo.SpanEnd,
-                         identifier: contextInfo.Identifier
-            );
+                         identifier: contextInfo.Identifier);
     }
 
     // context: roslyncache, build

@@ -31,28 +31,28 @@ public class ContextMatrixBuilder
     {
         bool includeUnclassified = _matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
 
-        foreach(var item in elements)
+        foreach (var item in elements)
         {
             var verbs = item.Contexts.Where(_contextClassifier.IsVerb).Distinct().ToList();
             var nouns = item.Contexts.Where(_contextClassifier.IsNoun).Distinct().ToList();
 
-            if(verbs.Any() && nouns.Any())
+            if (verbs.Any() && nouns.Any())
             {
-                foreach(var action in verbs)
-                    foreach(var domain in nouns)
+                foreach (var action in verbs)
+                    foreach (var domain in nouns)
                         matrix.Add(item, new ContextInfoMatrixCell(Action: action, Domain: domain));
             }
-            else if(verbs.Any())
+            else if (verbs.Any())
             {
-                foreach(var action in verbs)
+                foreach (var action in verbs)
                     matrix.Add(item, new ContextInfoMatrixCell(Action: action, Domain: _contextClassifier.EmptyDomain));
             }
-            else if(nouns.Any() && includeUnclassified)
+            else if (nouns.Any() && includeUnclassified)
             {
-                foreach(var domain in nouns)
+                foreach (var domain in nouns)
                     matrix.Add(item, new ContextInfoMatrixCell(Action: _contextClassifier.EmptyAction, Domain: domain));
             }
-            else if(includeUnclassified)
+            else if (includeUnclassified)
             {
                 matrix.Add(item, new ContextInfoMatrixCell(Action: _contextClassifier.EmptyAction, Domain: _contextClassifier.EmptyDomain));
             }
@@ -61,7 +61,7 @@ public class ContextMatrixBuilder
 
     private void AddEmptyCells(IContextInfoMatrix matrix, List<ContextInfo> elements)
     {
-        if(!_matrixOptions.IncludeAllStandardActions) return;
+        if (!_matrixOptions.IncludeAllStandardActions) return;
 
         var allVerbs = _contextClassifier.GetCombinedVerbs(elements.SelectMany(e => e.Contexts).Where(_contextClassifier.IsVerb).Distinct().ToList()).ToList();
         var allNouns = elements.SelectMany(e => e.Contexts).Where(_contextClassifier.IsNoun).Distinct().ToList();
@@ -72,17 +72,17 @@ public class ContextMatrixBuilder
             ? allNouns.Append(_contextClassifier.EmptyDomain)
             : allNouns;
 
-        foreach(var action in allVerbs)
+        foreach (var action in allVerbs)
         {
-            foreach(var domain in nounsToUse)
+            foreach (var domain in nounsToUse)
             {
                 matrix.Add(null, new ContextInfoMatrixCell(Action: action, Domain: domain));
             }
         }
 
-        if(includeUnclassified)
+        if (includeUnclassified)
         {
-            foreach(var noun in allNouns)
+            foreach (var noun in allNouns)
             {
                 matrix.Add(null, new ContextInfoMatrixCell(Action: _contextClassifier.EmptyAction, Domain: noun));
             }

@@ -6,16 +6,16 @@ public static class StringExtensions
 {
     public static string BeforeDot(this string input, int byGroupId = 1, int groupsCountToJoin = 1)
     {
-        if(string.IsNullOrEmpty(input))
+        if (string.IsNullOrEmpty(input))
             return string.Empty;
 
         var parts = input.Split('.');
-        if(byGroupId <= 0 || groupsCountToJoin <= 0)
+        if (byGroupId <= 0 || groupsCountToJoin <= 0)
             return string.Empty;
 
         // индекс в массиве (byGroupId начинается с 1, поэтому -1)
         int startIndex = byGroupId - 1;
-        if(startIndex >= parts.Length)
+        if (startIndex >= parts.Length)
             return string.Join(".", parts); // вернуть всю строку
 
         // ограничим количество элементов
@@ -29,7 +29,7 @@ public static class StringExtensions
     /// </summary>
     public static string ToAlphanumericUnderscore(this string input)
     {
-        if(input == null)
+        if (input == null)
             return string.Empty;
         return Regex.Replace(input, @"[^\p{L}\p{Nd}]", "_");
     }

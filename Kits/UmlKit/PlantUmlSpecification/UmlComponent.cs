@@ -24,7 +24,7 @@ public class UmlComponent : IUmlElement, IUmlDeclarable
     public void WriteTo(TextWriter writer)
     {
         writer.WriteLine();
-        if(!string.IsNullOrWhiteSpace(Url))
+        if (!string.IsNullOrWhiteSpace(Url))
             writer.WriteLine($"component \"{Name}\" [[{Url}]]");
         else
             writer.WriteLine(Declaration);

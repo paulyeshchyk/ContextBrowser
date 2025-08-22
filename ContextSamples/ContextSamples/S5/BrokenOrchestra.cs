@@ -15,7 +15,7 @@ public class BrokenOrchestra
     public void Test()
     {
         var data = Reader.ReadFile();
-        if(ValidateInput(data))
+        if (ValidateInput(data))
         {
             return;
         }

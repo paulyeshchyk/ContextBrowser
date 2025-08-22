@@ -12,7 +12,7 @@ public class CommandLineParser
     {
         options = default;
 
-        if(FindHelpParameter<T>(args, out errorMessage))
+        if (FindHelpParameter<T>(args, out errorMessage))
         {
             return false;
         }
@@ -24,7 +24,7 @@ public class CommandLineParser
             options = Parse<T>(args);
             return true;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             errorMessage = ex.Message;
             return false;
@@ -39,7 +39,7 @@ public class CommandLineParser
         var helpIndex = Array.FindIndex(args, a => a.Equals(helpPattern, StringComparison.OrdinalIgnoreCase));
 
         // Если --help найден
-        if(helpIndex == -1)
+        if (helpIndex == -1)
         {
             return false;
         }
@@ -62,7 +62,7 @@ public class CommandLineParser
     // context: commandline, build
     internal T Parse<T>(string[] args)
     {
-        if(args.Any(a => a.Equals($"{CommandLineDefaults.SArgumentPrefix}{CommandLineDefaults.SHelpKeyword}", StringComparison.OrdinalIgnoreCase)))
+        if (args.Any(a => a.Equals($"{CommandLineDefaults.SArgumentPrefix}{CommandLineDefaults.SHelpKeyword}", StringComparison.OrdinalIgnoreCase)))
         {
             // Пропускаем все аргументы, так как --help должен быть обработан TryParse
             return Activator.CreateInstance<T>();
@@ -71,10 +71,10 @@ public class CommandLineParser
         T options = Activator.CreateInstance<T>();
 
         // Проходим по всем аргументам
-        for(int i = 0; i < args.Length; i += 2)
+        for (int i = 0; i < args.Length; i += 2)
         {
             string argName = args[i];
-            if(!argName.StartsWith(CommandLineDefaults.SArgumentPrefix))
+            if (!argName.StartsWith(CommandLineDefaults.SArgumentPrefix))
             {
                 throw new ArgumentException(string.Format(SPrefixValueError, argName, CommandLineDefaults.SArgumentPrefix));
             }

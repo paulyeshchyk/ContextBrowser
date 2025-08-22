@@ -19,6 +19,7 @@ public static class ContextInfoService
     {
         return source.References.Add(callee);
     }
+
     public static bool AddToProperties<T>(T source, T property)
         where T : IContextWithReferences<T>
     {

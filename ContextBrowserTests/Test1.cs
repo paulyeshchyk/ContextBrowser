@@ -1,6 +1,5 @@
 ﻿namespace ContextBrowserTests;
 
-
 [TestClass]
 public sealed class Test1
 {

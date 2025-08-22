@@ -16,6 +16,7 @@ namespace ContextBrowser.Infrastructure;
 public class AppOptions
 {
     [CommandLineArgument("log-config", "JSON configuration for log levels.")]
+
     // context: build, appoptions
     public LogConfiguration<AppLevel, LogLevel> LogConfiguration { get; set; } = new()
     {
@@ -33,7 +34,7 @@ public class AppOptions
     };
 
     [CommandLineArgument("roslyn-options", "The source code path.")]
-    public CodeParsingOptions Semantic { get; set; } = new(
+    public CodeParsingOptions ParsingOptions { get; set; } = new(
 
         semanticOptions: new(
 
@@ -58,15 +59,14 @@ public class AppOptions
                 SemanticMemberType.@interface,
                 SemanticMemberType.@delegate,
                 SemanticMemberType.@record,
+
                 //RoslynCodeParserMemberType.@struct
             },
             externalNamespaceName: "ExternalNS",
             fakeOwnerName: "privateTYPE",
             fakeMethodName: "privateMETHOD",
             customAssembliesPaths: new List<string>() { "." },
-            createFailedCallees: true
-        )
-    );
+            createFailedCallees: true));
 
     [CommandLineArgument("import-options", "Параметры импорта")]
     public ImportOptions Import { get; set; } = new(
@@ -78,8 +78,7 @@ public class AppOptions
         //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
-        searchPaths: new[] { ".//..//..//..//" }
-    );
+        searchPaths: new[] { ".//..//..//..//" });
 
     [CommandLineArgument("export-options", "Параметры экспорта")]
     public ExportOptions Export { get; set; } = new(
@@ -88,27 +87,22 @@ public class AppOptions
             includeAllStandardActions: true,
                             htmlTable: new HtmlTableOptions(
                                 summaryPlacement: SummaryPlacementType.AfterFirst,
-                                     orientation: MatrixOrientationType.DomainRows
-                                )
-        ),
+                                     orientation: MatrixOrientationType.DomainRows)),
         paths: new ExportPaths(
             outputDirectory: ".//output",
                  cacheModel: new CacheJsonModel(
                     renewCache: true,
                          input: ".//cache//roslyn.json",
-                        output: ".//cache//roslyn.json"
-                ),
+                        output: ".//cache//roslyn.json"),
             new ExportPathItem(ExportPathType.index, "."),
             new ExportPathItem(ExportPathType.puml, "puml"),
             new ExportPathItem(ExportPathType.pages, "pages"),
-            new ExportPathItem(ExportPathType.pumlExtra, "puml/extra")
-        ).BuildFullPath()
-    );
+            new ExportPathItem(ExportPathType.pumlExtra, "puml/extra")).BuildFullPath());
 
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
                                               debug: false,
-                                        detailLevel: DiagramDetailLevel.Full,
+                                        detailLevel: DiagramDetailLevel.Summary,
                                           direction: DiagramDirection.Outgoing,
                                          activation: new DiagramActivationOptions(useActivation: true, useActivationCall: true),
                                   transitionOptions: new DiagramTransitionOptions(useCall: true, useDone: true),
@@ -124,7 +118,6 @@ public class AppOptions
              fakeAction: "_fakeAction",
              fakeDomain: "_fakeDomain",
         standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" },
-              metaItems: new[] { "Action;Domain;Elements" }
-        )
+              metaItems: new[] { "Action;Domain;Elements" })
     { };
 }

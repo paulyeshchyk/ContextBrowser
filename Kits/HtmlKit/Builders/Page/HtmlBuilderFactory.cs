@@ -24,7 +24,7 @@ public static class HtmlBuilderFactory
     public static readonly IHtmlBuilder H1 = new HtmlBuilderH1("h1");
     public static readonly IHtmlBuilder Paragraph = new HtmlBuilderP("p");
     public static readonly IHtmlBuilder Ul = new HtmlBuilderUl("ul");
-    public static readonly IHtmlBuilder Li = new HtmlBuilderLi("li", "nowrap");
+    public static readonly IHtmlBuilder Li = new HtmlBuilderLi("li");
     public static readonly IHtmlCellBuilder Raw = new RawBuilder();
 
     // pattern: Abstract Factory
@@ -63,7 +63,7 @@ public static class HtmlBuilderFactory
         // Поэтому здесь можно бросить исключение или просто оставить его неиспользуемым,
         // если мы уверены, что для этих тегов Cell вызываться не будет.
         // Для чистоты, можно сделать его более строгим:
-        public override void Cell(TextWriter sb, bool plainText, string? innerHtml = "", string? href = null, string? style = null)
+        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
         {
             throw new NotSupportedException($"Cell method is not supported for <{Tag}> tag in StandardTagBuilder. Use Start/End instead.");
         }
@@ -77,9 +77,9 @@ public static class HtmlBuilderFactory
         {
         }
 
-        public override void Cell(TextWriter sb, bool plainText, string? innerHtml = "", string? href = null, string? style = null)
+        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
         {
-            WriteContentTag(sb, plainText, innerHtml, style);
+            WriteContentTag(sb, innerHtml, style);
         }
     }
 
@@ -134,7 +134,7 @@ public static class HtmlBuilderFactory
 
     private class HtmlBuilderLi : HtmlBuilder
     {
-        public HtmlBuilderLi(string tag, string className) : base(tag, className)
+        public HtmlBuilderLi(string tag) : base(tag, string.Empty)
         {
         }
     }
@@ -157,7 +157,7 @@ public static class HtmlBuilderFactory
     public readonly struct RawBuilder : IHtmlCellBuilder
     {
         // context: html, build
-        public void Cell(TextWriter sb, bool plainText, string? innerHtml = "", string? href = null, string? style = null)
+        public void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
         {
             if (!string.IsNullOrWhiteSpace(innerHtml))
                 sb.WriteLine(innerHtml);

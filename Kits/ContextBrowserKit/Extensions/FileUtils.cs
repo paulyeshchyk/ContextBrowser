@@ -27,7 +27,7 @@ public static class FileUtils
     //context: file, create
     public static void CreateDirectoryIfNotExists(string path, OnWriteLog? onWriteLog = null)
     {
-        if(Directory.Exists(path))
+        if (Directory.Exists(path))
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Dbg, string.Format(SFolderExistsTemplate, path));
             return;
@@ -38,15 +38,15 @@ public static class FileUtils
             Directory.CreateDirectory(path);
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Dbg, string.Format(SFolderCreatedTemplate, path));
         }
-        catch(IOException e)
+        catch (IOException e)
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SErrorThrowenForDirectoryCreationTemplate, path, e.Message));
         }
-        catch(UnauthorizedAccessException e)
+        catch (UnauthorizedAccessException e)
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SNFolderAccessTemplate, path, e.Message));
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SUnknownErrorTemplate, path, e.Message));
         }
@@ -55,7 +55,7 @@ public static class FileUtils
     //context: file, delete, directory
     public static void WipeDirectory(string path, bool shouldClearContentOnly = true, OnWriteLog? onWriteLog = default)
     {
-        if(shouldClearContentOnly)
+        if (shouldClearContentOnly)
         {
             ClearDirectoryContents(path, onWriteLog: onWriteLog);
         }
@@ -68,7 +68,7 @@ public static class FileUtils
     //context: delete, file, directory
     public static void ClearDirectoryContents(string path, OnWriteLog? onWriteLog = default)
     {
-        if(!Directory.Exists(path))
+        if (!Directory.Exists(path))
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Warn, string.Format(SFolderNotFoundTemplate, path));
             return;
@@ -77,20 +77,20 @@ public static class FileUtils
         try
         {
             string[] files = Directory.GetFiles(path);
-            foreach(string file in files)
+            foreach (string file in files)
             {
                 DeleteFile(file, onWriteLog: onWriteLog);
             }
 
             string[] directories = Directory.GetDirectories(path);
-            foreach(string dir in directories)
+            foreach (string dir in directories)
             {
                 DeleteDirectory(dir, onWriteLog: onWriteLog);
             }
 
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Dbg, string.Format(SFolderWipedTemplate, path));
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SUnknownErrorWipeTemplate, path, e.Message));
         }
@@ -99,7 +99,7 @@ public static class FileUtils
     //context: delete, file
     private static void DeleteFile(string file, OnWriteLog? onWriteLog = default)
     {
-        if(!File.Exists(file))
+        if (!File.Exists(file))
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Warn, string.Format(SFileNotFoundTemplate, file));
             return;
@@ -110,11 +110,11 @@ public static class FileUtils
             File.Delete(file);
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Dbg, string.Format(SFileErasedTemplate, file));
         }
-        catch(IOException ex)
+        catch (IOException ex)
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SFileDeleteErrorTemplate, file, ex.Message));
         }
-        catch(UnauthorizedAccessException ex)
+        catch (UnauthorizedAccessException ex)
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SFileDeleteNoAccessTemplate, file, ex.Message));
         }
@@ -123,7 +123,7 @@ public static class FileUtils
     //context: file, delete, directory
     public static void DeleteDirectory(string path, bool recursive = true, OnWriteLog? onWriteLog = default)
     {
-        if(!Directory.Exists(path))
+        if (!Directory.Exists(path))
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SFolderExistsTemplate, path));
             return;
@@ -134,15 +134,15 @@ public static class FileUtils
             Directory.Delete(path, recursive);
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Trace, string.Format(SFolderWipedSuccessfullyTemplate, path));
         }
-        catch(IOException e)
+        catch (IOException e)
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SFolderWipeErrorTemplate, path, e.Message));
         }
-        catch(UnauthorizedAccessException e)
+        catch (UnauthorizedAccessException e)
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SFolderWipeAccessErrorTemplate, path, e.Message));
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             onWriteLog?.Invoke(AppLevel.file, LogLevel.Err, string.Format(SFolderWipeUnknownErrorTemplate, path, e.Message));
         }

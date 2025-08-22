@@ -25,11 +25,11 @@ public class UmlActivate : IUmlElement, IUmlDeclarable
     {
         writer.WriteLine();
 
-        if(!string.IsNullOrEmpty(Source))
+        if (!string.IsNullOrEmpty(Source))
         {
             writer.Write(Source);
             writer.Write($" -> {Destination}");
-            if(!string.IsNullOrWhiteSpace(_reason))
+            if (!string.IsNullOrWhiteSpace(_reason))
             {
                 writer.Write($": {_reason}");
             }
@@ -37,7 +37,7 @@ public class UmlActivate : IUmlElement, IUmlDeclarable
         }
         else
         {
-            if(!string.IsNullOrWhiteSpace(_reason))
+            if (!string.IsNullOrWhiteSpace(_reason))
             {
                 writer.Write($" -> {Destination}");
                 writer.Write($": {_reason}");
@@ -45,7 +45,7 @@ public class UmlActivate : IUmlElement, IUmlDeclarable
             }
         }
 
-        if(!SoftActivation)
+        if (!SoftActivation)
             writer.WriteLine(Declaration);
     }
 }

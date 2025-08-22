@@ -28,16 +28,14 @@ public static class ISymbolExtensions
     public static string GetShortestName(this ISymbol symbol)
     {
         // если это метод Invoke у делегата
-        if(symbol is IMethodSymbol ms && ms.MethodKind == MethodKind.DelegateInvoke)
+        if (symbol is IMethodSymbol ms && ms.MethodKind == MethodKind.DelegateInvoke)
         {
             var delegateName = ms.ContainingType?.ToDisplayString(
                 new SymbolDisplayFormat(
                     globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
                     typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameOnly,
                     memberOptions: SymbolDisplayMemberOptions.None,
-                    miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers
-                )
-            );
+                    miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers));
 
             // можно вернуть только имя делегата (OnWriteLog)
             // return delegateName ?? ms.Name;
@@ -55,8 +53,7 @@ public static class ISymbolExtensions
             localOptions: SymbolDisplayLocalOptions.None,
             parameterOptions: SymbolDisplayParameterOptions.None,
             genericsOptions: SymbolDisplayGenericsOptions.None,
-            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers
-        );
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
 
         return symbol.ToDisplayString(format);
     }
@@ -66,10 +63,9 @@ public static class ISymbolExtensions
         return symbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
     }
 
-
     public static string GetFullMemberName(this ISymbol symbol)
     {
-        if(symbol is IMethodSymbol ms)
+        if (symbol is IMethodSymbol ms)
         {
             var typeName = ms.ContainingType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
             return $"{typeName}.{ms.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)}";

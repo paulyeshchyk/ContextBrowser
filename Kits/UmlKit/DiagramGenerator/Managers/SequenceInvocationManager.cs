@@ -18,7 +18,7 @@ public static partial class SequenceInvocationManager
             reason: ctx.CalleeMethod,
             canActivate: ctx.Options.InvocationOptions.UseInvocation);
 
-        if(!activated)
+        if (!activated)
         {
             return false;
         }
@@ -34,7 +34,7 @@ public static partial class SequenceInvocationManager
     internal static bool ActivateInvocation<T>(RenderContext<T> ctx, string from, string to, string? reason, bool canActivate)
         where T : IUmlParticipant
     {
-        if(string.IsNullOrWhiteSpace(to) || !canActivate)
+        if (string.IsNullOrWhiteSpace(to) || !canActivate)
         {
             return false;
         }
@@ -48,12 +48,12 @@ public static partial class SequenceInvocationManager
     internal static bool DeactivateInvocation<T>(RenderContext<T> ctx, string from, string to, string rReason, bool canAddTransition)
         where T : IUmlParticipant
     {
-        if(string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
+        if (string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
         {
             return false;
         }
 
-        if(canAddTransition)
+        if (canAddTransition)
         {
             ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Render transition S2S1 [{from} -> {to}]:<return>");
             var diagram = ctx.Diagram;

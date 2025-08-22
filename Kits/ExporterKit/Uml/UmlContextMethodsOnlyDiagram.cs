@@ -21,15 +21,15 @@ public static class UmlContextMethodsOnlyDiagram
         var diagramId = $"methods_only_{outputPath}".AlphanumericOnly();
         var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
 
-        foreach(var method in methods)
+        foreach (var method in methods)
             diagram.Add(new UmlComponent(method.Name));
 
-        foreach(var method in methods)
+        foreach (var method in methods)
         {
             var references = ContextInfoService.GetReferencesSortedByInvocation(method);
-            foreach(var callee in references)
+            foreach (var callee in references)
             {
-                if(!methods.Any(m => m.Name == callee.Name))
+                if (!methods.Any(m => m.Name == callee.Name))
                     continue;
 
                 AddTransitionState(diagram, method, callee);

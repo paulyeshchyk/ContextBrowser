@@ -11,7 +11,7 @@ public static class ContextInfoCsvExporter
         var lines = new List<string>();
         lines.AddRange(contextClassifier.MetaItems);
 
-        foreach(var cell in matrix)
+        foreach (var cell in matrix)
         {
             BuildItem(lines, cell);
         }

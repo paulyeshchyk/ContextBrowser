@@ -15,7 +15,7 @@ public class UmlTransitionDtoBuilder
     public static UmlTransitionDto? CreateTransition(ContextInfo? caller, ContextInfo? callee, OnWriteLog? log, string? parentUid)
     {
         // Метод -> Метод
-        if(!(caller?.MethodOwner != null && callee?.MethodOwner != null))
+        if (!(caller?.MethodOwner != null && callee?.MethodOwner != null))
         {
             log?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[SKIP] Transition unsupported for {caller?.Name ?? string.Empty} -> {callee?.Name ?? string.Empty}");
             return null;
@@ -49,17 +49,16 @@ public class UmlTransitionDtoBuilder
             domain: callee.Domains.FirstOrDefault() ?? "unknown",
             runContext: runContext,
             ownerClass: ownerClass,
-            ownerMethod: ownerMethod
-        );
+            ownerMethod: ownerMethod);
     }
 
     private static ParticipantInfo ExtractParticipantInfo(ContextInfo contextInfo)
     {
-        if(contextInfo.ClassOwner is ContextInfo classOwner)
+        if (contextInfo.ClassOwner is ContextInfo classOwner)
         {
             return new ParticipantInfo(classOwner.FullName, classOwner.Name, classOwner.Name, contextInfo.Name);
         }
-        if(contextInfo?.MethodOwner?.ClassOwner is ContextInfo methodClassOwner)
+        if (contextInfo?.MethodOwner?.ClassOwner is ContextInfo methodClassOwner)
         {
             return new ParticipantInfo(methodClassOwner.FullName, methodClassOwner.Name, methodClassOwner.Name, contextInfo.Name);
         }

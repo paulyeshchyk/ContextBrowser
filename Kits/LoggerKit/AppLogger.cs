@@ -18,7 +18,6 @@ public class AppLogger<T>
         _writer = writer;
     }
 
-
     // context: log, build
     protected string FormattedText(T appLevel, LogLevel logLevel, string message)
     {
@@ -30,12 +29,12 @@ public class AppLogger<T>
     // context: log, model
     private bool CanWriteLog(LogLevel requested, LogLevel limitedByAppLevel)
     {
-        if(requested == LogLevel.None)
+        if (requested == LogLevel.None)
         {
             return false;
         }
 
-        return (int)requested <= (int)limitedByAppLevel;
+        return requested <= limitedByAppLevel;
     }
 
     // context: log, build
@@ -52,7 +51,7 @@ public class AppLogger<T>
     {
         var limitedByAppLevel = _appLogLevelStorage.GetLevel(appLevel);
 
-        if(CanWriteLog(logObject.LogLevel, limitedByAppLevel))
+        if (CanWriteLog(logObject.LogLevel, limitedByAppLevel))
         {
             TheWriteFunc(appLevel, logObject);
         }

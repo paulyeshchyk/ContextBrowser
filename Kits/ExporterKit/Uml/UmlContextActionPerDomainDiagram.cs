@@ -18,10 +18,10 @@ public static class UmlContextActionPerDomainDiagram
         var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
-        foreach(var item in matrix)
+        foreach (var item in matrix)
         {
             var count = item.Value.Count;
-            if(count == 0)
+            if (count == 0)
                 continue;
 
             AddPackage(linkGenerator, diagram, item.Key, count);

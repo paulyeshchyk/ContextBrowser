@@ -37,7 +37,7 @@ public abstract class CustomServer
             callback?.Invoke(result, null);
             return result;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             callback?.Invoke(null, $"Ошибка при запуске процесса {userInfo ?? "unknown"}: {ex.Message}");
             return null;
@@ -49,19 +49,19 @@ public static class CustomServerDetector
 {
     public static OSPlatform GetOSPlatform()
     {
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             return OSPlatform.Windows;
         }
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             return OSPlatform.OSX;
         }
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             return OSPlatform.Linux;
         }
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
         {
             return OSPlatform.FreeBSD;
         }

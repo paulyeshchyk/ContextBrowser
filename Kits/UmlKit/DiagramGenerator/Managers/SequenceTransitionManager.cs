@@ -20,7 +20,7 @@ public static partial class SequenceTransitionManager
     internal static void SystemCall<P>(IUmlTransitionFactory<P> factory, DiagramBuilderOptions options, UmlDiagram<P> diagram, string caller, string? reason, bool visibleWithoutActivation = false)
         where P : IUmlParticipant
     {
-        if(options.Activation.UseActivation || visibleWithoutActivation)
+        if (options.Activation.UseActivation || visibleWithoutActivation)
         {
             var from = factory.CreateTransitionObject(string.Empty);
             var to = factory.CreateTransitionObject(caller);

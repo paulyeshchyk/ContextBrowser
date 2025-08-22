@@ -15,7 +15,7 @@ public sealed class DomainWalker : Walker<ContextInfo>
     // context: build, Walker
     public void Walk(List<ContextInfo> allContexts)
     {
-        foreach(var item in allContexts.Where(i => i.Domains.Contains(StartingDomain)))
+        foreach (var item in allContexts.Where(i => i.Domains.Contains(StartingDomain)))
         {
             AddToVisited(item, Visited);
         }

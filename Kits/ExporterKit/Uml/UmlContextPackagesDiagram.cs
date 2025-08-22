@@ -22,7 +22,7 @@ public static class UmlContextPackagesDiagram
 
         var grouped = classes.GroupBy(c => c.Namespace);
 
-        foreach(var nsGroup in grouped)
+        foreach (var nsGroup in grouped)
         {
             AddPackage(diagram, methods, nsGroup);
         }
@@ -34,7 +34,7 @@ public static class UmlContextPackagesDiagram
     {
         var package = new UmlPackage(nsGroup.Key);
 
-        foreach(var cls in nsGroup)
+        foreach (var cls in nsGroup)
         {
             AddComponentGroup(methods, package, cls);
         }
@@ -51,7 +51,7 @@ public static class UmlContextPackagesDiagram
         var compGroup = new UmlComponentGroup(CleanName(cls.Name), stereotype);
 
         var methodsInClass = methods.Where(m => m.ClassOwner?.Name == cls.Name);
-        foreach(var method in methodsInClass)
+        foreach (var method in methodsInClass)
         {
             AddMethodBox(compGroup, method);
         }
@@ -69,7 +69,7 @@ public static class UmlContextPackagesDiagram
     // context: uml, build
     private static string? CleanName(string? rawName)
     {
-        if(string.IsNullOrEmpty(rawName))
+        if (string.IsNullOrEmpty(rawName))
             return rawName;
 
         return Regex.Replace(rawName, @"<(.+?)>", "[$1]")

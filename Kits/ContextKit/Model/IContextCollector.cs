@@ -10,5 +10,7 @@ public interface IContextCollector<T>
 
     void MergeFakeItems();
 
-    public Dictionary<string, T> BySymbolDisplayName { get; }
+    Dictionary<string, T> BySymbolDisplayName { get; }
+
+    void Renew(IEnumerable<T> byItems);
 }

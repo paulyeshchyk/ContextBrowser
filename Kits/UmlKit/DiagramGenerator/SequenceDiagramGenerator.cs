@@ -28,7 +28,7 @@ public class SequenceDiagramGenerator<P>
 
     public bool Generate(UmlDiagram<P> diagram, GrouppedSortedTransitionList? allTransitions, string domain)
     {
-        if(allTransitions == null || !allTransitions.HasTransitions())
+        if (allTransitions == null || !allTransitions.HasTransitions())
         {
             _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Warn, $"No transitions provided for [{domain}]");
             return false;

@@ -18,7 +18,7 @@ public class UmlArrow : IUmlElement
         var flowTypeStr = FlowType.Data();
         var flowDirection = ArrowDirection.Data();
 
-        switch(ArrowPosition)
+        switch (ArrowPosition)
         {
             case UmlArrowPosition.AtRight:
                 writer.Write($" {flowTypeStr}{flowDirection} ");

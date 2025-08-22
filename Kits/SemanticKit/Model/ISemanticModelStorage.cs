@@ -9,6 +9,9 @@ public interface ISemanticModelStorage<ISyntaxTreeWrapper, TSemanticModel>
     // context: semantic, create
     void AddRange(IEnumerable<KeyValuePair<ISyntaxTreeWrapper, TSemanticModel>> models);
 
+    // context: semantic, create
+    void Add(SemanticCompilationMap map);
+
     // context: semantic, read
     TSemanticModel? GetModel(ISyntaxTreeWrapper syntaxTree);
 

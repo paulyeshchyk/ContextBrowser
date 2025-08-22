@@ -43,7 +43,7 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
     //context: htmlmatrix, build
     protected override void WriteContent(TextWriter tw)
     {
-        HtmlBuilderFactory.Table.With(tw,() =>
+        HtmlBuilderFactory.Table.With(tw, () =>
         {
             new HtmlMatrixWriter(this, _options)
                 .WriteHeaderRow(tw)

@@ -14,7 +14,6 @@ public class UmlTransitionStateFactory : IUmlTransitionFactory<UmlState>
         return new UmlTransitionState((UmlState)from, (UmlState)to, arrow, label);
     }
 
-
     public IUmlParticipant CreateTransitionObject(string name)
     {
         return new UmlState(name, null);

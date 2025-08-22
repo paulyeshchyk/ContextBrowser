@@ -59,7 +59,6 @@ public static class CustomEnvironment
             System.Threading.Thread.Sleep(1000);
         }
 
-
         long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         customServer.OpenHtmlPage($"http://localhost:{SLocalHttpServerPort}/index.html?v={timestamp}");
     }

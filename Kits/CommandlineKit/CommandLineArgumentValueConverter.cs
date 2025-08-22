@@ -6,13 +6,13 @@ public static class CommandLineArgumentValueConverter
     // context: commandline, build
     public static object ConvertValue(Type targetType, string value)
     {
-        if(targetType == typeof(IEnumerable<string>))
+        if (targetType == typeof(IEnumerable<string>))
         {
             // Обрабатываем IEnumerable<string>
             return value.Split(',').Select(s => s.Trim());
         }
 
-        if(targetType.IsEnum)
+        if (targetType.IsEnum)
         {
             // Обрабатываем Enum
             return Enum.Parse(targetType, value, true);

@@ -15,7 +15,7 @@ public static class PumlInjector
     // context: read, uml
     public static string ReadPumlContent(string pumlFilePath)
     {
-        if(!File.Exists(pumlFilePath))
+        if (!File.Exists(pumlFilePath))
             throw new FileNotFoundException("Файл не найден", pumlFilePath);
 
         // Чтение всего файла в строку

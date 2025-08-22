@@ -18,7 +18,7 @@ public class UmlPackage : IUmlElement
     {
         writer.WriteLine();
         writer.WriteLine($"package \"{Name}\" {{");
-        foreach(var element in Elements)
+        foreach (var element in Elements)
             element.WriteTo(writer);
         writer.WriteLine("}");
     }

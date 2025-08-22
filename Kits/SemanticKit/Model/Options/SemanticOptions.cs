@@ -36,10 +36,10 @@ public record SemanticOptions
 // parsing: error
 public record CodeParsingOptions
 {
-    public SemanticOptions Semantic { get; set; }
+    public SemanticOptions SemanticOptions { get; set; }
 
     public CodeParsingOptions(SemanticOptions semanticOptions)
     {
-        Semantic = semanticOptions;
+        SemanticOptions = semanticOptions;
     }
 }

@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using ContextBrowserKit.Log;
+﻿using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using System.Text.RegularExpressions;
 
 namespace ContextBrowserKit.Extensions;
 
@@ -48,6 +48,7 @@ public class PathAnalyzer
                         }
                     }
                 }
+
                 // 4. Добавляем путь, если это файл
                 else if (File.Exists(path))
                 {
@@ -101,6 +102,7 @@ public class PathAnalyzer
         // Если шаблон не начинается со звёздочки, добавляем её
         return "*" + pattern;
     }
+
     private static bool IsFileMatch(string filePath, string pattern)
     {
         var fileName = Path.GetFileName(filePath);

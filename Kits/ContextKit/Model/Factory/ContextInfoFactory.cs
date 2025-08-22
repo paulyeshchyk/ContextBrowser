@@ -19,8 +19,7 @@ public class ContextInfoFactory<T> : IContextFactory<T>
                  symbol: dto.Symbol,
              syntaxNode: dto.SyntaxNode,
              classOwner: dto.ClassOwner,
-            methodOwner: dto.MethodOwner
-        )
+            methodOwner: dto.MethodOwner)
         { };
 
         return (T)result;

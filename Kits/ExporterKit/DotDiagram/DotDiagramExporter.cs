@@ -11,7 +11,7 @@ public static class DotDiagramExporter
         writer.WriteLine("digraph G {");
         writer.WriteLine("  rankdir=LR;");
 
-        foreach(var t in transitions.Distinct())
+        foreach (var t in transitions.Distinct())
         {
             writer.WriteLine($"  \"{t.CallerId}\" -> \"{t.CalleeId}\" [label=\"{t.Domain}\"];");
         }

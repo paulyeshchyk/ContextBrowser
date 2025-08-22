@@ -23,12 +23,12 @@ public class Walker<T>
     // context: update, Walker
     protected bool AddToVisited(T item, HashSet<T> visited)
     {
-        if(!visited.Add(item))
+        if (!visited.Add(item))
             return false;
 
         VisitCallback?.Invoke(item);
         var references = ContextInfoService.GetReferencesSortedByInvocation(item);
-        foreach(var reference in references.OfType<T>())
+        foreach (var reference in references.OfType<T>())
             AddToVisited(reference, visited);
         return true;
     }

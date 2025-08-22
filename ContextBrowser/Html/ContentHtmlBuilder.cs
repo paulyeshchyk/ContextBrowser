@@ -11,9 +11,9 @@ namespace ContextBrowser.Samples.HtmlPages;
 public static class ContentHtmlBuilder
 {
     // context: html, build
-    public static void Build(ContextBuilderModel model, AppOptions options, OnWriteLogObject? onWriteLog = null)
+    public static void Build(ContextInfoMatrixModel model, AppOptions options, OnWriteLogObject? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- ContentHtmlBuilder.Build ---", LogLevelNode.None));
-        HtmlIndexPage.GenerateContextHtmlPages(model.matrix, options.Export);
+        HtmlIndexPage.GenerateContextHtmlPages(model.Matrix, options.Export);
     }
 }

@@ -26,31 +26,31 @@ public static class HtmlIndexPage
 
             using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
 
-            HtmlBuilderFactory.Raw.Cell(writer, plainText: false, "<!DOCTYPE html>");
+            HtmlBuilderFactory.Raw.Cell(writer, "<!DOCTYPE html>");
             HtmlBuilderFactory.Html.With(writer, () =>
             {
                 HtmlBuilderFactory.Head.With(writer, () =>
                 {
-                    HtmlBuilderFactory.Meta.Cell(writer, plainText: false, style: "charset=\"UTF-8\"");
-                    HtmlBuilderFactory.Title.Cell(writer, plainText: true, title);
+                    HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
+                    HtmlBuilderFactory.Title.Cell(writer, title);
 
                     if (!string.IsNullOrWhiteSpace(injection.EmbeddedScript))
-                        HtmlBuilderFactory.Raw.Cell(writer, plainText: false, injection.EmbeddedScript);
+                        HtmlBuilderFactory.Raw.Cell(writer, injection.EmbeddedScript);
                 });
 
                 HtmlBuilderFactory.Body.With(writer, () =>
                 {
-                    HtmlBuilderFactory.H1.Cell(writer, plainText: true, $"{action.ToUpper()} -> {domain}");
-                    HtmlBuilderFactory.Paragraph.Cell(writer, plainText: true, $"Methods: {methodCount}");
+                    HtmlBuilderFactory.H1.Cell(writer, $"{action.ToUpper()} -> {domain}");
+                    HtmlBuilderFactory.Paragraph.Cell(writer, $"Methods: {methodCount}");
 
                     HtmlBuilderFactory.Ul.With(writer, () =>
                     {
                         foreach (var method in distinctMethods)
-                            HtmlBuilderFactory.Li.Cell(writer, plainText: true, method.FullName);
+                            HtmlBuilderFactory.Li.Cell(writer, method.FullName);
                     });
 
                     if (!string.IsNullOrWhiteSpace(injection.EmbeddedContent))
-                        HtmlBuilderFactory.Raw.Cell(writer, plainText: false, injection.EmbeddedContent);
+                        HtmlBuilderFactory.Raw.Cell(writer, injection.EmbeddedContent);
                 });
             });
         }

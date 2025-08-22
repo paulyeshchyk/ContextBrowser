@@ -4,7 +4,6 @@ public record DiagramIndicationOption
 {
     public bool UseAsync { get; set; }
 
-
     public DiagramIndicationOption(bool useAsync)
     {
         UseAsync = useAsync;

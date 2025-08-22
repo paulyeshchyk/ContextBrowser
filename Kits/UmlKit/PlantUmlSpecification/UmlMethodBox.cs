@@ -20,7 +20,7 @@ public class UmlMethodBox : IUmlElement
     public void WriteTo(TextWriter writer)
     {
         writer.WriteLine();
-        if(!string.IsNullOrWhiteSpace(Stereotype))
+        if (!string.IsNullOrWhiteSpace(Stereotype))
             writer.WriteLine($"    [{Name}] <<{Stereotype}>>");
         else
             writer.WriteLine($"    [{Name}]");

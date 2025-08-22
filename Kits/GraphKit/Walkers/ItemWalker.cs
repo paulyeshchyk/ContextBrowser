@@ -27,7 +27,7 @@ public sealed class ItemWalker : Walker<ContextInfo>
     // context: build, Walker
     public void Walk(IEnumerable<ContextInfo> items, bool skipDescendants = false)
     {
-        foreach(var item in items)
+        foreach (var item in items)
         {
             Walk(item, skipDescendants);
         }
@@ -37,16 +37,16 @@ public sealed class ItemWalker : Walker<ContextInfo>
     public void Walk(ContextInfo item, bool skipDescendants = false)
     {
         // Добавляем item и все его References в Visited
-        if(!AddToVisited(item, Visited))
+        if (!AddToVisited(item, Visited))
             return;
 
         var descendants = OnGetDescendants.Invoke(item);
-        foreach(var descendant in descendants)
+        foreach (var descendant in descendants)
         {
             // специально не проверяем Visited здесь
             AddToVisited(descendant, Visited);
 
-            if(!skipDescendants)
+            if (!skipDescendants)
                 TryExport(item, descendant);
         }
     }
@@ -58,14 +58,14 @@ public sealed class ItemWalker : Walker<ContextInfo>
         contexts.UnionWith(caller.Contexts);
         contexts.UnionWith(callee.Contexts);
 
-        foreach(var domain in contexts)
+        foreach (var domain in contexts)
         {
             var domainItems = OnGetDomainItems.Invoke(domain);
-            foreach(var itemForDomain in domainItems)
+            foreach (var itemForDomain in domainItems)
             {
                 OnExportItem(caller, callee, itemForDomain, domain);
 
-                if(!Visited.Contains(itemForDomain))
+                if (!Visited.Contains(itemForDomain))
                     Walk(itemForDomain, true);
             }
         }

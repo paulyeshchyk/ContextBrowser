@@ -28,7 +28,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     public GrouppedSortedTransitionList? Build(string domainName, List<ContextInfo> allContexts, IContextClassifier classifier)
     {
         var resultFromCache = _cache.GetFromCache(domainName);
-        if(resultFromCache?.HasTransitions() ?? false)
+        if (resultFromCache?.HasTransitions() ?? false)
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Trace, $"[CACHE]: returning data for [{domainName}]");
             return resultFromCache;
@@ -49,7 +49,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     {
         var methods = FetchAllMethods(domainName, allContexts, classifier);
 
-        if(!methods.Any())
+        if (!methods.Any())
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[MISS] Fetch Не найдено методов для [{domainName}]");
             return null;
@@ -74,7 +74,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     {
         var allTransitions = new GrouppedSortedTransitionList();
 
-        if(!_transitionBuilders.Any())
+        if (!_transitionBuilders.Any())
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Err, $"Build Domain [{domainName}] - no transition builders provided for domain");
             return allTransitions;
@@ -82,14 +82,14 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Build Domain [{domainName}]", LogLevelNode.Start);
 
-        foreach(var builder in _transitionBuilders)
+        foreach (var builder in _transitionBuilders)
         {
             var transitions = builder.BuildTransitions(methods, allContexts);
 
             allTransitions.Merge(transitions);
         }
 
-        if(!allTransitions.HasTransitions())
+        if (!allTransitions.HasTransitions())
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"No transitions found for domain [{domainName}]");
         }
@@ -114,7 +114,7 @@ internal class ContextTransitionDiagramBuilderCache
     public GrouppedSortedTransitionList? GetFromCache(string cacheKey)
     {
         // Попытка получить данные из кэша.
-        if(_cache.TryGetValue(cacheKey, out var cachedResult))
+        if (_cache.TryGetValue(cacheKey, out var cachedResult))
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Trace, $"[CACHE]: return result for [{cacheKey}]");
             return cachedResult;
@@ -127,7 +127,7 @@ internal class ContextTransitionDiagramBuilderCache
     // context: create, transitioncache
     public void AddToCache(string cacheKey, GrouppedSortedTransitionList? result)
     {
-        if(result == null || !result.HasTransitions())
+        if (result == null || !result.HasTransitions())
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[CACHE] Nothing to cache for [{cacheKey}]");
             return;

@@ -26,7 +26,7 @@ public static class UmlContextComponentDiagram
         diagram.SetTitle(diagramTitle);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
-        foreach(var method in methods)
+        foreach (var method in methods)
         {
             var component = new UmlComponent(method.FullName);
             diagram.Add(component);
@@ -38,7 +38,7 @@ public static class UmlContextComponentDiagram
     //context: uml, build, heatmap, directory
     public static void Build(IContextInfoMatrix matrix, ExportOptions exportOptions, DiagramBuilderOptions options)
     {
-        foreach(var cell in matrix)
+        foreach (var cell in matrix)
         {
             Build(exportOptions, cell, options);
         }

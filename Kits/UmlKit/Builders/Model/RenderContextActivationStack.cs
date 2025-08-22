@@ -8,6 +8,7 @@ namespace UmlKit.Builders.Model;
 public class RenderContextActivationStack : Stack<string>
 {
     private readonly OnWriteLog? _onWriteLog;
+
     public RenderContextActivationStack(OnWriteLog? onWriteLog) : base()
     {
         _onWriteLog = onWriteLog;

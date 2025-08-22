@@ -56,7 +56,6 @@ public class StateDiagramCompiler
     {
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile state for [{domain}]", LogLevelNode.Start);
 
-
         var diagramId = $"state_domain_{domain}".AlphanumericOnly();
         var diagram = new UmlDiagramState(_options, diagramId: diagramId);
         diagram.SetTitle($"Context: {domain}");
@@ -68,7 +67,7 @@ public class StateDiagramCompiler
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Render domain [{domain}]", LogLevelNode.Start);
         var rendered = _renderer.Generate(diagram, transitions, domain);
 
-        if(rendered)
+        if (rendered)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
             var path = ExportPathBuilder.BuildPath(_exportOptions.Paths, ExportPathType.puml, $"state_domain_{domain}.puml");

@@ -9,7 +9,6 @@ public record DiagramTransitionOptions : IActivationObserver
 
     public bool UseDone { get; set; }
 
-
     public DiagramTransitionOptions(bool useCall, bool useDone)
     {
         _useCall = useCall;

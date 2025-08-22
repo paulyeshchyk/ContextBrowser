@@ -19,26 +19,25 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
 
     public DiagramDirection Direction => DiagramDirection.Outgoing;
 
-
     public GrouppedSortedTransitionList BuildTransitions(List<ContextInfo> domainMethods, List<ContextInfo> allContexts)
     {
         var resultList = new GrouppedSortedTransitionList();
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, "Iterating domain methods", LogLevelNode.Start);
-        foreach(var ctx in domainMethods.OrderBy(m => m.SpanStart))
+        foreach (var ctx in domainMethods.OrderBy(m => m.SpanStart))
         {
             var theKey = ctx.Identifier;
 
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Getting references for method [{ctx.Name}]", LogLevelNode.Start);
             var references = ContextInfoService.GetReferencesSortedByInvocation(ctx);
-            foreach(var callee in references)
+            foreach (var callee in references)
             {
-                if(callee.ElementType != ContextInfoElementType.method)
+                if (callee.ElementType != ContextInfoElementType.method)
                 {
                     _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"Найдена ссылка, записанная в Reference, но не являющаяся методом [{callee.Name}]");
                     continue;
                 }
                 var result = UmlTransitionDtoBuilder.CreateTransition(ctx, callee, _onWriteLog, theKey);
-                if(result == null)
+                if (result == null)
                 {
                     _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Err, "Объект UmlTransitionDto не создан");
                     continue;

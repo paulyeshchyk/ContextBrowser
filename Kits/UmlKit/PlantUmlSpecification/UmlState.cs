@@ -31,12 +31,12 @@ public class UmlState : IUmlParticipant
 
     public override bool Equals(object? obj)
     {
-        if(ReferenceEquals(this, obj))
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if(obj is null || GetType() != obj.GetType())
+        if (obj is null || GetType() != obj.GetType())
         {
             return false;
         }

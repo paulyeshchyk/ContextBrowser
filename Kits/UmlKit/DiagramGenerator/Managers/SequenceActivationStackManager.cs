@@ -11,14 +11,14 @@ public static partial class SequenceActivationStackManager
     internal static bool TryActivate<T>(RenderContext<T> ctx, string source, string? destination, string reason)
         where T : IUmlParticipant
     {
-        if(!ctx.Options.Activation.UseActivation || string.IsNullOrWhiteSpace(destination))
+        if (!ctx.Options.Activation.UseActivation || string.IsNullOrWhiteSpace(destination))
         {
             return false;
         }
 
         ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Stack activate {destination}");
 
-        if(ctx.Options.Activation.UseActivationCall)
+        if (ctx.Options.Activation.UseActivationCall)
         {
             ctx.Diagram.Activate(source: source, destination, reason: ctx.Options.Debug ? $"INVOCATION ACTIVATE [ {reason} ]" : $"{reason}", softActivation: false);
         }
@@ -29,12 +29,12 @@ public static partial class SequenceActivationStackManager
     internal static bool TryDeactivate<T>(RenderContext<T> ctx, string? participant)
         where T : IUmlParticipant
     {
-        if(!ctx.Options.Activation.UseActivation || string.IsNullOrWhiteSpace(participant))
+        if (!ctx.Options.Activation.UseActivation || string.IsNullOrWhiteSpace(participant))
         {
             return false;
         }
 
-        if(ctx.ActivationStack.TryPeek(out var top) && top == participant)
+        if (ctx.ActivationStack.TryPeek(out var top) && top == participant)
         {
             return TryPop(ctx, participant);
         }

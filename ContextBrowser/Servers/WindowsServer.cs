@@ -20,7 +20,7 @@ public class WindowsServer : CustomServer
         var assembly = Assembly.GetExecutingAssembly();
         var fullResourceName = assembly.GetManifestResourceNames().FirstOrDefault(name => name.EndsWith(resourceName));
 
-        if(fullResourceName == null)
+        if (fullResourceName == null)
         {
             Console.WriteLine($"Ресурс '{resourceName}' не найден.");
             return;
@@ -29,15 +29,15 @@ public class WindowsServer : CustomServer
         Directory.CreateDirectory(folderPath);
 
         string destinationPath = Path.Combine(folderPath, resourceName);
-        using(Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName))
+        using (Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName))
         {
-            if(resourceStream == null)
+            if (resourceStream == null)
             {
                 Console.WriteLine($"Не удалось получить поток для ресурса '{fullResourceName}'.");
                 return;
             }
 
-            using(FileStream fileStream = File.Create(destinationPath))
+            using (FileStream fileStream = File.Create(destinationPath))
             {
                 resourceStream.CopyTo(fileStream);
             }
@@ -68,9 +68,9 @@ public class WindowsServer : CustomServer
     public override Process? StartServer(string filename, string arguments)
     {
         var processInfo = WindowsProcessInfoFactory.CmdExeProcessInfo(filename, arguments);
-        var result = StartServer(processInfo, filename,(process, error) =>
+        var result = StartServer(processInfo, filename, (process, error) =>
         {
-            if(error != null)
+            if (error != null)
             {
                 Console.WriteLine($"Error: {error}");
             }
@@ -80,20 +80,19 @@ public class WindowsServer : CustomServer
 
     public override void StopProcess(Process? process)
     {
-        if(process != null && !process.HasExited)
+        if (process != null && !process.HasExited)
         {
             Console.WriteLine($"Остановка процесса с ID {process.Id}...");
             try
             {
                 process.Kill();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Не удалось завершить процесс: {ex.Message}");
             }
         }
     }
-
 
     // Метод для проверки, занят ли порт
     public override bool IsPortInUse(int port)
@@ -108,21 +107,21 @@ public class WindowsServer : CustomServer
     {
         Process[] javaProcesses = Process.GetProcessesByName("java");
 
-        foreach(var process in javaProcesses)
+        foreach (var process in javaProcesses)
         {
             try
             {
-                if(process.HasExited)
+                if (process.HasExited)
                     continue;
 
                 string? executablePath = process.MainModule?.FileName;
 
-                if(executablePath != null && executablePath.Contains(jarFilename))
+                if (executablePath != null && executablePath.Contains(jarFilename))
                 {
                     return true;
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 // Игнорируем ошибки доступа, если нет прав
             }

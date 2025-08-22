@@ -21,47 +21,51 @@ public class ContextInfoCollector<TContext> : IContextCollector<TContext>
     public void Add(TContext info)
     {
         Collection.Add(info);
-        if(!string.IsNullOrWhiteSpace(info.FullName))
+        if (!string.IsNullOrWhiteSpace(info.FullName))
             BySymbolDisplayName[info.FullName] = info;
     }
 
     public void Append(TContext info)
     {
         FakeCollection.Add(info);
-        if(!string.IsNullOrWhiteSpace(info.FullName))
+        if (!string.IsNullOrWhiteSpace(info.FullName))
             BySymbolDisplayName[info.FullName] = info;
     }
 
     public void MergeFakeItems()
     {
-        foreach(var item in FakeCollection)
+        foreach (var item in FakeCollection)
         {
             Add(item);
         }
         FakeCollection.Clear();
+    }
+
+    public void Renew(IEnumerable<TContext> byItems)
+    {
+        // намеренно ничего не делаем — коллектор необновляемый здесь
     }
 }
 
 public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    public Dictionary<string, TContext> BySymbolDisplayName { get; }
+    public Dictionary<string, TContext> BySymbolDisplayName { get; private set; } = new Dictionary<string, TContext>();
 
     private readonly List<TContext> FakeCollection = new List<TContext>();
 
-    private readonly List<TContext> _existing;
+    private List<TContext> _existing = new List<TContext>();
 
     public ContextInfoReferenceCollector(IEnumerable<TContext> existing)
     {
-        _existing = existing.ToList();
+        Renew(existing);
+    }
 
-        BySymbolDisplayName = _existing
-            .Where(x => !string.IsNullOrWhiteSpace(x.FullName))
-            .GroupBy(x => x.FullName!)
-            .ToDictionary(
-                g => g.Key,
-                g => g.First(),
-                StringComparer.OrdinalIgnoreCase);
+    public void Renew(IEnumerable<TContext> byItems)
+    {
+        _existing = byItems.ToList();
+
+        BySymbolDisplayName = ContextInfoFullNameIndexBuilder.Build(byItems);
     }
 
     public void Add(TContext item)
@@ -74,14 +78,13 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     public void Append(TContext info)
     {
         FakeCollection.Add(info);
-        if(!string.IsNullOrWhiteSpace(info.FullName))
+        if (!string.IsNullOrWhiteSpace(info.FullName))
             BySymbolDisplayName[info.FullName] = info;
     }
 
-
     public void MergeFakeItems()
     {
-        foreach(var item in FakeCollection)
+        foreach (var item in FakeCollection)
         {
             _existing.Add(item);
         }

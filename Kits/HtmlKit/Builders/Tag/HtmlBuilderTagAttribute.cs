@@ -5,15 +5,15 @@ public static class HtmlBuilderTagAttribute
 {
     public static string BuildAttributes(IDictionary<string, string?>? attributes)
     {
-        if(attributes == null || attributes.Count == 0)
+        if (attributes == null || attributes.Count == 0)
         {
             return string.Empty;
         }
 
         var sb = new System.Text.StringBuilder();
-        foreach(var kvp in attributes)
+        foreach (var kvp in attributes)
         {
-            if(!string.IsNullOrWhiteSpace(kvp.Key) && !string.IsNullOrWhiteSpace(kvp.Value))
+            if (!string.IsNullOrWhiteSpace(kvp.Key) && !string.IsNullOrWhiteSpace(kvp.Value))
             {
                 sb.Append($" {kvp.Key}=\"{kvp.Value}\"");
             }

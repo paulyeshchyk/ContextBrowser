@@ -22,9 +22,9 @@ public partial class ContextInfoMatrix : IContextInfoMatrix
     // context: ContextInfoMatrix, update
     public void Add(ContextInfo? item, ContextInfoMatrixCell toCell)
     {
-        if(!_data.ContainsKey(toCell))
+        if (!_data.ContainsKey(toCell))
             _data[toCell] = new List<ContextInfo>();
-        if(item != null)
+        if (item != null)
         {
             _data[toCell].Add(item);
         }
@@ -43,7 +43,7 @@ public partial class ContextInfoMatrix : IContextInfoMatrix
     // context: ContextInfoMatrix, read
     public IEnumerator<KeyValuePair<ContextInfoMatrixCell, List<ContextInfo>>> GetEnumerator()
     {
-        foreach(var entry in _data)
+        foreach (var entry in _data)
         {
             yield return entry;
         }

@@ -37,7 +37,7 @@ public record ContextClassifier : IContextClassifier
     public bool IsVerb(string theWord)
     {
         // Сначала проверяем, есть ли слово в основном списке
-        if(StandardActions.Contains(theWord))
+        if (StandardActions.Contains(theWord))
         {
             return true;
         }
@@ -53,7 +53,7 @@ public record ContextClassifier : IContextClassifier
 
     public bool HasActionAndDomain(ContextInfo info)
     {
-        if(info.Contexts == null)
+        if (info.Contexts == null)
             return false;
 
         var hasVerb = info.Contexts.Any(IsVerb);

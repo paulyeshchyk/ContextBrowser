@@ -52,14 +52,14 @@ internal class HtmlMatrixWriter
     //context: htmlmatrix, build
     internal void WriteHeaderLeftCorner(TextWriter textWriter)
     {
-        HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.Cell(textWriter, plainText: false, FixedDataManager.TopLeftCell(_options), HrefManager.GetHrefSummary(_options));
+        HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.Cell(textWriter, FixedDataManager.TopLeftCell(_options), HrefManager.GetHrefSummary(_options));
     }
 
     //context: htmlmatrix, build
     internal void WriteHeaderSummaryStart(TextWriter textWriter)
     {
         if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
-            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, plainText: false, FixedDataManager.FirstSummaryRow(_options), HrefManager.GetHrefColHeaderSummary(_options));
+            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, FixedDataManager.FirstSummaryRow(_options), HrefManager.GetHrefColHeaderSummary(_options));
     }
 
     //context: htmlmatrix, build
@@ -68,7 +68,7 @@ internal class HtmlMatrixWriter
         foreach (var col in _htmlPageMatrix.UiMatrix.cols)
         {
             var href = HrefManager.GetHRefRowMeta(col, _options);
-            HtmlBuilderFactory.HtmlBuilderTableCell.ColMeta.Cell(textWriter, plainText: false, col, href);
+            HtmlBuilderFactory.HtmlBuilderTableCell.ColMeta.Cell(textWriter, col, href);
         }
     }
 
@@ -76,7 +76,7 @@ internal class HtmlMatrixWriter
     internal void WriteHeaderSummaryEnd(TextWriter textWriter)
     {
         if (_options.SummaryPlacement == SummaryPlacementType.AfterLast)
-            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, plainText: false, FixedDataManager.LastSummaryRow(_options), HrefManager.GetHrefRowHeaderSummary(_options));
+            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, FixedDataManager.LastSummaryRow(_options), HrefManager.GetHrefRowHeaderSummary(_options));
     }
 
     //context: htmlmatrix, build
@@ -87,20 +87,20 @@ internal class HtmlMatrixWriter
 
         HtmlBuilderFactory.HtmlBuilderTableRow.Summary.With(textWriter, () =>
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, plainText: false, FixedDataManager.SummaryRow(_options), HrefManager.GetHrefRowHeaderSummaryAfterFirst(_options));
+            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.Cell(textWriter, FixedDataManager.SummaryRow(_options), HrefManager.GetHrefRowHeaderSummaryAfterFirst(_options));
 
             if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
-                HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.Cell(textWriter, plainText: false, total.ToString(), HrefManager.GetHrefSummary(_options));
+                HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.Cell(textWriter, total.ToString(), HrefManager.GetHrefSummary(_options));
 
             foreach (var col in _htmlPageMatrix.UiMatrix.cols)
             {
                 var sum = colSums?.GetValueOrDefault(col).ToString() ?? string.Empty;
                 var href = HrefManager.GetHrefColSummary(col, _options);
-                HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.Cell(textWriter, plainText: false, sum, href);
+                HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.Cell(textWriter, sum, href);
             }
 
             if (_options.SummaryPlacement == SummaryPlacementType.AfterLast)
-                HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.Cell(textWriter, plainText: false, total.ToString(), HrefManager.GetHrefSummary(_options));
+                HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.Cell(textWriter, total.ToString(), HrefManager.GetHrefSummary(_options));
         });
     }
 
@@ -110,7 +110,7 @@ internal class HtmlMatrixWriter
         HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(textWriter, () =>
         {
             var href = HrefManager.GetHRefRowHeader(row, _options);
-            HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.Cell(textWriter, plainText: false, row, href);
+            HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.Cell(textWriter, row, href);
 
             if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
                 WriteRowSummaryCell(textWriter, row);
@@ -126,7 +126,7 @@ internal class HtmlMatrixWriter
                 _htmlPageMatrix.ContextsMatrix.TryGetValue(cell, out var methods);
                 var style = _htmlPageMatrix.CoverageManager.BuildCellStyle(cell, methods, _htmlPageMatrix.ContextsLookup);
 
-                HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(textWriter, plainText: false, data, hrefCell, style);
+                HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(textWriter, data, hrefCell, style);
             }
 
             if (_options.SummaryPlacement == SummaryPlacementType.AfterLast)
@@ -139,6 +139,6 @@ internal class HtmlMatrixWriter
     {
         var rowSum = _htmlPageMatrix.UiMatrix.RowsSummary(_htmlPageMatrix.ContextsMatrix, _options.Orientation)?.GetValueOrDefault(row).ToString() ?? string.Empty;
         var href = HrefManager.GetHrefRowSummary(row, _options);
-        HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.Cell(_tw, plainText: false, rowSum, href);
+        HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.Cell(_tw, rowSum, href);
     }
 }

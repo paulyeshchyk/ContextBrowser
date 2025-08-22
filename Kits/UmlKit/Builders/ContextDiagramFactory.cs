@@ -30,19 +30,19 @@ public static class ContextDiagramFactory
 
     static ContextDiagramFactory()
     {
-        RegisterBuilder(DiagramBuilderKeys.Transition,(options, onWriteLog) => new ContextTransitionDiagramBuilder(options, DefaultDirectionBuilders(onWriteLog), onWriteLog));
-        RegisterBuilder(DiagramBuilderKeys.MethodFlow,(options, onWriteLog) => new MethodFlowDiagramBuilder());
-        RegisterBuilder(DiagramBuilderKeys.Dependencies,(options, onWriteLog) => new DependencyDiagramBuilder());
+        RegisterBuilder(DiagramBuilderKeys.Transition, (options, onWriteLog) => new ContextTransitionDiagramBuilder(options, DefaultDirectionBuilders(onWriteLog), onWriteLog));
+        RegisterBuilder(DiagramBuilderKeys.MethodFlow, (options, onWriteLog) => new MethodFlowDiagramBuilder());
+        RegisterBuilder(DiagramBuilderKeys.Dependencies, (options, onWriteLog) => new DependencyDiagramBuilder());
     }
 
     public static void RegisterBuilder(string name, Func<DiagramBuilderOptions, OnWriteLog?, IContextDiagramBuilder> factoryFunc)
     {
-        if(string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Builder name cannot be null or whitespace.", nameof(name));
-        if(factoryFunc == null)
+        if (factoryFunc == null)
             throw new ArgumentNullException(nameof(factoryFunc));
 
-        if(_builderFactories.ContainsKey(name))
+        if (_builderFactories.ContainsKey(name))
         {
             Console.WriteLine($"Warning: Builder '{name}' is already registered and will be overwritten.");
             _builderFactories[name] = factoryFunc;
@@ -62,7 +62,7 @@ public static class ContextDiagramFactory
     {
         return _builderInstances.GetOrAdd(name, key =>
         {
-            if(!_builderFactories.TryGetValue(key, out var factoryFunc))
+            if (!_builderFactories.TryGetValue(key, out var factoryFunc))
                 throw new ArgumentException($"Builder not found for key '{key}'. Ensure it is registered.");
 
             return factoryFunc(options, onWriteLog);

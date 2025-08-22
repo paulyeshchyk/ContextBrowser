@@ -28,7 +28,7 @@ internal class CellWithCoverageBuilder
     {
         HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(writer, () =>
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(writer, plainText: true, label);
+            HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(writer, label);
         });
     }
 }

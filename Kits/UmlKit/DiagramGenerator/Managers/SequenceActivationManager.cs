@@ -32,7 +32,7 @@ public static partial class SequenceActivationManager
         var to = ctx.RunContextOrCallee.AlphanumericOnly();
         var label = ctx.CalleeMethod;
 
-        if(!ctx.Options.CalleeTransitionOptions.UseCall)
+        if (!ctx.Options.CalleeTransitionOptions.UseCall)
         {
             return true;
         }
@@ -41,7 +41,7 @@ public static partial class SequenceActivationManager
 
         var reason = ctx.Options.Debug ? $"CALLER CALLEE ACTIVATE [ {ctx.CalleeMethod} ]" : $"{ctx.CalleeMethod}";
 
-        if(!ctx.Options.Activation.UseActivation)
+        if (!ctx.Options.Activation.UseActivation)
         {
             SequenceTransitionManager.TryAddTransition(from, to, ctx.Diagram, ctx.Options.Indication, reason);
             return true;
@@ -56,7 +56,7 @@ public static partial class SequenceActivationManager
         var from = ctx.RunContextOrCallee;
         var to = ctx.Caller;
 
-        if(ctx.Options.CalleeTransitionOptions.UseDone)
+        if (ctx.Options.CalleeTransitionOptions.UseDone)
         {
             SequenceTransitionManager.TryAddTransition(from, to, ctx.Diagram, ctx.Options.Indication, "done");
         }

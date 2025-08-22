@@ -11,12 +11,12 @@ public static class LogerExtensions
         const int prefixLength = 5;
 
         // Обрезаем или дополняем префикс
-        if(prefix.Length > prefixLength)
+        if (prefix.Length > prefixLength)
         {
             // Обрезаем, если префикс длиннее
             prefix = prefix.Substring(0, prefixLength);
         }
-        else if(prefix.Length < prefixLength)
+        else if (prefix.Length < prefixLength)
         {
             // Дополняем пробелами, если префикс короче
             // ' ' - символ-заполнитель, prefixLength - целевая длина

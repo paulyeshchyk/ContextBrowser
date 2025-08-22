@@ -12,13 +12,13 @@ namespace ContextBrowser.Samples.HtmlPages;
 public static class DimensionBuilder
 {
     // context: contextInfo, build, html
-    public static void Build(ContextBuilderModel model, AppOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog = null)
+    public static void Build(ContextInfoMatrixModel model, AppOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- DimensionBuilder.Build ---");
 
         var builder = new HtmlContextDimensionBuilder(
-            model.matrix,
-            model.contextsList,
+            model.Matrix,
+            model.ContextsList,
             contextClassifier,
             options.Export,
             options.DiagramBuilder,

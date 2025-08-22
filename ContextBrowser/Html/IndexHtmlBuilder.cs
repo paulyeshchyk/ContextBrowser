@@ -13,15 +13,14 @@ namespace ContextBrowser.Samples.HtmlPages;
 public static class IndexHtmlBuilder
 {
     // context: html, build
-    public static void Build(ContextBuilderModel model, AppOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog = null)
+    public static void Build(ContextInfoMatrixModel model, AppOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog = null)
     {
         onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
         HtmlIndexGenerator.GenerateContextIndexHtml(
             contextClassifier: contextClassifier,
-                       matrix: model.matrix,
-               allContextInfo: model.contextLookup,
+                       matrix: model.Matrix,
+               allContextInfo: model.ContextLookup,
                    outputFile: ExportPathBuilder.BuildPath(options.Export.Paths, ExportPathType.index, "index.html"),
-                matrixOptions: options.Export.ExportMatrix
-            );
+                matrixOptions: options.Export.ExportMatrix);
     }
 }

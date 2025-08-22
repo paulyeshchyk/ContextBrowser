@@ -58,7 +58,6 @@ public class SequenceDiagramCompiler
     {
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile sequence for [{domain}]", LogLevelNode.Start);
 
-
         var diagramId = $"sequence_domain_{domain}".AlphanumericOnly();
         var diagram = new UmlDiagramSequence(_options, diagramId: diagramId);
         diagram.SetTitle($"Domain: {domain}");
@@ -76,7 +75,7 @@ public class SequenceDiagramCompiler
         var _generator = new SequenceDiagramGenerator<UmlParticipant>(renderer, _options, _onWriteLog, _factory);
         var result = _generator.Generate(diagram, transitions, domain);
 
-        if(result)
+        if (result)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
             var path = ExportPathBuilder.BuildPath(_exportOptions.Paths, ExportPathType.puml, $"sequence_domain_{domain}.puml");

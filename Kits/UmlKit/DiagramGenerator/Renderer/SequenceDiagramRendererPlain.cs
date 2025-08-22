@@ -26,24 +26,24 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
     {
         var activationStack = new RenderContextActivationStack(_onWriteLog);
         var plainList = allTransitions?.GetTransitionList();
-        if(plainList == null)
+        if (plainList == null)
         {
             return;
         }
 
         Stack<string> callStack = new Stack<string>();
 
-        foreach(var transition in plainList)
+        foreach (var transition in plainList)
         {
             var caller = transition.CallerClassName;
             var callee = transition.CalleeClassName;
 
-            while(callStack.Any() && callStack.Peek() != caller)
+            while (callStack.Any() && callStack.Peek() != caller)
             {
                 diagram.Deactivate(callStack.Pop());
             }
 
-            if(!callStack.Any() || callStack.Peek() != caller)
+            if (!callStack.Any() || callStack.Peek() != caller)
             {
                 SequenceTransitionManager.SystemCall(_factory, _options, diagram, caller, transition.CallerMethod ?? "_unknown_caller_method", true);
                 callStack.Push(caller);
@@ -60,8 +60,7 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
             _ = SequenceActivationManager.RenderDeactivateCallee(ctx);
             _ = SequenceActivationManager.RenderDeactivateCaller(ctx);
 
-
-            if(!string.IsNullOrWhiteSpace(callee) && !callStack.Contains(callee))
+            if (!string.IsNullOrWhiteSpace(callee) && !callStack.Contains(callee))
             {
                 callStack.Push(callee);
             }
@@ -71,7 +70,7 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
 
     private void WipeStack(Stack<string> callStack, UmlDiagram<P> diagram)
     {
-        while(callStack.Count > 0)
+        while (callStack.Count > 0)
         {
             diagram.Deactivate(callStack.Pop());
         }

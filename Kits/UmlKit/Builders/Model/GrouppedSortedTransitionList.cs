@@ -16,7 +16,7 @@ public class GrouppedSortedTransitionList
     public GrouppedSortedTransitionList(IReadOnlyDictionary<string, SortedList<int, UmlTransitionDto>> initialData)
     {
         _dataset = new Dictionary<string, SortedList<int, UmlTransitionDto>>();
-        foreach(var pair in initialData)
+        foreach (var pair in initialData)
         {
             _dataset.Add(pair.Key, new SortedList<int, UmlTransitionDto>(pair.Value));
         }
@@ -26,7 +26,7 @@ public class GrouppedSortedTransitionList
 
     public void Add(UmlTransitionDto transitionDto, string key)
     {
-        if(!_dataset.TryGetValue(key, out var transitionList))
+        if (!_dataset.TryGetValue(key, out var transitionList))
         {
             transitionList = new SortedList<int, UmlTransitionDto>();
             _dataset.Add(key, transitionList);
@@ -67,7 +67,7 @@ public class GrouppedSortedTransitionList
     {
         var _finalDataset = Concat(sourceB);
         _dataset.Clear();
-        foreach(var pair in _finalDataset)
+        foreach (var pair in _finalDataset)
         {
             _dataset.Add(pair.Key, new SortedList<int, UmlTransitionDto>(pair.Value));
         }
@@ -88,37 +88,36 @@ public class GrouppedSortedTransitionList
             {
                 var combinedList = new SortedList<int, UmlTransitionDto>();
 
-                if(sourceB.GetDataset().TryGetValue(key, out var listB))
+                if (sourceB.GetDataset().TryGetValue(key, out var listB))
                 {
-                foreach(var item in listB.Values)
+                foreach (var item in listB.Values)
                     {
                     combinedList.Add(combinedList.Count, item);
                     }
                 }
 
-                if(_dataset.TryGetValue(key, out var listA))
+                if (_dataset.TryGetValue(key, out var listA))
                 {
-                foreach(var item in listA.Values)
+                foreach (var item in listA.Values)
                     {
                     combinedList.Add(combinedList.Count, item);
                     }
                 }
                 return combinedList;
-            }
-        );
+            });
     }
 
     public List<UmlTransitionDto> ConcatToList(GrouppedSortedTransitionList sourceB)
     {
         var resultList = new List<UmlTransitionDto>();
 
-        foreach(var list in sourceB.GetDataset().Values)
+        foreach (var list in sourceB.GetDataset().Values)
         {
             resultList.AddRange(list.Values);
         }
 
         var uniqueKeysFromA = _dataset.Keys.Except(sourceB.GetDataset().Keys);
-        foreach(var key in uniqueKeysFromA)
+        foreach (var key in uniqueKeysFromA)
         {
             resultList.AddRange(_dataset[key].Values);
         }

@@ -16,10 +16,10 @@ public static class CommandLineHelpProducer
         helpText.AppendLine("Доступные параметры:");
 
         // Итерируемся по свойствам модели и ищем атрибуты
-        foreach(var prop in typeof(T).GetProperties())
+        foreach (var prop in typeof(T).GetProperties())
         {
             var argAttr = prop.GetCustomAttribute<CommandLineArgumentAttribute>();
-            if(argAttr != null)
+            if (argAttr != null)
             {
                 // Помечаем обязательные параметры
                 var isRequired = prop.GetCustomAttribute<System.Runtime.CompilerServices.RequiredMemberAttribute>() != null;
@@ -39,16 +39,16 @@ public static class CommandLineHelpProducer
         var allProperties = typeof(T).GetProperties();
 
         // Если запрошена помощь по конкретному параметру
-        if(!string.IsNullOrWhiteSpace(specificParamName))
+        if (!string.IsNullOrWhiteSpace(specificParamName))
         {
             // Ищем свойство по имени параметра
             var targetProp = allProperties.FirstOrDefault(p =>
                 p.GetCustomAttribute<CommandLineArgumentAttribute>()?.Name.Equals(specificParamName, StringComparison.OrdinalIgnoreCase) ?? false);
 
-            if(targetProp != null)
+            if (targetProp != null)
             {
                 var argAttr = targetProp.GetCustomAttribute<CommandLineArgumentAttribute>();
-                if(argAttr != null)
+                if (argAttr != null)
                 {
                     var isRequired = targetProp.GetCustomAttribute<System.Runtime.CompilerServices.RequiredMemberAttribute>() != null;
                     var requiredMarker = isRequired ? " (обязательный)" : string.Empty;
@@ -73,10 +73,10 @@ public static class CommandLineHelpProducer
         // Показываем полный текст справки (по умолчанию или после ошибки)
         helpText.AppendLine("Доступные параметры:");
 
-        foreach(var prop in allProperties)
+        foreach (var prop in allProperties)
         {
             var argAttr = prop.GetCustomAttribute<CommandLineArgumentAttribute>();
-            if(argAttr != null)
+            if (argAttr != null)
             {
                 var isRequired = prop.GetCustomAttribute<System.Runtime.CompilerServices.RequiredMemberAttribute>() != null;
                 var requiredMarker = isRequired ? " (обязательный)" : string.Empty;

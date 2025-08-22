@@ -18,10 +18,10 @@ public class CoverManager : ICoverageManager
 
     public int GetCoverageValue(ContextInfo? ctx)
     {
-        if(ctx == null)
+        if (ctx == null)
             return 0;
 
-        if(!ctx.Dimensions.TryGetValue(SCoverageAttributeName, out var raw))
+        if (!ctx.Dimensions.TryGetValue(SCoverageAttributeName, out var raw))
         {
             return 0;
         }

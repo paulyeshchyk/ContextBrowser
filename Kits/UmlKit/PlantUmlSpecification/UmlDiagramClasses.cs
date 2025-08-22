@@ -34,7 +34,7 @@ public class UmlDiagramClasses : UmlDiagram<UmlState>
 
     public override UmlDiagram<UmlState> AddParticipant(UmlState participant, string alias)
     {
-        if(participant is UmlState state)
+        if (participant is UmlState state)
         {
             _states.Add(state);
             return this;
@@ -42,7 +42,6 @@ public class UmlDiagramClasses : UmlDiagram<UmlState>
 
         throw new ArgumentException($"UmlState is supported only {nameof(participant)}");
     }
-
 
     // context: uml, create
     //public override IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null)
@@ -54,12 +53,12 @@ public class UmlDiagramClasses : UmlDiagram<UmlState>
 
     public override IUmlElement AddTransition(UmlState from, UmlState to, bool isAsync = false, string? label = null)
     {
-        if(from is not UmlState theFrom)
+        if (from is not UmlState theFrom)
         {
             throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
         }
 
-        if(to is not UmlState theTo)
+        if (to is not UmlState theTo)
         {
             throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
         }
@@ -67,7 +66,6 @@ public class UmlDiagramClasses : UmlDiagram<UmlState>
         var result = new UmlTransitionState(theFrom, theTo, new UmlArrow(), label);
         return AddTransition(result);
     }
-
 
     public override IUmlElement AddTransition(IUmlTransition<UmlState> transition)
     {
@@ -108,7 +106,7 @@ public class UmlDiagramClasses : UmlDiagram<UmlState>
     {
         writer.WriteLine();
 
-        foreach(var element in _elements.Values)
+        foreach (var element in _elements.Values)
         {
             element.WriteTo(writer);
         }

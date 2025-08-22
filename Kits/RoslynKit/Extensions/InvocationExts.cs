@@ -3,7 +3,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Route.Wrappers.Syntax;
+using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Extensions;
@@ -24,7 +24,7 @@ internal static class InvocationExts
         bool isPartial;
         var expression = invocationExpression.Expression;
 
-        if(expression is MemberAccessExpressionSyntax memberAccess)
+        if (expression is MemberAccessExpressionSyntax memberAccess)
         {
             isPartial = false;
             nameSpace = options.ExternalNamespaceName;
@@ -32,7 +32,7 @@ internal static class InvocationExts
             ownerName = memberAccess.Expression.ToString();
             onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Found new owner and methodname for invocation [{invocationExpression}]: [{ownerName}.{methodName}]");
         }
-        else if(expression is IdentifierNameSyntax identifierName)
+        else if (expression is IdentifierNameSyntax identifierName)
         {
             isPartial = true;
             nameSpace = options.ExternalNamespaceName;

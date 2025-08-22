@@ -26,7 +26,7 @@ public class UmlComponentGroup : IUmlElement
     {
         writer.WriteLine();
         writer.WriteLine($"  component \"{Name}\" <<{Stereotype}>> {{");
-        foreach(var member in Members)
+        foreach (var member in Members)
             member.WriteTo(writer);
         writer.WriteLine("  }");
     }

@@ -44,7 +44,6 @@ public class MacOsServer : CustomServer
         return result;
     }
 
-
     public override void StopProcess(Process? process)
     {
         if (process != null && !process.HasExited)
@@ -195,7 +194,6 @@ public static class MacOsProcessInfoFactory
         };
         return startInfo;
     }
-
 
     public static ProcessStartInfo HttpServerProcessInfo(int port, string folder)
     {

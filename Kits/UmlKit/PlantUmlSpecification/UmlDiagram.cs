@@ -62,7 +62,7 @@ public abstract class UmlDiagram<P>
     public virtual IEnumerable<IUmlElement>? AddNoteOver(string caller, string callee, string note)
     {
         var result = new List<IUmlElement>() { new UmlNote(caller, UmlNotePosition.Over, note), new UmlNote(callee, UmlNotePosition.Over, note), };
-        foreach(var item in result)
+        foreach (var item in result)
         {
             Add(item);
         }
@@ -88,6 +88,7 @@ public abstract class UmlDiagram<P>
     protected readonly Dictionary<string, string> _skinParams = new();
     protected string? _title;
     protected readonly DiagramBuilderOptions _options;
+
     // context: uml, create
     public void Add(IUmlElement element)
     {
@@ -129,14 +130,14 @@ public abstract class UmlDiagram<P>
     // context: uml, update
     protected virtual void WriteSkinElements(TextWriter writer)
     {
-        foreach(var kvp in _skinParams)
+        foreach (var kvp in _skinParams)
             writer.WriteLine($"skinparam {kvp.Key} {kvp.Value}");
     }
 
     // context: uml, update
     protected virtual void WriteTitle(TextWriter writer)
     {
-        if(!string.IsNullOrWhiteSpace(_title))
+        if (!string.IsNullOrWhiteSpace(_title))
             writer.WriteLine($"title {_title}");
     }
 

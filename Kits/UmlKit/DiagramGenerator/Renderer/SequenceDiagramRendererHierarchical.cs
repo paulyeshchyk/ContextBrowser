@@ -26,7 +26,7 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
     public void Render(UmlDiagram<P> diagram, GrouppedSortedTransitionList? allTransitions)
     {
         var rootTransitions = allTransitions?.GetTransitionList();
-        if(rootTransitions == null)
+        if (rootTransitions == null)
         {
             return;
         }
@@ -42,17 +42,17 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
 
     private void RenderRecursive(UmlDiagram<P> diagram, List<UmlTransitionDto> transitions, RenderContextActivationStack activationStack, GrouppedSortedTransitionList? allTransitions)
     {
-        foreach(var transition in transitions)
+        foreach (var transition in transitions)
         {
             // Логика активации/деактивации на основе стека
-            while(activationStack.Any() && activationStack.Peek() != transition.CallerClassName)
+            while (activationStack.Any() && activationStack.Peek() != transition.CallerClassName)
             {
                 //RenderDeactivateCaller
                 SequenceActivationManager.RenderDeactivateCallee(new RenderContext<P>(
                     transition, diagram, _options, activationStack, _onWriteLog));
             }
 
-            if(!activationStack.Any() || activationStack.Peek() != transition.CallerClassName)
+            if (!activationStack.Any() || activationStack.Peek() != transition.CallerClassName)
             {
                 // Вызываем SystemCall для первого вызова в цепочке
                 SequenceTransitionManager.SystemCall(_factory, _options, diagram,
@@ -63,7 +63,7 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
 
             // Логика рендеринга для текущего перехода
             var ctx = new RenderContext<P>(transition, diagram, _options, activationStack, _onWriteLog);
-            SequenceParticipantsManager.AddParticipants(ctx, UmlParticipantKeyword.Actor);
+            SequenceParticipantsManager.AddParticipants(ctx, UmlParticipantKeyword.Control);
 
             // Рендеринг вызовов
             SequenceActivationManager.RenderActivateCallee(ctx);
@@ -71,7 +71,7 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
 
             // Если есть дочерние вызовы, рекурсивно рендерим их
             var children = GetChildrenList(transition, allTransitions);
-            if(children.Any())
+            if (children.Any())
             {
                 RenderRecursive(diagram, children.ToList(), activationStack, allTransitions);
             }

@@ -23,6 +23,8 @@ public interface IContextInfo
     public IContextInfo? ClassOwner { get; set; }
 
     public IContextInfo? MethodOwner { get; set; }
+
+    public string NameWithClassOwnerName { get; }
 }
 
 public interface IContextDataContainer

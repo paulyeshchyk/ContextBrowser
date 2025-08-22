@@ -13,7 +13,6 @@ public interface ISymbolInfo
     string GetFullName();
 }
 
-
 public interface ISyntaxNodeInfo
 {
     IOrderedEnumerable<T> DescendantNodes<T>() where T : class;

@@ -1,3 +1,5 @@
+using ContextKit.Model;
+
 namespace SemanticKit.Model;
 
 public interface IInvocationParser
@@ -6,5 +8,7 @@ public interface IInvocationParser
 
     void ParseFile(string filePath, CancellationToken cancellationToken);
 
-    void ParseFiles(string[] filePaths, CancellationToken cancellationToken);
+    IEnumerable<ContextInfo> ParseFiles(string[] filePaths, CancellationToken cancellationToken);
+
+    void RenewContextInfoList(IEnumerable<ContextInfo> contextInfoList);
 }

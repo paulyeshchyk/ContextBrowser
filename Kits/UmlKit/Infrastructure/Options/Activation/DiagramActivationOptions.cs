@@ -11,7 +11,7 @@ public record DiagramActivationOptions
         get => _useActivation;
         set
         {
-            if(_useActivation != value)
+            if (_useActivation != value)
             {
                 _useActivation = value;
                 NotifyObservers();
@@ -20,7 +20,6 @@ public record DiagramActivationOptions
     }
 
     public bool UseActivationCall => UseActivation ? _useActivationCallRaw : false;
-
 
     public DiagramActivationOptions(bool useActivation, bool useActivationCall)
     {
@@ -36,7 +35,7 @@ public record DiagramActivationOptions
 
     public void NotifyObservers()
     {
-        foreach(var observer in _observers)
+        foreach (var observer in _observers)
         {
             observer.Update(_useActivation);
         }

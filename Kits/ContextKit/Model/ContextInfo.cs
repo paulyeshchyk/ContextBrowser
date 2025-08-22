@@ -49,6 +49,16 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public override int GetHashCode() => FullName.GetHashCode();
 
+    public string NameWithClassOwnerName
+    {
+        get
+        {
+            return ElementType == ContextInfoElementType.method && !string.IsNullOrWhiteSpace(ClassOwner?.Name)
+                ? $"{ClassOwner?.Name}.{Name}"
+                : $"{Name}";
+        }
+    }
+
     public virtual bool Equals(ContextInfo? obj) => obj is ContextInfo other && FullName.Equals(other.FullName);
 
     public ContextInfo(

@@ -18,16 +18,16 @@ public abstract class HtmlPage
         {
             HtmlBuilderFactory.Head.With(sb, () =>
             {
-                HtmlBuilderFactory.Meta.Cell(sb, plainText: false, style: "charset =\"UTF-8\"");
-                HtmlBuilderFactory.Title.Cell(sb, plainText: true, Title);
-                HtmlBuilderFactory.Style.Cell(sb, plainText: false, Resources.HtmlProducerContentStyle);
+                HtmlBuilderFactory.Meta.Cell(sb, style: "charset =\"UTF-8\"");
+                HtmlBuilderFactory.Title.Cell(sb, Title);
+                HtmlBuilderFactory.Style.Cell(sb, Resources.HtmlProducerContentStyle);
 
                 foreach (var script in GetScripts())
-                    HtmlBuilderFactory.Script.Cell(sb, plainText: false, script);
+                    HtmlBuilderFactory.Script.Cell(sb, script);
 
                 HtmlBuilderFactory.Body.With(sb, () =>
                 {
-                    HtmlBuilderFactory.H1.Cell(sb, plainText: true, Title);
+                    HtmlBuilderFactory.H1.Cell(sb, Title);
                     WriteContent(sb);
                 });
             });

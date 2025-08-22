@@ -24,7 +24,7 @@ public class IncomingTransitionBuilder : ITransitionBuilder
 
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Build incoming", LogLevelNode.Start);
 
-        foreach(var callee in domainMethods)
+        foreach (var callee in domainMethods)
         {
             BuildCallee(resultList, callee);
         }
@@ -35,21 +35,21 @@ public class IncomingTransitionBuilder : ITransitionBuilder
     private void BuildCallee(GrouppedSortedTransitionList resultList, ContextInfo callee)
     {
         var invokedByList = callee.InvokedBy;
-        if(!invokedByList.Any())
+        if (!invokedByList.Any())
         {
             _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] Building invoked by list for callee {callee.FullName}, no invoked by found");
         }
         var theKey = callee.Identifier;
-        foreach(var caller in invokedByList)
+        foreach (var caller in invokedByList)
         {
-            if(caller.ElementType != ContextInfoElementType.method)
+            if (caller.ElementType != ContextInfoElementType.method)
             {
                 _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] Building invoked by {callee.FullName} -> {caller.FullName}, caller is not method");
                 continue;
             }
 
             var result = UmlTransitionDtoBuilder.CreateTransition(caller, callee, _onWriteLog, theKey);
-            if(result == null)
+            if (result == null)
             {
                 _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[MISS] Building invoked by {callee.FullName} -> {caller.FullName}, transition was not created");
                 continue;

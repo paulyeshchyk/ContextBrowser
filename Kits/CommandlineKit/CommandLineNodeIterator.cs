@@ -14,25 +14,25 @@ internal static class CommandLineNodeIterator
         object? currentObject = targetObject;
         PropertyInfo? currentProperty = null;
 
-        for(int i = 0; i < propertyPath.Length; i++)
+        for (int i = 0; i < propertyPath.Length; i++)
         {
             // Находим свойство по имени
             currentProperty = currentObject?.GetType().GetProperty(
                 propertyPath[i], BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
-            if(currentProperty == null)
+            if (currentProperty == null)
             {
                 throw new ArgumentException(string.Format(SParsingErrorUnknownPropertyMessage, propertyPath[i], string.Join(".", propertyPath)));
             }
 
             // Если это не последнее свойство в пути, создаём вложенный объект
-            if(i < propertyPath.Length - 1)
+            if (i < propertyPath.Length - 1)
             {
                 object? nestedObject = currentProperty.GetValue(currentObject);
-                if(nestedObject == null)
+                if (nestedObject == null)
                 {
                     // Если вложенный объект null, создаём его
-                    if(currentProperty.PropertyType.IsClass)
+                    if (currentProperty.PropertyType.IsClass)
                     {
                         nestedObject = Activator.CreateInstance(currentProperty.PropertyType);
                         currentProperty.SetValue(currentObject, nestedObject);
