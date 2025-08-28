@@ -10,6 +10,7 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
+// context: comment, build
 public class CSharpCommentTriviaSyntaxParser<TContext> : CSharpCommentSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
@@ -18,6 +19,7 @@ public class CSharpCommentTriviaSyntaxParser<TContext> : CSharpCommentSyntaxPars
     {
     }
 
+    // context: comment, build
     public override void Parse(TContext? parent, object node, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
         if (node is not MemberDeclarationSyntax memberDeclaration)
@@ -27,7 +29,7 @@ public class CSharpCommentTriviaSyntaxParser<TContext> : CSharpCommentSyntaxPars
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Parsing comments for {node.GetType().Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Comments, LogLevel.Dbg, $"Parsing comments for {node.GetType().Name}");
 
         foreach (var trivia in memberDeclaration.GetLeadingTrivia().Where(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia)))
         {

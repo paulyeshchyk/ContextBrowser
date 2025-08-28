@@ -12,23 +12,23 @@ public abstract class HtmlPage
     {
     }
 
-    protected void Produce(TextWriter sb)
+    protected void Produce(TextWriter writer)
     {
-        HtmlBuilderFactory.Html.With(sb, () =>
+        HtmlBuilderFactory.Html.With(writer, () =>
         {
-            HtmlBuilderFactory.Head.With(sb, () =>
+            HtmlBuilderFactory.Head.With(writer, () =>
             {
-                HtmlBuilderFactory.Meta.Cell(sb, style: "charset =\"UTF-8\"");
-                HtmlBuilderFactory.Title.Cell(sb, Title);
-                HtmlBuilderFactory.Style.Cell(sb, Resources.HtmlProducerContentStyle);
+                HtmlBuilderFactory.Meta.Cell(writer, style: "charset =\"UTF-8\"");
+                HtmlBuilderFactory.Title.Cell(writer, Title);
+                HtmlBuilderFactory.Style.Cell(writer, Resources.HtmlProducerContentStyle);
 
                 foreach (var script in GetScripts())
-                    HtmlBuilderFactory.Script.Cell(sb, script);
+                    HtmlBuilderFactory.Script.Cell(writer, script);
 
-                HtmlBuilderFactory.Body.With(sb, () =>
+                HtmlBuilderFactory.Body.With(writer, () =>
                 {
-                    HtmlBuilderFactory.H1.Cell(sb, Title);
-                    WriteContent(sb);
+                    HtmlBuilderFactory.H1.Cell(writer, Title);
+                    WriteContent(writer);
                 });
             });
         });
@@ -36,8 +36,9 @@ public abstract class HtmlPage
 
     protected virtual IEnumerable<string> GetScripts()
     {
-        // По умолчанию только один скрипт
-        yield return Resources.HtmlProducerContentStyleScript;
+        return new List<string> {
+            Resources.HtmlProducerContentStyleScript
+        };
     }
 
     protected abstract void WriteContent(TextWriter sb);

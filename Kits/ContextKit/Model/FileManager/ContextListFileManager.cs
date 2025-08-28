@@ -88,8 +88,9 @@ public static class ContextListFileManager
 
             return ContextInfoSerializableModelAdapter.ConvertToContextInfo(serializableList);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Console.WriteLine(ex);
             return await fallback(cancellationToken).ConfigureAwait(false);
         }
     }
@@ -113,16 +114,17 @@ internal static class ContextInfoSerializableModelAdapter
     {
         return new ContextInfo(
             elementType: model.ElementType,
-            identifier: model.Identifier,
-            name: model.Name,
-            fullName: model.FullName,
-            nameSpace: model.Namespace,
-            spanStart: model.SpanStart,
-            spanEnd: model.SpanEnd,
-            contexts: model.Contexts,
-            action: model.Action,
-            domains: model.Domains,
-            dimensions: model.Dimensions)
+             identifier: model.Identifier,
+                   name: model.Name,
+               fullName: model.FullName,
+              shortName: model.ShortName,
+              nameSpace: model.Namespace,
+              spanStart: model.SpanStart,
+                spanEnd: model.SpanEnd,
+               contexts: model.Contexts,
+                 action: model.Action,
+                domains: model.Domains,
+             dimensions: model.Dimensions)
         { };
     }
 
@@ -136,23 +138,24 @@ internal static class ContextInfoSerializableModelAdapter
     public static ContextInfoSerializableModel Adapt(ContextInfo contextInfo)
     {
         return new ContextInfoSerializableModel
-            (
-                        elementType: contextInfo.ElementType,
-                               name: contextInfo.Name,
-                           fullName: contextInfo.FullName,
-                           contexts: contextInfo.Contexts,
-                         @namespace: contextInfo.Namespace,
-                 classOwnerFullName: contextInfo.ClassOwner?.FullName,
-                methodOwnerFullName: contextInfo.MethodOwner?.FullName,
-                             action: contextInfo.Action,
-                            domains: contextInfo.Domains,
-                referencesFullNames: contextInfo.References.Select(r => r.FullName).ToHashSet(),
-                 invokedByFullNames: contextInfo.InvokedBy.Select(i => i.FullName).ToHashSet(),
-                propertiesFullNames: contextInfo.Properties.Select(p => p.FullName).ToHashSet(),
-                         dimensions: contextInfo.Dimensions,
-                          spanStart: contextInfo.SpanStart,
-                            spanEnd: contextInfo.SpanEnd,
-                         identifier: contextInfo.Identifier);
+        (
+                    elementType: contextInfo.ElementType,
+                           name: contextInfo.Name,
+                       fullName: contextInfo.FullName,
+                      shortName: contextInfo.ShortName,
+                       contexts: contextInfo.Contexts,
+                      nameSpace: contextInfo.Namespace,
+             classOwnerFullName: contextInfo.ClassOwner?.FullName,
+            methodOwnerFullName: contextInfo.MethodOwner?.FullName,
+                         action: contextInfo.Action,
+                        domains: contextInfo.Domains,
+            referencesFullNames: contextInfo.References.Select(r => r.FullName).ToHashSet(),
+             invokedByFullNames: contextInfo.InvokedBy.Select(i => i.FullName).ToHashSet(),
+            propertiesFullNames: contextInfo.Properties.Select(p => p.FullName).ToHashSet(),
+                     dimensions: contextInfo.Dimensions,
+                      spanStart: contextInfo.SpanStart,
+                        spanEnd: contextInfo.SpanEnd,
+                     identifier: contextInfo.Identifier);
     }
 
     // context: roslyncache, build
@@ -215,6 +218,8 @@ public record ContextInfoSerializableModel
 
     public string FullName { get; set; }
 
+    public string ShortName { get; set; }
+
     public HashSet<string> Contexts { get; set; }
 
     public string Namespace { get; set; }
@@ -244,8 +249,9 @@ public record ContextInfoSerializableModel
     public ContextInfoSerializableModel(ContextInfoElementType elementType,
         string name,
         string fullName,
+        string shortName,
         HashSet<string> contexts,
-        string @namespace,
+        string nameSpace,
         string? classOwnerFullName,
         string? methodOwnerFullName,
         string? action,
@@ -261,8 +267,9 @@ public record ContextInfoSerializableModel
         ElementType = elementType;
         Name = name;
         FullName = fullName;
+        ShortName = shortName;
         Contexts = contexts;
-        Namespace = @namespace;
+        Namespace = nameSpace;
         ClassOwnerFullName = classOwnerFullName;
         MethodOwnerFullName = methodOwnerFullName;
         Action = action;

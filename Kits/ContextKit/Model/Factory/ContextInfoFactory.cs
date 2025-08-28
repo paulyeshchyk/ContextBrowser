@@ -12,12 +12,13 @@ public class ContextInfoFactory<T> : IContextFactory<T>
             elementType: dto.ElementType,
              identifier: dto.Identifier,
                    name: dto.Name,
-              nameSpace: dto.Namespace,
                fullName: dto.FullName,
+              shortName: dto.ShortName,
+              nameSpace: dto.Namespace,
               spanStart: dto.SpanStart,
                 spanEnd: dto.SpanEnd,
-                 symbol: dto.Symbol,
-             syntaxNode: dto.SyntaxNode,
+             symbolInfo: dto.SymbolWrapper,
+             syntaxNode: dto.SyntaxWrapper,
              classOwner: dto.ClassOwner,
             methodOwner: dto.MethodOwner)
         { };

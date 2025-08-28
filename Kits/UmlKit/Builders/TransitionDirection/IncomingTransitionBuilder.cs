@@ -37,24 +37,25 @@ public class IncomingTransitionBuilder : ITransitionBuilder
         var invokedByList = callee.InvokedBy;
         if (!invokedByList.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] Building invoked by list for callee {callee.FullName}, no invoked by found");
+            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] No invoked by found for {callee.FullName}");
+            return;
         }
+
+        _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[OK] Invoked found for {callee.FullName}", LogLevelNode.Start);
         var theKey = callee.Identifier;
         foreach (var caller in invokedByList)
         {
             if (caller.ElementType != ContextInfoElementType.method)
             {
-                _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] Building invoked by {callee.FullName} -> {caller.FullName}, caller is not method");
+                _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[SKIP] Caller is not method {callee.FullName} -> {caller.FullName}");
                 continue;
             }
 
             var result = UmlTransitionDtoBuilder.CreateTransition(caller, callee, _onWriteLog, theKey);
-            if (result == null)
+            if (result != null)
             {
-                _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[MISS] Building invoked by {callee.FullName} -> {caller.FullName}, transition was not created");
-                continue;
+                resultList.Add((UmlTransitionDto)result, theKey.ToString());
             }
-            resultList.Add((UmlTransitionDto)result, theKey.ToString());
         }
         _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }

@@ -5,7 +5,7 @@ public interface IHtmlTagBuilder
 {
     void Start(TextWriter sb);
 
-    void Start(TextWriter writer, string? className);
+    void Start(TextWriter writer, string? className, string? id);
 
     void End(TextWriter sb);
 }

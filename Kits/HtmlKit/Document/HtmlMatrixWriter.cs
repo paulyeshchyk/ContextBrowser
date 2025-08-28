@@ -11,8 +11,8 @@ namespace HtmlKit.Document;
 //context: htmlmatrix, build
 internal class HtmlMatrixWriter
 {
-    private IHtmlPageMatrix _htmlPageMatrix;
-    private HtmlTableOptions _options;
+    private readonly IHtmlPageMatrix _htmlPageMatrix;
+    private readonly HtmlTableOptions _options;
 
     public HtmlMatrixWriter(IHtmlPageMatrix htmlPageMatrix, HtmlTableOptions options)
     {
@@ -118,8 +118,8 @@ internal class HtmlMatrixWriter
             foreach (var col in _htmlPageMatrix.UiMatrix.cols)
             {
                 var cell = _options.Orientation == MatrixOrientationType.ActionRows
-                    ? new ContextInfoMatrixCell(row, col)
-                    : new ContextInfoMatrixCell(col, row);
+                    ? new ContextInfoDataCell(row, col)
+                    : new ContextInfoDataCell(col, row);
 
                 var data = _htmlPageMatrix.ProduceData(cell);
                 var hrefCell = HrefManager.GetHrefCell(cell, _options);

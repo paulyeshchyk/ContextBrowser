@@ -7,7 +7,10 @@ namespace ContextBrowserKit.Options;
 public enum AppLevel
 {
     Roslyn,
+    R_Assembly,
+    R_Inv,
     R_Parse,
+    R_Comments,
     P_Tran,
     P_Bld,
     P_Rnd,

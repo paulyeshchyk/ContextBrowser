@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Log;
+﻿using System.Diagnostics.CodeAnalysis;
+using ContextBrowserKit.Log;
 using ContextKit.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
@@ -8,7 +9,7 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, EnumDeclarationSyntax, ISemanticModelWrapper>
+public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, EnumDeclarationSyntax, ISemanticModelWrapper, CSharpEnumSyntaxNodeWrapper>
     where TContext : IContextWithReferences<TContext>
 {
     public CSharpEnumContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog)
@@ -16,32 +17,21 @@ public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCo
     {
     }
 
-    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, EnumDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
+    public override ContextInfoElementType ElementType => ContextInfoElementType.@enum;
+}
 
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, cancellationToken);
 
-        var syntaxWrap = new CSharpSyntaxNodeWrapper(syntax);
-        var symbolWrap = new CSharpISymbolWrapper(symbol);
+public class CSharpEnumSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<EnumDeclarationSyntax>//, ISymbolInfo
+{
+    private MemberDeclarationSyntax _syntaxNode => (EnumDeclarationSyntax)SyntaxNode;
 
-        var nameSpace = syntax.GetNamespaceName();
-        var spanStart = syntax.Span.Start;
-        var spanEnd = syntax.Span.End;
-        var identifier = syntax.Identifier.Text;
+    public override string Identifier => _syntaxNode.GetIdentifier();
 
-        string fullName;
-        string name;
-        if (symbol != null)
-        {
-            fullName = symbolWrap.ToDisplayString();
-            name = symbolWrap.GetName();
-        }
-        else
-        {
-            fullName = $"{nameSpace}.{identifier}";
-            name = identifier;
-        }
-        return new ContextInfoDto(ContextInfoElementType.@enum, fullName, name, nameSpace, identifier, spanStart, spanEnd, symbol: symbolWrap, syntaxNode: syntaxWrap);
-    }
+    public override string Namespace => _syntaxNode.GetNamespaceOrGlobal();
+
+    public override string GetName() => _syntaxNode.GetIdentifier();
+
+    public override string GetFullName() => $"{Namespace}.{GetName()}";
+
+    public override string GetShortName() => _syntaxNode.GetIdentifier();
 }

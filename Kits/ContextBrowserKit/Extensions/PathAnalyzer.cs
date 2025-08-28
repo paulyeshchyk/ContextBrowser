@@ -1,7 +1,7 @@
-﻿using ContextBrowserKit.Log;
+﻿using System.Text.RegularExpressions;
+using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using System.Text.RegularExpressions;
 
 namespace ContextBrowserKit.Extensions;
 
@@ -106,7 +106,7 @@ public class PathAnalyzer
     private static bool IsFileMatch(string filePath, string pattern)
     {
         var fileName = Path.GetFileName(filePath);
-        var regexPattern = "^" + Regex.Escape(pattern).Replace("\\*", ".*").Replace("\\?", ".") + "$";
+        var regexPattern = Regex.Escape(pattern) + "$"; // pattern == ".cs"
         return Regex.IsMatch(fileName, regexPattern, RegexOptions.IgnoreCase);
     }
 

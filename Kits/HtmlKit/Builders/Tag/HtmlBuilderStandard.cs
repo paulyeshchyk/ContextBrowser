@@ -25,7 +25,7 @@ public class HtmlBuilderStandard : IHtmlTagBuilder
         sb.WriteLine($"</{Tag}>");
     }
 
-    public void Start(TextWriter writer, string? className)
+    public void Start(TextWriter writer, string? className, string? id)
     {
         throw new NotImplementedException();
     }

@@ -81,7 +81,7 @@ public class CommandLineParser
             string argValue = (i + 1 < args.Length) ? args[i + 1] : string.Empty;
 
             // Разделяем имя аргумента по точке, чтобы получить путь к свойству
-            string[] propertyPath = argName.Substring(2).Split('.');
+            string[] propertyPath = argName[2..].Split('.');
 
             // Используем новый вспомогательный метод для установки значения
             CommandLineNodeIterator.SetNestedPropertyValue(options, propertyPath, argValue);

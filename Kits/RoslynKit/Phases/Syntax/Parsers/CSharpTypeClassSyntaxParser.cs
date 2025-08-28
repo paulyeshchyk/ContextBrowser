@@ -53,7 +53,7 @@ public class CSharpTypeClassSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         var typeContext = _typeContextInfoBuilder.BuildContextInfo(parent, typeSyntax, model, cancellationToken);
         if (typeContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {typeSyntax.GetNamespaceName()}");
+            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {typeSyntax.GetNamespaceOrGlobal()}");
             return;
         }
 

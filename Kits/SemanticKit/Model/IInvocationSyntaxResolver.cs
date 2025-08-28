@@ -2,5 +2,5 @@ namespace SemanticKit.Model;
 
 public interface IInvocationSyntaxResolver
 {
-    IInvocationSyntaxWrapper? ResolveInvocationSymbol(object invocation, CancellationToken cancellationToken);
+    BaseSyntaxWrapper? ResolveInvocationSymbol(object invocation, CancellationToken cancellationToken);
 }

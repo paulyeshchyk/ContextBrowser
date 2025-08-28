@@ -1,37 +1,70 @@
-﻿using ContextKit.Model;
+﻿using ContextBrowserKit.Log;
+using ContextKit.Model;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
+using SemanticKit.Model;
 
 namespace RoslynKit.Wrappers.Syntax;
 
 public class CSharpISymbolWrapper : ISymbolInfo
 {
-    private readonly ISymbol? _symbol;
+    private readonly string _identifier;
+    private readonly string _namespace;
+    private readonly string _name;
+    private readonly string _fullname;
+    private readonly string _shortName;
+    private object? _syntax;
 
-    public CSharpISymbolWrapper(object? symbol)
+    public CSharpISymbolWrapper(object? model, ISyntaxNodeWrapper syntaxWrap, OnWriteLog? onWriteLog, CancellationToken cancellationToken)
     {
+        if (model is not ISemanticModelWrapper imodel)
+        {
+            throw new Exception($"model was not provided");
+        }
+        if (syntaxWrap.GetSyntax() is not MemberDeclarationSyntax syntax)
+        {
+            throw new Exception($"syntax not loaded");
+        }
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, imodel, onWriteLog, cancellationToken);
+
         if (symbol is ISymbol isymbol)
         {
-            _symbol = isymbol;
+            _identifier = isymbol.GetFullMemberName(includeParams: true);
+            _namespace = isymbol.GetNamespaceOrGlobal();
+            _name = isymbol.GetNameAndClassOwnerName();
+            _fullname = isymbol.GetFullMemberName(includeParams: true);
+            _shortName = isymbol.GetShortName();
         }
         else
         {
-            if (symbol is null)
+            if (symbol is not null)
             {
-                return;
+                throw new Exception($"symbol is not isymbol ({symbol})");
             }
 
-            throw new Exception($"symbol is not isymbol ({symbol})");
+            _identifier = syntaxWrap.Identifier;
+            _namespace = syntaxWrap.Namespace;
+            _name = syntaxWrap.GetName();
+            _fullname = syntaxWrap.GetFullName();
+            _shortName = syntaxWrap.GetShortName();
         }
     }
 
-    public string GetNameSpace() => _symbol?.GetNameSpace() ?? "not_defined_name";
+    public string Identifier => _identifier;
 
-    public string GetName() => _symbol?.Name ?? "not_defined_name";
+    public string Namespace => _namespace;
 
-    public string GetFullName() => _symbol?.ToDisplayString() ?? "not_defined_fullname";
+    public string GetName() => _name;
 
-    public string GetShortestName() => _symbol?.GetShortestName() ?? " not_defined";
+    public string GetFullName() => _fullname;
 
-    public string ToDisplayString() => _symbol?.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) ?? " not_defined";
+    public string GetShortName() => _shortName;
+
+    public object? GetSyntax() => _syntax;
+
+    public void SetSyntax(object syntax)
+    {
+        _syntax = syntax;
+    }
 }

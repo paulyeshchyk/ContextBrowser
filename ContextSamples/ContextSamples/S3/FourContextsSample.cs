@@ -21,7 +21,7 @@ public class FlowOrchestrator
 // context: share, S3
 public class AnotherService
 {
-    private FlowOrchestrator flowOrchestrator = new FlowOrchestrator();
+    private readonly FlowOrchestrator flowOrchestrator = new FlowOrchestrator();
 
     // context: share, S3
     public void DoSomething(string data)

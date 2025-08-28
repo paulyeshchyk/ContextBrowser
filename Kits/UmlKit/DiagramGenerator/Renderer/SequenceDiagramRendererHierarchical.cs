@@ -61,9 +61,15 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
                 activationStack.Push(transition.CallerClassName);
             }
 
+            var defaultKeywords = new UmlParticipantKeywordsSet()
+            {
+                Actor = UmlParticipantKeyword.Actor,
+                Control = UmlParticipantKeyword.Control,
+            };
+
             // Логика рендеринга для текущего перехода
             var ctx = new RenderContext<P>(transition, diagram, _options, activationStack, _onWriteLog);
-            SequenceParticipantsManager.AddParticipants(ctx, UmlParticipantKeyword.Control);
+            SequenceParticipantsManager.AddParticipants(ctx, defaultKeywords);
 
             // Рендеринг вызовов
             SequenceActivationManager.RenderActivateCallee(ctx);

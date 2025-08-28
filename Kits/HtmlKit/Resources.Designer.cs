@@ -61,6 +61,42 @@ namespace HtmlKit {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .tabs {
+        ///  display: flex;
+        ///  flex-wrap: wrap;
+        ///  border-bottom: 1px solid #ccc;
+        ///}
+        ///.tab-button {
+        ///  padding: 10px 20px;
+        ///  cursor: pointer;
+        ///  background-color: #f1f1f1;
+        ///  border: 1px solid #ccc;
+        ///  border-bottom: none;
+        ///  border-radius: 5px 5px 0 0;
+        ///  margin-right: 5px;
+        ///}
+        ///.tab-button.active {
+        ///  background-color: #fff;
+        ///  border-color: #ccc;
+        ///  border-bottom: 1px solid #fff;
+        ///}
+        ///.tab-content {
+        ///  display: none;
+        ///  padding: 20px;
+        ///  border: 1px solid #ccc;
+        ///  border-top: none;
+        ///  overflow-x: auto;
+        ///  overflow-y: auto;
+        ///}
+        ///.tab-c [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CssTabsheetTabs {
+            get {
+                return ResourceManager.GetString("CssTabsheetTabs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to :root {
         ///  --link-color: #0077cc;
         ///  --cell-border-color: #cccccc;
@@ -112,6 +148,26 @@ namespace HtmlKit {
         internal static string HtmlProducerContentStyleScript {
             get {
                 return ResourceManager.GetString("HtmlProducerContentStyleScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to function showTab(tabId, clickedButton) {
+        ///            document.querySelectorAll(&quot;.tab-content&quot;).forEach(content =&gt; {
+        ///                content.classList.remove(&quot;active&quot;);
+        ///            });
+        ///
+        ///            document.querySelectorAll(&quot;.tab-button&quot;).forEach(button =&gt; {
+        ///                button.classList.remove(&quot;active&quot;);
+        ///            });
+        ///
+        ///            document.getElementById(tabId).classList.add(&quot;active&quot;);
+        ///            clickedButton.classList.add(&quot;active&quot;);
+        ///        }.
+        /// </summary>
+        internal static string JsShowTabseetTabScript {
+            get {
+                return ResourceManager.GetString("JsShowTabseetTabScript", resourceCulture);
             }
         }
         

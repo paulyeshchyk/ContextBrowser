@@ -3,7 +3,7 @@
 // context: S6, build
 public class Alpha
 {
-    private Beta beta = new Beta();
+    private readonly Beta beta = new Beta();
 
     // context: S6, build
     public void Method1()
@@ -21,7 +21,7 @@ public class Alpha
 // context: S6.1, build
 public class Beta
 {
-    private Gamma gamma = new Gamma();
+    private readonly Gamma gamma = new Gamma();
 
     // context: S6.1, build
     public void Method2()
@@ -33,7 +33,7 @@ public class Beta
 // context: S6.2, build
 public class Gamma
 {
-    private Alpha alpha = new Alpha();
+    private readonly Alpha alpha = new Alpha();
 
     // context: S6.2, build
     public void Method3()

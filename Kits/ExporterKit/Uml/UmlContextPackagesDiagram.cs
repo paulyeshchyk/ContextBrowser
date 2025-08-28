@@ -15,7 +15,7 @@ public static class UmlContextPackagesDiagram
     public static void Build(List<ContextInfo> elements, string outputPath, DiagramBuilderOptions options)
     {
         var diagramId = $"packages_{outputPath}".AlphanumericOnly();
-        var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
+        var diagram = new UmlClassDiagram(options, diagramId: diagramId);
 
         var classes = elements.Where(e => e.ElementType == ContextInfoElementType.@class).ToList();
         var methods = elements.Where(e => e.ElementType == ContextInfoElementType.method).ToList();
@@ -30,7 +30,7 @@ public static class UmlContextPackagesDiagram
         diagram.WriteToFile(outputPath);
     }
 
-    private static void AddPackage(UmlDiagramClasses diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> nsGroup)
+    private static void AddPackage(UmlClassDiagram diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> nsGroup)
     {
         var package = new UmlPackage(nsGroup.Key);
 

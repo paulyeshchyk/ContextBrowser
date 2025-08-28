@@ -19,7 +19,7 @@ public static class UmlContextMethodsOnlyDiagram
                 .ToList();
 
         var diagramId = $"methods_only_{outputPath}".AlphanumericOnly();
-        var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
+        var diagram = new UmlClassDiagram(options, diagramId: diagramId);
 
         foreach (var method in methods)
             diagram.Add(new UmlComponent(method.Name));
@@ -39,7 +39,7 @@ public static class UmlContextMethodsOnlyDiagram
         diagram.WriteToFile(outputPath);
     }
 
-    private static void AddTransitionState(UmlDiagramClasses diagram, ContextInfo method, ContextInfo callee)
+    private static void AddTransitionState(UmlClassDiagram diagram, ContextInfo method, ContextInfo callee)
     {
         var state1 = new UmlState(method.Name ?? "<unknown method>", null);
         var state2 = new UmlState(callee?.Name ?? "<unknown callee>", null);

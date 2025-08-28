@@ -7,5 +7,5 @@ public interface ICoverageManager
 {
     int GetCoverageValue(ContextInfo? ctx);
 
-    string? BuildCellStyle(ContextInfoMatrixCell cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo> contextLookup);
+    string? BuildCellStyle(ContextInfoDataCell cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo> contextLookup);
 }

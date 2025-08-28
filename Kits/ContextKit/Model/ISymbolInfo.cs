@@ -2,18 +2,37 @@
 
 public interface ISymbolInfo
 {
-    string ToDisplayString();
+    string Identifier { get; }
 
-    string GetShortestName();
+    string Namespace { get; }
 
-    string GetNameSpace();
+    string GetShortName();
 
     string GetName();
 
     string GetFullName();
+
+    object? GetSyntax();
+
+    void SetSyntax(object syntax);
 }
 
-public interface ISyntaxNodeInfo
+public interface ISyntaxNodeWrapper : ISpanInfo
 {
-    IOrderedEnumerable<T> DescendantNodes<T>() where T : class;
+    IOrderedEnumerable<T> DescendantSyntaxNodes<T>()
+        where T : class;
+
+    string Identifier { get; }
+
+    string Namespace { get; }
+
+    string GetShortName();
+
+    string GetName();
+
+    string GetFullName();
+
+    object? GetSyntax();
+
+    void SetSyntax(object? syntax);
 }

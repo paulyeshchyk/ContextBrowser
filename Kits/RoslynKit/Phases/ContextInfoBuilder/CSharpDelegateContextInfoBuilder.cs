@@ -8,7 +8,7 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public class CSharpDelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, DelegateDeclarationSyntax, ISemanticModelWrapper>
+public class CSharpDelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, DelegateDeclarationSyntax, ISemanticModelWrapper, CSharpDelegateSyntaxNodeWrapper>
     where TContext : IContextWithReferences<TContext>
 {
     public CSharpDelegateContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog)
@@ -16,32 +16,20 @@ public class CSharpDelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder
     {
     }
 
-    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, DelegateDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
+    public override ContextInfoElementType ElementType => ContextInfoElementType.@delegate;
+}
 
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, cancellationToken);
+public class CSharpDelegateSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<DelegateDeclarationSyntax>, ISymbolInfo
+{
+    private DelegateDeclarationSyntax? _syntaxNode => (DelegateDeclarationSyntax?)SyntaxNode;
 
-        var syntaxWrap = new CSharpSyntaxNodeWrapper(syntax);
-        var symbolWrap = new CSharpISymbolWrapper(symbol);
+    public override string Identifier => _syntaxNode?.GetIdentifier() ?? throw new ArgumentException(nameof(_syntaxNode));
 
-        var nameSpace = syntax.GetNamespaceName();
-        var spanStart = syntax.Span.Start;
-        var spanEnd = syntax.Span.End;
-        var identifier = syntax.Identifier.Text;
+    public override string Namespace => _syntaxNode?.GetNamespaceOrGlobal() ?? throw new ArgumentException(nameof(_syntaxNode));
 
-        string name;
-        string fullName;
-        if (symbol != null)
-        {
-            fullName = symbolWrap.ToDisplayString();
-            name = symbolWrap.GetName();
-        }
-        else
-        {
-            fullName = $"{nameSpace}.{identifier}";
-            name = identifier;
-        }
-        return new ContextInfoDto(ContextInfoElementType.@delegate, fullName, name, nameSpace, identifier, spanStart, spanEnd, symbol: symbolWrap, syntaxNode: syntaxWrap);
-    }
+    public override string GetFullName() => $"{Namespace}.{GetName()}";
+
+    public override string GetName() => _syntaxNode?.GetIdentifier() ?? throw new ArgumentException(nameof(_syntaxNode));
+
+    public override string GetShortName() => GetName();
 }

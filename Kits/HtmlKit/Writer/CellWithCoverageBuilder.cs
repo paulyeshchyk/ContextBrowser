@@ -7,7 +7,7 @@ namespace HtmlKit.Writer;
 // pattern: Builder
 internal class CellWithCoverageBuilder
 {
-    public static string Build(ContextInfoMatrixCell container, int cnt)
+    public static string Build(ContextInfoDataCell container, int cnt)
     {
         if (cnt == 0)
         {

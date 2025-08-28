@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -472,6 +472,53 @@ td.hover-col.hover-cell {
 }
 
 document.addEventListener("DOMContentLoaded", autoResizeEmbeddedTables);
+</value>
+  </data>
+  <data name="JsShowTabseetTabScript" xml:space="preserve">
+    <value>function showTab(tabId, clickedButton) {
+            document.querySelectorAll(".tab-content").forEach(content =&gt; {
+                content.classList.remove("active");
+            });
+
+            document.querySelectorAll(".tab-button").forEach(button =&gt; {
+                button.classList.remove("active");
+            });
+
+            document.getElementById(tabId).classList.add("active");
+            clickedButton.classList.add("active");
+        }</value>
+  </data>
+  <data name="CssTabsheetTabs" xml:space="preserve">
+    <value>.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #ccc;
+}
+.tab-button {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  margin-right: 5px;
+}
+.tab-button.active {
+  background-color: #fff;
+  border-color: #ccc;
+  border-bottom: 1px solid #fff;
+}
+.tab-content {
+  display: none;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-top: none;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+.tab-content.active {
+  display: block;
+}
 </value>
   </data>
 </root>

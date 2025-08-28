@@ -13,9 +13,9 @@ public sealed class ItemWalker : Walker<ContextInfo>
 
     public delegate void ExportItem(ContextInfo item, ContextInfo descendant, ContextInfo? descendantDomainItem, string domain);
 
-    private GetDescendantsFunction OnGetDescendants;
-    private GetDomainItemsFunction OnGetDomainItems;
-    private ExportItem OnExportItem;
+    private readonly GetDescendantsFunction OnGetDescendants;
+    private readonly GetDomainItemsFunction OnGetDomainItems;
+    private readonly ExportItem OnExportItem;
 
     public ItemWalker(GetDescendantsFunction onGetDescendants, GetDomainItemsFunction onGetDomainItems, ExportItem onExportItem, Action<ContextInfo>? visitCallback = default) : base(visitCallback)
     {
@@ -51,7 +51,7 @@ public sealed class ItemWalker : Walker<ContextInfo>
         }
     }
 
-    // context: build, share
+    // context: build, share, Walker
     internal void TryExport(ContextInfo caller, ContextInfo callee)
     {
         var contexts = new HashSet<string>();

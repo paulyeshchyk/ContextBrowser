@@ -7,7 +7,7 @@ namespace HtmlKit.Document;
 
 public interface IHtmlPageMatrix
 {
-    IContextInfoMatrix ContextsMatrix { get; }
+    IContextInfoData ContextsMatrix { get; }
 
     HtmlMatrix UiMatrix { get; }
 
@@ -15,5 +15,5 @@ public interface IHtmlPageMatrix
 
     ICoverageManager CoverageManager { get; }
 
-    string ProduceData(ContextInfoMatrixCell container);
+    string ProduceData(ContextInfoDataCell container);
 }

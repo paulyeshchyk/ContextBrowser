@@ -13,7 +13,7 @@ public class LogObject
 
     public LogLevel LogLevel { get; set; }
 
-    private string? _message;
+    private readonly string? _message;
 
     public string? Message => MessageWithCode();
 

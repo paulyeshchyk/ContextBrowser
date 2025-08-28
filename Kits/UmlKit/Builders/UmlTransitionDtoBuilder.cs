@@ -2,7 +2,6 @@
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using ContextKit.Extensions;
 using ContextKit.Model;
 using UmlKit.Builders.Model;
 
@@ -15,9 +14,14 @@ public class UmlTransitionDtoBuilder
     public static UmlTransitionDto? CreateTransition(ContextInfo? caller, ContextInfo? callee, OnWriteLog? log, string? parentUid)
     {
         // Метод -> Метод
-        if (!(caller?.MethodOwner != null && callee?.MethodOwner != null))
+        if (caller?.MethodOwner == null)
         {
-            log?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[SKIP] Transition unsupported for {caller?.Name ?? string.Empty} -> {callee?.Name ?? string.Empty}");
+            log?.Invoke(AppLevel.P_Tran, LogLevel.Err, $"[SKIP] Caller method owner not found for {caller?.Name ?? string.Empty}");
+            return default;
+        }
+        if ((callee?.MethodOwner == null))
+        {
+            log?.Invoke(AppLevel.P_Tran, LogLevel.Err, $"[SKIP] Callee method owner not found for {callee?.Name ?? string.Empty}");
             return null;
         }
 
@@ -29,11 +33,11 @@ public class UmlTransitionDtoBuilder
         var callerInfo = ExtractParticipantInfo(caller);
         var calleeInfo = ExtractParticipantInfo(callee);
 
-        var runContext = callee.MethodOwner?.ClassOwner?.Name?.AlphanumericOnly();
+        var runContext = callee.MethodOwner?.ClassOwner?.Name?.AlphanumericOnly() ?? string.Empty;//"STATIC";
         var ownerClass = caller.MethodOwner?.ClassOwner?.Name;
         var ownerMethod = caller.MethodOwner?.Name;
 
-        log?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[ADD] method call: {caller.GetDebugSymbolName()} -> {callee.GetDebugSymbolName()}");
+        log?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[ADD] method call: {caller.FullName} -> {callee.FullName}");
 
         return new UmlTransitionDto(
             uid: callee.Identifier,

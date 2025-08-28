@@ -22,7 +22,7 @@ public sealed class RenderContext<T>
 
     public string Callee => Transition.CalleeClassName;
 
-    public string? RunContext => Transition.RunContext;
+    public string RunContext => Transition.RunContext;
 
     public string? CallerMethod => Transition.CallerMethod;
 

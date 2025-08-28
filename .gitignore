@@ -5,3 +5,4 @@ bin/Debug/net6.0/output
 bin
 .vs
 obj
+**/.DS_Store

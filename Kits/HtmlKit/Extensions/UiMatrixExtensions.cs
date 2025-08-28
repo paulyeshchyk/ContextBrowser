@@ -10,7 +10,7 @@ namespace HtmlKit.Extensions;
 public static class UiMatrixExtensions
 {
     // context: htmlmatrix, read
-    public static Dictionary<string, int>? RowsSummary(this HtmlMatrix uiMatrix, IContextInfoMatrix matrix, MatrixOrientationType orientation)
+    public static Dictionary<string, int>? RowsSummary(this HtmlMatrix uiMatrix, IContextInfoData matrix, MatrixOrientationType orientation)
     {
         return uiMatrix.rows.ToDictionary(row => row, row => uiMatrix.cols.Sum(col =>
         {
@@ -20,7 +20,7 @@ public static class UiMatrixExtensions
     }
 
     // context: htmlmatrix, read
-    public static Dictionary<string, int>? ColsSummary(this HtmlMatrix uiMatrix, IContextInfoMatrix matrix, MatrixOrientationType orientation)
+    public static Dictionary<string, int>? ColsSummary(this HtmlMatrix uiMatrix, IContextInfoData matrix, MatrixOrientationType orientation)
     {
         return uiMatrix.cols.ToDictionary(col => col, col => uiMatrix.rows.Sum(row =>
         {

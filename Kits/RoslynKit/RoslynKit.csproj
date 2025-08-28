@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	
+
 	<PropertyGroup>
 		<BaseOutputPath>../../bin</BaseOutputPath>
 		<OutputType>library</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,5 +19,5 @@
 		<ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
 		<ProjectReference Include="..\SemanticKit\SemanticKit.csproj" />
 	</ItemGroup>
-	
+
 </Project>

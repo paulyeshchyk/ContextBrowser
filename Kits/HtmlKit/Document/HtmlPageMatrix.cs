@@ -19,13 +19,13 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
 
     public HtmlMatrix UiMatrix { get; }
 
-    public IContextInfoMatrix ContextsMatrix { get; }
+    public IContextInfoData ContextsMatrix { get; }
 
-    private CoverManager _coverManager = new CoverManager();
+    private readonly CoverManager _coverManager = new CoverManager();
 
     public ICoverageManager CoverageManager => _coverManager;
 
-    public HtmlPageMatrix(HtmlMatrix uiMatrix, IContextInfoMatrix matrix, HtmlTableOptions options, Dictionary<string, ContextInfo> contextLookup) : base()
+    public HtmlPageMatrix(HtmlMatrix uiMatrix, IContextInfoData matrix, HtmlTableOptions options, Dictionary<string, ContextInfo> contextLookup) : base()
     {
         UiMatrix = uiMatrix;
         ContextsMatrix = matrix;
@@ -54,7 +54,7 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
     }
 
     //context: ContextInfoMatrix, build
-    public string ProduceData(ContextInfoMatrixCell container)
+    public string ProduceData(ContextInfoDataCell container)
     {
         ContextsMatrix.TryGetValue(container, out var methods);
         var cnt = methods?.Count ?? 0;

@@ -1,60 +1,61 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using ContextKit.Model;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
 using SemanticKit.Model;
 
 namespace RoslynKit.Wrappers.Syntax;
 
-public record CSharpInvocationSyntaxWrapper : IInvocationSyntaxWrapper
+public record CSharpInvocationSyntaxWrapper : BaseSyntaxWrapper
 {
-    private readonly string? _displayString;
-    private readonly bool _isValid = true;
+    public string FullName { get; set; }
 
-    public string FullName { get; init; }
+    public bool IsPartial { get; set; }
 
-    public bool IsPartial { get; init; }
-
-    public string ShortName { get; init; }
+    public string ShortName { get; set; }
 
     public int SpanEnd { get; init; }
 
     public int SpanStart { get; init; }
 
-    public bool IsValid => _isValid;
+    public bool IsValid { get; private set; }
 
-    public string Name => ShortName;
+    public string Name { get; set; }
 
-    public string Namespace { get; private set; }
+    public string Namespace { get; set; }
 
-    public CSharpInvocationSyntaxWrapper(ISymbol symbol, ExpressionSyntax syntax)
+    public string Identifier { get; set; }
+
+    public CSharpInvocationSyntaxWrapper(ISymbol isymbol, ExpressionSyntax syntax)
     {
-        ShortName = symbol.GetShortestName();
-        FullName = symbol.GetFullMemberName();
+        ShortName = isymbol.GetShortName();
+        FullName = isymbol.GetFullMemberName(includeParams: true);
+        Name = isymbol.GetNameAndClassOwnerName();
+        Namespace = isymbol.GetNamespaceOrGlobal();
+        Identifier = isymbol.GetFullMemberName(includeParams: true);
+
         SpanStart = syntax.Span.Start;
         SpanEnd = syntax.Span.End;
-        Namespace = symbol.GetNameSpace();
-        if (symbol is IMethodSymbol methodSymbol)
+        if (isymbol is IMethodSymbol methodSymbol)
         {
-            _displayString = methodSymbol.ToDisplayString();
-            _isValid = true;
+            IsValid = true;
         }
         else
         {
-            _isValid = false;
-            _displayString = null;
+            IsValid = false;
         }
     }
 
-    public CSharpInvocationSyntaxWrapper(bool isPartial, string fullName, string shortName, int spanStart, int spanEnd)
+    public CSharpInvocationSyntaxWrapper(bool isPartial, string fullName, string shortName, int spanStart, int spanEnd, string nameSpace)
     {
         IsPartial = isPartial;
         FullName = fullName;
+        Identifier = fullName;
         ShortName = shortName;
+        Name = shortName;
         SpanStart = spanStart;
         SpanEnd = spanEnd;
-        Namespace = "rEfaCtoring issue";
-        _displayString = "ReFaCtoring ISSue";
+        Namespace = nameSpace;
+        IsValid = true;
     }
-
-    public string? ToDisplayString() => _displayString;
 }

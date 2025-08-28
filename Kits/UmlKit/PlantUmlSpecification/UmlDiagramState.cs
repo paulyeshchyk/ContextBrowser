@@ -43,13 +43,6 @@ public class UmlDiagramState : UmlDiagram<UmlState>
         throw new ArgumentException($"UmlState is supported only {nameof(participant)}");
     }
 
-    //public override IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null)
-    //{
-    //    var theFrom = new UmlState(from);
-    //    var theTo = new UmlState(to);
-    //    return AddTransition(theFrom, theTo, isAsync, label);
-    //}
-
     public override IUmlElement AddTransition(UmlState from, UmlState to, bool isAsync = false, string? label = null)
     {
         if (from is not UmlState theFrom)

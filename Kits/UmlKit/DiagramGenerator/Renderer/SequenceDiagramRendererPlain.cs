@@ -1,4 +1,7 @@
-﻿using ContextBrowserKit.Log;
+﻿using ContextBrowserKit;
+using ContextBrowserKit.Log;
+using ContextBrowserKit.Log.Options;
+using ContextBrowserKit.Options;
 using UmlKit.Builders;
 using UmlKit.Builders.Model;
 using UmlKit.DiagramGenerator.Managers;
@@ -43,14 +46,30 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
                 diagram.Deactivate(callStack.Pop());
             }
 
+            var defaultKeywords = new UmlParticipantKeywordsSet()
+            {
+                Actor = UmlParticipantKeyword.Actor,
+                Control = UmlParticipantKeyword.Control,
+            };
+
+            // 1. Сначала акторы
+            var ctx = new RenderContext<P>(transition, diagram, _options, activationStack, _onWriteLog);
+            if (string.IsNullOrWhiteSpace(ctx.Callee))
+            {
+#warning to be fixed asap
+                _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Err, $"Callee is empty for transition {ctx.Caller}.{ctx.CallerMethod} -> ??.{ctx.CalleeMethod}");
+                continue;
+            }
+            SequenceParticipantsManager.AddParticipants(ctx, defaultKeywords);
+
+            // 2. Затем переходы
             if (!callStack.Any() || callStack.Peek() != caller)
             {
                 SequenceTransitionManager.SystemCall(_factory, _options, diagram, caller, transition.CallerMethod ?? "_unknown_caller_method", true);
                 callStack.Push(caller);
             }
 
-            var ctx = new RenderContext<P>(transition, diagram, _options, activationStack, _onWriteLog);
-            SequenceParticipantsManager.AddParticipants(ctx, UmlParticipantKeyword.Actor);
+            // 3. Позже всё остальное
 
             _ = SequenceActivationManager.RenderActivateCaller(ctx);
             _ = SequenceActivationManager.RenderActivateCallee(ctx);

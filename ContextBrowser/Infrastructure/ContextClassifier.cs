@@ -68,4 +68,34 @@ public record ContextClassifier : IContextClassifier
             .Union(StandardActions)
             .ToList();
     }
+
+    public bool IsEmptyAction(string actionName)
+    {
+        return string.IsNullOrWhiteSpace(actionName) || actionName.Equals(EmptyAction);
+    }
+
+    public bool IsEmptyDomain(string domainName)
+    {
+        return string.IsNullOrWhiteSpace(domainName) || domainName.Equals(EmptyDomain);
+    }
+
+    public bool IsActionApplicable(ContextInfo ctx, string? actionName)
+    {
+        if (string.IsNullOrWhiteSpace(actionName) || this.IsEmptyAction(actionName))
+        {
+            return string.IsNullOrEmpty(ctx.Action);
+        }
+        // Проверяем Action и классификатор
+        return actionName.Equals(ctx.Action) && this.HasActionAndDomain(ctx);
+    }
+
+    public bool IsDomainApplicable(ContextInfo ctx, string? domainName)
+    {
+        if (string.IsNullOrWhiteSpace(domainName) || this.IsEmptyDomain(domainName))
+        {
+            return ctx.Domains.Count() == 0;
+        }
+        // Проверяем домен и классификатор
+        return ctx.Domains.Contains(domainName) && this.HasActionAndDomain(ctx);
+    }
 }

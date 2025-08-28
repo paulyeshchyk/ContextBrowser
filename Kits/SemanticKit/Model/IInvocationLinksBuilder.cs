@@ -5,5 +5,5 @@ namespace SemanticKit.Model;
 
 public interface IInvocationLinksBuilder<TContext> where TContext : ContextInfo, IContextWithReferences<TContext>
 {
-    TContext? LinkInvocation(TContext callerContextInfo, IInvocationSyntaxWrapper symbolDto, SemanticOptions options);
+    TContext? LinkInvocation(TContext callerContextInfo, BaseSyntaxWrapper symbolDto, SemanticOptions options);
 }

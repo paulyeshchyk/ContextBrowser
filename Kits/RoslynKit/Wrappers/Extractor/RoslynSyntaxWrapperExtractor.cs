@@ -17,6 +17,6 @@ internal static class RoslynSyntaxWrapperExtractor
             return default;
         }
 
-        return new CSharpInvocationSyntaxWrapper(symbol: symbol, syntax: resultSyntax);
+        return new CSharpInvocationSyntaxWrapper(isymbol: symbol, syntax: resultSyntax);
     }
 }

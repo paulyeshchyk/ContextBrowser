@@ -50,15 +50,3 @@ public class UmlParticipant : IUmlParticipant
                Keyword == other.Keyword;
     }
 }
-
-public enum UmlParticipantKeyword
-{
-    Participant,
-    Actor,
-    Boundary,
-    Control,
-    Entity,
-    Database,
-    Collections,
-    Queue
-}

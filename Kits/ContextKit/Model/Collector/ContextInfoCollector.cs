@@ -52,7 +52,7 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
 {
     public Dictionary<string, TContext> BySymbolDisplayName { get; private set; } = new Dictionary<string, TContext>();
 
-    private readonly List<TContext> FakeCollection = new List<TContext>();
+    private readonly HashSet<TContext> FakeCollection = new();
 
     private List<TContext> _existing = new List<TContext>();
 
@@ -65,7 +65,7 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     {
         _existing = byItems.ToList();
 
-        BySymbolDisplayName = ContextInfoFullNameIndexBuilder.Build(byItems);
+        BySymbolDisplayName = ContextInfoFullNameIndexBuilder.Build(_existing);
     }
 
     public void Add(TContext item)

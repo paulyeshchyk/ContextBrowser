@@ -50,9 +50,9 @@ public class CSharpMethodSyntaxParser<TContext>
 
         var buildItems = ParseMethodSyntax(typeContext, methodDeclarationSyntaxies, semanticModel, cancellationToken);
 
-        foreach (var item in buildItems)
+        foreach (var (context, syntax) in buildItems)
         {
-            _triviaCommentParser.Parse(item.Item1, item.Item2, semanticModel, cancellationToken);
+            _triviaCommentParser.Parse(context, syntax, semanticModel, cancellationToken);
         }
     }
 
@@ -71,7 +71,7 @@ public class CSharpMethodSyntaxParser<TContext>
             var methodModel = BuildWrapper(method, semanticModel, cancellationToken);
             if (methodModel == null)
             {
-                _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Warn, $"[{parent.Name}]: не найден символ для метода [{method}]", LogLevelNode.Start);
+                _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Warn, $"[{parent.Name}]: не найден символ для метода [{method}]");
                 continue;
             }
 

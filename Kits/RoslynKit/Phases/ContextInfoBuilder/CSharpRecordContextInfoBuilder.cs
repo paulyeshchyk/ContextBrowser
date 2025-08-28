@@ -8,7 +8,7 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public class CSharpRecordContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, MemberDeclarationSyntax, ISemanticModelWrapper>
+public class CSharpRecordContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, MemberDeclarationSyntax, ISemanticModelWrapper, CSharpRecordSyntaxNodeWrapper>
     where TContext : IContextWithReferences<TContext>
 {
     public CSharpRecordContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog)
@@ -16,32 +16,21 @@ public class CSharpRecordContextInfoBuilder<TContext> : BaseContextInfoBuilder<T
     {
     }
 
-    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, MemberDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
+    public override ContextInfoElementType ElementType => ContextInfoElementType.@record;
+}
 
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, cancellationToken);
+public class CSharpRecordSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<MemberDeclarationSyntax>
+{
+    private MemberDeclarationSyntax _syntaxNode => (MemberDeclarationSyntax)SyntaxNode;
 
-        var syntaxWrap = new CSharpSyntaxNodeWrapper(syntax);
-        var symbolWrap = new CSharpISymbolWrapper(symbol);
+    public override string Identifier => _syntaxNode.GetIdentifier();
 
-        var nameSpace = syntax.GetNamespaceName();
-        var spanStart = syntax.Span.Start;
-        var spanEnd = syntax.Span.End;
-        var identifier = syntax.GetDeclarationName();
+    public override string Namespace => _syntaxNode.GetNamespaceOrGlobal();
 
-        string fullName;
-        string name;
-        if (symbol != null)
-        {
-            fullName = symbolWrap.ToDisplayString();
-            name = symbolWrap.GetName();
-        }
-        else
-        {
-            fullName = $"{nameSpace}.{identifier}";
-            name = identifier;
-        }
-        return new ContextInfoDto(ContextInfoElementType.record, fullName, name, nameSpace, identifier, spanStart, spanEnd, symbol: symbolWrap, syntaxNode: syntaxWrap);
-    }
+    public override string GetFullName() => $"{Namespace}.{GetName()}";
+
+    public override string GetName() => _syntaxNode.GetIdentifier();
+
+#warning this is incorrect
+    public override string GetShortName() => GetName();
 }

@@ -1,7 +1,6 @@
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using ContextKit.Extensions;
 using ContextKit.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Phases.Invocations;
@@ -13,13 +12,13 @@ namespace RoslynKit.Phases.ContextInfoBuilder;
 public class RoslynInvocationReferenceBuilder<TContext>
     where TContext : ContextInfo, IContextWithReferences<TContext>
 {
-    private OnWriteLog? _onWriteLog;
+    private readonly OnWriteLog? _onWriteLog;
     protected readonly IContextFactory<TContext> _factory;
-    private IInvocationSyntaxResolver _invocationSyntaxResolver;
-    private SemanticOptions _options;
-    private IContextCollector<TContext> _collector;
-    private IInvocationLinker<TContext, InvocationExpressionSyntax> _invocationLinker;
-    private ISemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax> _referenceBuilderValidator;
+    private readonly IInvocationSyntaxResolver _invocationSyntaxResolver;
+    private readonly SemanticOptions _options;
+    private readonly IContextCollector<TContext> _collector;
+    private readonly IInvocationLinker<TContext, InvocationExpressionSyntax> _invocationLinker;
+    private readonly ISemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax> _referenceBuilderValidator;
 
     public RoslynInvocationReferenceBuilder(OnWriteLog? onWriteLog, IContextFactory<TContext> factory, IInvocationSyntaxResolver invocationSyntaxResolver, SemanticOptions options, IContextCollector<TContext> collector)
     {
@@ -39,22 +38,17 @@ public class RoslynInvocationReferenceBuilder<TContext>
     // context: roslyn, read
     public void BuildReferences(TContext callerContext, CancellationToken cancellationToken)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Build references for [{callerContext.GetDebugName()}]");
+        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, $"Building references for {callerContext.FullName}", LogLevelNode.Start);
 
         var validationResult = _referenceBuilderValidator.Validate(callerContext, _collector);
-        if (validationResult == null)
+        if (validationResult != null)
         {
-            return;
+            var callerContextInfo = validationResult.CallerContextInfo;
+            var invocationList = validationResult.Invocations;
+
+            _invocationLinker.Link(invocationList, callerContext, callerContextInfo, cancellationToken);
         }
-
-        BuildInvocations(callerContext, validationResult, cancellationToken);
+        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
-    private void BuildInvocations(TContext callerContext, SemanticReferenceBuilderValidationResult<TContext, InvocationExpressionSyntax> validationResult, CancellationToken cancellationToken)
-    {
-        var callerContextInfo = validationResult.CallerContextInfo;
-        var invocationList = validationResult.Invocations;
-
-        _invocationLinker.Link(invocationList, callerContext, callerContextInfo, cancellationToken);
-    }
 }

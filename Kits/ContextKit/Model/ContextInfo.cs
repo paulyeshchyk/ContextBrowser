@@ -8,13 +8,17 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 {
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
 
-    public string Name { get; set; } = "unknown_context_info_name";
+    public string Identifier { get; } = Guid.NewGuid().ToString();
 
-    public string FullName { get; set; } = string.Empty;
+    public string Namespace { get; set; }
+
+    public string FullName { get; set; }
+
+    public string Name { get; set; }
+
+    public string ShortName { get; set; }
 
     public HashSet<string> Contexts { get; set; } = new();
-
-    public string Namespace { get; set; } = "Global";
 
     public IContextInfo? ClassOwner { get; set; }
 
@@ -39,13 +43,11 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public int SpanEnd { get; set; } = 0;
 
-    public string Identifier { get; } = Guid.NewGuid().ToString();
+    [JsonIgnore]
+    public ISymbolInfo? SymbolWrapper { get; set; }
 
     [JsonIgnore]
-    public ISymbolInfo? Symbol { get; set; }
-
-    [JsonIgnore]
-    public ISyntaxNodeInfo? SyntaxNode { get; set; }
+    public ISyntaxNodeWrapper? SyntaxWrapper { get; set; }
 
     public override int GetHashCode() => FullName.GetHashCode();
 
@@ -66,6 +68,7 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
         string identifier,
         string name,
         string fullName,
+        string shortName,
         string nameSpace,
         int spanStart,
         int spanEnd,
@@ -73,20 +76,21 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
         HashSet<string>? domains = null,
         Dictionary<string, string>? dimensions = null,
         HashSet<string>? contexts = null,
-        ISymbolInfo? symbol = null,
-        ISyntaxNodeInfo? syntaxNode = null,
+        ISymbolInfo? symbolInfo = null,
+        ISyntaxNodeWrapper? syntaxNode = null,
         IContextInfo? classOwner = null,
         IContextInfo? methodOwner = null)
     {
         ElementType = elementType;
         Identifier = identifier;
-        Name = symbol?.GetShortestName() ?? name;
-        FullName = symbol?.GetFullName() ?? fullName;
-        Namespace = symbol?.GetNameSpace() ?? nameSpace;
+        Namespace = symbolInfo?.Namespace ?? nameSpace;
+        FullName = symbolInfo?.GetFullName() ?? fullName;
+        Name = symbolInfo?.GetName() ?? name;
+        ShortName = symbolInfo?.GetShortName() ?? shortName;
         SpanStart = spanStart;
         SpanEnd = spanEnd;
-        Symbol = symbol;
-        SyntaxNode = syntaxNode;
+        SymbolWrapper = symbolInfo;
+        SyntaxWrapper = syntaxNode;
         ClassOwner = classOwner;
         MethodOwner = methodOwner;
         Contexts = contexts ?? new();

@@ -86,6 +86,9 @@ public abstract class UmlDiagram<P>
     protected readonly SortedList<int, IUmlElement> _elements = new();
 
     protected readonly Dictionary<string, string> _skinParams = new();
+
+    //none; . ; :;
+    protected string? _separator; //по-умолчанию null
     protected string? _title;
     protected readonly DiagramBuilderOptions _options;
 
@@ -104,11 +107,17 @@ public abstract class UmlDiagram<P>
         _skinParams[name] = value;
     }
 
+    public void SetSeparator(string separtor)
+    {
+        _separator = separtor;
+    }
+
     // context: uml, share
     public virtual void WriteTo(TextWriter writer)
     {
         WriteStart(writer);
         WriteSkinElements(writer);
+        WriteSeparator(writer);
         WriteTitle(writer);
         WriteBody(writer);
         WriteEnd(writer);
@@ -127,6 +136,13 @@ public abstract class UmlDiagram<P>
         writer.WriteLine(SUmlEndTag);
     }
 
+    protected virtual void WriteSeparator(TextWriter writer)
+    {
+        if (_separator != null)
+        {
+            writer.WriteLine($"set separator {_separator}");
+        }
+    }
     // context: uml, update
     protected virtual void WriteSkinElements(TextWriter writer)
     {

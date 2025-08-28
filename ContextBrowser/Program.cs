@@ -1,5 +1,7 @@
 ﻿using CommandlineKit;
 using CommandlineKit.Model;
+using ContextBrowser.Html.Composite;
+using ContextBrowser.Html.Pages.Index;
 using ContextBrowser.Infrastructure;
 using ContextBrowser.Model;
 using ContextBrowser.Roslyn;
@@ -11,7 +13,10 @@ using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
 using ContextKit.Stategies;
+using ExporterKit.HtmlPageSamples;
+using ExporterKit.Puml;
 using ExporterKit.Uml;
+using HtmlKit.Model;
 using LoggerKit;
 using LoggerKit.Model;
 using RoslynKit.Assembly;
@@ -63,7 +68,8 @@ public static class Program
         }
     }
 
-    private static async Task RunAsync(AppOptions appOptions, CancellationToken cancellationToken)
+    // context: execute
+    internal static async Task RunAsync(AppOptions appOptions, CancellationToken cancellationToken)
     {
         var appLogLevelStorage = new AppLoggerLevelStore<AppLevel>();
         appLogLevelStorage.SetLevels(appOptions.LogConfiguration.LogLevels);
@@ -140,31 +146,54 @@ public static class Program
             await ContextListFileManager.SaveContextsToCacheAsync(cacheModel, contextsList, cancellationToken).ConfigureAwait(false);
         }, cancellationToken);
 
-        var contextInfoMatrixModel = ContextInfoMatrixModelBuilder.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier, appLogger.WriteLog);
+        var contextInfoDataset = ContextInfoDatasetBuilder.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier, appLogger.WriteLog);
 
         //ExtraDiagramsBuilder.Build(contextInfoMatrixModel, options, options.Classifier, appLogger.WriteLog);
 
-        ComponentDiagram.Build(contextInfoMatrixModel, appOptions, appLogger.WriteLog);
+        ComponentDiagram.Build(contextInfoDataset, appOptions, appLogger.WriteLog);
 
-        ActionPerDomainDiagramBuilder.Build(contextInfoMatrixModel, appOptions, appLogger.WriteLog);
+        IndexHtmlBuilder.Build(contextInfoDataset, appOptions, appOptions.Classifier, appLogger.WriteLog);
 
-        ContentHtmlBuilder.Build(contextInfoMatrixModel, appOptions, appLogger.WriteLogObject);
+        HtmlActionPerDomainDiagramBuilder.Build(contextInfoDataset, appOptions, appLogger.WriteLog);
 
-        IndexHtmlBuilder.Build(contextInfoMatrixModel, appOptions, appOptions.Classifier, appLogger.WriteLog);
+        //
+        var actionStateGenerator = new UmlStateActionDiagramCompiler(contextInfoDataset.ContextInfoData, appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder, appLogger.WriteLog);
+        _ = actionStateGenerator.Generate(contextInfoDataset.ContextsList);
 
-        DimensionBuilder.Build(contextInfoMatrixModel, appOptions, appOptions.Classifier, appLogger.WriteLog);
+        var actionSequenceGenerator = new UmlSequenceActionDiagramCompiler(contextInfoDataset.ContextInfoData, appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder, appLogger.WriteLog);
+        _ = actionSequenceGenerator.Generate(contextInfoDataset.ContextsList);
 
-        ExtraDiagramsBuilder.Build(contextInfoMatrixModel, appOptions, appOptions.Classifier, appLogger.WriteLog);
+        var domainSequenceGenerator = new UmlSequenceDomainDiagramCompiler(contextInfoDataset.ContextInfoData, appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder, appLogger.WriteLog);
+        _ = domainSequenceGenerator.Generate(contextInfoDataset.ContextsList);
+
+        // action per domain
+        ActionPerDomainPageBuilder.Build(contextInfoDataset, appOptions, appLogger.WriteLogObject);
+
+        // action only
+        ActionOnlyPageBuilder.Build(contextInfoDataset, appOptions, appLogger.WriteLogObject);
+
+        // domain only
+        DomainOnlyPageBuilder.Build(contextInfoDataset, appOptions, appLogger.WriteLogObject);
+
+
+        ExtraDiagramsBuilder.Build(contextInfoDataset, appOptions, appOptions.Classifier, appLogger.WriteLog);
 
         CustomEnvironment.CopyResources(appOptions.Export.Paths.OutputDirectory);
         CustomEnvironment.RunServers(appOptions.Export.Paths.OutputDirectory);
     }
 
-    private static Task<IEnumerable<ContextInfo>> DoParseCode(AppOptions appOptions, IndentedAppLogger<AppLevel> appLogger, RoslynContextParser contextParser, CancellationToken cancellationToken)
+    // context: app
+    internal static Task<IEnumerable<ContextInfo>> DoParseCode(AppOptions appOptions, IndentedAppLogger<AppLevel> appLogger, RoslynContextParser contextParser, CancellationToken cancellationToken)
     {
         var sourcePaths = appOptions.Import.SearchPaths;
         var filePaths = PathAnalyzer.GetFilePaths(sourcePaths, appOptions.Import.FileExtensions, appLogger.WriteLog);
 
-        return contextParser.ParseAsync(filePaths, cancellationToken);
+        var filtered = PathFilter.FilteroutPaths(filePaths, appOptions.Import.Exclude, (thePath) => thePath);
+
+        if (!filtered.Any())
+        {
+            throw new Exception("No files to parse");
+        }
+        return contextParser.ParseAsync(filtered, cancellationToken);
     }
 }

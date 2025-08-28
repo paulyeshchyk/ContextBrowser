@@ -3,8 +3,10 @@ using ContextBrowserKit.Log;
 
 namespace ContextBrowserKit.Options.Export;
 
+// context:export, build
 public static class ExportPathBuilder
 {
+    // context:export, build
     public static ExportPaths BuildFullPath(this ExportPaths config)
     {
         var outputDirectory = Path.GetFullPath(config.OutputDirectory);
@@ -23,6 +25,7 @@ public static class ExportPathBuilder
         return new ExportPaths(outputDirectory, config.CacheModel, finalPaths);
     }
 
+    // context:export, build
     public static string GetPath(this ExportPaths config, ExportPathType pathType)
     {
         var output = Path.GetFullPath(config.OutputDirectory);
@@ -30,6 +33,7 @@ public static class ExportPathBuilder
         return Path.Combine(output, folder);
     }
 
+    // context:export, build
     public static string BuildPath(this ExportPaths config, ExportPathType pathType, string filename)
     {
         var folder = GetPath(config, pathType);
@@ -37,8 +41,10 @@ public static class ExportPathBuilder
     }
 }
 
+// context:export, build
 public static class ExportPathDirectoryPreparer
 {
+    // context:export, build
     public static void Prepare(this ExportPaths config, OnWriteLog? onWriteLog = null)
     {
         DirectoryUtils.Prepare(config.OutputDirectory, onWriteLog);

@@ -13,9 +13,9 @@ namespace RoslynKit.Wrappers.Extractor;
 //context roslyn, builder
 public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
 {
-    private OnWriteLog? _onWriteLog;
-    private ISemanticInvocationResolver _semanticInvocationResolver;
-    private SemanticOptions _options;
+    private readonly OnWriteLog? _onWriteLog;
+    private readonly ISemanticInvocationResolver _semanticInvocationResolver;
+    private readonly SemanticOptions _options;
 
     public RoslynInvocationSyntaxExtractor(ISemanticInvocationResolver semanticInvocationResolver, SemanticOptions options, OnWriteLog? onWriteLog)
     {
@@ -25,39 +25,42 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
     }
 
     // context: roslyn, read
-    public IInvocationSyntaxWrapper? ResolveInvocationSymbol(object invocation, CancellationToken cancellationToken)
+    public BaseSyntaxWrapper? ResolveInvocationSymbol(object invocation, CancellationToken cancellationToken)
     {
-#warning do not do checks like this, use wrapper instead
+        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, $"Resolving symbol for invocation [{invocation}]", LogLevelNode.Start);
+
         if (invocation is not InvocationExpressionSyntax byInvocation)
         {
             throw new Exception("Invocation is not InvocationExpressionSyntax");
         }
 
-        cancellationToken.ThrowIfCancellationRequested();
+        var result = GetSyntaxWrapper(byInvocation, cancellationToken);
+        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
+        return result;
+    }
+
+    private BaseSyntaxWrapper? GetSyntaxWrapper(InvocationExpressionSyntax byInvocation, CancellationToken cancellationToken)
+    {
+
+        BaseSyntaxWrapper? result;
         var invocationWrapper = new RoslynInvocationExpressionWrapper(byInvocation, _semanticInvocationResolver);
         var invocationSemanticModel = FindSemanticModel(invocationWrapper);
         if (invocationSemanticModel == null)
         {
-            //TODO: warn
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[MISS] Semantic model was not defined for [{invocationWrapper.Expression}]");
-#warning use invocationWrapper instead of byInvocation
-            return byInvocation.GetMethodInfoFromSyntax(null, _options, _onWriteLog);
+            _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, $"[MISS] Semantic model was not defined for [{invocationWrapper.Expression}]");
+            result = byInvocation.GetMethodInfoFromSyntax(_options, _onWriteLog);
         }
-
-        var symbol = RoslynMethodSymbolExtractor.GetMethodSymbol(invocationWrapper, invocationSemanticModel, _onWriteLog, cancellationToken);
-        if (symbol == null)
+        else
         {
-            //TODO: warn
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[MISS] Symbol was not resolved for invocation [{invocationWrapper.Expression}]");
-#warning use invocationWrapper instead of byInvocation
-            return byInvocation.GetMethodInfoFromSyntax(null, _options, _onWriteLog);
+            cancellationToken.ThrowIfCancellationRequested();
+            var symbol = RoslynMethodSymbolExtractor.GetMethodSymbol(invocationWrapper, invocationSemanticModel, _onWriteLog, cancellationToken);
+
+            result = (symbol != null)
+                ? RoslynSyntaxWrapperExtractor.Extract(byInvocation, symbol, _onWriteLog)
+                : byInvocation.GetMethodInfoFromSyntax(_options, _onWriteLog);
         }
-
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[OK] Resolved symbol [{symbol.GetFullMemberName()}]");
-
-#warning use invocationWrapper instead of byInvocation
-        return RoslynSyntaxWrapperExtractor.Extract(byInvocation, symbol, _onWriteLog);
+        return result;
     }
 
     // context: roslyn, read

@@ -14,7 +14,7 @@ public static class LogerExtensions
         if (prefix.Length > prefixLength)
         {
             // Обрезаем, если префикс длиннее
-            prefix = prefix.Substring(0, prefixLength);
+            prefix = prefix[..prefixLength];
         }
         else if (prefix.Length < prefixLength)
         {

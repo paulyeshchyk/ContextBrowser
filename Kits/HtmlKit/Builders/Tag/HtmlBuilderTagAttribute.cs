@@ -27,8 +27,18 @@ public static class HtmlBuilderTagAttribute
         return string.IsNullOrWhiteSpace(className) ? string.Empty : $" class=\"{className}\"";
     }
 
+    public static string BuildIdAttribute(string? idValue)
+    {
+        return string.IsNullOrWhiteSpace(idValue) ? string.Empty : $" id=\"{idValue}\"";
+    }
+
     public static string BuildStyleAttribute(string? style)
     {
         return string.IsNullOrWhiteSpace(style) ? string.Empty : $" {style}";
+    }
+
+    public static string BuildOnClickAttribute(string? onClickEvent)
+    {
+        return string.IsNullOrWhiteSpace(onClickEvent) ? string.Empty : $" onClick = \"{onClickEvent}\"";
     }
 }

@@ -13,7 +13,7 @@ public static class UmlContextRelationDiagram
     public static void GenerateLinksUml(HashSet<(string From, string To)> links, string outputPath, DiagramBuilderOptions options)
     {
         var diagramId = $"relation_{outputPath}".AlphanumericOnly();
-        var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
+        var diagram = new UmlClassDiagram(options, diagramId: diagramId);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach (var (from, to) in links)
@@ -24,7 +24,7 @@ public static class UmlContextRelationDiagram
         diagram.WriteToFile(outputPath);
     }
 
-    private static void AddRelation(DiagramBuilderOptions options, UmlDiagramClasses diagram, string from, string to)
+    private static void AddRelation(DiagramBuilderOptions options, UmlClassDiagram diagram, string from, string to)
     {
         var arrow = new UmlArrow(flowType: options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync);
         var relation = new UmlRelation(from, to, arrow);

@@ -4,12 +4,12 @@ using UmlKit.Model;
 namespace UmlKit.PlantUmlSpecification;
 
 // context: uml, model
-public class UmlDiagramClasses : UmlDiagram<UmlState>
+public class UmlClassDiagram : UmlDiagram<UmlState>
 {
     private readonly HashSet<UmlState> _states = new();
     private readonly List<UmlTransitionState> _transitions = new();
 
-    public UmlDiagramClasses(DiagramBuilderOptions options, string diagramId) : base(options, diagramId)
+    public UmlClassDiagram(DiagramBuilderOptions options, string diagramId) : base(options, diagramId)
     {
     }
 

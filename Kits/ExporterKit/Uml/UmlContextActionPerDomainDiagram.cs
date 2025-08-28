@@ -11,11 +11,11 @@ namespace UmlKit.Exporter;
 public static class UmlContextActionPerDomainDiagram
 {
     //context: build, uml, links, heatmap
-    public static void Build(IContextInfoMatrix matrix, Func<string, string, string> linkGenerator, string outputPath, DiagramBuilderOptions options)
+    public static void Build(IContextInfoData matrix, Func<string, string, string> linkGenerator, string outputPath, DiagramBuilderOptions options)
     {
         var diagramId = $"actionPerDomain_{outputPath}".AlphanumericOnly();
 
-        var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
+        var diagram = new UmlClassDiagram(options, diagramId: diagramId);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach (var item in matrix)
@@ -30,7 +30,7 @@ public static class UmlContextActionPerDomainDiagram
         diagram.WriteToFile(outputPath);
     }
 
-    private static void AddPackage(Func<string, string, string> linkGenerator, UmlDiagramClasses diagram, ContextInfoMatrixCell cell, int count)
+    private static void AddPackage(Func<string, string, string> linkGenerator, UmlClassDiagram diagram, ContextInfoDataCell cell, int count)
     {
         var packageId = $"{cell.Action}_{cell.Domain}";
         var label = $"{packageId}\\nMethods: {count}";

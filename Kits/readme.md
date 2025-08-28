@@ -1,4 +1,4 @@
-# список занятых портов
+# run netstat
 netstat -ano | findstr "LISTENING"
 
 # run pico

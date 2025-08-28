@@ -48,22 +48,43 @@ public class RoslynCompilationBuilder : ICompilationBuilder
     // context: roslyn, build
     public ICompilationWrapper BuildCompilation(IEnumerable<ISyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name = "Parser")
     {
-        var compilation = CSharpCompilation.Create(name, options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                    .AddSyntaxTrees(syntaxTrees.Select(st => st.Tree).Cast<SyntaxTree>())
-                    .AddReferences(RoslynAssemblyLoader.Fetch(_onWriteLog));
+        var referencesToLoad = RoslynAssemblyLoader.Fetch(_options.SemanticFilters, _onWriteLog);
 
-        var diags = compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error);
-        foreach (var diagnostic in diags)
+        var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable);
+        var compilation = CSharpCompilation.Create(name, options: compilationOptions)
+                    .AddSyntaxTrees(syntaxTrees.Select(st => st.Tree).Cast<SyntaxTree>())
+                    .AddReferences(referencesToLoad);
+
+        var references = compilation.References;
+        foreach (var reference in references)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, diagnostic.ToString());
+            _onWriteLog?.Invoke(AppLevel.R_Assembly, LogLevel.Trace, $"Loaded reference: {reference.Display}");
+        }
+
+        var diagnostics = compilation.GetDiagnostics();
+        var diagnosticErrors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
+        foreach (var diagnostic in diagnosticErrors)
+        {
+            _onWriteLog?.Invoke(AppLevel.R_Assembly, LogLevel.Err, $"Diagnostics: {diagnostic}");
+        }
+
+        var diagnosticWarnings = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning);
+        foreach (var diagnostic in diagnosticWarnings)
+        {
+            _onWriteLog?.Invoke(AppLevel.R_Assembly, LogLevel.Warn, $"Diagnostics: {diagnostic}");
         }
 
         return new RoslynCompilationWrapper(compilation);
     }
 
-    private static string PsoudoCodeInject(string filePath)
+    private string PsoudoCodeInject(string filePath)
     {
         var code = File.ReadAllText(filePath);
+        if (!_options.IncludePseudoCode)
+        {
+            return code;
+        }
+
         if (!code.Contains("using System;", StringComparison.Ordinal))
         {
             // Вставим в самое начало, добавим отступ

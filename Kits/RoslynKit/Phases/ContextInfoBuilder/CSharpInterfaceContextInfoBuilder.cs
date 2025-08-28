@@ -8,7 +8,7 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public class CSharpInterfaceContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, InterfaceDeclarationSyntax, ISemanticModelWrapper>
+public class CSharpInterfaceContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, InterfaceDeclarationSyntax, ISemanticModelWrapper, CSharpInterfaceSyntaxNodeWrapper>
     where TContext : IContextWithReferences<TContext>
 {
     public CSharpInterfaceContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog)
@@ -16,32 +16,22 @@ public class CSharpInterfaceContextInfoBuilder<TContext> : BaseContextInfoBuilde
     {
     }
 
-    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, InterfaceDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
+    public override ContextInfoElementType ElementType => ContextInfoElementType.@interface;
+}
 
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, cancellationToken);
 
-        var syntaxNodeWrap = new CSharpSyntaxNodeWrapper(syntax);
-        var symbolWrap = new CSharpISymbolWrapper(symbol);
+public class CSharpInterfaceSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<InterfaceDeclarationSyntax>, ISymbolInfo
+{
+    private InterfaceDeclarationSyntax _syntaxNode => (InterfaceDeclarationSyntax)SyntaxNode;
 
-        var nameSpace = syntax.GetNamespaceName();
-        var spanStart = syntax.Span.Start;
-        var spanEnd = syntax.Span.End;
-        var identifier = syntax.GetDeclarationName();
+    public override string Identifier => _syntaxNode.GetIdentifier();
 
-        string fullName;
-        string name;
-        if (symbol != null)
-        {
-            fullName = symbolWrap.ToDisplayString();
-            name = symbolWrap.GetName();
-        }
-        else
-        {
-            fullName = $"{nameSpace}.{identifier}";
-            name = identifier;
-        }
-        return new ContextInfoDto(ContextInfoElementType.@interface, fullName, name, nameSpace, identifier, spanStart, spanEnd, symbol: symbolWrap, syntaxNode: syntaxNodeWrap);
-    }
+    public override string Namespace => _syntaxNode.GetNamespaceOrGlobal();
+
+    public override string GetFullName() => $"{Namespace}.{GetName()}";
+
+    public override string GetName() => _syntaxNode.GetIdentifier();
+
+#warning this is incorrect
+    public override string GetShortName() => GetName();
 }

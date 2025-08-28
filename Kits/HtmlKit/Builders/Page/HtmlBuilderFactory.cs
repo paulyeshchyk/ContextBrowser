@@ -1,4 +1,5 @@
 ﻿using HtmlKit.Builders.Core;
+using HtmlKit.Builders.Tag;
 using HtmlKit.Classes;
 
 namespace HtmlKit.Page;
@@ -8,6 +9,16 @@ namespace HtmlKit.Page;
 // context: html, build
 public static class HtmlBuilderFactory
 {
+    public static class JsScripts
+    {
+        public static readonly string JsShowTabsheetTabScript = Resources.JsShowTabseetTabScript;
+    }
+
+    public static class CssStyles
+    {
+        public static readonly string CssTabsheet = Resources.CssTabsheetTabs;
+    }
+
     // Общие теги, поведение которых не сильно отличается от базового HtmlBuilderBase
     public static readonly IHtmlBuilder Html = new HtmlBuilderStandard("html", HtmlTagClasses.Page.Html);
 
@@ -22,7 +33,9 @@ public static class HtmlBuilderFactory
     public static readonly IHtmlBuilder Script = new HtmlBuilderScript("script");
     public static readonly IHtmlBuilder Style = new HtmlBuilderStyle("style");
     public static readonly IHtmlBuilder H1 = new HtmlBuilderH1("h1");
-    public static readonly IHtmlBuilder Paragraph = new HtmlBuilderP("p");
+    public static readonly IHtmlBuilder Button = new HtmlBuilderButton("button");
+    public static readonly IHtmlBuilder Div = new HtmlBuilderP("div");
+    public static readonly IHtmlBuilder P = new HtmlBuilderP("p");
     public static readonly IHtmlBuilder Ul = new HtmlBuilderUl("ul");
     public static readonly IHtmlBuilder Li = new HtmlBuilderLi("li");
     public static readonly IHtmlCellBuilder Raw = new RawBuilder();
@@ -60,10 +73,7 @@ public static class HtmlBuilderFactory
         }
 
         // Cell метод не всегда применим для произвольных тегов (html, head, body, table)
-        // Поэтому здесь можно бросить исключение или просто оставить его неиспользуемым,
-        // если мы уверены, что для этих тегов Cell вызываться не будет.
-        // Для чистоты, можно сделать его более строгим:
-        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
+        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "")
         {
             throw new NotSupportedException($"Cell method is not supported for <{Tag}> tag in StandardTagBuilder. Use Start/End instead.");
         }
@@ -77,9 +87,9 @@ public static class HtmlBuilderFactory
         {
         }
 
-        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
+        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "")
         {
-            WriteContentTag(sb, innerHtml, style);
+            WriteContentTag(sb, innerHtml, style, className);
         }
     }
 
@@ -87,6 +97,8 @@ public static class HtmlBuilderFactory
     // context: html, build
     internal class HtmlBuilderMeta : HtmlBuilder
     {
+        protected override bool IsClosable => false;
+
         public HtmlBuilderMeta(string tag) : base(tag, string.Empty)
         {
         }
@@ -96,6 +108,8 @@ public static class HtmlBuilderFactory
     // context: html, build
     internal class HtmlBuilderScript : HtmlBuilder
     {
+        protected override bool isRaw => true;
+
         public HtmlBuilderScript(string tag) : base(tag, string.Empty)
         {
         }
@@ -107,6 +121,12 @@ public static class HtmlBuilderFactory
     {
         public HtmlBuilderStyle(string tag) : base(tag, string.Empty)
         {
+        }
+
+        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "")
+        {
+            if (!string.IsNullOrWhiteSpace(innerHtml))
+                sb.WriteLine($"<style>{innerHtml}</style>");
         }
     }
 
@@ -121,6 +141,29 @@ public static class HtmlBuilderFactory
     private class HtmlBuilderP : HtmlBuilder
     {
         public HtmlBuilderP(string tag) : base(tag, string.Empty)
+        {
+        }
+    }
+
+    private class HtmlBuilderButton : HtmlBuilder
+    {
+        public HtmlBuilderButton(string tag) : base(tag, string.Empty)
+        {
+        }
+
+        protected override void WriteContentTag(TextWriter sb, string? content = "", string? style = null, string className = "")
+        {
+            string classAttr = HtmlBuilderTagAttribute.BuildClassAttribute(className);
+            string styleAttr = HtmlBuilderTagAttribute.BuildStyleAttribute(style);
+            string onClickAttr = HtmlBuilderTagAttribute.BuildOnClickAttribute(_onClickEvent);
+
+            sb.WriteLine($"<{Tag}{classAttr}{styleAttr}{onClickAttr}>{content}</{Tag}>");
+        }
+    }
+
+    private class HtmlBuilderDiv : HtmlBuilder
+    {
+        public HtmlBuilderDiv(string tag) : base(tag, string.Empty)
         {
         }
     }
@@ -157,7 +200,7 @@ public static class HtmlBuilderFactory
     public readonly struct RawBuilder : IHtmlCellBuilder
     {
         // context: html, build
-        public void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null)
+        public void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "")
         {
             if (!string.IsNullOrWhiteSpace(innerHtml))
                 sb.WriteLine(innerHtml);

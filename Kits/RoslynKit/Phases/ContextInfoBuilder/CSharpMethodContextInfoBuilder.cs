@@ -9,7 +9,7 @@ using SemanticKit.Model;
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
 // context: roslyn, build, contextInfo
-public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, MethodDeclarationSyntax, ISemanticModelWrapper>
+public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, MethodDeclarationSyntax, ISemanticModelWrapper, CSharpMethodSyntaxNodeWrapper>
     where TContext : IContextWithReferences<TContext>
 {
     public CSharpMethodContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog)
@@ -17,38 +17,7 @@ public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<T
     {
     }
 
-    protected override IContextInfo BuildContextInfoDto(TContext? ownerContext, MethodDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, cancellationToken);
-
-        var syntaxWrap = new CSharpSyntaxNodeWrapper(syntax);
-        var symbolWrap = new CSharpISymbolWrapper(symbol);
-
-        var nameSpace = syntax.GetNamespaceName();
-        var spanStart = syntax.Span.Start;
-        var spanEnd = syntax.Span.End;
-        var identifier = syntax.Identifier.Text;
-
-        string fullName;
-        string name;
-        if (symbol != null)
-        {
-            fullName = symbolWrap.ToDisplayString();
-            name = symbolWrap.GetName();
-        }
-        else
-        {
-            fullName = $"{nameSpace}.{identifier}";
-            name = identifier;
-        }
-        var result = new ContextInfoDto(ContextInfoElementType.method, fullName, name, nameSpace, identifier, spanStart, spanEnd, classOwner: ownerContext, symbol: symbolWrap, syntaxNode: syntaxWrap);
-
-        result.MethodOwner = result; // делаем себя же владельцем метода
-
-        return result;
-    }
+    public override ContextInfoElementType ElementType => ContextInfoElementType.@method;
 
     public TContext? BuildInvocationContextInfo(TContext? ownerContext, CSharpMethodSyntaxWrapper wrapper)
     {
@@ -63,4 +32,19 @@ public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<T
 
         return BuildContextInfo(ownerContext, contextInfoDto);
     }
+}
+
+public class CSharpMethodSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<MethodDeclarationSyntax>, ISymbolInfo
+{
+    private MethodDeclarationSyntax _syntaxNode => (MethodDeclarationSyntax)SyntaxNode;
+
+    public override string Identifier => _syntaxNode.GetIdentifier();
+
+    public override string Namespace => _syntaxNode.GetNamespaceOrGlobal();
+
+    public override string GetFullName() => $"{Namespace}.{GetName()}";
+
+    public override string GetName() => _syntaxNode.GetIdentifier();
+
+    public override string GetShortName() => GetName();
 }

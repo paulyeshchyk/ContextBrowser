@@ -1,22 +1,43 @@
 ﻿using ContextKit.Model;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using RoslynKit.Extensions;
 
 namespace RoslynKit.Wrappers.Syntax;
 
-public class CSharpSyntaxNodeWrapper : ISyntaxNodeInfo
+public abstract class CSharpSyntaxNodeWrapper<S> : ISyntaxNodeWrapper
+    where S : notnull, SyntaxNode
 {
-    private readonly SyntaxNode? _syntaxNode;
+    protected S? SyntaxNode;
 
-    public CSharpSyntaxNodeWrapper(SyntaxNode? syntaxNode)
-    {
-        _syntaxNode = syntaxNode;
-    }
+    public int SpanStart => SyntaxNode?.Span.Start ?? -1;
 
-    public IOrderedEnumerable<T> DescendantNodes<T>() where T : class
+    public int SpanEnd => SyntaxNode?.Span.End ?? -1;
+
+
+    public IOrderedEnumerable<T> DescendantSyntaxNodes<T>()
+        where T : class
     {
-        return _syntaxNode?
+        return SyntaxNode?
             .DescendantNodes()
             .OfType<T>()
             .OrderBy(c => (c as SyntaxNode)?.SpanStart ?? -1) ?? Enumerable.Empty<T>().OrderBy(t => -1);
+    }
+
+    public abstract string Identifier { get; }
+
+    public abstract string Namespace { get; }
+
+    public abstract string GetFullName();
+
+    public abstract string GetName();
+
+    public abstract string GetShortName();
+
+    public object? GetSyntax() => SyntaxNode;
+
+    public void SetSyntax(object? syntax)
+    {
+        SyntaxNode = (S?)syntax;
     }
 }

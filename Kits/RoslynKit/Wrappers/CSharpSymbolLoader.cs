@@ -33,7 +33,7 @@ public static class CSharpSymbolLoader
         catch (Exception ex)
         {
             onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Exception, $"[CSharpSymbolLoader] {ex.Message}");
-            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"{syntax.ToString()}");
+            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"{syntax}");
             return default;
         }
     }

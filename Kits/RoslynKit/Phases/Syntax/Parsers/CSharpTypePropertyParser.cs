@@ -4,6 +4,7 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using RoslynKit.Extensions;
 using RoslynKit.Phases.ContextInfoBuilder;
 using SemanticKit.Model;
 
@@ -88,7 +89,7 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
         }
 
         // Проверяем, существует ли уже контекст для этого типа, чтобы избежать рекурсии
-        var cnt = _collector.BySymbolDisplayName.GetValueOrDefault(typeSymbol.ToDisplayString());
+        var cnt = _collector.BySymbolDisplayName.GetValueOrDefault(typeSymbol.GetFullMemberName(includeParams: true));
         if (cnt != null)
         {
             return;

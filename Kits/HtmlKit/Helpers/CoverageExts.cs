@@ -6,7 +6,7 @@ namespace HtmlKit.Helpers;
 public static class CoverageExts
 {
     //context: color, ContextInfo, build
-    public static string? GetCoverageColorForCell(ContextInfoMatrixCell cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
+    public static string? GetCoverageColorForCell(ContextInfoDataCell cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
     {
         if (methods != null && methods.Count > 0)
         {

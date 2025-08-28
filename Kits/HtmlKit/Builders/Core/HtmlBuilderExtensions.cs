@@ -18,9 +18,9 @@ public static class HtmlBuilderExtensions
         builder.End(sb);
     }
 
-    public static void With(this IHtmlBuilder builder, TextWriter writer, Action body, string? className)
+    public static void With(this IHtmlBuilder builder, TextWriter writer, Action body, string? className, string? id = null)
     {
-        builder.Start(writer, className);
+        builder.Start(writer, className, id);
         body();
         builder.End(writer);
     }

@@ -2,14 +2,16 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticModel>
+public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticModel, TWrapper>
     where TContext : IContextWithReferences<TContext>
     where TSyntaxNode : class
     where TSemanticModel : ISemanticModelWrapper
+    where TWrapper : ISyntaxNodeWrapper, new()
 {
     protected readonly IContextCollector<TContext> _collector;
     protected readonly IContextFactory<TContext> _factory;
@@ -25,7 +27,36 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
         _onWriteLog = onWriteLog;
     }
 
-    protected abstract IContextInfo BuildContextInfoDto(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel, CancellationToken cancellationToken);
+    public abstract ContextInfoElementType ElementType { get; }
+
+    public virtual IContextInfo BuildContextInfoDto(TContext? ownerContext, TSyntaxNode syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var syntaxWrap = new TWrapper();
+        syntaxWrap.SetSyntax(syntax);
+
+        var wrapper = new CSharpISymbolWrapper(model, syntaxWrap, _onWriteLog, cancellationToken);
+
+        var nameSpace = wrapper.Namespace;
+        var identifier = wrapper.Identifier;
+
+        string fullName = wrapper.GetFullName();
+        string name = wrapper.GetName();
+        string shortName = wrapper.GetShortName();
+
+        return new ContextInfoDto(
+              elementType: ElementType,
+                 fullName: fullName,
+                     name: name,
+                shortName: shortName,
+                nameSpace: nameSpace,
+               identifier: identifier,
+            symbolWrapper: wrapper,
+            syntaxWrapper: syntaxWrap,
+               classOwner: ownerContext,
+              methodOwner: ownerContext);
+    }
 
     public virtual TContext? BuildContextInfo(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel, CancellationToken cancellationToken)
     {

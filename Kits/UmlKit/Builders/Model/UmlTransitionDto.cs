@@ -21,7 +21,7 @@ public record UmlTransitionDto
 
     public string? Domain { get; init; }
 
-    public string? RunContext { get; init; }
+    public string RunContext { get; init; }
 
     public string? OwnerClass { get; init; }
 
@@ -31,7 +31,7 @@ public record UmlTransitionDto
 
     public string? ParentUid { get; init; }
 
-    public UmlTransitionDto(string? callerId, string callerName, string callerClassName, string? callerMethod, string? calleeId, string calleeName, string calleeClassName, string? calleeMethod, string? domain, string? runContext, string? ownerClass, string? ownerMethod, string uid, string? parentUid)
+    public UmlTransitionDto(string? callerId, string callerName, string callerClassName, string? callerMethod, string? calleeId, string calleeName, string calleeClassName, string? calleeMethod, string? domain, string runContext, string? ownerClass, string? ownerMethod, string uid, string? parentUid)
     {
         Uid = uid;
         ParentUid = parentUid;

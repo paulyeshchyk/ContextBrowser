@@ -11,10 +11,10 @@ namespace UmlKit.Exporter;
 public static class UmlContextMethodPerActionDomainDiagram
 {
     //context: build, uml
-    public static void Build(IContextInfoMatrix matrix, string outputPath, DiagramBuilderOptions options)
+    public static void Build(IContextInfoData matrix, string outputPath, DiagramBuilderOptions options)
     {
         var diagramId = $"method_per_action_domain_{outputPath}".AlphanumericOnly();
-        var diagram = new UmlDiagramClasses(options, diagramId: diagramId);
+        var diagram = new UmlClassDiagram(options, diagramId: diagramId);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach (var cell in matrix)
@@ -33,7 +33,7 @@ public static class UmlContextMethodPerActionDomainDiagram
         diagram.WriteToFile(outputPath);
     }
 
-    private static void AddPackage(UmlDiagramClasses diagram, string blockLabel, IEnumerable<ContextKit.Model.ContextInfo> listOfClasses)
+    private static void AddPackage(UmlClassDiagram diagram, string blockLabel, IEnumerable<ContextKit.Model.ContextInfo> listOfClasses)
     {
         var package = new UmlPackage(blockLabel);
 

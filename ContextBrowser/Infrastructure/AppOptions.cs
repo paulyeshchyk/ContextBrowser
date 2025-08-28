@@ -24,6 +24,8 @@ public class AppOptions
         {
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Assembly, LogLevel = LogLevel.Trace },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Inv, LogLevel = LogLevel.Err },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Parse, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Warn },
@@ -37,7 +39,9 @@ public class AppOptions
     public CodeParsingOptions ParsingOptions { get; set; } = new(
 
         semanticOptions: new(
-
+            semanticFilters: new(
+                excludedAssemblyNamesPattern: "**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*",
+                runtimeAssemblyFilenamePattern: "System.Runtime*.dll"),
             methodModifierTypes: new()
             {
                 SemanticAccessorModifierType.@public,
@@ -66,10 +70,12 @@ public class AppOptions
             fakeOwnerName: "privateTYPE",
             fakeMethodName: "privateMETHOD",
             customAssembliesPaths: new List<string>() { "." },
-            createFailedCallees: true));
+            createFailedCallees: true,
+            includePseudoCode: false));
 
     [CommandLineArgument("import-options", "Параметры импорта")]
     public ImportOptions Import { get; set; } = new(
+        exclude: "**/obj/**;**/*Tests*/**",
         fileExtensions: ".cs",
 
         //".//..//..//..//"
@@ -78,13 +84,13 @@ public class AppOptions
         //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
-        searchPaths: new[] { ".//..//..//..//" });
+        searchPaths: new[] { "/Users/paul/projects/ContextBrowser/" });
 
     [CommandLineArgument("export-options", "Параметры экспорта")]
     public ExportOptions Export { get; set; } = new(
         exportMatrix: new ExportMatrixOptions(
                  unclassifiedPriority: UnclassifiedPriorityType.Highest,
-            includeAllStandardActions: true,
+            includeAllStandardActions: false,
                             htmlTable: new HtmlTableOptions(
                                 summaryPlacement: SummaryPlacementType.AfterFirst,
                                      orientation: MatrixOrientationType.DomainRows)),
@@ -103,7 +109,7 @@ public class AppOptions
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
                                               debug: false,
                                         detailLevel: DiagramDetailLevel.Summary,
-                                          direction: DiagramDirection.Outgoing,
+                                          direction: DiagramDirection.Incoming,
                                          activation: new DiagramActivationOptions(useActivation: true, useActivationCall: true),
                                   transitionOptions: new DiagramTransitionOptions(useCall: true, useDone: true),
                                    invocationOption: new DiagramInvocationOption(useInvocation: true, useReturn: true),

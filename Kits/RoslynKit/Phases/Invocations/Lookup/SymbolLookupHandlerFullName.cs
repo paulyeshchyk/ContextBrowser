@@ -15,7 +15,7 @@ public class SymbolLookupHandlerFullName<TContext, TSemanticModel> : SymbolLooku
     where TSemanticModel : class, ISemanticModelWrapper
 
 {
-    private IContextCollector<TContext> _collector;
+    private readonly IContextCollector<TContext> _collector;
 
     /// <summary>
     /// Конструктор обработчика FullNameLookupHandler.
@@ -33,13 +33,16 @@ public class SymbolLookupHandlerFullName<TContext, TSemanticModel> : SymbolLooku
     /// </summary>
     /// <param name="symbolDto">Обертка над синтаксическим узлом вызова.</param>
     /// <returns>Найденный контекст или null, если не найден.</returns>
-    public override TContext? Handle(IInvocationSyntaxWrapper symbolDto)
+    public override TContext? Handle(BaseSyntaxWrapper symbolDto)
     {
         if (_collector.BySymbolDisplayName.TryGetValue(symbolDto.FullName, out var calleeContextInfo))
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"[OK] Found ContextInfo by SymbolName: {symbolDto.FullName}");
+            _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, $"[OK  ] ContextInfo was found for {symbolDto.FullName}");
             return calleeContextInfo;
         }
+
+
+        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Trace, $"[MISS] ContextInfo not found for {symbolDto.FullName}");
 
         // Если не найдено, передаем запрос следующему обработчику в цепочке.
         return base.Handle(symbolDto);

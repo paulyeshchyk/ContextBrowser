@@ -20,7 +20,25 @@ public record SemanticOptions
 
     public bool CreateFailedCallees { get; set; }
 
-    public SemanticOptions(string externalNamespaceName, string fakeOwnerName, string fakeMethodName, HashSet<SemanticAccessorModifierType> methodModifierTypes, HashSet<SemanticAccessorModifierType> classModifierTypes, HashSet<SemanticMemberType> memberTypes, IEnumerable<string> customAssembliesPaths, bool createFailedCallees)
+    public SemanticFilters SemanticFilters { get; set; }
+
+    /// <summary>
+    /// if true then error CS8915 occured
+    /// </summary>
+    public bool IncludePseudoCode { get; set; }
+
+    public SemanticOptions(
+        string externalNamespaceName,
+        string fakeOwnerName,
+        string fakeMethodName,
+        HashSet<SemanticAccessorModifierType> methodModifierTypes,
+        HashSet<SemanticAccessorModifierType> classModifierTypes,
+        HashSet<SemanticMemberType> memberTypes,
+        IEnumerable<string> customAssembliesPaths,
+        bool createFailedCallees,
+        bool includePseudoCode,
+        SemanticFilters semanticFilters
+    )
     {
         ExternalNamespaceName = externalNamespaceName;
         FakeOwnerName = fakeOwnerName;
@@ -30,7 +48,23 @@ public record SemanticOptions
         MemberTypes = memberTypes;
         CustomAssembliesPaths = customAssembliesPaths;
         CreateFailedCallees = createFailedCallees;
+        IncludePseudoCode = includePseudoCode;
+        SemanticFilters = semanticFilters;
     }
+}
+
+public record SemanticFilters
+{
+
+    public string ExcludedAssemblyNamesPattern { get; }
+    public string RuntimeAssemblyFilenamePattern { get; }
+
+    public SemanticFilters(string excludedAssemblyNamesPattern, string runtimeAssemblyFilenamePattern)
+    {
+        ExcludedAssemblyNamesPattern = excludedAssemblyNamesPattern;
+        RuntimeAssemblyFilenamePattern = runtimeAssemblyFilenamePattern;
+    }
+
 }
 
 // parsing: error

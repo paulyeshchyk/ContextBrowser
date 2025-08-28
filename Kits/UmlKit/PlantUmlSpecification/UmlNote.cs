@@ -2,9 +2,9 @@
 
 public class UmlNote : IUmlElement
 {
-    private string _note;
-    private UmlNotePosition _position;
-    private string _caller;
+    private readonly string _note;
+    private readonly UmlNotePosition _position;
+    private readonly string _caller;
 
     public UmlNote(string caller, UmlNotePosition position, string note)
     {

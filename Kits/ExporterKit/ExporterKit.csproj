@@ -6,6 +6,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -19,9 +20,6 @@
 		<ProjectReference Include="..\HtmlKit\HtmlKit.csproj" />
 		<ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
 		<ProjectReference Include="..\UmlKit\UmlKit.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Options\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Resources.Designer.cs">

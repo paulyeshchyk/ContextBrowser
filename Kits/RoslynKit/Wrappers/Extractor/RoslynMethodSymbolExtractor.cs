@@ -13,7 +13,7 @@ internal static class RoslynMethodSymbolExtractor
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"Looking IMethodSymbol for expression: {invocation.Expression}");
+        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, $"Looking IMethodSymbol for expression: {invocation.Expression}");
 
         var si = semanticModel.GetSymbolInfo(invocation.Expression, cancellationToken);
         if (si is not SymbolInfo symbolInfo)
@@ -23,18 +23,16 @@ internal static class RoslynMethodSymbolExtractor
 
         if (symbolInfo.Symbol is IMethodSymbol method)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"Found IMethodSymbol for expression: {invocation.Expression}");
+            _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, $"[DONE] Found IMethodSymbol for expression: {invocation.Expression}");
             return method;
         }
 
         if (symbolInfo.CandidateSymbols.Length > 0)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"Found Candidate of IMethodSymbol for expression: {invocation.Expression}");
+            _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, $"[DONE] Found Candidate of IMethodSymbol for expression: {invocation.Expression}");
             return symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
         }
-
-        // TODO: warn
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[MISS]: No symbol for expression: {invocation.Expression}");
+        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Warn, $"[FAIL]: No symbol for expression: {invocation.Expression}");
         return null;
     }
 }
