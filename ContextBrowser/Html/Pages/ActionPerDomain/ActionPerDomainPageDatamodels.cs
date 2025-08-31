@@ -8,7 +8,7 @@ using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 using HtmlKit.Page;
 
-namespace ContextBrowser.Html.Composite;
+namespace HtmlKit.Page.Compiler;
 
 internal interface IActionPerDomainMethodListDatamodel : IHtmlTabsheetDataModel
 {

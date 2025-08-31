@@ -10,10 +10,24 @@ using LoggerKit;
 namespace ExporterKit.Uml;
 
 // context: ContextInfo, ContextInfoMatrix, build
-public static class ContextInfoDatasetBuilder
+public interface IContextInfoDatasetBuilder
 {
     // context: ContextInfo, ContextInfoMatrix, build
-    public static IContextInfoDataset Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier, IAppLogger<AppLevel> _logger)
+    IContextInfoDataset Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier);
+}
+
+// context: ContextInfo, ContextInfoMatrix, build
+public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
+{
+    private readonly IAppLogger<AppLevel> _logger;
+
+    public ContextInfoDatasetBuilder(IAppLogger<AppLevel> logger)
+    {
+        _logger = logger;
+    }
+
+    // context: ContextInfo, ContextInfoMatrix, build
+    public IContextInfoDataset Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier)
     {
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
 

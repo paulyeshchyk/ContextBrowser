@@ -21,7 +21,7 @@ public class CSharpRecordContextInfoBuilder<TContext> : BaseContextInfoBuilder<T
 
 public class CSharpRecordSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<MemberDeclarationSyntax>
 {
-    private MemberDeclarationSyntax _syntaxNode => (MemberDeclarationSyntax)SyntaxNode;
+    private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<MemberDeclarationSyntax>();
 
     public override string Identifier => _syntaxNode.GetIdentifier();
 

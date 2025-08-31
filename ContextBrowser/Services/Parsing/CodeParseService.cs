@@ -28,8 +28,8 @@ public class CodeParseService : ICodeParseService
     // context: app
     public Task<IEnumerable<ContextInfo>> Parse(IContextParser<ContextInfo> contextParser, CancellationToken cancellationToken)
     {
-        var importOptions = _optionsStore.Options.Import;
-        var appOptions = _optionsStore.Options;
+        var importOptions = _optionsStore.Options().Import;
+        var parsingOptions = _optionsStore.Options().ParsingOptions;
 
         var filePaths = PathAnalyzer.GetFilePaths(importOptions.SearchPaths, importOptions.FileExtensions, _logger.WriteLog);
         var filtered = PathFilter.FilteroutPaths(filePaths, importOptions.Exclude, (thePath) => thePath);
@@ -38,6 +38,6 @@ public class CodeParseService : ICodeParseService
         {
             throw new Exception("No files to parse");
         }
-        return contextParser.ParseAsync(filtered, appOptions.ParsingOptions.SemanticOptions, cancellationToken);
+        return contextParser.ParseAsync(filtered, parsingOptions.SemanticOptions, cancellationToken);
     }
 }

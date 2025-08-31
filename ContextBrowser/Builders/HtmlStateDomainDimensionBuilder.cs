@@ -5,6 +5,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Matrix;
+using ExporterKit.DiagramCompiler;
 using ExporterKit.HtmlPageSamples;
 using ExporterKit.Puml;
 using LoggerKit;
@@ -14,62 +15,17 @@ namespace ContextBrowser.Samples.HtmlPages;
 
 [Obsolete]
 // context: contextInfo, build, html
-public static class HtmlStateDomainDimensionBuilder
+public static class PumlStateDomainDimensionBuilder
 {
     // context: contextInfo, build, html
     public static void Build(IContextInfoDataset model, AppOptions options, IContextClassifier contextClassifier, IAppLogger<AppLevel> _logger)
     {
         _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- DimensionBuilder.Build ---");
 
-        var builder = new HtmlStateDomainBuilder(
-            model.ContextInfoData,
-            model.ContextsList,
-            contextClassifier,
-            options.Export,
-            options.DiagramBuilder,
+        var builder = new InjectorUmlStateDomainDiagramCompiler(
+
             _logger);
 
-        builder.Build();
-    }
-}
-
-// context: html, dimension, build
-internal class HtmlStateDomainBuilder
-{
-    private readonly IContextInfoData _matrix;
-    private readonly List<ContextInfo> _allContexts;
-    private readonly ExportOptions _exportOptions;
-    private readonly Dictionary<string, bool> _renderedStates;
-
-    public HtmlStateDomainBuilder(IContextInfoData matrix, List<ContextInfo> allContexts, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options, IAppLogger<AppLevel> _logger)
-    {
-        _matrix = matrix;
-        _allContexts = allContexts;
-        _exportOptions = exportOptions;
-
-        // Инициализация генераторов
-        var stateGenerator = new UmlStateDomainDiagramCompiler(_matrix, contextClassifier, exportOptions, options, _logger);
-
-        // Генерация диаграмм
-        _renderedStates = stateGenerator.Compile(_allContexts);
-    }
-
-    // context: html, dimension, build
-    public void Build()
-    {
-        var allDomains = _matrix.GetDomains().Distinct();
-
-        foreach (var domain in allDomains)
-        {
-            var methods = _matrix.GetMethodsByDomain(domain: domain).ToList();
-
-            PumlHtmlInjection? puml = null;
-            if (_renderedStates.TryGetValue(domain, out var rendered_state) && rendered_state == true)
-            {
-                puml = PumlInjector.InjectDomainSequenceEmbeddedHtml(domain, _exportOptions);
-            }
-
-            HtmlSequenceDomainPageBuilder.Build(domain, methods, puml, _exportOptions);
-        }
+        builder.Build(model, contextClassifier, options.Export, options.DiagramBuilder);
     }
 }

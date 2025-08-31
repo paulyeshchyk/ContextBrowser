@@ -1,12 +1,17 @@
 ﻿using CommandlineKit;
 using ContextBrowser.FileManager;
 using ContextBrowser.Infrastructure;
+using ContextBrowser.Samples.HtmlPages;
 using ContextBrowser.Services;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
 using ContextKit.Stategies;
+using ExporterKit.DiagramCompiler;
+using ExporterKit.HtmlPageSamples;
+using ExporterKit.Uml;
+using HtmlKit.Page.Compiler;
 using LoggerKit;
 using LoggerKit.Model;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +32,9 @@ public static class Program
     {
         var hab = Host.CreateApplicationBuilder(args);
 
+        hab.Services.AddHostedService<CustomEnvironmentHostedService>();
+        hab.Services.AddSingleton<IServerStartSignal, ServerStartSignal>();
+
         hab.Services.AddSingleton<IAppOptionsStore, AppSettingsStore>();
         hab.Services.AddSingleton<ICommandlineArgumentsParserService, CommandlineArgumentsParserService>();
         hab.Services.AddSingleton<IMainService, MainService>();
@@ -38,6 +46,7 @@ public static class Program
         hab.Services.AddTransient<IContextInfoCacheService, ContextInfoCacheService>();
         hab.Services.AddTransient<IContextClassifierBuilder, ContextClassifierBuilder>();
         hab.Services.AddTransient<IContextInfoRelationManager, ContextInfoRelationManager>();
+        hab.Services.AddTransient<IContextInfoDatasetBuilder, ContextInfoDatasetBuilder>();
 
         hab.Services.AddSingleton<ICompilationBuilder, RoslynCompilationBuilder>();
         hab.Services.AddTransient<ICodeParseService, CodeParseService>();
@@ -51,6 +60,23 @@ public static class Program
         hab.Services.AddTransient<IReferenceParserFactory, ReferenceParserFactory>();
         hab.Services.AddTransient<IDeclarationParserFactory, DeclarationParserFactory>();
         hab.Services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
+
+        hab.Services.AddTransient<IDiagramCompiler, UmlComponentDiagramCompiler>();
+        hab.Services.AddTransient<IDiagramCompiler, UmlActionPerDomainDiagramCompiler>();
+        hab.Services.AddTransient<IDiagramCompiler, UmlStateActionDiagramCompiler>();
+        hab.Services.AddTransient<IDiagramCompiler, UmlSequenceActionDiagramCompiler>();
+        hab.Services.AddTransient<IDiagramCompiler, UmlSequenceDomainDiagramCompiler>();
+        hab.Services.AddTransient<IDiagramCompiler, UmlExtraDiagramsCompiler>();
+
+        hab.Services.AddTransient<IDiagramCompilerOrchestrator, DiagramCompilerOrchestrator>();
+
+        hab.Services.AddTransient<IHtmlPageCompiler, ActionPerDomainHtmlPageCompiler>();
+        hab.Services.AddTransient<IHtmlPageCompiler, ActionOnlyHtmlPageCompiler>();
+        hab.Services.AddTransient<IHtmlPageCompiler, DomainOnlyHtmlPageCompiler>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlIndexBuilder>();
+
+        hab.Services.AddTransient<IHtmlCompilerOrchestrator, HtmlCompilerOrchestrator>();
+
 
         hab.Services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(provider =>
         {

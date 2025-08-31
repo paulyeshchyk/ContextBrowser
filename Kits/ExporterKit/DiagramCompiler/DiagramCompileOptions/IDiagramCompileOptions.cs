@@ -1,6 +1,6 @@
 using UmlKit.Builders;
 
-namespace ExporterKit.HtmlPageSamples;
+namespace ExporterKit.DiagramCompiler.DiagramCompilerOptions;
 
 public interface IDiagramCompileOptions
 {

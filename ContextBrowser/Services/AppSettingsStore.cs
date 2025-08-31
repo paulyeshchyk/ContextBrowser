@@ -4,16 +4,18 @@ namespace ContextBrowser.Services;
 
 public interface IAppOptionsStore
 {
-    AppOptions Options { get; }
+    AppOptions Options();
     void SetOptions(AppOptions options);
 }
 
 public class AppSettingsStore : IAppOptionsStore
 {
-    public AppOptions Options { get; private set; }
+    private AppOptions? _options = null;
+
+    public AppOptions Options() { return _options!; }
 
     public void SetOptions(AppOptions options)
     {
-        Options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 }

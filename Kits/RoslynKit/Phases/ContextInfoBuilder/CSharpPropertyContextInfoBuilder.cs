@@ -21,7 +21,7 @@ public class CSharpPropertyContextInfoBuilder<TContext> : BaseContextInfoBuilder
 
 public class CSharpPropertySyntaxNodeWrapper : CSharpSyntaxNodeWrapper<PropertyDeclarationSyntax>, ISymbolInfo
 {
-    private PropertyDeclarationSyntax _syntaxNode => (PropertyDeclarationSyntax)SyntaxNode;
+    private PropertyDeclarationSyntax _syntaxNode => GetCoSyntax<PropertyDeclarationSyntax>();
 
     public override string Identifier => _syntaxNode.GetIdentifier();
 

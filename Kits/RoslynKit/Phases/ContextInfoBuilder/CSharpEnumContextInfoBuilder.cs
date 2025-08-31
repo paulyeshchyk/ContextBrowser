@@ -23,7 +23,7 @@ public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCo
 
 public class CSharpEnumSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<EnumDeclarationSyntax>
 {
-    private MemberDeclarationSyntax _syntaxNode => (EnumDeclarationSyntax)SyntaxNode;
+    private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<EnumDeclarationSyntax>();
 
     public override string Identifier => _syntaxNode.GetIdentifier();
 

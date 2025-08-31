@@ -4,7 +4,7 @@ using ExporterKit.Puml;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 
-namespace ContextBrowser.Samples.HtmlPages;
+namespace HtmlKit.Page.Compiler;
 
 internal class DomainOnlyMethodListDataModel : IDomainOnlyMethodListDatamodel
 {

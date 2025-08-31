@@ -1,9 +1,9 @@
 using ContextBrowserKit.Extensions;
 using UmlKit.Builders;
 
-namespace ExporterKit.HtmlPageSamples;
+namespace ExporterKit.DiagramCompiler.DiagramCompilerOptions;
 
-public static class CompileOptionsFactory
+public static class DiagramCompileOptionsFactory
 {
     public static IDiagramCompileOptions ActionStateOptions(string action)
     {

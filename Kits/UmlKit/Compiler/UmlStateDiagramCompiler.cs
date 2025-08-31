@@ -58,6 +58,7 @@ public class UmlStateDiagramCompiler
         var diagram = new UmlDiagramState(_options, diagramId: diagramId);
         diagram.SetTitle($"Context: {metaItem}");
         diagram.SetSkinParam("componentStyle", "rectangle");
+        diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
 
         // Используем фабрику для создания построителя диаграмм
         var transitions = _builder.Build(metaItem, fetchType: FetchType.FetchDomain, allContexts, _classifier);
@@ -88,6 +89,7 @@ public class UmlStateDiagramCompiler
         var diagram = new UmlDiagramState(_options, diagramId: diagramId);
         diagram.SetTitle($"Context: {metaItem}");
         diagram.SetSkinParam("componentStyle", "rectangle");
+        diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
 
         // Используем фабрику для создания построителя диаграмм
         var transitions = _builder.Build(metaItem, fetchType: FetchType.FetchAction, allContexts, _classifier);

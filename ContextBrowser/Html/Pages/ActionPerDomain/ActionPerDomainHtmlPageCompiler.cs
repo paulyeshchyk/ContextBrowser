@@ -1,18 +1,28 @@
-using ContextBrowser.Html.Composite;
 using ContextBrowser.Infrastructure;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Html;
 using HtmlKit.Builders.Core;
 using HtmlKit.Page;
 using LoggerKit;
 
-public static partial class ActionPerDomainHtmlPageBuilder
+namespace HtmlKit.Page.Compiler;
+
+public class ActionPerDomainHtmlPageCompiler : IHtmlPageCompiler
 {
+    private readonly IAppLogger<AppLevel> _logger;
+
+    public ActionPerDomainHtmlPageCompiler(IAppLogger<AppLevel> logger)
+    {
+        _logger = logger;
+    }
+
     // context: html, build
-    public static void Build(IContextInfoDataset contextInfoDataset, AppOptions appOptions, IAppLogger<AppLevel> _logger)
+
+    public void Compile(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions)
     {
         _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "--- ActionPerDomainPage.Build ---", LogLevelNode.None);
 
@@ -47,7 +57,7 @@ public static partial class ActionPerDomainHtmlPageBuilder
                 model: new ActionPerDomainComponentsDatamodel(),
                 build: (writer, model, dto) =>
                 {
-                    var pumlInjection = model.GetEmbeddedPumlInjection(dto, appOptions.Export);
+                    var pumlInjection = model.GetEmbeddedPumlInjection(dto, exportOptions);
 
                     if (!string.IsNullOrWhiteSpace(pumlInjection.EmbeddedScript))
                         HtmlBuilderFactory.Raw.Cell(writer, pumlInjection.EmbeddedScript);
@@ -59,7 +69,7 @@ public static partial class ActionPerDomainHtmlPageBuilder
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider(registrations);
 
-        var builder = new HtmlPageWithTabsBuilder(contextInfoDataset, appOptions.Export, tabsheetDataProvider);
+        var builder = new HtmlPageWithTabsBuilder(contextInfoDataset, exportOptions, tabsheetDataProvider);
         builder.Build((cellData) => $"composite_{cellData.DataCell.Action}_{cellData.DataCell.Domain}.html");
     }
 }

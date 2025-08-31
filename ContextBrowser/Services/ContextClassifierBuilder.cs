@@ -15,7 +15,7 @@ public class ContextClassifierBuilder : IContextClassifierBuilder
 
     public IContextClassifier Build()
     {
-        return _optionsStore.Options.Classifier;
+        return _optionsStore.Options().Classifier;
     }
 
 }

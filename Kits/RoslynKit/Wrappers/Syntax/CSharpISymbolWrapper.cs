@@ -56,6 +56,17 @@ public class CSharpISymbolWrapper : ISymbolInfo
     {
         _syntax = syntax;
     }
+
+    public S GetCoSyntax<S>()
+    {
+        if (_syntax is not S coSyntax)
+        {
+            throw new Exception($"incorrect syntax, expected {typeof(S)}");
+        }
+        return coSyntax;
+    }
+
+
     public CSharpISymbolWrapper() { }
 
 }

@@ -21,7 +21,7 @@ public class CSharpInterfaceContextInfoBuilder<TContext> : BaseContextInfoBuilde
 
 public class CSharpInterfaceSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<InterfaceDeclarationSyntax>, ISymbolInfo
 {
-    private InterfaceDeclarationSyntax _syntaxNode => (InterfaceDeclarationSyntax)SyntaxNode;
+    private InterfaceDeclarationSyntax _syntaxNode => GetCoSyntax<InterfaceDeclarationSyntax>();
 
     public override string Identifier => _syntaxNode.GetIdentifier();
 

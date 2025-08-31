@@ -12,9 +12,9 @@ public interface ISymbolInfo
 
     string GetFullName();
 
-    object? GetSyntax();
+    S GetCoSyntax<S>();
 
-    void SetSyntax(object? syntax);
+    void SetSyntax(object syntax);
 }
 
 public interface ISyntaxNodeWrapper : ISpanInfo
@@ -32,7 +32,7 @@ public interface ISyntaxNodeWrapper : ISpanInfo
 
     string GetFullName();
 
-    object? GetSyntax();
+    object GetSyntax();
 
-    void SetSyntax(object? syntax);
+    void SetSyntax(object syntax);
 }

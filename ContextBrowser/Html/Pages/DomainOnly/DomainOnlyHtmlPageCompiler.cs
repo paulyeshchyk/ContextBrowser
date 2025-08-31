@@ -13,13 +13,22 @@ using HtmlKit.Page;
 using LoggerKit;
 using UmlKit.Infrastructure.Options;
 
-namespace ContextBrowser.Samples.HtmlPages;
+namespace HtmlKit.Page.Compiler;
 
 // context: contextInfo, build, html
-public static class DomainOnlyHtmlPageBuilder
+public class DomainOnlyHtmlPageCompiler : IHtmlPageCompiler
 {
+
+    private readonly IAppLogger<AppLevel> _logger;
+
+    public DomainOnlyHtmlPageCompiler(IAppLogger<AppLevel> logger)
+    {
+        _logger = logger;
+    }
+
     // context: contextInfo, build, html
-    public static void Build(IContextInfoDataset contextInfoDataset, AppOptions appOptions, IAppLogger<AppLevel> _logger)
+
+    public void Compile(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions)
     {
         _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- DomainOnly.Build ---", LogLevelNode.None));
 
@@ -54,7 +63,7 @@ public static class DomainOnlyHtmlPageBuilder
                 model: new DomainOnlyStatesDatamodel(),
                 build: (writer, model, dto) =>
                 {
-                    var pumlInjection = model.GetEmbeddedPumlInjection(dto, appOptions.Export);
+                    var pumlInjection = model.GetEmbeddedPumlInjection(dto, exportOptions);
 
                     if (!string.IsNullOrWhiteSpace(pumlInjection.EmbeddedScript))
                         HtmlBuilderFactory.Raw.Cell(writer, pumlInjection.EmbeddedScript);
@@ -71,7 +80,7 @@ public static class DomainOnlyHtmlPageBuilder
                 model: new DomainOnlySequenceDatamodel(),
                 build: (writer, model, dto) =>
                 {
-                    var pumlInjection = model.GetEmbeddedPumlInjection(dto, appOptions.Export);
+                    var pumlInjection = model.GetEmbeddedPumlInjection(dto, exportOptions);
 
                     if (!string.IsNullOrWhiteSpace(pumlInjection.EmbeddedScript))
                         HtmlBuilderFactory.Raw.Cell(writer, pumlInjection.EmbeddedScript);
@@ -83,7 +92,7 @@ public static class DomainOnlyHtmlPageBuilder
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider(registrations);
 
-        var builder = new HtmlPageWithTabsBuilder(contextInfoDataset, appOptions.Export, tabsheetDataProvider);
+        var builder = new HtmlPageWithTabsBuilder(contextInfoDataset, exportOptions, tabsheetDataProvider);
         builder.Build((cellData) => $"composite_domain_{cellData.DataCell.Domain}.html");
     }
 }

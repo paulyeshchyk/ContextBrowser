@@ -36,7 +36,7 @@ public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<T
 
 public class CSharpMethodSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<MethodDeclarationSyntax>, ISymbolInfo
 {
-    private MethodDeclarationSyntax _syntaxNode => (MethodDeclarationSyntax)SyntaxNode;
+    private MethodDeclarationSyntax _syntaxNode => GetCoSyntax<MethodDeclarationSyntax>();
 
     public override string Identifier => _syntaxNode.GetIdentifier();
 

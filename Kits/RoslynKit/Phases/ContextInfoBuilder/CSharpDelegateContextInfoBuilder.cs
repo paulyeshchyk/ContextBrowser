@@ -21,7 +21,7 @@ public class CSharpDelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder
 
 public class CSharpDelegateSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<DelegateDeclarationSyntax>, ISymbolInfo
 {
-    private DelegateDeclarationSyntax? _syntaxNode => (DelegateDeclarationSyntax?)SyntaxNode;
+    private DelegateDeclarationSyntax? _syntaxNode => GetCoSyntax<DelegateDeclarationSyntax>();
 
     public override string Identifier => _syntaxNode?.GetIdentifier() ?? throw new ArgumentException(nameof(_syntaxNode));
 
@@ -32,4 +32,5 @@ public class CSharpDelegateSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<DelegateD
     public override string GetName() => _syntaxNode?.GetIdentifier() ?? throw new ArgumentException(nameof(_syntaxNode));
 
     public override string GetShortName() => GetName();
+
 }

@@ -29,7 +29,7 @@ public class CSharpTypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TCon
 
 public class CSharpTypeSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<MemberDeclarationSyntax>, ISymbolInfo
 {
-    private MemberDeclarationSyntax _syntaxNode => (MemberDeclarationSyntax)SyntaxNode;
+    private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<MemberDeclarationSyntax>();
 
     public override string Identifier => _syntaxNode.GetIdentifier();
 
