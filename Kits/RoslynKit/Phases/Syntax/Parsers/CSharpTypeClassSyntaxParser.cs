@@ -36,35 +36,35 @@ public class CSharpTypeClassSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 
     public override bool CanParse(object syntax) => syntax is ClassDeclarationSyntax;
 
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
+    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (syntax is not ClassDeclarationSyntax typeSyntax)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax ({nameof(syntax)}) is not ClassDeclarationSyntax");
+            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax ({nameof(syntax)}) is not ClassDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - type syntax");
+        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - type syntax");
 
         var symbol = CSharpSymbolLoader.LoadSymbol(typeSyntax, model, _onWriteLog, cancellationToken);
 
         var typeContext = _typeContextInfoBuilder.BuildContextInfo(parent, typeSyntax, model, cancellationToken);
         if (typeContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {typeSyntax.GetNamespaceOrGlobal()}");
+            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {typeSyntax.GetNamespaceOrGlobal()}");
             return;
         }
 
         var propertySyntaxes = typeSyntax.Members.OfType<PropertyDeclarationSyntax>();
         foreach (var propertySyntax in propertySyntaxes)
         {
-            _propertyDeclarationParser.Parse(typeContext, propertySyntax, model, cancellationToken);
+            _propertyDeclarationParser.Parse(typeContext, propertySyntax, model, options, cancellationToken);
         }
 
-        _triviaCommentParser.Parse(typeContext, typeSyntax, model, cancellationToken);
+        _triviaCommentParser.Parse(typeContext, typeSyntax, model, options, cancellationToken);
 
-        _methodSyntaxParser.ParseMethodSyntax(typeSyntax, model, typeContext, cancellationToken);
+        _methodSyntaxParser.ParseMethodSyntax(typeSyntax, model, typeContext, options, cancellationToken);
     }
 }

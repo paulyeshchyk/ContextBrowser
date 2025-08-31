@@ -2,28 +2,36 @@
 
 public static class ContextInfoService
 {
-    public static bool AddToReferences<T>(T source, T callee)
+    public static bool AddToReferences<T>(T? source, T? callee)
         where T : IContextWithReferences<T>
     {
-        return source.References.Add(callee);
+        if (source == null)
+            return false;
+
+        if (callee == null)
+        {
+            return false;
+        }
+        if (callee?.ElementType != ContextInfoElementType.method)
+        {
+            return false;
+        }
+        _ = source.References.Add(callee);
+        return true;
     }
 
     public static bool AddToInvokedBy<T>(T caller, T callee)
         where T : IContextWithReferences<T>
     {
-        return callee.InvokedBy.Add(caller);
-    }
-
-    public static bool AddToReference<T>(T source, T callee)
-        where T : IContextWithReferences<T>
-    {
-        return source.References.Add(callee);
+        _ = callee.InvokedBy.Add(caller);
+        return true;
     }
 
     public static bool AddToProperties<T>(T source, T property)
         where T : IContextWithReferences<T>
     {
-        return source.Properties.Add(property);
+        _ = source.Properties.Add(property);
+        return true;
     }
 
     public static IEnumerable<ContextInfo> GetReferencesSortedByInvocation<T>(T source)

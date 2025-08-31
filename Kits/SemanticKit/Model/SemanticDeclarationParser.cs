@@ -3,6 +3,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
+using LoggerKit;
 using SemanticKit.Model.Options;
 
 namespace SemanticKit.Model;
@@ -12,39 +13,36 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
     where TContext : IContextWithReferences<TContext>
 {
     protected readonly ISemanticTreeModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper> _semanticModelBuilder;
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
     private readonly ISemanticSyntaxRouter<TContext> _router;
-    private readonly SemanticOptions _options;
-    private readonly ContextInfoCollector<TContext> _collector;
+    private readonly IContextCollector<TContext> _collector;
 
     public SemanticDeclarationParser(
         ISemanticTreeModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper> modelBuilder,
-        OnWriteLog? onWriteLog,
-        SemanticOptions options,
+        IAppLogger<AppLevel> logger,
         ISemanticSyntaxRouter<TContext> router,
-        ContextInfoCollector<TContext> collector)
+        IContextCollector<TContext> collector)
     {
         _semanticModelBuilder = modelBuilder;
-        _onWriteLog = onWriteLog;
-        _options = options;
+        _logger = logger;
         _router = router;
         _collector = collector;
     }
 
     // context: semantic, build
-    public IEnumerable<TContext> ParseFiles(IEnumerable<string> codeFiles, CancellationToken cancellationToken)
+    public IEnumerable<TContext> ParseFiles(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, "Parsing files: phase 1", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1", LogLevelNode.Start);
 
-        var compilationMap = _semanticModelBuilder.BuildCompilationMap(codeFiles, _options, cancellationToken);
+        var compilationMap = _semanticModelBuilder.BuildCompilationMap(codeFiles, options, cancellationToken);
         foreach (var mapItem in compilationMap)
         {
-            ParseDeclarations(_options, mapItem, cancellationToken);
+            ParseDeclarations(options, mapItem, cancellationToken);
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
         return _collector.GetAll();
     }
@@ -62,19 +60,19 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - {tree.FilePath}", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - {tree.FilePath}", LogLevelNode.Start);
 
         var availableSyntaxies = tree.GetAvailableSyntaxies(options, cancellationToken);
 
         if (availableSyntaxies.Any())
         {
-            _router.Route(availableSyntaxies, model, cancellationToken);
+            _router.Route(availableSyntaxies, model, options, cancellationToken);
         }
         else
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Model has no members: {tree.FilePath}");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Model has no members: {tree.FilePath}");
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ContextKit.Model;
 using RoslynKit.Phases.Syntax.Parsers;
+using SemanticKit.Model.Options;
 
 namespace ContextBrowser.Model;
 
@@ -12,9 +13,9 @@ public class InvocationFileParser : IFileParser
         _parser = parser;
     }
 
-    public IEnumerable<ContextInfo> ParseFiles(string[] filePaths, CancellationToken ct)
+    public IEnumerable<ContextInfo> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken ct)
     {
-        return _parser.ParseFiles(filePaths, ct);
+        return _parser.ParseFiles(filePaths, options, ct);
     }
 
     public void RenewContextInfoList(IEnumerable<ContextInfo> contextInfoList)

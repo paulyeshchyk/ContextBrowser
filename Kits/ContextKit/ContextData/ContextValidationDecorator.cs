@@ -25,7 +25,7 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
     {
         if (!(container != null && container is not null))
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, "Comment container is null");
+            _onWriteLog?.Invoke(AppLevel.R_Comments, LogLevel.Err, "Comment container is null");
             return;
         }
 
@@ -34,13 +34,13 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
         if (string.IsNullOrEmpty(container.Action))
         {
             container.Action = _contextClassifier.FakeAction;
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{container.Name}]: No action found");
+            _onWriteLog?.Invoke(AppLevel.R_Comments, LogLevel.Dbg, $"[{container.Name}]: No action found");
         }
 
         if (container.Domains.Count == 0)
         {
             container.Domains.Add(_contextClassifier.FakeDomain);
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"[{container.Name}]: No domains found");
+            _onWriteLog?.Invoke(AppLevel.R_Comments, LogLevel.Dbg, $"[{container.Name}]: No domains found");
         }
     }
 }

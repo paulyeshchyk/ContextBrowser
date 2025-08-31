@@ -2,6 +2,7 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Phases.Invocations;
 using SemanticKit.Model;
@@ -12,43 +13,41 @@ namespace RoslynKit.Phases.ContextInfoBuilder;
 public class RoslynInvocationReferenceBuilder<TContext>
     where TContext : ContextInfo, IContextWithReferences<TContext>
 {
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
     protected readonly IContextFactory<TContext> _factory;
     private readonly IInvocationSyntaxResolver _invocationSyntaxResolver;
-    private readonly SemanticOptions _options;
     private readonly IContextCollector<TContext> _collector;
     private readonly IInvocationLinker<TContext, InvocationExpressionSyntax> _invocationLinker;
     private readonly ISemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax> _referenceBuilderValidator;
 
-    public RoslynInvocationReferenceBuilder(OnWriteLog? onWriteLog, IContextFactory<TContext> factory, IInvocationSyntaxResolver invocationSyntaxResolver, SemanticOptions options, IContextCollector<TContext> collector)
+    public RoslynInvocationReferenceBuilder(IAppLogger<AppLevel> logger, IContextFactory<TContext> factory, IInvocationSyntaxResolver invocationSyntaxResolver, IContextCollector<TContext> collector)
     {
-        _onWriteLog = onWriteLog;
+        _logger = logger;
         _factory = factory;
-        _options = options;
         _collector = collector;
         _invocationSyntaxResolver = invocationSyntaxResolver;
 
-        var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _onWriteLog);
-        var methodContextInfoBuilder = new CSharpMethodContextInfoBuilder<TContext>(_collector, _factory, _onWriteLog);
-        var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(_collector, _onWriteLog, methodContextInfoBuilder, typeContextInfoBuilder);
-        _invocationLinker = new RoslynInvocationLinker<TContext>(linksInvocationBuilder, _onWriteLog, _invocationSyntaxResolver, _options);
-        _referenceBuilderValidator = new SemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax>(_onWriteLog);
+        var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _logger.WriteLog);
+        var methodContextInfoBuilder = new CSharpMethodContextInfoBuilder<TContext>(_collector, _factory, _logger.WriteLog);
+        var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(_collector, _logger.WriteLog, methodContextInfoBuilder, typeContextInfoBuilder);
+        _invocationLinker = new RoslynInvocationLinker<TContext>(linksInvocationBuilder, _logger.WriteLog, _invocationSyntaxResolver);
+        _referenceBuilderValidator = new SemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax>(_logger.WriteLog);
     }
 
     // context: roslyn, read
-    public void BuildReferences(TContext callerContext, CancellationToken cancellationToken)
+    public void BuildReferences(TContext callerContext, SemanticOptions options, CancellationToken cancellationToken)
     {
-        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, $"Building references for {callerContext.FullName}", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Building references for {callerContext.FullName}", LogLevelNode.Start);
 
         var validationResult = _referenceBuilderValidator.Validate(callerContext, _collector);
         if (validationResult != null)
         {
             var callerContextInfo = validationResult.CallerContextInfo;
-            var invocationList = validationResult.Invocations;
+            var invocationList = validationResult.Invocations.ToList();
 
-            _invocationLinker.Link(invocationList, callerContext, callerContextInfo, cancellationToken);
+            _invocationLinker.Link(invocationList, callerContext, callerContextInfo, options, cancellationToken);
         }
-        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
 }

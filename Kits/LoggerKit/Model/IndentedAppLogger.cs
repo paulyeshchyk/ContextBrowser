@@ -3,12 +3,6 @@ using ContextBrowserKit.Log.Options;
 
 namespace LoggerKit.Model;
 
-public static class IndentedAppLoggerHelpers1
-{
-    public static string SEndTag = "TreeEnd";
-    public static string SStartTag = "TreeStart";
-}
-
 // context: log, share
 public class IndentedAppLogger<T> : AppLogger<T>
     where T : notnull

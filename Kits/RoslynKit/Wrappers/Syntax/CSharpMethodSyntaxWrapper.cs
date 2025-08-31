@@ -2,11 +2,12 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
+using RoslynKit.Signature;
 using SemanticKit.Model;
 
 namespace RoslynKit.Wrappers.Syntax;
 
-public record CSharpMethodSyntaxWrapper : BaseSyntaxWrapper
+public record CSharpMethodSyntaxWrapper : ISyntaxWrapper
 {
     public string Name { get; set; }
 
@@ -25,6 +26,9 @@ public record CSharpMethodSyntaxWrapper : BaseSyntaxWrapper
     public string ShortName { get; set; }
 
     public bool IsValid { get; set; } = true;
+
+    public ICustomMethodSignature? Signature { get; set; }
+
 
     public CSharpMethodSyntaxWrapper(object symbol, MethodDeclarationSyntax syntax)
     {
@@ -45,7 +49,7 @@ public record CSharpMethodSyntaxWrapper : BaseSyntaxWrapper
         }
     }
 
-    public CSharpMethodSyntaxWrapper(BaseSyntaxWrapper wrapper)
+    public CSharpMethodSyntaxWrapper(ISyntaxWrapper wrapper)
     {
         Identifier = wrapper.Identifier;
         Name = wrapper.Name;
@@ -55,6 +59,20 @@ public record CSharpMethodSyntaxWrapper : BaseSyntaxWrapper
         Namespace = wrapper.Namespace;
         IsPartial = false;
         ShortName = wrapper.ShortName;
+        if (wrapper.Signature is not null)
+        {
+            Signature = new CSharpMethodSignature
+            (
+                ResultType: wrapper.Signature.ResultType,
+                Namespace: wrapper.Signature.Namespace,
+                ClassName: wrapper.Signature.ClassName,
+                MethodName: wrapper.Signature.MethodName,
+                Arguments: wrapper.Signature.Arguments,
+                Raw: wrapper.Signature.Raw
+            )
+            { };
+
+        }
     }
 
     public IContextInfo GetContextInfoDto()
@@ -68,10 +86,5 @@ public record CSharpMethodSyntaxWrapper : BaseSyntaxWrapper
              identifier: FullName,
               spanStart: SpanStart,
                 spanEnd: SpanEnd);
-    }
-
-    public string? ToDisplayString()
-    {
-        throw new NotImplementedException();
     }
 }

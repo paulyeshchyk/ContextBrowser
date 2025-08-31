@@ -19,7 +19,6 @@ public class CSharpInterfaceContextInfoBuilder<TContext> : BaseContextInfoBuilde
     public override ContextInfoElementType ElementType => ContextInfoElementType.@interface;
 }
 
-
 public class CSharpInterfaceSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<InterfaceDeclarationSyntax>, ISymbolInfo
 {
     private InterfaceDeclarationSyntax _syntaxNode => (InterfaceDeclarationSyntax)SyntaxNode;

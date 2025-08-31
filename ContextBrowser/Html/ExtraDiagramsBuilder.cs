@@ -5,17 +5,18 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using LoggerKit;
 using UmlKit.Exporter;
 
 namespace ContextBrowser.Samples.HtmlPages;
 
 // context:uml, build
-public static class ExtraDiagramsBuilder
+public static class PumlExtraDiagramsBuilder
 {
     // context:uml, build
-    public static void Build(IContextInfoDataset model, AppOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog = null)
+    public static void Build(IContextInfoDataset model, AppOptions options, IContextClassifier contextClassifier, IAppLogger<AppLevel> _logger)
     {
-        onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Cntx, "--- ExtraDiagramsBuilder.Build ---");
+        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "--- ExtraDiagramsBuilder.Build ---");
 
         //ContextMatrixUmlExporter.GenerateCsv(matrix, $"{theOutputPath}matrix.csv");
         //HeatmapExporter.GenerateHeatmapCsv(matrix, $"{theOutputPath}heatmap.csv", unclassifiedPriority);

@@ -1,27 +1,23 @@
-using ContextBrowserKit.Extensions;
-using ContextBrowserKit.Log;
-using ContextBrowserKit.Log.Options;
-using ContextBrowserKit.Options;
-using Microsoft.CodeAnalysis;
+
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Extensions;
 
-internal static class InvocationExpressionSyntaxExtensions
+internal static class CSharpExpressionSyntaxExtensionConverter
 {
     /// <summary>
-    /// Извлекает имя метода и имя владельца (если есть) из InvocationExpressionSyntax,
+    /// Извлекает имя метода и имя владельца (если есть) из ExpressionSyntax,
     /// работая только с синтаксическим деревом.
     /// </summary>
     /// <param name="invocationExpression">Синтаксический узел вызова метода.</param>
-    /// <returns>Кортеж с именем метода и именем владельца. Имя владельца может быть null.</returns>
-    public static CSharpInvocationSyntaxWrapper? GetMethodInfoFromSyntax(this InvocationExpressionSyntax invocationExpression, SemanticOptions options, OnWriteLog? onWriteLog)
+    /// <returns>Кортеж с именем namespace и полным именем владельца</returns>
+    public static (string?, bool) ConvertToMethodRawSignature(this ExpressionSyntax initialExpression, SemanticOptions options)
     {
-        var expression = invocationExpression.Expression;
         var nameParts = new List<string>();
         bool isPartial = false;
+
+        var expression = initialExpression;
 
         // Перебираем синтаксические узлы, чтобы собрать полное имя.
         while (expression != null)
@@ -37,31 +33,32 @@ internal static class InvocationExpressionSyntaxExtensions
                 nameParts.Add(identifierName.Identifier.Text);
                 break; // Достигли самой верхней части имени.
             }
+            else if (expression is MemberBindingExpressionSyntax memberBindingExpressionSyntax)
+            {
+                nameParts.Add("BIND");
+                nameParts.Add(expression.GetIdentifier());
+                break;
+            }
             else
             {
+                nameParts.Add(expression.GetIdentifier());
                 break; // Прерываем, если тип узла неизвестен.
             }
         }
 
         if (!nameParts.Any())
         {
-            onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Trace, $"Unknown invocation discovered\n {invocationExpression}");
             return default;
         }
 
         // Собираем имя в обратном порядке.
         nameParts.Reverse();
+
         string manualFullName = string.Join(".", nameParts);
 
         // В этом случае namespace и ownerName не могут быть надежно определены.
         string namespaceName = options.ExternalNamespaceName;
-
-        return new CSharpInvocationSyntaxWrapper(
-            isPartial: isPartial,
-            fullName: $"{namespaceName}.{manualFullName}",
-            shortName: manualFullName,
-            spanStart: invocationExpression.Span.Start,
-            spanEnd: invocationExpression.Span.End,
-            nameSpace: namespaceName);
+        var raw = $"{namespaceName}.{manualFullName}()";
+        return (raw, isPartial);
     }
 }

@@ -22,5 +22,5 @@ public interface ISymbolLookupHandler<TContext, TSemanticModel>
     /// </summary>
     /// <param name="symbolDto">Обертка над синтаксическим узлом вызова.</param>
     /// <returns>Найденный контекст или null, если обработчик не смог обработать запрос.</returns>
-    TContext? Handle(BaseSyntaxWrapper symbolDto);
+    TContext? Handle(ISyntaxWrapper symbolDto);
 }

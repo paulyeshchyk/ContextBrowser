@@ -16,7 +16,7 @@ public static partial class SequenceActivationStackManager
             return false;
         }
 
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Stack activate {destination}");
+        ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"Stack activate {destination}");
 
         if (ctx.Options.Activation.UseActivationCall)
         {
@@ -39,14 +39,14 @@ public static partial class SequenceActivationStackManager
             return TryPop(ctx, participant);
         }
 
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Err, $"Stack deactivate {participant} - incorrect or empty stack.");
+        ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Err, $"Stack deactivate {participant} - incorrect or empty stack.");
         return false;
     }
 
     internal static bool TryPush<T>(RenderContext<T> ctx, string destination)
         where T : IUmlParticipant
     {
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"TryPush {destination}");
+        ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"TryPush {destination}");
         ctx.ActivationStack.Push(destination);
         return true;
     }
@@ -54,7 +54,7 @@ public static partial class SequenceActivationStackManager
     internal static bool TryPop<T>(RenderContext<T> ctx, string participant)
         where T : IUmlParticipant
     {
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"TryPop {participant}");
+        ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"TryPop {participant}");
         var item = ctx.ActivationStack.Pop();
         ctx.Diagram.Deactivate(item);
         return true;

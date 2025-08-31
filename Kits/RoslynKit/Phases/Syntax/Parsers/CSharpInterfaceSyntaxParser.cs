@@ -5,6 +5,7 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Phases.ContextInfoBuilder;
 using SemanticKit.Model;
+using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
@@ -32,32 +33,32 @@ public class CSharpInterfaceSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 
     public override bool CanParse(object syntax) => syntax is InterfaceDeclarationSyntax;
 
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
+    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (syntax is not InterfaceDeclarationSyntax interfaceSyntax)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax is not InterfaceDeclarationSyntax");
+            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax is not InterfaceDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Parsing files: phase 1 - interface syntax");
+        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - interface syntax");
 
         var interfaceContext = _interfaceContextInfoBuilder.BuildContextInfo(default, interfaceSyntax, model, cancellationToken);
         if (interfaceContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, "Failed to build context for interface.");
+            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, "Failed to build context for interface.");
             return;
         }
 
         var propertySyntaxes = interfaceSyntax.Members.OfType<PropertyDeclarationSyntax>();
         foreach (var propertySyntax in propertySyntaxes)
         {
-            _propertyDeclarationParser.Parse(interfaceContext, propertySyntax, model, cancellationToken);
+            _propertyDeclarationParser.Parse(interfaceContext, propertySyntax, model, options, cancellationToken);
         }
 
-        _triviaCommentParser.Parse(interfaceContext, interfaceSyntax, model, cancellationToken);
+        _triviaCommentParser.Parse(interfaceContext, interfaceSyntax, model, options, cancellationToken);
 
         var methodSyntaxes = interfaceSyntax.Members.OfType<MethodDeclarationSyntax>();
 

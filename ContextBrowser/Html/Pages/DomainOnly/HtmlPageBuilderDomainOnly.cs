@@ -10,17 +10,18 @@ using ExporterKit.HtmlPageSamples;
 using ExporterKit.Puml;
 using HtmlKit.Builders.Core;
 using HtmlKit.Page;
+using LoggerKit;
 using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser.Samples.HtmlPages;
 
 // context: contextInfo, build, html
-public static class DomainOnlyPageBuilder
+public static class DomainOnlyHtmlPageBuilder
 {
     // context: contextInfo, build, html
-    public static void Build(IContextInfoDataset contextInfoDataset, AppOptions appOptions, OnWriteLogObject? onWriteLog = null)
+    public static void Build(IContextInfoDataset contextInfoDataset, AppOptions appOptions, IAppLogger<AppLevel> _logger)
     {
-        onWriteLog?.Invoke(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- DomainOnly.Build ---", LogLevelNode.None));
+        _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- DomainOnly.Build ---", LogLevelNode.None));
 
         var registrations = new List<IHtmlTabRegistration>
         {

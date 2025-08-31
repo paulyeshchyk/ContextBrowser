@@ -34,25 +34,25 @@ public class SymbolLookupHandlerMethod<TContext, TSemanticModel> : SymbolLookupH
     /// </summary>
     /// <param name="symbolDto">Обертка над синтаксическим узлом вызова.</param>
     /// <returns>Найденный контекст или null, если не найден.</returns>
-    public override TContext? Handle(BaseSyntaxWrapper symbolDto)
+    public override TContext? Handle(ISyntaxWrapper symbolDto)
     {
         if (!symbolDto.IsValid || symbolDto.FullName is not string fullName)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Trace, $"[MISS] Symbol is not IMethodSymbol: {symbolDto.FullName}");
+            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol is not IMethodSymbol: {symbolDto.FullName}");
             return base.Handle(symbolDto);
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Trace, $"[FALLBACK] Trying full signature: {fullName}");
+        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[FALLBACK] Trying full signature: {fullName}");
 
         if (!_collector.BySymbolDisplayName.TryGetValue(fullName, out var result))
         {
-            _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Trace, $"[MISS] Symbol exists but fallback lookup failed: {fullName}");
+            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol exists but fallback lookup failed: {fullName}");
 
             // Если не применимо или не найдено, передаем запрос следующему обработчику.
             return base.Handle(symbolDto);
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Trace, $"[HIT] Recovered callee via full symbol: {fullName}");
+        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[HIT] Recovered callee via full symbol: {fullName}");
         return result;
     }
 }

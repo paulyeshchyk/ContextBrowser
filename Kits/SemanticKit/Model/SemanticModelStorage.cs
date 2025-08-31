@@ -2,6 +2,7 @@ using ContextBrowserKit;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using LoggerKit;
 
 namespace SemanticKit.Model;
 
@@ -9,12 +10,13 @@ namespace SemanticKit.Model;
 public class SemanticModelStorage : ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper>
 {
     private readonly LRUCache<string, CompilationMap> _cache;
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
 
-    public SemanticModelStorage(int capacity, OnWriteLog? onWriteLog = null)
+    public SemanticModelStorage(IAppLogger<AppLevel> logger)
     {
+        int capacity = 0;
         _cache = new LRUCache<string, CompilationMap>(capacity);
-        _onWriteLog = onWriteLog;
+        _logger = logger;
     }
 
     public bool IsInfinite => _cache.IsInfinite;
@@ -55,7 +57,7 @@ public class SemanticModelStorage : ISemanticModelStorage<ISyntaxTreeWrapper, IS
 
         if (tree == null || string.IsNullOrWhiteSpace(filePath) || model == null && !_cache.TryGetValue(filePath, out _))
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Warn, "[WARN] SyntaxTree has no file path; skipping");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Warn, "[WARN] SyntaxTree has no file path; skipping");
             return false;
         }
 

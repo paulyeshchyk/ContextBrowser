@@ -37,7 +37,7 @@ public static partial class SequenceActivationManager
             return true;
         }
 
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Render CallerToStep1 transition [{from} -> {to}]:<{label}>");
+        ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"Render CallerToStep1 transition [{from} -> {to}]:<{label}>");
 
         var reason = ctx.Options.Debug ? $"CALLER CALLEE ACTIVATE [ {ctx.CalleeMethod} ]" : $"{ctx.CalleeMethod}";
 

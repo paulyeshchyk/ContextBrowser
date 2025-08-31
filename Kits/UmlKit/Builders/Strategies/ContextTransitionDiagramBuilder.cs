@@ -19,7 +19,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     public ContextTransitionDiagramBuilder(DiagramBuilderOptions options, IEnumerable<ITransitionBuilder> transitionBuilders, OnWriteLog? onWriteLog = null)
     {
         _options = options;
-        _transitionBuilders = transitionBuilders.Where(b => b.Direction == _options.Direction).ToList();
+        _transitionBuilders = transitionBuilders.Where(b => b.Direction == _options.DiagramDirection).ToList();
         _onWriteLog = onWriteLog;
         _cache = new ContextTransitionDiagramBuilderCache(onWriteLog);
     }

@@ -6,10 +6,12 @@ namespace ContextBrowserKit.Options;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AppLevel
 {
-    Roslyn,
-    R_Assembly,
-    R_Inv,
-    R_Parse,
+    App,
+    R_Symbol,
+    R_Syntax,
+    R_Dll,
+    R_Cntx,
+    R_Invocation,
     R_Comments,
     P_Tran,
     P_Bld,

@@ -1,6 +1,8 @@
+using SemanticKit.Model.Options;
+
 namespace SemanticKit.Model;
 
 public interface IInvocationSyntaxResolver
 {
-    BaseSyntaxWrapper? ResolveInvocationSymbol(object invocation, CancellationToken cancellationToken);
+    ISyntaxWrapper? ResolveInvocationSymbol(object invocation, SemanticOptions options, CancellationToken cancellationToken);
 }

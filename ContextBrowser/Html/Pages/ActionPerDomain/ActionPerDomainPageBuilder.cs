@@ -5,15 +5,16 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ExporterKit.Html;
-using HtmlKit.Page;
 using HtmlKit.Builders.Core;
+using HtmlKit.Page;
+using LoggerKit;
 
-public static partial class ActionPerDomainPageBuilder
+public static partial class ActionPerDomainHtmlPageBuilder
 {
     // context: html, build
-    public static void Build(IContextInfoDataset contextInfoDataset, AppOptions appOptions, OnWriteLogObject? onWriteLog = null)
+    public static void Build(IContextInfoDataset contextInfoDataset, AppOptions appOptions, IAppLogger<AppLevel> _logger)
     {
-        onWriteLog?.Invoke(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- ActionPerDomainPage.Build ---", LogLevelNode.None));
+        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "--- ActionPerDomainPage.Build ---", LogLevelNode.None);
 
         var registrations = new List<IHtmlTabRegistration>
         {

@@ -10,11 +10,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
-		<PackageReference Include="System.Management" Version="6.0.2" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\Kits\CommandlineKit\CommandlineKit.csproj" />
 		<ProjectReference Include="..\Kits\ContextBrowserKit\ContextBrowserKit.csproj" />
 		<ProjectReference Include="..\Kits\ContextKit\ContextKit.csproj" />
@@ -39,6 +34,11 @@
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
 	</ItemGroup>
 
 </Project>

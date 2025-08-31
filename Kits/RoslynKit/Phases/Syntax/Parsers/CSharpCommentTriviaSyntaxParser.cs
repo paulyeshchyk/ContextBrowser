@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SemanticKit.Model;
+using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
@@ -20,7 +21,7 @@ public class CSharpCommentTriviaSyntaxParser<TContext> : CSharpCommentSyntaxPars
     }
 
     // context: comment, build
-    public override void Parse(TContext? parent, object node, ISemanticModelWrapper model, CancellationToken cancellationToken)
+    public override void Parse(TContext? parent, object node, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (node is not MemberDeclarationSyntax memberDeclaration)
         {

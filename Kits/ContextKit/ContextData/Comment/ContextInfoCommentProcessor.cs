@@ -8,9 +8,10 @@ public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
 {
     private readonly List<ICommentParsingStrategy<T>> _strategies = new();
 
-    public ContextInfoCommentProcessor(IEnumerable<ICommentParsingStrategy<T>> strategies)
+    public ContextInfoCommentProcessor(ICommentParsingStrategyFactory<T> factory, IContextClassifierBuilder contextClassifierBuilder)
     {
-        _strategies.AddRange(strategies);
+        var contextClassifier = contextClassifierBuilder.Build();
+        _strategies.AddRange(factory.CreateStrategies(contextClassifier));
     }
 
     // context: contextInfo, comment, build

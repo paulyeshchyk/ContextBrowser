@@ -12,7 +12,7 @@ public static partial class SequenceParticipantsManager
     internal static void AddParticipants<T>(RenderContext<T> ctx, UmlParticipantKeywordsSet defaultKeywords)
         where T : IUmlParticipant
     {
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Adding participants for context: {ctx.RunContext}", LogLevelNode.Start);
+        ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"Adding participants for context: {ctx.RunContext}", LogLevelNode.Start);
 
         var callerName = ctx.Transition.CallerClassName.AlphanumericOnly();
         var calleeName = ctx.Transition.CalleeClassName.AlphanumericOnly();
@@ -36,7 +36,7 @@ public static partial class SequenceParticipantsManager
             AddParticipant(ctx, defaultKeywords.Control, runContextName);
         }
 
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     private static void AddParticipantIfApplicable<T>(string className, string runContextName, RenderContext<T> ctx, UmlParticipantKeywordsSet defaultKeywords)
@@ -55,7 +55,7 @@ public static partial class SequenceParticipantsManager
     private static void AddParticipant<T>(RenderContext<T> ctx, UmlParticipantKeyword keyword, string p)
         where T : IUmlParticipant
     {
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Adding participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");
+        ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"Adding participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");
         ctx.Diagram.AddParticipant(p, keyword: keyword);
     }
 }

@@ -4,6 +4,7 @@ using ContextKit.Stategies;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SemanticKit.Model;
+using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
@@ -21,7 +22,7 @@ public abstract class CSharpCommentSyntaxParser<TContext> : ISyntaxParser<TConte
         _onWriteLog = onWriteLog;
     }
 
-    public abstract void Parse(TContext? parent, object node, ISemanticModelWrapper model, CancellationToken cancellationToken);
+    public abstract void Parse(TContext? parent, object node, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
 
     internal string ExtractComment(SyntaxTrivia trivia)
     {

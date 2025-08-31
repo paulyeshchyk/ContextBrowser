@@ -8,9 +8,9 @@ public partial record DiagramBuilderOptions
 {
     public bool Debug { get; set; }
 
-    public DiagramDetailLevel DetailLevel { get; set; }
+    public DiagramDetailLevel DiagramDetailLevel { get; set; }
 
-    public DiagramDirection Direction { get; set; }
+    public DiagramDirection DiagramDirection { get; set; }
 
     public DiagramActivationOptions Activation { get; set; }
 
@@ -20,29 +20,25 @@ public partial record DiagramBuilderOptions
 
     public DiagramIndicationOption Indication { get; set; }
 
-    public DiagramBuilderTreeMode TreeMode { get; set; }
-
     public DiagramBuilderKeys DiagramType { get; set; }
 
     public DiagramBuilderOptions(
         bool debug,
-        DiagramDetailLevel detailLevel,
-        DiagramDirection direction,
+        DiagramDetailLevel diagramDetailLevel,
+        DiagramDirection diagramDirection,
+        DiagramBuilderKeys diagramType,
         DiagramActivationOptions activation,
         DiagramTransitionOptions transitionOptions,
         DiagramInvocationOption invocationOption,
-        DiagramIndicationOption indication,
-        DiagramBuilderTreeMode treeMode,
-        DiagramBuilderKeys diagramType)
+        DiagramIndicationOption indication)
     {
-        DetailLevel = detailLevel;
-        Direction = direction;
+        DiagramDetailLevel = diagramDetailLevel;
+        DiagramDirection = diagramDirection;
+        DiagramType = diagramType;
         Activation = activation;
         CalleeTransitionOptions = transitionOptions;
         InvocationOptions = invocationOption;
         Indication = indication;
-        TreeMode = treeMode;
-        DiagramType = diagramType;
         Debug = debug;
     }
 }

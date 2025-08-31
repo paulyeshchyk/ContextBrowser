@@ -32,8 +32,8 @@ public static class CSharpSymbolLoader
         }
         catch (Exception ex)
         {
-            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Exception, $"[CSharpSymbolLoader] {ex.Message}");
-            onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Trace, $"{syntax}");
+            onWriteLog?.Invoke(AppLevel.R_Symbol, LogLevel.Exception, $"[CSharpSymbolLoader] {ex.Message}");
+            onWriteLog?.Invoke(AppLevel.R_Symbol, LogLevel.Trace, $"{syntax}");
             return default;
         }
     }

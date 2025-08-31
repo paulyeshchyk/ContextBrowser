@@ -5,9 +5,21 @@ using LoggerKit.Model;
 
 namespace LoggerKit;
 
-// context: log, build
-public class AppLogger<T>
+// context: log, share
+public interface IAppLogger<T>
     where T : notnull
+{
+    void Configure(LogConfiguration<T, LogLevel> configuration);
+
+    // context: log, share
+    void WriteLog(T appLevel, LogLevel logLevel, string message, LogLevelNode logLevelNode = LogLevelNode.None);
+
+    // context: log, share
+    void WriteLogObject(T appLevel, LogObject logObject);
+}
+
+// context: log, share
+public class AppLogger<T> : IAppLogger<T> where T : notnull
 {
     private readonly AppLoggerLevelStore<T> _appLogLevelStorage;
     protected readonly ILogWriter _writer;
@@ -16,6 +28,11 @@ public class AppLogger<T>
     {
         _appLogLevelStorage = store;
         _writer = writer;
+    }
+
+    public void Configure(LogConfiguration<T, LogLevel> configuration)
+    {
+        _appLogLevelStorage.SetLevels(configuration.LogLevels);
     }
 
     // context: log, build
@@ -37,7 +54,7 @@ public class AppLogger<T>
         return requested <= limitedByAppLevel;
     }
 
-    // context: log, build
+    // context: log, share
     // parsing: error
     public void WriteLog(T appLevel, LogLevel logLevel, string message, LogLevelNode logLevelNode = LogLevelNode.None)
     {
@@ -45,7 +62,7 @@ public class AppLogger<T>
         WriteLogObject(appLevel, logObject);
     }
 
-    // context: log, build
+    // context: log, share
     // parsing: error
     public void WriteLogObject(T appLevel, LogObject logObject)
     {
@@ -57,7 +74,7 @@ public class AppLogger<T>
         }
     }
 
-    // context: log, build
+    // context: log, share
     protected virtual void TheWriteFunc(T appLevel, LogObject logObject)
     {
         var formattedMessage = FormattedText(appLevel, logObject.LogLevel, logObject.Message ?? string.Empty);

@@ -5,6 +5,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Matrix;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.TransitionFactory;
 using UmlKit.DiagramGenerator;
@@ -15,12 +16,12 @@ using UmlKit.Model;
 namespace ExporterKit.HtmlPageSamples;
 
 // контекст: generator, state, action
-public class UmlStateActionDiagramCompiler : DiagramGeneratorBase
+public class UmlStateActionDiagramCompiler : DiagramCompilerBase
 {
-    public UmlStateActionDiagramCompiler(IContextInfoData matrix, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options, OnWriteLog? onWriteLog)
-        : base(matrix, contextClassifier, exportOptions, options, onWriteLog) { }
+    public UmlStateActionDiagramCompiler(IContextInfoData matrix, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options, IAppLogger<AppLevel> logger)
+        : base(matrix, contextClassifier, exportOptions, options, logger) { }
 
-    public override Dictionary<string, bool> Generate(List<ContextInfo> allContexts)
+    public override Dictionary<string, bool> Compile(List<ContextInfo> allContexts)
     {
         var renderedCache = new Dictionary<string, bool>();
         var actions = _matrix.GetActions().Distinct();
@@ -32,22 +33,21 @@ public class UmlStateActionDiagramCompiler : DiagramGeneratorBase
         return renderedCache;
     }
 
-
     /// <summary>
     /// Компилирует диаграмму состояний.
     /// </summary>
     protected bool GenerateSingle(IDiagramCompileOptions options, List<ContextInfo> allContexts)
     {
-        _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling State {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling State {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
         var _factory = new UmlTransitionStateFactory();
-        var renderer = new SequenceDiagramRendererPlain<UmlState>(_onWriteLog, _options, _factory);
-        var _generator = new SequenceDiagramGenerator<UmlState>(renderer, _options, _onWriteLog, _factory);
-        var bf2 = ContextDiagramFactory.Custom(_options.DiagramType, _options, _onWriteLog);
+        var renderer = new SequenceDiagramRendererPlain<UmlState>(_logger, _options, _factory);
+        var _generator = new SequenceDiagramGenerator<UmlState>(renderer, _options, _logger, _factory);
+        var diagramBuilder = ContextDiagramBuildersFactory.BuilderForType(_options.DiagramType, _options, _logger.WriteLog);
 
-        var compiler = new UmlStateDiagramCompiler(_contextClassifier, _options, bf2, _exportOptions, _generator, _onWriteLog);
+        var compiler = new UmlStateDiagramCompiler(_contextClassifier, _options, diagramBuilder, _exportOptions, _generator, _logger.WriteLog);
         var rendered = compiler.CompileAction(options.MetaItem, options.DiagramId, options.OutputFileName, allContexts);
 
-        _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
         return rendered;
     }
 }

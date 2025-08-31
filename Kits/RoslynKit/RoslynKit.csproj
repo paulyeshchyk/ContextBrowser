@@ -9,8 +9,11 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
 
+	<PropertyGroup>
+	  <RuntimeFrameworkVersion>6.0.417</RuntimeFrameworkVersion>
+	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
 	</ItemGroup>
 
 	<ItemGroup>

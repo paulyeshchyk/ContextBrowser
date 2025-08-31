@@ -21,7 +21,7 @@ public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCo
 }
 
 
-public class CSharpEnumSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<EnumDeclarationSyntax>//, ISymbolInfo
+public class CSharpEnumSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<EnumDeclarationSyntax>
 {
     private MemberDeclarationSyntax _syntaxNode => (EnumDeclarationSyntax)SyntaxNode;
 

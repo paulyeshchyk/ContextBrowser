@@ -1,20 +1,21 @@
 ﻿using ContextKit.Model;
 using SemanticKit.Model;
+using SemanticKit.Model.Options;
 
 namespace ContextBrowser.Model;
 
 public class SemanticDeclarationFileParser : IFileParser
 {
-    private readonly SemanticDeclarationParser<ContextInfo> _parser;
+    private readonly ISemanticDeclarationParser<ContextInfo> _parser;
 
-    public SemanticDeclarationFileParser(SemanticDeclarationParser<ContextInfo> parser)
+    public SemanticDeclarationFileParser(ISemanticDeclarationParser<ContextInfo> parser)
     {
         _parser = parser;
     }
 
-    public IEnumerable<ContextInfo> ParseFiles(string[] filePaths, CancellationToken ct)
+    public IEnumerable<ContextInfo> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken ct)
     {
-        return _parser.ParseFiles(filePaths, ct);
+        return _parser.ParseFiles(filePaths, options, ct);
     }
 
     public void RenewContextInfoList(IEnumerable<ContextInfo> contextInfoList)

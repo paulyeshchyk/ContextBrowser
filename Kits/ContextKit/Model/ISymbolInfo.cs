@@ -14,7 +14,7 @@ public interface ISymbolInfo
 
     object? GetSyntax();
 
-    void SetSyntax(object syntax);
+    void SetSyntax(object? syntax);
 }
 
 public interface ISyntaxNodeWrapper : ISpanInfo

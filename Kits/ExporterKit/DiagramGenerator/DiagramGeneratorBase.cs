@@ -5,6 +5,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Matrix;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.TransitionFactory;
 using UmlKit.DiagramGenerator;
@@ -15,23 +16,23 @@ using UmlKit.Model;
 namespace ExporterKit.HtmlPageSamples;
 
 // контекст: abstract, base, generator
-public abstract class DiagramGeneratorBase
+public abstract class DiagramCompilerBase
 {
     protected readonly IContextClassifier _contextClassifier;
     protected readonly ExportOptions _exportOptions;
     protected readonly DiagramBuilderOptions _options;
-    protected readonly OnWriteLog? _onWriteLog;
+    protected readonly IAppLogger<AppLevel> _logger;
     protected readonly IContextInfoData _matrix;
 
-    public abstract Dictionary<string, bool> Generate(List<ContextInfo> allContexts);
+    public abstract Dictionary<string, bool> Compile(List<ContextInfo> allContexts);
 
-    protected DiagramGeneratorBase(IContextInfoData matrix, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options, OnWriteLog? onWriteLog)
+    protected DiagramCompilerBase(IContextInfoData matrix, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options, IAppLogger<AppLevel> logger)
     {
         _matrix = matrix;
         _contextClassifier = contextClassifier;
         _exportOptions = exportOptions;
         _options = options;
-        _onWriteLog = onWriteLog;
+        _logger = logger;
     }
 
 }

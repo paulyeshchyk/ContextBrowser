@@ -1,6 +1,7 @@
 ﻿using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.Model;
 using UmlKit.DiagramGenerator.Renderer;
@@ -13,15 +14,15 @@ namespace UmlKit.DiagramGenerator;
 public class SequenceDiagramGenerator<P>
         where P : IUmlParticipant
 {
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
     private readonly DiagramBuilderOptions _options;
     private readonly IUmlTransitionFactory<P> _factory;
     private readonly ISequenceDiagramRenderer<P> _renderer;
 
-    public SequenceDiagramGenerator(ISequenceDiagramRenderer<P> renderer, DiagramBuilderOptions options, OnWriteLog? onWriteLog, IUmlTransitionFactory<P> factory)
+    public SequenceDiagramGenerator(ISequenceDiagramRenderer<P> renderer, DiagramBuilderOptions options, IAppLogger<AppLevel> logger, IUmlTransitionFactory<P> factory)
     {
         _options = options;
-        _onWriteLog = onWriteLog;
+        _logger = logger;
         _factory = factory;
         _renderer = renderer;
     }
@@ -30,15 +31,15 @@ public class SequenceDiagramGenerator<P>
     {
         if (allTransitions == null || !allTransitions.HasTransitions())
         {
-            _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Warn, $"No transitions provided for [{domain}]");
+            _logger.WriteLog(AppLevel.P_Rnd, LogLevel.Warn, $"No transitions provided for [{domain}]");
             return false;
         }
 
-        _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, $"Rendering Diagram transitions for [{domain}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Rnd, LogLevel.Dbg, $"Rendering Diagram transitions for [{domain}]", LogLevelNode.Start);
 
         _renderer.Render(diagram, allTransitions);
 
-        _onWriteLog?.Invoke(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return true;
     }
 }

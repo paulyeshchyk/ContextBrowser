@@ -1,6 +1,7 @@
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using RoslynKit.Wrappers.Meta;
@@ -12,26 +13,24 @@ namespace RoslynKit.Assembly;
 // context: roslyn, build
 public class RoslynCompilationBuilder : ICompilationBuilder
 {
-    private readonly SemanticOptions _options;
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
 
-    public RoslynCompilationBuilder(SemanticOptions options, OnWriteLog? onWriteLog)
+    public RoslynCompilationBuilder(IAppLogger<AppLevel> logger)
     {
-        _options = options;
-        _onWriteLog = onWriteLog;
+        _logger = logger;
     }
 
     // context: roslyn, build
-    public SemanticCompilationMap BuildCompilationMap(IEnumerable<string> codeFiles, CancellationToken cancellationToken = default)
+    public SemanticCompilationMap BuildCompilationMap(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken = default)
     {
         // 1. Читаем все файлы и создаём деревья с путями
         var syntaxTrees = codeFiles
-            .Select(filePath => CSharpSyntaxTree.ParseText(PsoudoCodeInject(filePath), path: filePath, cancellationToken: cancellationToken))
+            .Select(filePath => CSharpSyntaxTree.ParseText(PsoudoCodeInject(options, filePath), path: filePath, cancellationToken: cancellationToken))
             .Select(t => new RoslynSyntaxTreeWrapper(t))
             .ToList();
 
         // 2. Создаём единый Compilation
-        var compilation = BuildCompilation(syntaxTrees, _options.CustomAssembliesPaths);
+        var compilation = BuildCompilation(options, syntaxTrees, options.CustomAssembliesPaths);
 
         // 3. Формируем модель для каждого дерева
         var result = new SemanticCompilationMap();
@@ -46,9 +45,9 @@ public class RoslynCompilationBuilder : ICompilationBuilder
     }
 
     // context: roslyn, build
-    public ICompilationWrapper BuildCompilation(IEnumerable<ISyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name = "Parser")
+    public ICompilationWrapper BuildCompilation(SemanticOptions options, IEnumerable<ISyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name = "Parser")
     {
-        var referencesToLoad = RoslynAssemblyLoader.Fetch(_options.SemanticFilters, _onWriteLog);
+        var referencesToLoad = RoslynAssemblyFetcher.Fetch(options.SemanticFilters, _logger.WriteLog);
 
         var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable);
         var compilation = CSharpCompilation.Create(name, options: compilationOptions)
@@ -58,26 +57,26 @@ public class RoslynCompilationBuilder : ICompilationBuilder
         var references = compilation.References;
         foreach (var reference in references)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Assembly, LogLevel.Trace, $"Loaded reference: {reference.Display}");
+            _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Loaded reference: {reference.Display}");
         }
 
         var diagnostics = compilation.GetDiagnostics();
         var diagnosticErrors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
         foreach (var diagnostic in diagnosticErrors)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Assembly, LogLevel.Err, $"Diagnostics: {diagnostic}");
+            _logger.WriteLog(AppLevel.R_Dll, LogLevel.Err, $"Diagnostics: {diagnostic}");
         }
 
         var diagnosticWarnings = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning);
         foreach (var diagnostic in diagnosticWarnings)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Assembly, LogLevel.Warn, $"Diagnostics: {diagnostic}");
+            _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Diagnostics: {diagnostic}");
         }
 
         return new RoslynCompilationWrapper(compilation);
     }
 
-    private string PsoudoCodeInject(string filePath)
+    private string PsoudoCodeInject(SemanticOptions _options, string filePath)
     {
         var code = File.ReadAllText(filePath);
         if (!_options.IncludePseudoCode)

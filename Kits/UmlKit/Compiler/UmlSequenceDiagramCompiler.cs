@@ -3,6 +3,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.TransitionFactory;
 using UmlKit.DiagramGenerator;
@@ -21,7 +22,7 @@ public class UmlSequenceDiagramCompiler
     // Свойства класса, инициализируемые в конструкторе
     private readonly IContextClassifier _classifier;
     private readonly ExportOptions _exportOptions;
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
     private readonly DiagramBuilderOptions _options;
     private readonly IContextDiagramBuilder _diagramBuilder;
 
@@ -36,13 +37,13 @@ public class UmlSequenceDiagramCompiler
     public UmlSequenceDiagramCompiler(
         IContextClassifier classifier,
         ExportOptions exportOptions,
-        OnWriteLog? onWriteLog,
+        IAppLogger<AppLevel> logger,
         DiagramBuilderOptions options,
         IContextDiagramBuilder diagramBuilder)
     {
         _classifier = classifier;
         _exportOptions = exportOptions;
-        _onWriteLog = onWriteLog;
+        _logger = logger;
         _options = options;
         _diagramBuilder = diagramBuilder;
     }
@@ -59,7 +60,7 @@ public class UmlSequenceDiagramCompiler
     /// <returns>Возвращает true, если рендеринг был успешным, иначе false.</returns>
     public bool Compile(string metaItem, FetchType fetchType, string diagramId, string title, string outputFileName, List<ContextInfo> contextItems)
     {
-        _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile sequence for [{metaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile sequence for [{metaItem}]", LogLevelNode.Start);
 
         var diagram = new UmlDiagramSequence(_options, diagramId: diagramId);
         diagram.SetTitle(title);
@@ -68,8 +69,8 @@ public class UmlSequenceDiagramCompiler
         var transitions = _diagramBuilder.Build(metaItem, fetchType, contextItems, _classifier);
 
         var factory = new UmlTransitionParticipantFactory();
-        var renderer = new SequenceDiagramRendererPlain<UmlParticipant>(_onWriteLog, _options, factory);
-        var generator = new SequenceDiagramGenerator<UmlParticipant>(renderer, _options, _onWriteLog, factory);
+        var renderer = new SequenceDiagramRendererPlain<UmlParticipant>(_logger, _options, factory);
+        var generator = new SequenceDiagramGenerator<UmlParticipant>(renderer, _options, _logger, factory);
         var result = generator.Generate(diagram, transitions, metaItem);
 
         if (result)
@@ -78,7 +79,7 @@ public class UmlSequenceDiagramCompiler
             diagram.WriteToFile(path);
         }
 
-        _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return result;
     }
 }

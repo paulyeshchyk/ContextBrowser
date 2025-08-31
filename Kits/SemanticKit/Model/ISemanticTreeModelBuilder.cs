@@ -7,12 +7,6 @@ public interface ISemanticTreeModelBuilder<TSyntaxTree, TSemanticModel>
     where TSyntaxTree : notnull
     where TSemanticModel : notnull
 {
-    // context: semantic, model
-    public ISemanticModelStorage<TSyntaxTree, TSemanticModel> SemanticTreeModelStorage { get; }
-
-    // context: semantic, model
-    public ISyntaxTreeWrapperBuilder SyntaxTreeWrapperBuilder { get; }
-
     // context: semantic, build
     public SemanticCompilationView BuildCompilationView(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken);
 

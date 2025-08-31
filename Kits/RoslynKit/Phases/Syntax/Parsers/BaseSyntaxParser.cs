@@ -1,6 +1,7 @@
 using ContextBrowserKit.Log;
 using ContextKit.Model;
 using SemanticKit.Model;
+using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
@@ -16,5 +17,5 @@ public abstract class BaseSyntaxParser<TContext> : ISyntaxParser<TContext>
 
     public abstract bool CanParse(object syntax);
 
-    public abstract void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken);
+    public abstract void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
 }

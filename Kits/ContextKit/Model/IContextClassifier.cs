@@ -55,3 +55,8 @@ public interface IContextClassifier
 
     IEnumerable<string> GetCombinedVerbs(IEnumerable<string> verbs);
 }
+
+public interface IContextClassifierBuilder
+{
+    IContextClassifier Build();
+}

@@ -3,6 +3,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using SemanticKit.Model;
+using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax;
 
@@ -18,11 +19,11 @@ public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
         _parsers = parsers;
     }
 
-    public void Route(IEnumerable<object> availableSyntaxies, ISemanticModelWrapper model, CancellationToken cancellationToken)
+    public void Route(IEnumerable<object> availableSyntaxies, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Routing syntaxies - ({availableSyntaxies.Count()})", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Routing syntaxies - ({availableSyntaxies.Count()})", LogLevelNode.Start);
 
         foreach (var item in availableSyntaxies)
         {
@@ -30,13 +31,13 @@ public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
 
             if (parser == null)
             {
-                _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS]: No parser found for syntax type: {item}");
+                _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"[MISS]: No parser found for syntax type: {item}");
                 continue;
             }
 
-            parser.Parse(default, item, model, cancellationToken);
+            parser.Parse(default, item, model, options, cancellationToken);
         }
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 }

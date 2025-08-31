@@ -1,4 +1,6 @@
 ﻿using ContextBrowserKit.Log;
+using ContextBrowserKit.Options;
+using LoggerKit;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
@@ -16,7 +18,7 @@ public sealed class RenderContext<T>
 
     public RenderContextActivationStack ActivationStack { get; }
 
-    public OnWriteLog? Log { get; }
+    public IAppLogger<AppLevel> Logger { get; }
 
     public string Caller => Transition.CallerClassName;
 
@@ -30,12 +32,12 @@ public sealed class RenderContext<T>
 
     public string RunContextOrCallee => !string.IsNullOrWhiteSpace(RunContext) ? RunContext : Callee;
 
-    public RenderContext(UmlTransitionDto t, UmlDiagram<T> diagram, DiagramBuilderOptions options, RenderContextActivationStack activationStack, OnWriteLog? log)
+    public RenderContext(UmlTransitionDto t, UmlDiagram<T> diagram, DiagramBuilderOptions options, RenderContextActivationStack activationStack, IAppLogger<AppLevel> logger)
     {
         Transition = t;
         Diagram = diagram;
         Options = options;
         ActivationStack = activationStack;
-        Log = log;
+        Logger = logger;
     }
 }

@@ -1,24 +1,24 @@
-﻿using ContextBrowserKit.Log;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
+using ContextBrowserKit.Log;
 using UmlKit.Builders.Strategies;
 using UmlKit.Builders.TransitionDirection;
 using UmlKit.Infrastructure.Options;
 
 namespace UmlKit.Builders;
 
-public static class ContextDiagramFactory
+public static class ContextDiagramBuildersFactory
 {
     public static IEnumerable<string> AvailableNames => _builderFactories.Keys;
 
     private static readonly ConcurrentDictionary<string, IContextDiagramBuilder> _builderInstances = new(StringComparer.OrdinalIgnoreCase);
 
-    public static IContextDiagramBuilder Custom(DiagramBuilderKeys key, DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(key, options, onWriteLog);
+    public static IContextDiagramBuilder BuilderForType(DiagramBuilderKeys key, DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(key, options, onWriteLog);
 
-    public static IContextDiagramBuilder Transition(DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(DiagramBuilderKeys.Transition, options, onWriteLog);
+    public static IContextDiagramBuilder TransitionBuilder(DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(DiagramBuilderKeys.Transition, options, onWriteLog);
 
-    public static IContextDiagramBuilder Dependencies(DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(DiagramBuilderKeys.Dependencies, options, onWriteLog);
+    public static IContextDiagramBuilder DependenciesBuilder(DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(DiagramBuilderKeys.Dependencies, options, onWriteLog);
 
-    public static IContextDiagramBuilder MethodsOnly(DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(DiagramBuilderKeys.MethodFlow, options, onWriteLog);
+    public static IContextDiagramBuilder MethodsOnlyBuilder(DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(DiagramBuilderKeys.MethodFlow, options, onWriteLog);
 
     private static readonly Dictionary<string, Func<DiagramBuilderOptions, OnWriteLog?, IContextDiagramBuilder>> _builderFactories = new(StringComparer.OrdinalIgnoreCase);
 
@@ -28,7 +28,7 @@ public static class ContextDiagramFactory
             new BiDirectionalTransitionBuilder(onWriteLog),
         };
 
-    static ContextDiagramFactory()
+    static ContextDiagramBuildersFactory()
     {
         RegisterBuilder(DiagramBuilderKeys.Transition, (options, onWriteLog) => new ContextTransitionDiagramBuilder(options, DefaultDirectionBuilders(onWriteLog), onWriteLog));
         RegisterBuilder(DiagramBuilderKeys.MethodFlow, (options, onWriteLog) => new MethodFlowDiagramBuilder());

@@ -1,7 +1,7 @@
-﻿using ContextBrowser.Servers;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using ContextBrowser.Servers;
 
-namespace ContextBrowser.ContextCommentsParser;
+namespace ContextBrowser.Services;
 
 public static class CustomEnvironment
 {

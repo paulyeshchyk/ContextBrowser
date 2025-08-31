@@ -29,20 +29,22 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
     }
 
     // context: roslyn, update
-    public TContext? LinkInvocation(TContext callerContextInfo, BaseSyntaxWrapper symbolDto, SemanticOptions options)
+    public TContext? LinkInvocation(TContext callerContextInfo, ISyntaxWrapper symbolDto, SemanticOptions options)
     {
-        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Dbg, $"Linking invocation caller: [{callerContextInfo.FullName}]]", LogLevelNode.Start);
+        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"Linking invocation caller: [{callerContextInfo.FullName}]]", LogLevelNode.Start);
         var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, symbolDto, options);
         if (calleeContextInfo != null)
         {
             AddReferences(callerContextInfo, calleeContextInfo);
             AddInvokedBy(callerContextInfo, calleeContextInfo);
         }
-
-        var message = (calleeContextInfo != null)
-            ? $"[DONE] Linking invocation caller: [{callerContextInfo.FullName}] with:  [{symbolDto.FullName}]"
-            : $"[FAIL] Linking invocation caller: [{callerContextInfo.FullName}] with:  [{symbolDto.FullName}]";
-        _onWriteLog?.Invoke(AppLevel.R_Inv, (calleeContextInfo != null) ? LogLevel.Dbg : LogLevel.Err, message, LogLevelNode.End);
+        else
+        {
+            var message = (calleeContextInfo != null)
+                ? $"[DONE] Linking invocation caller: [{callerContextInfo.FullName}] with:  [{symbolDto.FullName}]"
+                : $"[FAIL] Linking invocation caller: [{callerContextInfo.FullName}] with:  [{symbolDto.FullName}]";
+            _onWriteLog?.Invoke(AppLevel.R_Cntx, (calleeContextInfo != null) ? LogLevel.Dbg : LogLevel.Err, message, LogLevelNode.End);
+        }
 
         return calleeContextInfo;
     }
@@ -50,26 +52,33 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
     private void AddInvokedBy(TContext callerContextInfo, TContext calleeContextInfo)
     {
         var addedInvokedBy = ContextInfoService.AddToInvokedBy(callerContextInfo, calleeContextInfo);
+
         var message = addedInvokedBy
             ? $"[DONE] Adding invokedBy for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]"
             : $"[SKIP] Adding invokedBy for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]";
-        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Trace, message);
+        var level = addedInvokedBy
+            ? LogLevel.Trace
+            : LogLevel.Err;
+        _onWriteLog?.Invoke(AppLevel.R_Cntx, level, message);
     }
 
     private void AddReferences(TContext callerContextInfo, TContext calleeContextInfo)
     {
-        var addedReference = ContextInfoService.AddToReference(callerContextInfo, calleeContextInfo);
+        var addedReference = ContextInfoService.AddToReferences(callerContextInfo, calleeContextInfo);
+
         var message = (addedReference)
             ? $"[DONE] Adding reference for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]"
             : $"[SKIP] Adding reference for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]";
-
-        _onWriteLog?.Invoke(AppLevel.R_Inv, LogLevel.Trace, message);
+        var level = addedReference
+            ? LogLevel.Trace
+            : LogLevel.Err;
+        _onWriteLog?.Invoke(AppLevel.R_Cntx, level, message);
     }
 
     // Класс: RoslynPhaseParserInvocationLinksBuilder<TContext>
-    private TContext? FindOrCreateCalleeNode(TContext callerContextInfo, BaseSyntaxWrapper symbolDto, SemanticOptions options)
+    private TContext? FindOrCreateCalleeNode(TContext callerContextInfo, ISyntaxWrapper symbolDto, SemanticOptions options)
     {
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Dbg, $"Looking for callee by symbol [{symbolDto.FullName}]");
+        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"Looking for callee by symbol [{symbolDto.FullName}]");
 
         var fullNameHandler = new SymbolLookupHandlerFullName<TContext, ISemanticModelWrapper>(_collector, _onWriteLog);
         var methodSymbolHandler = new SymbolLookupHandlerMethod<TContext, ISemanticModelWrapper>(_collector, _onWriteLog);

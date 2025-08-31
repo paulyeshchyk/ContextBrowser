@@ -41,7 +41,7 @@ public abstract class SymbolLookupHandler<TContext, TSemanticModel> : ISymbolLoo
     /// </summary>
     /// <param name="symbolDto">Обертка над синтаксическим узлом вызова.</param>
     /// <returns>Найденный контекст или null.</returns>
-    public virtual TContext? Handle(BaseSyntaxWrapper symbolDto)
+    public virtual TContext? Handle(ISyntaxWrapper symbolDto)
     {
         return _nextHandler?.Handle(symbolDto);
     }

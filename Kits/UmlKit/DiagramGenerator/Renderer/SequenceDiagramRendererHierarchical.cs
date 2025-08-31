@@ -1,4 +1,6 @@
 ﻿using ContextBrowserKit.Log;
+using ContextBrowserKit.Options;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.Model;
 using UmlKit.DiagramGenerator.Managers;
@@ -13,13 +15,13 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
 {
     private readonly IUmlTransitionFactory<P> _factory;
     private readonly DiagramBuilderOptions _options;
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
 
-    public SequenceDiagramRendererHierarchical(OnWriteLog? onWriteLog, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory)
+    public SequenceDiagramRendererHierarchical(IAppLogger<AppLevel> logger, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory)
     {
         _factory = factory;
         _options = options;
-        _onWriteLog = onWriteLog;
+        _logger = logger;
     }
 
     // Этот метод будет публичным, и именно его вы будете вызывать
@@ -30,7 +32,7 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
         {
             return;
         }
-        var activationStack = new RenderContextActivationStack(_onWriteLog);
+        var activationStack = new RenderContextActivationStack(_logger);
 
         RenderRecursive(diagram, rootTransitions, activationStack, allTransitions);
     }
@@ -49,7 +51,7 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
             {
                 //RenderDeactivateCaller
                 SequenceActivationManager.RenderDeactivateCallee(new RenderContext<P>(
-                    transition, diagram, _options, activationStack, _onWriteLog));
+                    transition, diagram, _options, activationStack, _logger));
             }
 
             if (!activationStack.Any() || activationStack.Peek() != transition.CallerClassName)
@@ -68,7 +70,7 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
             };
 
             // Логика рендеринга для текущего перехода
-            var ctx = new RenderContext<P>(transition, diagram, _options, activationStack, _onWriteLog);
+            var ctx = new RenderContext<P>(transition, diagram, _options, activationStack, _logger);
             SequenceParticipantsManager.AddParticipants(ctx, defaultKeywords);
 
             // Рендеринг вызовов

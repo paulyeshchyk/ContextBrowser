@@ -5,6 +5,7 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Phases.ContextInfoBuilder;
 using SemanticKit.Model;
+using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
@@ -25,25 +26,25 @@ public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     public override bool CanParse(object syntax) => syntax is DelegateDeclarationSyntax;
 
     // context: roslyn, build
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
+    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (syntax is not DelegateDeclarationSyntax delegateSyntax)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax is not DelegateDeclarationSyntax");
+            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax is not DelegateDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Cntx, $"Parsing files: phase 1 - delegate syntax");
+        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - delegate syntax");
 
         var delegateContext = _delegateContextInfoBuilder.BuildContextInfo(default, delegateSyntax, model, cancellationToken);
         if (delegateContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"Syntax \"{delegateSyntax}\" was not resolved");
+            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{delegateSyntax}\" was not resolved");
             return;
         }
 
-        _triviaCommentParser.Parse(delegateContext, delegateSyntax, model, cancellationToken);
+        _triviaCommentParser.Parse(delegateContext, delegateSyntax, model, options, cancellationToken);
     }
 }

@@ -70,16 +70,6 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
         return transition;
     }
 
-    //public override IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null)
-    //{
-    //    if(string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
-    //        throw new ArgumentException($"From({from ?? string.Empty}) and To({to ?? string.Empty}) must not be null or empty");
-
-    //    var f = AddParticipant(from);
-    //    var t = AddParticipant(to);
-    //    return AddTransition(f, t, isAsync, label);
-    //}
-
     public override IUmlElement AddTransition(UmlParticipant from, UmlParticipant to, bool isAsync = false, string? label = null)
     {
         var transition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: isAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), label);

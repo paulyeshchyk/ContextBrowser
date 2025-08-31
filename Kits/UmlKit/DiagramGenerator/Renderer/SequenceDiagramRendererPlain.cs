@@ -2,6 +2,7 @@
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.Model;
 using UmlKit.DiagramGenerator.Managers;
@@ -14,20 +15,20 @@ namespace UmlKit.DiagramGenerator.Renderer;
 public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
     where P : IUmlParticipant
 {
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel>_logger;
     private readonly DiagramBuilderOptions _options;
     private readonly IUmlTransitionFactory<P> _factory;
 
-    public SequenceDiagramRendererPlain(OnWriteLog? onWriteLog, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory)
+    public SequenceDiagramRendererPlain(IAppLogger<AppLevel>logger, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory)
     {
-        _onWriteLog = onWriteLog;
+        _logger = logger;
         _options = options;
         _factory = factory;
     }
 
     public void Render(UmlDiagram<P> diagram, GrouppedSortedTransitionList? allTransitions)
     {
-        var activationStack = new RenderContextActivationStack(_onWriteLog);
+        var activationStack = new RenderContextActivationStack(_logger);
         var plainList = allTransitions?.GetTransitionList();
         if (plainList == null)
         {
@@ -53,11 +54,11 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
             };
 
             // 1. Сначала акторы
-            var ctx = new RenderContext<P>(transition, diagram, _options, activationStack, _onWriteLog);
+            var ctx = new RenderContext<P>(transition, diagram, _options, activationStack, _logger);
             if (string.IsNullOrWhiteSpace(ctx.Callee))
             {
 #warning to be fixed asap
-                _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Err, $"Callee is empty for transition {ctx.Caller}.{ctx.CallerMethod} -> ??.{ctx.CalleeMethod}");
+                _logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, $"Callee is empty for transition {ctx.Caller}.{ctx.CallerMethod} -> ??.{ctx.CalleeMethod}");
                 continue;
             }
             SequenceParticipantsManager.AddParticipants(ctx, defaultKeywords);

@@ -4,17 +4,18 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using LoggerKit;
 using UmlKit.Exporter;
 
 namespace ContextBrowser.Samples.HtmlPages;
 
 // context: uml, build
-public static class HtmlActionPerDomainDiagramBuilder
+public static class PumlActionPerDomainDiagramBuilder
 {
     // context: uml, build
-    public static void Build(IContextInfoDataset model, AppOptions options, OnWriteLog? onWriteLog = null)
+    public static void Build(IContextInfoDataset model, AppOptions options, IAppLogger<AppLevel> _logger)
     {
-        onWriteLog?.Invoke(AppLevel.P_Bld, LogLevel.Cntx, "--- ActionPerDomainDiagramBuilder.Build ---");
+        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "--- ActionPerDomainDiagramBuilder.Build ---");
         UmlContextActionPerDomainDiagram.Build(model.ContextInfoData, (action, domain) => GetCompositeName(action, domain, options.Export), GetHeatmapPath(options.Export), options.DiagramBuilder);
 
         static string GetCompositeName(string action, string domain, ExportOptions options)

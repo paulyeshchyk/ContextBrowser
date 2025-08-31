@@ -6,22 +6,23 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Matrix;
+using ExporterKit.Html;
 using ExporterKit.HtmlPageSamples;
 using ExporterKit.Puml;
-using HtmlKit.Page;
 using HtmlKit.Builders.Core;
+using HtmlKit.Page;
+using LoggerKit;
 using UmlKit.Infrastructure.Options;
-using ExporterKit.Html;
 
 namespace ContextBrowser.Samples.HtmlPages;
 
 // context: contextInfo, build, html
-public static class ActionOnlyPageBuilder
+public static class ActionOnlyHtmlPageBuilder
 {
     // context: contextInfo, build, html
-    public static void Build(IContextInfoDataset contextInfoDataset, AppOptions appOptions, OnWriteLogObject? onWriteLog = null)
+    public static void Build(IContextInfoDataset contextInfoDataset, AppOptions appOptions, IAppLogger<AppLevel>_logger)
     {
-        onWriteLog?.Invoke(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- ActionOnly.Build ---", LogLevelNode.None));
+        _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- ActionOnly.Build ---", LogLevelNode.None));
 
         var registrations = new List<IHtmlTabRegistration>
         {

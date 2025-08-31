@@ -9,6 +9,7 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
 	<ItemGroup>
+		<ProjectReference Include="../LoggerKit/LoggerKit.csproj" />
 		<ProjectReference Include="..\CommandlineKit\CommandlineKit.csproj" />
 		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
 	</ItemGroup>

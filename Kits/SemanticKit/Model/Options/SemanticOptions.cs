@@ -55,14 +55,13 @@ public record SemanticOptions
 
 public record SemanticFilters
 {
+    public string ExcludedAssemblyNamesPatterns { get; }
+    public string RuntimeAssemblyFilenamePatterns { get; }
 
-    public string ExcludedAssemblyNamesPattern { get; }
-    public string RuntimeAssemblyFilenamePattern { get; }
-
-    public SemanticFilters(string excludedAssemblyNamesPattern, string runtimeAssemblyFilenamePattern)
+    public SemanticFilters(string excludedAssemblyNamesPatterns, string runtimeAssemblyFilenamePatterns)
     {
-        ExcludedAssemblyNamesPattern = excludedAssemblyNamesPattern;
-        RuntimeAssemblyFilenamePattern = runtimeAssemblyFilenamePattern;
+        ExcludedAssemblyNamesPatterns = excludedAssemblyNamesPatterns;
+        RuntimeAssemblyFilenamePatterns = runtimeAssemblyFilenamePatterns;
     }
 
 }

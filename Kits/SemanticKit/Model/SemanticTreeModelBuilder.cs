@@ -1,4 +1,6 @@
 using ContextBrowserKit.Log;
+using ContextBrowserKit.Options;
+using LoggerKit;
 using SemanticKit.Model.Options;
 
 namespace SemanticKit.Model;
@@ -6,33 +8,31 @@ namespace SemanticKit.Model;
 // context: roslyn, build, contextInfo
 public class SemanticTreeModelBuilder : ISemanticTreeModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper>
 {
-    private readonly OnWriteLog? _onWriteLog = null;
     private readonly ICompilationBuilder _compilationBuilder;
+    private readonly IAppLogger<AppLevel> _logger;
+    private readonly ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> _modelStorage;
+    private readonly ISyntaxTreeWrapperBuilder _treeWrapperBuilder;
 
-    public ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> SemanticTreeModelStorage { get; }
-
-    public ISyntaxTreeWrapperBuilder SyntaxTreeWrapperBuilder { get; }
-
-    public SemanticTreeModelBuilder(ICompilationBuilder compilationBuilder, ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> modelStorage, ISyntaxTreeWrapperBuilder treeWrapperBuilder, OnWriteLog? onWriteLog = null)
+    public SemanticTreeModelBuilder(ICompilationBuilder compilationBuilder, ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> modelStorage, ISyntaxTreeWrapperBuilder treeWrapperBuilder, IAppLogger<AppLevel> logger)
     {
-        SemanticTreeModelStorage = modelStorage;
-        SyntaxTreeWrapperBuilder = treeWrapperBuilder;
-        _onWriteLog = onWriteLog;
+        _modelStorage = modelStorage;
+        _treeWrapperBuilder = treeWrapperBuilder;
+        _logger = logger;
         _compilationBuilder = compilationBuilder;
     }
 
     // context: roslyn, build, contextInfo
     public SemanticCompilationMap BuildCompilationMap(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
     {
-        var compilationMap = _compilationBuilder.BuildCompilationMap(codeFiles, cancellationToken);
-        SemanticTreeModelStorage.Add(compilationMap);
+        var compilationMap = _compilationBuilder.BuildCompilationMap(options, codeFiles, cancellationToken);
+        _modelStorage.Add(compilationMap);
         return compilationMap;
     }
 
     // context: roslyn, build, contextInfo
     public SemanticCompilationView BuildCompilationView(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken)
     {
-        var syntaxTreeWrapper = SyntaxTreeWrapperBuilder.Build(code, filePath, cancellationToken);
+        var syntaxTreeWrapper = _treeWrapperBuilder.Build(code, filePath, cancellationToken);
         return BuildCompilationView(syntaxTreeWrapper, options, cancellationToken);
     }
 
@@ -41,16 +41,16 @@ public class SemanticTreeModelBuilder : ISemanticTreeModelBuilder<ISyntaxTreeWra
     {
         var root = syntaxTreeWrapper.GetCompilationUnitRoot(cancellationToken);
 
-        var model = SemanticTreeModelStorage.GetModel(syntaxTreeWrapper);
+        var model = _modelStorage.GetModel(syntaxTreeWrapper);
         if (model == null)
         {
             // Добавляем текущий syntaxTree во временный список всех деревьев
-            var allSyntaxTrees = SemanticTreeModelStorage.GetAllSyntaxTrees().Concat(new[] { syntaxTreeWrapper }).Distinct();
+            var allSyntaxTrees = _modelStorage.GetAllSyntaxTrees().Concat(new[] { syntaxTreeWrapper }).Distinct();
 
-            var compilationWrapper = _compilationBuilder.BuildCompilation(allSyntaxTrees, options.CustomAssembliesPaths, "Parser");
+            var compilationWrapper = _compilationBuilder.BuildCompilation(options, allSyntaxTrees, options.CustomAssembliesPaths, "Parser");
             var themodel = compilationWrapper.GetSemanticModel(syntaxTreeWrapper);
 
-            SemanticTreeModelStorage.Add(syntaxTreeWrapper, themodel);
+            _modelStorage.Add(syntaxTreeWrapper, themodel);
             return new SemanticCompilationView(themodel, syntaxTreeWrapper, root);
         }
         else

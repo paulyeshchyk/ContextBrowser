@@ -5,16 +5,17 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.HtmlPageSamples;
+using LoggerKit;
 
 namespace ContextBrowser.Html.Pages.Index;
 
 // context: html, build
-public static class IndexHtmlBuilder
+public static class HtmlIndexBuilder
 {
     // context: html, build
-    public static void Build(IContextInfoDataset model, AppOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog = null)
+    public static void Build(IContextInfoDataset model, AppOptions options, IContextClassifier contextClassifier, IAppLogger<AppLevel> _logger)
     {
-        onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
+        _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
         HtmlIndexGenerator.GenerateContextIndexHtml(
             contextClassifier: contextClassifier,
                        matrix: model.ContextInfoData,

@@ -7,6 +7,7 @@ using ContextKit.Model;
 using ContextKit.Model.Matrix;
 using ExporterKit.HtmlPageSamples;
 using ExporterKit.Puml;
+using LoggerKit;
 using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser.Samples.HtmlPages;
@@ -16,9 +17,9 @@ namespace ContextBrowser.Samples.HtmlPages;
 public static class HtmlStateDomainDimensionBuilder
 {
     // context: contextInfo, build, html
-    public static void Build(IContextInfoDataset model, AppOptions options, IContextClassifier contextClassifier, OnWriteLog? onWriteLog = null)
+    public static void Build(IContextInfoDataset model, AppOptions options, IContextClassifier contextClassifier, IAppLogger<AppLevel> _logger)
     {
-        onWriteLog?.Invoke(AppLevel.Html, LogLevel.Cntx, "--- DimensionBuilder.Build ---");
+        _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- DimensionBuilder.Build ---");
 
         var builder = new HtmlStateDomainBuilder(
             model.ContextInfoData,
@@ -26,7 +27,7 @@ public static class HtmlStateDomainDimensionBuilder
             contextClassifier,
             options.Export,
             options.DiagramBuilder,
-            onWriteLog);
+            _logger);
 
         builder.Build();
     }
@@ -40,17 +41,17 @@ internal class HtmlStateDomainBuilder
     private readonly ExportOptions _exportOptions;
     private readonly Dictionary<string, bool> _renderedStates;
 
-    public HtmlStateDomainBuilder(IContextInfoData matrix, List<ContextInfo> allContexts, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options, OnWriteLog? onWriteLog)
+    public HtmlStateDomainBuilder(IContextInfoData matrix, List<ContextInfo> allContexts, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options, IAppLogger<AppLevel> _logger)
     {
         _matrix = matrix;
         _allContexts = allContexts;
         _exportOptions = exportOptions;
 
         // Инициализация генераторов
-        var stateGenerator = new UmlStateDomainDiagramCompiler(_matrix, contextClassifier, exportOptions, options, onWriteLog);
+        var stateGenerator = new UmlStateDomainDiagramCompiler(_matrix, contextClassifier, exportOptions, options, _logger);
 
         // Генерация диаграмм
-        _renderedStates = stateGenerator.Generate(_allContexts);
+        _renderedStates = stateGenerator.Compile(_allContexts);
     }
 
     // context: html, dimension, build

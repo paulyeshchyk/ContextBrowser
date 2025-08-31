@@ -29,50 +29,28 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
 
     public abstract ContextInfoElementType ElementType { get; }
 
-    public virtual IContextInfo BuildContextInfoDto(TContext? ownerContext, TSyntaxNode syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
+    public virtual TContext? BuildContextInfo(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var syntaxWrap = new TWrapper();
-        syntaxWrap.SetSyntax(syntax);
+        var syntaxNodeWrapper = new TWrapper();
+        syntaxNodeWrapper.SetSyntax(syntaxNode);
 
-        var wrapper = new CSharpISymbolWrapper(model, syntaxWrap, _onWriteLog, cancellationToken);
+        var symbolInfo = CSharpISymbolWrapperConverter.FromSymbolInfo(semanticModel, syntaxNodeWrapper, _onWriteLog, cancellationToken);
+        var dto = ContextInfoDtoConverter.ConvertFromSyntaxNodeWrapper(ownerContext, syntaxNodeWrapper, symbolInfo, ElementType);
 
-        var nameSpace = wrapper.Namespace;
-        var identifier = wrapper.Identifier;
-
-        string fullName = wrapper.GetFullName();
-        string name = wrapper.GetName();
-        string shortName = wrapper.GetShortName();
-
-        return new ContextInfoDto(
-              elementType: ElementType,
-                 fullName: fullName,
-                     name: name,
-                shortName: shortName,
-                nameSpace: nameSpace,
-               identifier: identifier,
-            symbolWrapper: wrapper,
-            syntaxWrapper: syntaxWrap,
-               classOwner: ownerContext,
-              methodOwner: ownerContext);
-    }
-
-    public virtual TContext? BuildContextInfo(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel, CancellationToken cancellationToken)
-    {
-        var dto = BuildContextInfoDto(ownerContext, syntaxNode, semanticModel, cancellationToken);
         return BuildContextInfo(ownerContext, dto);
     }
 
     protected virtual TContext? BuildContextInfo(TContext? ownerContext, IContextInfo dto)
     {
-        _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");
+        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");
 
         var result = _factory.Create(contextInfo: dto);
 
         if (result == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Parse, LogLevel.Err, $"Creating method ContextInfo failed {dto.Name}");
+            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, $"Creating method ContextInfo failed {dto.Name}");
             return default;
         }
 

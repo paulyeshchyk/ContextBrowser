@@ -39,7 +39,7 @@ public static partial class SequenceInvocationManager
             return false;
         }
 
-        ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Render transition S1S2 [{from} -> {to}]:<{reason}>");
+        ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"Render transition S1S2 [{from} -> {to}]:<{reason}>");
         var dReason = ctx.Options.Debug ? $"CALLEE INVOCATION ACTIVATE [ {reason} ]" : $"{reason}";
 
         return SequenceActivationStackManager.TryActivate(ctx, source: from, destination: to, dReason);
@@ -55,7 +55,7 @@ public static partial class SequenceInvocationManager
 
         if (canAddTransition)
         {
-            ctx.Log?.Invoke(AppLevel.P_Rnd, LogLevel.Trace, $"Render transition S2S1 [{from} -> {to}]:<return>");
+            ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"Render transition S2S1 [{from} -> {to}]:<return>");
             var diagram = ctx.Diagram;
             var opt = ctx.Options.Indication;
             SequenceTransitionManager.TryAddTransition(from, to, diagram, opt, rReason);

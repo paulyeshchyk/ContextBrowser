@@ -3,6 +3,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextBrowserKit.Options.Import;
+using ContextKit.Model;
 using HtmlKit.Options;
 using LoggerKit.Model;
 using SemanticKit.Model.Options;
@@ -22,11 +23,13 @@ public class AppOptions
     {
         LogLevels =
         {
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.App, LogLevel = LogLevel.Trace },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.file, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Roslyn, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Assembly, LogLevel = LogLevel.Trace },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Inv, LogLevel = LogLevel.Err },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Parse, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Symbol, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Syntax, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Cntx, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Dll, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Invocation, LogLevel = LogLevel.Err },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Warn },
@@ -40,8 +43,8 @@ public class AppOptions
 
         semanticOptions: new(
             semanticFilters: new(
-                excludedAssemblyNamesPattern: "**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*",
-                runtimeAssemblyFilenamePattern: "System.Runtime*.dll"),
+                excludedAssemblyNamesPatterns: "**/System.Private*.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*",
+                runtimeAssemblyFilenamePatterns: "**/System.Runtime*.dll;**/mscorlib.dll"),
             methodModifierTypes: new()
             {
                 SemanticAccessorModifierType.@public,
@@ -75,7 +78,7 @@ public class AppOptions
 
     [CommandLineArgument("import-options", "Параметры импорта")]
     public ImportOptions Import { get; set; } = new(
-        exclude: "**/obj/**;**/*Tests*/**",
+        exclude: "**/obj/**;**/*Tests*/**;**/Resources.Designer.cs",
         fileExtensions: ".cs",
 
         //".//..//..//..//"
@@ -97,7 +100,7 @@ public class AppOptions
         paths: new ExportPaths(
             outputDirectory: ".//output",
                  cacheModel: new CacheJsonModel(
-                    renewCache: true,
+                    renewCache: false,
                          input: ".//cache//roslyn.json",
                         output: ".//cache//roslyn.json"),
             new ExportPathItem(ExportPathType.index, "."),
@@ -108,17 +111,16 @@ public class AppOptions
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
                                               debug: false,
-                                        detailLevel: DiagramDetailLevel.Summary,
-                                          direction: DiagramDirection.Incoming,
+                                 diagramDetailLevel: DiagramDetailLevel.Method,
+                                   diagramDirection: DiagramDirection.BiDirectional,
+                                        diagramType: DiagramBuilderKeys.Transition,
                                          activation: new DiagramActivationOptions(useActivation: true, useActivationCall: true),
                                   transitionOptions: new DiagramTransitionOptions(useCall: true, useDone: true),
                                    invocationOption: new DiagramInvocationOption(useInvocation: true, useReturn: true),
-                                         indication: new DiagramIndicationOption(useAsync: true),
-                                           treeMode: DiagramBuilderTreeMode.FromParentToChild,
-                                        diagramType: DiagramBuilderKeys.Transition);
+                                         indication: new DiagramIndicationOption(useAsync: true));
 
     [CommandLineArgument("context-classifier", "Определение контекста представления")]
-    public ContextClassifier Classifier { get; set; } = new(
+    public IContextClassifier Classifier { get; set; } = new ContextClassifier(
             emptyAction: "NoAction",
             emptyDomain: "NoDomain",
              fakeAction: "_fakeAction",

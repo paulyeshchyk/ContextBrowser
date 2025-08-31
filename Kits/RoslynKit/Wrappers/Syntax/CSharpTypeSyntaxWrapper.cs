@@ -2,11 +2,12 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
+using RoslynKit.Signature;
 using SemanticKit.Model;
 
 namespace RoslynKit.Wrappers.Syntax;
 
-public record CSharpTypeSyntaxWrapper : BaseSyntaxWrapper
+public record CSharpTypeSyntaxWrapper : ISyntaxWrapper
 {
     public string Name { get; set; }
 
@@ -26,6 +27,9 @@ public record CSharpTypeSyntaxWrapper : BaseSyntaxWrapper
 
     public bool IsValid { get; set; } = true;
 
+    public ICustomMethodSignature? Signature { get; set; }
+
+
     public CSharpTypeSyntaxWrapper(ISymbol symbol, TypeDeclarationSyntax syntax)
     {
         Identifier = symbol.GetFullMemberName(includeParams: true);
@@ -37,15 +41,38 @@ public record CSharpTypeSyntaxWrapper : BaseSyntaxWrapper
         ShortName = symbol.GetShortName();
     }
 
-    public CSharpTypeSyntaxWrapper(string identifier, string name, string fullName, int spanStart, int spanEnd, string nameSpace)
+    public CSharpTypeSyntaxWrapper(ISyntaxWrapper syntaxWrapper, int spanStart, int spanEnd)
     {
-        Identifier = identifier;
-        Name = name;
-        FullName = fullName;
         SpanStart = spanStart;
         SpanEnd = spanEnd;
-        Namespace = nameSpace;
-        ShortName = name;
+
+        if (syntaxWrapper.Signature is not null)
+        {
+            Name = syntaxWrapper.Signature.ClassName;
+            ShortName = syntaxWrapper.Signature.ClassName;
+            Namespace = syntaxWrapper.Signature.Namespace;
+            Identifier = $"{syntaxWrapper.Signature.Namespace}.{syntaxWrapper.Signature.ClassName}";
+            FullName = $"{syntaxWrapper.Signature.Namespace}.{syntaxWrapper.Signature.ClassName}";
+
+            Signature = new CSharpMethodSignature
+            (
+                ResultType: syntaxWrapper.Signature.ResultType,
+                Namespace: syntaxWrapper.Signature.Namespace,
+                ClassName: syntaxWrapper.Signature.ClassName,
+                MethodName: syntaxWrapper.Signature.MethodName,
+                Arguments: syntaxWrapper.Signature.Arguments,
+                Raw: syntaxWrapper.Signature.Raw
+            )
+            { };
+        }
+        else
+        {
+            FullName = syntaxWrapper.FullName;
+            Identifier = syntaxWrapper.Identifier;
+            ShortName = syntaxWrapper.ShortName;
+            Name = syntaxWrapper.Name;
+            Namespace = syntaxWrapper.Namespace;
+        }
     }
 
     public IContextInfo GetContextInfoDto()
@@ -59,10 +86,5 @@ public record CSharpTypeSyntaxWrapper : BaseSyntaxWrapper
              identifier: FullName,
               spanStart: SpanStart,
                 spanEnd: SpanEnd);
-    }
-
-    public string? ToDisplayString()
-    {
-        throw new NotImplementedException();
     }
 }

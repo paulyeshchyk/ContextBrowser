@@ -2,60 +2,36 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
+using RoslynKit.Signature;
 using SemanticKit.Model;
 
 namespace RoslynKit.Wrappers.Syntax;
 
-public record CSharpInvocationSyntaxWrapper : BaseSyntaxWrapper
+public record CSharpInvocationSyntaxWrapper : ISyntaxWrapper
 {
-    public string FullName { get; set; }
+    public bool IsPartial { get; set; } = false;
 
-    public bool IsPartial { get; set; }
 
-    public string ShortName { get; set; }
+    public int SpanEnd { get; set; } = 0;
 
-    public int SpanEnd { get; init; }
+    public int SpanStart { get; set; } = 0;
 
-    public int SpanStart { get; init; }
+    public bool IsValid { get; set; } = false;
 
-    public bool IsValid { get; private set; }
+    public string FullName { get; set; } = string.Empty;
 
-    public string Name { get; set; }
+    public string ShortName { get; set; } = string.Empty;
 
-    public string Namespace { get; set; }
+    public string Name { get; set; } = string.Empty;
 
-    public string Identifier { get; set; }
+    public string Namespace { get; set; } = string.Empty;
 
-    public CSharpInvocationSyntaxWrapper(ISymbol isymbol, ExpressionSyntax syntax)
+    public string Identifier { get; set; } = string.Empty;
+
+    public ICustomMethodSignature? Signature { get; set; } = null;
+
+    public CSharpInvocationSyntaxWrapper()
     {
-        ShortName = isymbol.GetShortName();
-        FullName = isymbol.GetFullMemberName(includeParams: true);
-        Name = isymbol.GetNameAndClassOwnerName();
-        Namespace = isymbol.GetNamespaceOrGlobal();
-        Identifier = isymbol.GetFullMemberName(includeParams: true);
 
-        SpanStart = syntax.Span.Start;
-        SpanEnd = syntax.Span.End;
-        if (isymbol is IMethodSymbol methodSymbol)
-        {
-            IsValid = true;
-        }
-        else
-        {
-            IsValid = false;
-        }
-    }
-
-    public CSharpInvocationSyntaxWrapper(bool isPartial, string fullName, string shortName, int spanStart, int spanEnd, string nameSpace)
-    {
-        IsPartial = isPartial;
-        FullName = fullName;
-        Identifier = fullName;
-        ShortName = shortName;
-        Name = shortName;
-        SpanStart = spanStart;
-        SpanEnd = spanEnd;
-        Namespace = nameSpace;
-        IsValid = true;
     }
 }
