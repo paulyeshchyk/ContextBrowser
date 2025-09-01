@@ -34,15 +34,16 @@ public static class RoslynAssemblyFetcher
     {
         var runtimeDirectoryPaths = RoslynAssemblyFetcher.FetchRuntimeDirectoryAssemblyPaths(semanticFilters, onWriteLog);
         var currentDomainPaths = RoslynAssemblyFetcher.FetchCurrentDomainPaths(semanticFilters, onWriteLog);
-        var trustedPlatformPaths = RoslynAssemblyFetcher.FetchTrustedPlatformPaths(semanticFilters, onWriteLog);
+        //var trustedPlatformPaths = RoslynAssemblyFetcher.FetchTrustedPlatformPaths(semanticFilters, onWriteLog);
 
         var uniqAssemlyPaths = new HashSet<string>();
 
-        //uniqAssemlyPaths.UnionWith(runtimeDirectoryPaths);
+        uniqAssemlyPaths.Add(typeof(object).Assembly.Location);
+
+        uniqAssemlyPaths.UnionWith(runtimeDirectoryPaths);
         uniqAssemlyPaths.UnionWith(currentDomainPaths);
         //uniqAssemlyPaths.UnionWith(trustedPlatformPaths);
 
-        uniqAssemlyPaths.Add(typeof(object).Assembly.Location);
 
         return uniqAssemlyPaths.Select(path => MetadataReference.CreateFromFile(path));
     }
@@ -116,12 +117,10 @@ public static class RoslynAssemblyFetcher
 
         var runtimeDirectoryPaths = Directory.GetFiles(runtimeDirectory);
 
-        var filtered = PathFilter.FilteroutPaths(runtimeDirectoryPaths, semanticFilters.ExcludedAssemblyNamesPatterns, (theAssembly) => (theAssembly));
+        var result = PathFilter.FilterPaths(runtimeDirectoryPaths, semanticFilters.RuntimeAssemblyFilenamePatterns, (theAssembly) => (theAssembly));
 
-
-        //var result = PathFilter.FilterPaths(runtimeDirectoryPaths, semanticFilters.RuntimeAssemblyFilenamePatterns, (p) => p);
-        var includedLogValue = filtered.Any() ? string.Join("\nIncluded Runtime directory assembly: ", filtered.Select(a => a)) : "none";
+        var includedLogValue = result.Any() ? string.Join("\nIncluded Runtime directory assembly: ", result.Select(a => a)) : "none";
         onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Trace, $"Included Runtime directory assembly: {includedLogValue}");
-        return filtered;
+        return result;
     }
 }

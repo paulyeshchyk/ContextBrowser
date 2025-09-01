@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Commandline.Polyfills;
+﻿using System.Collections.Generic;
+using ContextBrowserKit.Commandline.Polyfills;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -43,8 +44,8 @@ public class AppOptions
 
         semanticOptions: new(
             semanticFilters: new(
-                excludedAssemblyNamesPatterns: "**/System.Private*.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*",
-                runtimeAssemblyFilenamePatterns: "**/System.Runtime*.dll;**/mscorlib.dll"),
+                excludedAssemblyNamesPatterns: "**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*",
+                runtimeAssemblyFilenamePatterns: "**/System.Diagnostics.Process.dll;**/System.Net.NetworkInformation.dll;**/System.Net.Primitives.dll;"), //**/ System.Resources.ResourceManager.dll;**/System.Globalization.dll
             methodModifierTypes: new()
             {
                 SemanticAccessorModifierType.@public,
