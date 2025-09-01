@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
@@ -60,12 +62,12 @@ public class WindowsServer : CustomServer
         StartShell(arguments, true);
     }
 
-    public override Process? StartShell(string arguments, bool autoclose = false)
+    public override System.Diagnostics.Process? StartShell(string arguments, bool autoclose = false)
     {
         return StartServer("cmd.exe", autoclose ? $"/c {arguments}" : arguments);
     }
 
-    public override Process? StartServer(string filename, string arguments)
+    public override System.Diagnostics.Process? StartServer(string filename, string arguments)
     {
         var processInfo = WindowsProcessInfoFactory.CmdExeProcessInfo(filename, arguments);
         var result = StartServer(processInfo, filename, (process, error) =>
@@ -78,7 +80,7 @@ public class WindowsServer : CustomServer
         return result;
     }
 
-    public override void StopProcess(Process? process)
+    public override void StopProcess(System.Diagnostics.Process? process)
     {
         if (process != null && !process.HasExited)
         {
@@ -105,7 +107,7 @@ public class WindowsServer : CustomServer
 
     public override bool IsJvmPlantUmlProcessRunning(string jarFilename)
     {
-        Process[] javaProcesses = Process.GetProcessesByName("java");
+        var javaProcesses = System.Diagnostics.Process.GetProcessesByName("java");
 
         foreach (var process in javaProcesses)
         {
@@ -129,17 +131,17 @@ public class WindowsServer : CustomServer
         return false;
     }
 
-    public override Process? StartJar(string folder, string jarName, string args)
+    public override System.Diagnostics.Process? StartJar(string folder, string jarName, string args)
     {
         return StartShell($"cd /d \"{folder}\" && start java -jar {jarName} {args}", true);
     }
 
-    public override Process? StartHttpServer(int port, string folder)
+    public override System.Diagnostics.Process? StartHttpServer(int port, string folder)
     {
         return StartShell($"cd /d \"{folder}\" && start http-server -p {port} --no-cache", true);
     }
 
-    public override Process? OpenHtmlPage(string page)
+    public override System.Diagnostics.Process? OpenHtmlPage(string page)
     {
         return StartShell($"start {page}", true);
     }
@@ -147,9 +149,9 @@ public class WindowsServer : CustomServer
 
 public static class WindowsProcessInfoFactory
 {
-    public static ProcessStartInfo CmdExeProcessInfo(string filename, string arguments)
+    public static System.Diagnostics.ProcessStartInfo CmdExeProcessInfo(string filename, string arguments)
     {
-        return new ProcessStartInfo
+        return new()
         {
             FileName = filename,
             Arguments = arguments,

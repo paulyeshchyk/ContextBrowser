@@ -1,4 +1,5 @@
-﻿using ContextKit.Model;
+﻿using System.Collections.Generic;
+using ContextKit.Model;
 using UmlKit.Builders.Model;
 
 namespace UmlKit.Builders;

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using ContextBrowser.Infrastructure;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;

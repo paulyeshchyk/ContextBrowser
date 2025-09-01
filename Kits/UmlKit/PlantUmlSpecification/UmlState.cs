@@ -1,4 +1,6 @@
-﻿using ContextBrowserKit.Extensions;
+﻿using System;
+using System.IO;
+using ContextBrowserKit.Extensions;
 
 namespace UmlKit.Model;
 

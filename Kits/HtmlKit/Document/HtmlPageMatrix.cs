@@ -1,4 +1,6 @@
-﻿using ContextBrowserKit.Matrix;
+﻿using System.Collections.Generic;
+using System.IO;
+using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Matrix;

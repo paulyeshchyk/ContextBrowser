@@ -1,4 +1,6 @@
-﻿namespace ContextBrowser.Samples.SampleMultifile;
+﻿using System;
+
+namespace ContextBrowser.Samples.SampleMultifile;
 
 // context: create, build, S5.1
 public class BrokenOrchestra

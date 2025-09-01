@@ -1,4 +1,7 @@
-﻿namespace UmlKit.Model;
+﻿using System;
+using System.IO;
+
+namespace UmlKit.Model;
 
 public class UmlNote : IUmlElement
 {

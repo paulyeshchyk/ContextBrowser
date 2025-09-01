@@ -1,4 +1,6 @@
-﻿using CommandlineKit.Model;
+﻿using System;
+using System.Linq;
+using CommandlineKit.Model;
 
 namespace CommandlineKit;
 

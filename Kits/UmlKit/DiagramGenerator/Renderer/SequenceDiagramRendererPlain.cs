@@ -1,4 +1,6 @@
-﻿using ContextBrowserKit;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ContextBrowserKit;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
@@ -15,11 +17,11 @@ namespace UmlKit.DiagramGenerator.Renderer;
 public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
     where P : IUmlParticipant
 {
-    private readonly IAppLogger<AppLevel>_logger;
+    private readonly IAppLogger<AppLevel> _logger;
     private readonly DiagramBuilderOptions _options;
     private readonly IUmlTransitionFactory<P> _factory;
 
-    public SequenceDiagramRendererPlain(IAppLogger<AppLevel>logger, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory)
+    public SequenceDiagramRendererPlain(IAppLogger<AppLevel> logger, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory)
     {
         _logger = logger;
         _options = options;

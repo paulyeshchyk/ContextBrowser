@@ -1,12 +1,18 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Runtime.Serialization;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log;
@@ -14,6 +20,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.Extensions.Hosting;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Assembly;
@@ -30,31 +37,12 @@ public static class RoslynAssemblyFetcher
         var trustedPlatformPaths = RoslynAssemblyFetcher.FetchTrustedPlatformPaths(semanticFilters, onWriteLog);
 
         var uniqAssemlyPaths = new HashSet<string>();
-        uniqAssemlyPaths.UnionWith(runtimeDirectoryPaths);
+
+        //uniqAssemlyPaths.UnionWith(runtimeDirectoryPaths);
         uniqAssemlyPaths.UnionWith(currentDomainPaths);
+        //uniqAssemlyPaths.UnionWith(trustedPlatformPaths);
 
-        // uniqAssemlyPaths.UnionWith(new List<string>() { "/usr/local/share/dotnet/sdk/6.0.417/System.CodeDom.dll" });
-
-        // uniqAssemlyPaths.UnionWith(trustedPlatformPaths);
-        // uniqAssemlyPaths.Add("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/6.0.25/mscorlib.dll");
-        // uniqAssemlyPaths.Add("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/6.0.25/System.Core.dll");
-        // uniqAssemlyPaths.Add("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/6.0.25/System.Collections.dll");
-        // uniqAssemlyPaths.Add("/Users/paul/projects/ContextBrowser/bin/Debug/net6.0/System.Collections.Immutable.dll");
-        // uniqAssemlyPaths.Add("/Users/paul/projects/ContextBrowser/bin/Debug/net6.0/System.Reflection.Metadata.dll");
-        // uniqAssemlyPaths.Add("/Users/paul/projects/ContextBrowser/bin/Debug/net6.0/System.Text.Encoding.CodePages.dll");
-        // uniqAssemlyPaths.Add("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/6.0.25/System.Runtime.dll");
-        // uniqAssemlyPaths.Add(typeof(System.Net.NetworkInformation.GatewayIPAddressInformation).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(CSharpCommandLineArguments).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(SyntaxNode).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(ISymbol).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(Regex).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(JsonArray).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(CallSite).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(LinkedListNode<>).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(Console).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(ProcessStartInfo).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(ConcurrentDictionary<,>).Assembly.Location);
-
+        uniqAssemlyPaths.Add(typeof(object).Assembly.Location);
 
         return uniqAssemlyPaths.Select(path => MetadataReference.CreateFromFile(path));
     }
@@ -127,9 +115,13 @@ public static class RoslynAssemblyFetcher
         }
 
         var runtimeDirectoryPaths = Directory.GetFiles(runtimeDirectory);
-        var result = PathFilter.FilterPaths(runtimeDirectoryPaths, semanticFilters.RuntimeAssemblyFilenamePatterns, (p) => p);
-        var includedLogValue = result.Any() ? string.Join("\nIncluded Runtime directory assembly: ", result.Select(a => a)) : "none";
+
+        var filtered = PathFilter.FilteroutPaths(runtimeDirectoryPaths, semanticFilters.ExcludedAssemblyNamesPatterns, (theAssembly) => (theAssembly));
+
+
+        //var result = PathFilter.FilterPaths(runtimeDirectoryPaths, semanticFilters.RuntimeAssemblyFilenamePatterns, (p) => p);
+        var includedLogValue = filtered.Any() ? string.Join("\nIncluded Runtime directory assembly: ", filtered.Select(a => a)) : "none";
         onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Trace, $"Included Runtime directory assembly: {includedLogValue}");
-        return result;
+        return filtered;
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Stategies;

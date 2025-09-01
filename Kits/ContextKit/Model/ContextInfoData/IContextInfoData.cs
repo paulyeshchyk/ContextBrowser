@@ -1,4 +1,6 @@
-﻿namespace ContextKit.Model.Matrix;
+﻿using System.Collections.Generic;
+
+namespace ContextKit.Model.Matrix;
 
 // context: ContextInfoMatrix, model
 public interface IContextInfoData : IEnumerable<KeyValuePair<ContextInfoDataCell, List<ContextInfo>>>

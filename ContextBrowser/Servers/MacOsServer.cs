@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Linq;
+using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
@@ -7,7 +9,7 @@ namespace ContextBrowser.Servers;
 
 public class MacOsServer : CustomServer
 {
-    public override Process? StartShell(string arguments, bool autoclose = false)
+    public override System.Diagnostics.Process? StartShell(string arguments, bool autoclose = false)
     {
         var startInfo = MacOsProcessInfoFactory.ZSHProcessInfo(arguments);
         return StartServer(startInfo, arguments, (process, error1) =>
@@ -29,7 +31,7 @@ public class MacOsServer : CustomServer
         });
     }
 
-    public override Process? StartServer(string filename, string arguments)
+    public override System.Diagnostics.Process? StartServer(string filename, string arguments)
     {
         var shellArguments = $"-a Terminal {filename} --args {arguments}";
         var processInfo = MacOsProcessInfoFactory.OpenProcessInfo(shellArguments);
@@ -44,7 +46,7 @@ public class MacOsServer : CustomServer
         return result;
     }
 
-    public override void StopProcess(Process? process)
+    public override void StopProcess(System.Diagnostics.Process? process)
     {
         if (process != null && !process.HasExited)
         {
@@ -118,7 +120,7 @@ public class MacOsServer : CustomServer
     public override bool IsJvmPlantUmlProcessRunning(string jarFilename)
     {
         var pgrep = MacOsProcessInfoFactory.JvmIsRunningProcessInfo(jarFilename);
-        using (var process = Process.Start(pgrep))
+        using (var process = System.Diagnostics.Process.Start(pgrep))
         {
             if (process == null) return false;
 
@@ -130,7 +132,7 @@ public class MacOsServer : CustomServer
         }
     }
 
-    public override Process? StartJar(string folder, string jarName, string args)
+    public override System.Diagnostics.Process? StartJar(string folder, string jarName, string args)
     {
         var processInfo = MacOsProcessInfoFactory.JavaRunJarProcessInfo(folder, jarName, args);
         return StartServer(processInfo, jarName, (process, error) =>
@@ -142,7 +144,7 @@ public class MacOsServer : CustomServer
         });
     }
 
-    public override Process? StartHttpServer(int port, string folder)
+    public override System.Diagnostics.Process? StartHttpServer(int port, string folder)
     {
         // Запускаем 'http-server' напрямую
         var processInfo = MacOsProcessInfoFactory.HttpServerProcessInfo(port, folder);
@@ -155,7 +157,7 @@ public class MacOsServer : CustomServer
         });
     }
 
-    public override Process? OpenHtmlPage(string page)
+    public override System.Diagnostics.Process? OpenHtmlPage(string page)
     {
         var processInfo = MacOsProcessInfoFactory.OpenProcessInfo(page, true);
         return StartServer(processInfo, page, (process, error) =>
@@ -170,9 +172,9 @@ public class MacOsServer : CustomServer
 
 public static class MacOsProcessInfoFactory
 {
-    public static ProcessStartInfo OpenProcessInfo(string shellArguments, bool createNoWindow = false)
+    public static System.Diagnostics.ProcessStartInfo OpenProcessInfo(string shellArguments, bool createNoWindow = false)
     {
-        return new ProcessStartInfo
+        return new System.Diagnostics.ProcessStartInfo
         {
             FileName = "open",
             Arguments = shellArguments,
@@ -181,9 +183,9 @@ public static class MacOsProcessInfoFactory
         };
     }
 
-    public static ProcessStartInfo ZSHProcessInfo(string arguments)
+    public static System.Diagnostics.ProcessStartInfo ZSHProcessInfo(string arguments)
     {
-        var startInfo = new ProcessStartInfo
+        var startInfo = new System.Diagnostics.ProcessStartInfo
         {
             FileName = "/bin/zsh",
             Arguments = $"-c \"{arguments}\"",
@@ -195,10 +197,10 @@ public static class MacOsProcessInfoFactory
         return startInfo;
     }
 
-    public static ProcessStartInfo HttpServerProcessInfo(int port, string folder)
+    public static System.Diagnostics.ProcessStartInfo HttpServerProcessInfo(int port, string folder)
     {
         //var http_module_path = "/usr/local/lib/node_modules/node/lib";
-        var startInfo = new ProcessStartInfo
+        var startInfo = new System.Diagnostics.ProcessStartInfo
         {
             FileName = "npx",
             Arguments = $"http-server -p {port} --no-cache",
@@ -211,9 +213,9 @@ public static class MacOsProcessInfoFactory
         return startInfo;
     }
 
-    public static ProcessStartInfo JavaRunJarProcessInfo(string folder, string jarName, string args)
+    public static System.Diagnostics.ProcessStartInfo JavaRunJarProcessInfo(string folder, string jarName, string args)
     {
-        return new ProcessStartInfo
+        return new System.Diagnostics.ProcessStartInfo
         {
             FileName = "java",
             Arguments = $"-jar \"{Path.Combine(folder, jarName)}\" {args}",
@@ -224,9 +226,9 @@ public static class MacOsProcessInfoFactory
         };
     }
 
-    public static ProcessStartInfo JvmIsRunningProcessInfo(string jarFilename)
+    public static System.Diagnostics.ProcessStartInfo JvmIsRunningProcessInfo(string jarFilename)
     {
-        return new ProcessStartInfo
+        return new System.Diagnostics.ProcessStartInfo
         {
             FileName = "pgrep",
             Arguments = $"-f \"{jarFilename}\"",

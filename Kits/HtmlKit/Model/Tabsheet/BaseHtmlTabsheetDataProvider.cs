@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using ContextBrowserKit.Options.Export;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;

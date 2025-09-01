@@ -1,3 +1,4 @@
+using System;
 using ContextBrowser.Infrastructure;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;

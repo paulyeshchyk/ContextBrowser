@@ -1,4 +1,6 @@
-﻿namespace ContextBrowser.Samples;
+﻿using System;
+
+namespace ContextBrowser.Samples;
 
 // context: S6, build
 public class Alpha

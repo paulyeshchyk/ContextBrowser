@@ -1,4 +1,6 @@
-﻿namespace LoggerKit;
+﻿using System;
+
+namespace LoggerKit;
 
 // context: log, share
 public class ConsoleLogWriter : ILogWriter

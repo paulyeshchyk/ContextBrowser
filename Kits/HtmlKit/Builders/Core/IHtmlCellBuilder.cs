@@ -1,4 +1,6 @@
-﻿namespace HtmlKit.Builders.Core;
+﻿using System.IO;
+
+namespace HtmlKit.Builders.Core;
 
 // pattern: Template method
 public interface IHtmlCellBuilder

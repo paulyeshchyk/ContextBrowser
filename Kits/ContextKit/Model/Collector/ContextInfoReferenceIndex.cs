@@ -1,4 +1,6 @@
-﻿namespace ContextKit.Model.Collector;
+﻿using System.Collections.Generic;
+
+namespace ContextKit.Model.Collector;
 
 public class ContextInfoReferenceIndex<TContext>
     where TContext : IContextWithReferences<TContext>

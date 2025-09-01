@@ -1,4 +1,7 @@
-﻿using ContextBrowserKit.Options;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using ContextBrowserKit.Options;
 using ContextKit.Model.Matrix;
 using HtmlKit.Builders.Core;
 using HtmlKit.Extensions;

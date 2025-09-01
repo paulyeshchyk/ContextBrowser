@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using UmlKit.Model;
 
 namespace UmlKit.PlantUmlSpecification;

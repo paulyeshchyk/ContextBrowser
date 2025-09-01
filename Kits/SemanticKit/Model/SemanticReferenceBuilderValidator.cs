@@ -1,3 +1,4 @@
+using System.Linq;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;

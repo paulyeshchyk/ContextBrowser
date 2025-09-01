@@ -1,4 +1,6 @@
-﻿namespace UmlKit.Model;
+﻿using System.IO;
+
+namespace UmlKit.Model;
 
 public class UmlLine : IUmlElement
 {

@@ -1,4 +1,6 @@
-﻿namespace HtmlKit.Builders.Tag;
+﻿using System.Collections.Generic;
+
+namespace HtmlKit.Builders.Tag;
 
 // pattern: Builder
 public static class HtmlBuilderTagAttribute

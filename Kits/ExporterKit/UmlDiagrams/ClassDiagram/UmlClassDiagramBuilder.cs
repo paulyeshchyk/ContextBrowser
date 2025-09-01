@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using ContextKit.Model;
 using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;

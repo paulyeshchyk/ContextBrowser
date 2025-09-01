@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Puml;

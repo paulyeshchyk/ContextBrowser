@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace ContextBrowser.Services;
 
 public interface IServerStartSignal

@@ -1,4 +1,7 @@
-﻿namespace UmlKit.Builders.Model;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace UmlKit.Builders.Model;
 
 public class GrouppedSortedTransitionList
 {
@@ -90,17 +93,17 @@ public class GrouppedSortedTransitionList
 
                 if (sourceB.GetDataset().TryGetValue(key, out var listB))
                 {
-                foreach (var item in listB.Values)
+                    foreach (var item in listB.Values)
                     {
-                    combinedList.Add(combinedList.Count, item);
+                        combinedList.Add(combinedList.Count, item);
                     }
                 }
 
                 if (_dataset.TryGetValue(key, out var listA))
                 {
-                foreach (var item in listA.Values)
+                    foreach (var item in listA.Values)
                     {
-                    combinedList.Add(combinedList.Count, item);
+                        combinedList.Add(combinedList.Count, item);
                     }
                 }
                 return combinedList;

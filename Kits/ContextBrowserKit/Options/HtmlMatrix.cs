@@ -1,4 +1,6 @@
-﻿namespace ContextBrowserKit.Matrix;
+﻿using System.Collections.Generic;
+
+namespace ContextBrowserKit.Matrix;
 
 // context: model, htmlmatrix
 // pattern: DTO

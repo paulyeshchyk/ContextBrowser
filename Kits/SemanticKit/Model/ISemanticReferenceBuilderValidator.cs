@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ContextKit.Model;
 
 namespace SemanticKit.Model;

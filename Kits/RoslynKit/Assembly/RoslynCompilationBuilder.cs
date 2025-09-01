@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
@@ -49,7 +54,20 @@ public class RoslynCompilationBuilder : ICompilationBuilder
     {
         var referencesToLoad = RoslynAssemblyFetcher.Fetch(options.SemanticFilters, _logger.WriteLog);
 
-        var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable);
+        var compilationOptions = new CSharpCompilationOptions(
+            OutputKind.DynamicallyLinkedLibrary,
+            nullableContextOptions: NullableContextOptions.Enable,
+            usings: new[] {
+                "System",
+                "System.Collections",
+                "System.Collections.Immutable",
+                "System.Collections.Generic",
+                "System.IO",
+                "System.Linq",
+                "System.Net.Http",
+                "System.Threading",
+                "System.Threading.Tasks",
+            });
         var compilation = CSharpCompilation.Create(name, options: compilationOptions)
                     .AddSyntaxTrees(syntaxTrees.Select(st => st.Tree).Cast<SyntaxTree>())
                     .AddReferences(referencesToLoad);

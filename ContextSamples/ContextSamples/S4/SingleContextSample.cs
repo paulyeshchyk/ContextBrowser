@@ -1,4 +1,6 @@
-﻿namespace ContextBrowser.Samples.Sample_Task;
+﻿using System;
+
+namespace ContextBrowser.Samples.Sample_Task;
 
 // context: create, S4
 public class TaskService

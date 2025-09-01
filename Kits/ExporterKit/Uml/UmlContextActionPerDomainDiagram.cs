@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Extensions;
+﻿using System;
+using ContextBrowserKit.Extensions;
 using ContextKit.Model.Matrix;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;

@@ -1,4 +1,6 @@
-﻿namespace UmlKit.Builders.Model;
+﻿using System.Collections.Generic;
+
+namespace UmlKit.Builders.Model;
 
 public class SortedTransitionlist1 : SortedList<int, UmlTransitionDto>
 {

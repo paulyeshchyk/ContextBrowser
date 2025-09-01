@@ -1,4 +1,6 @@
-﻿using ContextKit.Model;
+﻿using System;
+using System.Linq;
+using ContextKit.Model;
 
 namespace ContextKit.Stategies;
 

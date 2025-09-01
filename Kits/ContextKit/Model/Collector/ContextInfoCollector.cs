@@ -1,4 +1,8 @@
-﻿namespace ContextKit.Model.Collector;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ContextKit.Model.Collector;
 
 // context: ContextInfo, build
 public class ContextInfoCollector<TContext> : IContextCollector<TContext>

@@ -1,4 +1,6 @@
-﻿using ContextKit.Model;
+﻿using System;
+using System.Collections.Generic;
+using ContextKit.Model;
 
 namespace GraphKit.Walkers;
 

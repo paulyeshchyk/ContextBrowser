@@ -1,4 +1,6 @@
-﻿using HtmlKit.Builders.Core;
+﻿using System.Collections.Generic;
+using System.IO;
+using HtmlKit.Builders.Core;
 using HtmlKit.Page;
 
 namespace HtmlKit.Document;

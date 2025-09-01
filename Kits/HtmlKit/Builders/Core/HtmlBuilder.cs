@@ -1,5 +1,6 @@
-﻿using HtmlKit.Builders.Tag;
+﻿using System.IO;
 using System.Net;
+using HtmlKit.Builders.Tag;
 
 namespace HtmlKit.Builders.Core;
 
