@@ -59,13 +59,15 @@ public class RoslynCompilationBuilder : ICompilationBuilder
             nullableContextOptions: NullableContextOptions.Enable,
             usings: new[] {
                 "System",
-                "System.Collections",
-                "System.Collections.Immutable",
-                "System.Collections.Generic",
-                "System.IO",
-                "System.Linq",
-                "System.Net.Http",
-                "System.Threading",
+                //"System.Diagnostics",
+                //"System.Diagnostics.Process",
+                //"System.Collections",
+                //"System.Collections.Immutable",
+                //"System.Collections.Generic",
+                //"System.IO",
+                //"System.Linq",
+                //"System.Net.Http",
+                //"System.Threading",
                 "System.Threading.Tasks",
             });
         var compilation = CSharpCompilation.Create(name, options: compilationOptions)
@@ -89,7 +91,7 @@ public class RoslynCompilationBuilder : ICompilationBuilder
         foreach (var diagnostic in diagnosticWarnings)
         {
             _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Diagnostics: {diagnostic}");
-        }
+        }   
 
         return new RoslynCompilationWrapper(compilation);
     }

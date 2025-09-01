@@ -78,7 +78,7 @@ public class AppOptions
 
     [CommandLineArgument("import-options", "Параметры импорта")]
     public ImportOptions Import { get; set; } = new(
-        exclude: "**/obj/**;**/*Tests*/**;**/Resources.Designer.cs",
+        exclude: "**/obj/**;**/*Tests*/**",
         fileExtensions: ".cs",
 
         //".//..//..//..//"
@@ -87,7 +87,7 @@ public class AppOptions
         //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
-        searchPaths: new[] { "/Users/paul/projects/ContextBrowser/" });
+        searchPaths: new[] { ".//..//..//..//" });
 
     [CommandLineArgument("export-options", "Параметры экспорта")]
     public ExportOptions Export { get; set; } = new(
@@ -100,7 +100,7 @@ public class AppOptions
         paths: new ExportPaths(
             outputDirectory: ".//output",
                  cacheModel: new CacheJsonModel(
-                    renewCache: false,
+                    renewCache: true,
                          input: ".//cache//roslyn.json",
                         output: ".//cache//roslyn.json"),
             new ExportPathItem(ExportPathType.index, "."),
