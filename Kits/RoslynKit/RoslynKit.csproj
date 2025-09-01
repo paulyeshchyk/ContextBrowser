@@ -11,6 +11,7 @@
 	<PropertyGroup>
 	  <RuntimeFrameworkVersion>6.0.417</RuntimeFrameworkVersion>
 	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />

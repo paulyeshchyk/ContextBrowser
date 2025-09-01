@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+	    <!-- <BaseOutputPath>../../bin</BaseOutputPath> -->
+
+    	<TargetFramework>netstandard2.0</TargetFramework>
+
+    	<!-- Указываем, что это Source Generator -->
+    	<IsRoslynGenerator>true</IsRoslynGenerator>
+
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+  	</PropertyGroup>
+
+  	<ItemGroup>
+    <!-- Указываем зависимости для компилятора Roslyn -->
+    	<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
+    	<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" PrivateAssets="all" />
+  	</ItemGroup>
+
+
+</Project>
