@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ContextBrowserKit.Extensions;
 
 namespace SemanticKit.Model.Options;
 
@@ -24,7 +25,9 @@ public record SemanticOptions
 
     public bool CreateFailedCallees { get; set; }
 
-    public AssemblyPathsFilter SemanticFilters { get; set; }
+    public AssemblyPathFilterPatterns SemanticFilters { get; set; }
+
+    public string GlobalUsings { get; set; }
 
     /// <summary>
     /// if true then error CS8915 occured
@@ -41,7 +44,8 @@ public record SemanticOptions
         IEnumerable<string> customAssembliesPaths,
         bool createFailedCallees,
         bool includePseudoCode,
-        AssemblyPathsFilter semanticFilters
+        string globalUsings,
+        AssemblyPathFilterPatterns semanticFilters
     )
     {
         ExternalNamespaceName = externalNamespaceName;
@@ -53,78 +57,10 @@ public record SemanticOptions
         CustomAssembliesPaths = customAssembliesPaths;
         CreateFailedCallees = createFailedCallees;
         IncludePseudoCode = includePseudoCode;
+        GlobalUsings = globalUsings;
         SemanticFilters = semanticFilters;
     }
 }
-
-public record SemanticFilters
-{
-    public string Excluded { get; }
-    public string Included { get; }
-
-    public SemanticFilters(string excluded, string included)
-    {
-        Excluded = excluded;
-        Included = included;
-    }
-}
-
-public class AssemblyPathsFilter
-{
-    public readonly SemanticFilters TrustedFilters;
-    public readonly SemanticFilters RuntimeFilters;
-    public readonly SemanticFilters DomainFilters;
-
-    public AssemblyPathsFilter(SemanticFilters trustedFilters, SemanticFilters runtimeFilters, SemanticFilters domainFilters)
-    {
-        TrustedFilters = trustedFilters;
-        RuntimeFilters = runtimeFilters;
-        DomainFilters = domainFilters;
-    }
-
-    /// <summary>
-    /// Фильтрует пути сборок на основе доверенных фильтров.
-    /// </summary>
-    public IEnumerable<string> FilterTrustedPaths(IEnumerable<string> assemblyPaths)
-    {
-        return ApplyFilters(assemblyPaths, TrustedFilters);
-    }
-
-    /// <summary>
-    /// Фильтрует пути сборок на основе фильтров времени выполнения.
-    /// </summary>
-    public IEnumerable<string> FilterRuntimePaths(IEnumerable<string> assemblyPaths)
-    {
-        return ApplyFilters(assemblyPaths, RuntimeFilters);
-    }
-
-    /// <summary>
-    /// Фильтрует пути сборок на основе доменных фильтров.
-    /// </summary>
-    public IEnumerable<string> FilterDomainPaths(IEnumerable<string> assemblyPaths)
-    {
-        return ApplyFilters(assemblyPaths, DomainFilters);
-    }
-
-    /// <summary>
-    /// Применяет заданные фильтры к набору путей.
-    /// </summary>
-    private static IEnumerable<string> ApplyFilters(IEnumerable<string> assemblyPaths, SemanticFilters filters)
-    {
-        var excludedPatterns = filters.Excluded.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        var includedPatterns = filters.Included.Split(';', StringSplitOptions.RemoveEmptyEntries);
-
-        return assemblyPaths
-            .Where(path =>
-            {
-                var isIncluded = includedPatterns.Length == 0 || includedPatterns.Any(p => path.Contains(p, StringComparison.OrdinalIgnoreCase));
-                var isExcluded = excludedPatterns.Any(p => path.Contains(p, StringComparison.OrdinalIgnoreCase));
-                return isIncluded && !isExcluded;
-            })
-            .ToList();
-    }
-}
-
 
 // parsing: error
 public record CodeParsingOptions

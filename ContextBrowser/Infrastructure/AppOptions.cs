@@ -45,9 +45,9 @@ public class AppOptions
         semanticOptions: new(
             semanticFilters: new(
                 trustedFilters: new(included: string.Empty, excluded: string.Empty),
-                domainFilters: new(included: string.Empty, excluded: "**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*"),
+                domainFilters: new(included: "**/*", excluded: "**/net6.0/System.Text.Json.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*"),
                 runtimeFilters: new(included: "**/System.Diagnostics.Process.dll;**/System.Net.NetworkInformation.dll;**/System.Net.Primitives.dll;", excluded: string.Empty)////**/ System.Resources.ResourceManager.dll;**/System.Globalization.dll
-                ), 
+                ),
             methodModifierTypes: new()
             {
                 SemanticAccessorModifierType.@public,
@@ -77,7 +77,10 @@ public class AppOptions
             fakeMethodName: "privateMETHOD",
             customAssembliesPaths: new List<string>() { "." },
             createFailedCallees: true,
-            includePseudoCode: false));
+            includePseudoCode: false,
+            globalUsings: "System.Text.Json; System.Diagnostics; System.Diagnostics.Process; System.Collections; System.Collections.Immutable; System.Collections.Generic; System.IO; System.Linq; System.Net.Http; System.Threading; System.Threading.Tasks"
+        )
+    );
 
     [CommandLineArgument("import-options", "Параметры импорта")]
     public ImportOptions Import { get; set; } = new(
