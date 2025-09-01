@@ -76,7 +76,7 @@ public class MainService : IMainService
     public async Task RunAsync(CancellationToken cancellationToken)
     {
         var appOptions = _optionsStore.Options();
-        ExportPathDirectoryPreparer.Prepare(appOptions.Export.Paths);
+        ExportPathDirectoryPreparer.Prepare(appOptions.Export.Paths, _appLogger.WriteLog);
 
         // парсинг кода
         var contextsList = await _parsingOrchestrant.GetParsedContextsAsync(appOptions, cancellationToken);

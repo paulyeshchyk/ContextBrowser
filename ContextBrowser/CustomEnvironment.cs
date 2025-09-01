@@ -2,6 +2,9 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using ContextBrowser.Servers;
+using ContextBrowserKit.Log;
+using ContextBrowserKit.Log.Options;
+using ContextBrowserKit.Options;
 
 namespace ContextBrowser.Services;
 
@@ -44,7 +47,7 @@ public static class CustomEnvironment
         customServer.CopyResourceX(Resources.render_plantuml, SRenderPlantumlJsFilename, httpServerPath);
     }
 
-    public static void RunServers(string outputFolderPath)
+    public static void RunServers(string outputFolderPath, OnWriteLog? onWriteLog)
     {
         var httpServerPath = Path.GetFullPath(outputFolderPath);
 

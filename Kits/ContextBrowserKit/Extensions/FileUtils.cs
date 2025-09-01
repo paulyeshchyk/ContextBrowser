@@ -3,7 +3,6 @@ using System.IO;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using ContextBrowserKitSourceAttribute.TraceGenerator;
 
 namespace ContextBrowserKit.Extensions;
 
@@ -55,7 +54,6 @@ public static class FileUtils
         }
     }
 
-    [TraceMethodStart(null, (int)AppLevel.R_Dll, (int)LogLevel.Trace, $"Compilation map building for: z")]
     //context: file, delete, directory
     public static void WipeDirectory(string path, bool shouldClearContentOnly = true, OnWriteLog? onWriteLog = default)
     {
