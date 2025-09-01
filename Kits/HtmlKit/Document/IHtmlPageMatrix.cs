@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Matrix;
+﻿using System.Collections.Generic;
+using ContextBrowserKit.Matrix;
 using ContextKit.Model;
 using ContextKit.Model.Matrix;
 using HtmlKit.Document.Coverage;

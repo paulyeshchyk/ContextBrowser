@@ -1,4 +1,6 @@
-﻿using ContextKit.Model;
+﻿using System;
+using System.Linq;
+using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;

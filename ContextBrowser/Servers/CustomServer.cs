@@ -1,21 +1,21 @@
-﻿using System.Diagnostics;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace ContextBrowser.Servers;
 
 public abstract class CustomServer
 {
-    public abstract Process? StartServer(string filename, string arguments);
+    public abstract System.Diagnostics.Process? StartServer(string filename, string arguments);
 
-    public abstract Process? StartShell(string arguments, bool autoclose = false);
+    public abstract System.Diagnostics.Process? StartShell(string arguments, bool autoclose = false);
 
-    public abstract Process? StartJar(string folder, string jarName, string args);
+    public abstract System.Diagnostics.Process? StartJar(string folder, string jarName, string args);
 
-    public abstract Process? OpenHtmlPage(string page);
+    public abstract System.Diagnostics.Process? OpenHtmlPage(string page);
 
-    public abstract Process? StartHttpServer(int port, string folder);
+    public abstract System.Diagnostics.Process? StartHttpServer(int port, string folder);
 
-    public abstract void StopProcess(Process? process);
+    public abstract void StopProcess(System.Diagnostics.Process? process);
 
     public abstract void CopyFile(string sourceFile, string outputDirectory);
 
@@ -29,11 +29,11 @@ public abstract class CustomServer
 
     public abstract bool IsJvmPlantUmlProcessRunning(string jarFilename);
 
-    public Process? StartServer(ProcessStartInfo startInfo, string? userInfo = null, Action<Process?, string?>? callback = null)
+    public System.Diagnostics.Process? StartServer(System.Diagnostics.ProcessStartInfo startInfo, string? userInfo = null, Action<System.Diagnostics.Process?, string?>? callback = null)
     {
         try
         {
-            var result = Process.Start(startInfo);
+            var result = System.Diagnostics.Process.Start(startInfo);
             callback?.Invoke(result, null);
             return result;
         }

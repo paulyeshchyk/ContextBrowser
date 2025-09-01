@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SemanticKit.Model;
 
 // context: semantic, model

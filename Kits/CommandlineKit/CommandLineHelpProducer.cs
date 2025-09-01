@@ -1,6 +1,8 @@
-﻿using ContextBrowserKit.Commandline.Polyfills;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using ContextBrowserKit.Commandline.Polyfills;
 
 namespace CommandlineKit;
 

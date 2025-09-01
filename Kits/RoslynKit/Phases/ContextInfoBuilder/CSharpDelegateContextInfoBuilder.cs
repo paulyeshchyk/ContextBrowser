@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Log;
+﻿using System;
+using ContextBrowserKit.Log;
 using ContextKit.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;

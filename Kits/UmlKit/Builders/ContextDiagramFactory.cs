@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using ContextBrowserKit.Log;
 using UmlKit.Builders.Strategies;
 using UmlKit.Builders.TransitionDirection;

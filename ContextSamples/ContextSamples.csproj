@@ -4,7 +4,6 @@
 		<BaseOutputPath>../bin</BaseOutputPath>
 		<OutputType>library</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>

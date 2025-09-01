@@ -4,7 +4,6 @@
 		<BaseOutputPath>../bin</BaseOutputPath>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
@@ -39,6 +38,7 @@
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0" />
 	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+	  <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
 	</ItemGroup>
-
+    
 </Project>

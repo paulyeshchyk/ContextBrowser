@@ -1,4 +1,6 @@
-﻿using ContextKit.Model;
+﻿using System;
+using System.Collections.Generic;
+using ContextKit.Model;
 using UmlKit.Builders.Model;
 
 namespace UmlKit.Builders.Strategies;

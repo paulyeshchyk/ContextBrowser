@@ -1,4 +1,8 @@
-﻿using ContextBrowserKit.Extensions;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using ContextBrowserKit.Extensions;
 using ContextKit.Model;
 using ContextKit.Model.Service;
 using UmlKit.Infrastructure.Options;

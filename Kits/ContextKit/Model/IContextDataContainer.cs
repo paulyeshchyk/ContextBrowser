@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ContextKit.Model;
 
 public interface IContextDataContainer

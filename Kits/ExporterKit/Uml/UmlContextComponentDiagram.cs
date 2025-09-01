@@ -1,4 +1,6 @@
-﻿using ContextBrowserKit.Extensions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Matrix;

@@ -1,4 +1,6 @@
-﻿namespace HtmlKit.Helpers;
+﻿using System;
+
+namespace HtmlKit.Helpers;
 
 // context: color, build
 internal static class HeatmapColorBuilder

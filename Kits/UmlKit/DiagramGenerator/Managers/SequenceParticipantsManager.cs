@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Extensions;
+﻿using System;
+using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using UmlKit.Builders.Model;

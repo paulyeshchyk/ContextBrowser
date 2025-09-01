@@ -1,4 +1,6 @@
-﻿using UmlKit.Infrastructure.Options;
+﻿using System.Collections.Generic;
+using System.IO;
+using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 
 namespace UmlKit.PlantUmlSpecification;

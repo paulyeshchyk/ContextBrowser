@@ -1,4 +1,6 @@
-﻿namespace ContextBrowserKit.Commandline.Polyfills;
+﻿using System;
+
+namespace ContextBrowserKit.Commandline.Polyfills;
 
 // context: commandline, model
 [AttributeUsage(AttributeTargets.Property)]

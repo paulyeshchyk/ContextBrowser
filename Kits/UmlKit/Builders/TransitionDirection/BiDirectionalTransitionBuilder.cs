@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Log;
+﻿using System.Collections.Generic;
+using ContextBrowserKit.Log;
 using ContextKit.Model;
 using UmlKit.Builders.Model;
 using UmlKit.Infrastructure.Options;

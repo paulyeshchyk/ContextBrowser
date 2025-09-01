@@ -1,4 +1,6 @@
-﻿namespace ContextKit.Model;
+﻿using System.Collections.Generic;
+
+namespace ContextKit.Model;
 
 public interface IContextInfo : ISemanticInfo, ISpanInfo, ISemanticContainer
 {

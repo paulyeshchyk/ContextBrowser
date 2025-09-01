@@ -1,4 +1,8 @@
-﻿using ContextBrowserKit.Log;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -97,10 +101,15 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
         }
 
         var declarationSyntax = typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+        if (!typeSymbol.IsImplicitlyDeclared && declarationSyntax == null)
+        {
+            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[{typeSymbol}] Symbol is not implicitly declared");
+            return;
+        }
 
         if (declarationSyntax == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, $"[{typeSymbol}] Symbol has no declared syntax");
+            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, $"[{typeSymbol}] Symbol is not implicitly declared, but has no declared syntax");
             return;
         }
 

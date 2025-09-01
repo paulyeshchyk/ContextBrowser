@@ -1,4 +1,8 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace ContextBrowserKit.Options.Export;
 
 public record ExportPaths

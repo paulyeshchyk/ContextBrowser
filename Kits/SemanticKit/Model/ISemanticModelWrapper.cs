@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace SemanticKit.Model;
 
 public interface ISemanticModelWrapper

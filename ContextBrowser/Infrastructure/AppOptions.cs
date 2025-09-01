@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Commandline.Polyfills;
+﻿using System.Collections.Generic;
+using ContextBrowserKit.Commandline.Polyfills;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -43,8 +44,10 @@ public class AppOptions
 
         semanticOptions: new(
             semanticFilters: new(
-                excludedAssemblyNamesPatterns: "**/System.Private*.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*",
-                runtimeAssemblyFilenamePatterns: "**/System.Runtime*.dll;**/mscorlib.dll"),
+                trustedFilters: new(included: string.Empty, excluded: string.Empty),
+                domainFilters: new(included: "**/*", excluded: "**/net6.0/System.Text.Json.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*"),
+                runtimeFilters: new(included: "**/System.Diagnostics.Process.dll;**/System.Net.NetworkInformation.dll;**/System.Net.Primitives.dll;", excluded: string.Empty)////**/ System.Resources.ResourceManager.dll;**/System.Globalization.dll
+                ),
             methodModifierTypes: new()
             {
                 SemanticAccessorModifierType.@public,
@@ -74,11 +77,14 @@ public class AppOptions
             fakeMethodName: "privateMETHOD",
             customAssembliesPaths: new List<string>() { "." },
             createFailedCallees: true,
-            includePseudoCode: false));
+            includePseudoCode: false,
+            globalUsings: "System.Text.Json; System.Diagnostics; System.Diagnostics.Process; System.Collections; System.Collections.Immutable; System.Collections.Generic; System.IO; System.Linq; System.Net.Http; System.Threading; System.Threading.Tasks"
+        )
+    );
 
     [CommandLineArgument("import-options", "Параметры импорта")]
     public ImportOptions Import { get; set; } = new(
-        exclude: "**/obj/**;**/*Tests*/**;**/Resources.Designer.cs",
+        exclude: "**/obj/**;**/*Tests*/**",
         fileExtensions: ".cs",
 
         //".//..//..//..//"
@@ -87,7 +93,7 @@ public class AppOptions
         //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
-        searchPaths: new[] { "/Users/paul/projects/ContextBrowser/" });
+        searchPaths: new[] { ".//..//..//..//" });
 
     [CommandLineArgument("export-options", "Параметры экспорта")]
     public ExportOptions Export { get; set; } = new(
@@ -100,7 +106,7 @@ public class AppOptions
         paths: new ExportPaths(
             outputDirectory: ".//output",
                  cacheModel: new CacheJsonModel(
-                    renewCache: false,
+                    renewCache: true,
                          input: ".//cache//roslyn.json",
                         output: ".//cache//roslyn.json"),
             new ExportPathItem(ExportPathType.index, "."),

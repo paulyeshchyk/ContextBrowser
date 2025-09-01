@@ -1,4 +1,6 @@
-﻿using ContextBrowserKit.Extensions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ContextBrowserKit.Extensions;
 using ContextKit.Model.Matrix;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;

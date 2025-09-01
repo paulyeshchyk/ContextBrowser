@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using UmlKit.Infrastructure.Options;

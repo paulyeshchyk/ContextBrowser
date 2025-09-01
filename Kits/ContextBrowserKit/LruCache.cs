@@ -1,4 +1,8 @@
-﻿namespace ContextBrowserKit;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ContextBrowserKit;
 
 public class LRUCache<TKey, TValue>
     where TKey : notnull

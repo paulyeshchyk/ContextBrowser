@@ -1,4 +1,6 @@
-﻿namespace UmlKit.Extensions;
+﻿using System;
+
+namespace UmlKit.Extensions;
 
 public static class EnumExts
 {

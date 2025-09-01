@@ -1,4 +1,6 @@
-﻿namespace LoggerKit.Model;
+﻿using System.Collections.Generic;
+
+namespace LoggerKit.Model;
 
 // context: log, model
 public class LogConfiguration<TAppLevel, TLogLevel>

@@ -1,19 +1,29 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Runtime.Serialization;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Filters;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.Extensions.Hosting;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Assembly;
@@ -21,115 +31,102 @@ namespace RoslynKit.Assembly;
 // context: roslyn, build
 public static class RoslynAssemblyFetcher
 {
-
     // context: roslyn, build
-    public static IEnumerable<MetadataReference> Fetch(SemanticFilters semanticFilters, OnWriteLog? onWriteLog)
+    public static IEnumerable<MetadataReference> Fetch(AssemblyPathFilterPatterns assemblyPathsFilter, IAppLogger<AppLevel> logger)
     {
-        var runtimeDirectoryPaths = RoslynAssemblyFetcher.FetchRuntimeDirectoryAssemblyPaths(semanticFilters, onWriteLog);
-        var currentDomainPaths = RoslynAssemblyFetcher.FetchCurrentDomainPaths(semanticFilters, onWriteLog);
-        var trustedPlatformPaths = RoslynAssemblyFetcher.FetchTrustedPlatformPaths(semanticFilters, onWriteLog);
+        var trustedPlatformPaths = RoslynAssemblyFetcher.FetchTrustedPlatformPaths(logger);
+        var filteredTrustedPaths = RoslynAssemblyFetcher.ApplyFilters(trustedPlatformPaths, assemblyPathsFilter.TrustedFilters);
+        logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredTrustedPaths.Count()} trusted сборок");
 
-        var uniqAssemlyPaths = new HashSet<string>();
-        uniqAssemlyPaths.UnionWith(runtimeDirectoryPaths);
-        uniqAssemlyPaths.UnionWith(currentDomainPaths);
+        var currentDomainPaths = RoslynAssemblyFetcher.FetchCurrentDomainPaths(logger);
+        var filteredDomainPaths = RoslynAssemblyFetcher.ApplyFilters(currentDomainPaths, assemblyPathsFilter.DomainFilters);
+        logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredDomainPaths.Count()} domain сборок");
 
-        // uniqAssemlyPaths.UnionWith(new List<string>() { "/usr/local/share/dotnet/sdk/6.0.417/System.CodeDom.dll" });
+        var runtimeDirectoryPaths = RoslynAssemblyFetcher.FetchRuntimeDirectoryAssemblyPaths(logger);
+        var filteredRuntimePaths = RoslynAssemblyFetcher.ApplyFilters(runtimeDirectoryPaths, assemblyPathsFilter.DomainFilters);
+        logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredRuntimePaths.Count()} domain сборок");
 
-        // uniqAssemlyPaths.UnionWith(trustedPlatformPaths);
-        // uniqAssemlyPaths.Add("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/6.0.25/mscorlib.dll");
-        // uniqAssemlyPaths.Add("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/6.0.25/System.Core.dll");
-        // uniqAssemlyPaths.Add("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/6.0.25/System.Collections.dll");
-        // uniqAssemlyPaths.Add("/Users/paul/projects/ContextBrowser/bin/Debug/net6.0/System.Collections.Immutable.dll");
-        // uniqAssemlyPaths.Add("/Users/paul/projects/ContextBrowser/bin/Debug/net6.0/System.Reflection.Metadata.dll");
-        // uniqAssemlyPaths.Add("/Users/paul/projects/ContextBrowser/bin/Debug/net6.0/System.Text.Encoding.CodePages.dll");
-        // uniqAssemlyPaths.Add("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/6.0.25/System.Runtime.dll");
-        // uniqAssemlyPaths.Add(typeof(System.Net.NetworkInformation.GatewayIPAddressInformation).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(CSharpCommandLineArguments).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(SyntaxNode).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(ISymbol).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(Regex).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(JsonArray).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(CallSite).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(LinkedListNode<>).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(Console).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(ProcessStartInfo).Assembly.Location);
-        // uniqAssemlyPaths.Add(typeof(ConcurrentDictionary<,>).Assembly.Location);
+        var allAssemblyPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            typeof(object).Assembly.Location
+        };
 
+        allAssemblyPaths.UnionWith(filteredTrustedPaths);
+        allAssemblyPaths.UnionWith(filteredDomainPaths);
+        allAssemblyPaths.UnionWith(filteredRuntimePaths);
 
-        return uniqAssemlyPaths.Select(path => MetadataReference.CreateFromFile(path));
+        return allAssemblyPaths.Select(path => MetadataReference.CreateFromFile(path));
     }
 
-
     // context: roslyn, build
-    internal static string[] FetchTrustedPlatformPaths(SemanticFilters semanticFilters, OnWriteLog? onWriteLog)
+    private static string[] FetchTrustedPlatformPaths(IAppLogger<AppLevel> logger)
     {
-        var trustedAssembliesPaths = (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string ?? string.Empty).Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
-        if (trustedAssembliesPaths == null || trustedAssembliesPaths.Length == 0)
+        var result = (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string ?? string.Empty)
+            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
+
+        if (result.Length == 0)
         {
-            onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Warn, "Не удалось найти доверенные сборки платформы.");
+            logger.WriteLog(AppLevel.R_Dll, LogLevel.Warn, "Не удалось найти доверенные сборки платформы.");
             return Array.Empty<string>();
         }
 
-        var excluded = PathFilter.FilterPaths(trustedAssembliesPaths, semanticFilters.ExcludedAssemblyNamesPatterns, (thePath) => (thePath));
-        var filtered = PathFilter.FilteroutPaths(trustedAssembliesPaths, semanticFilters.ExcludedAssemblyNamesPatterns, (thePath) => (thePath));
-
-        var excludedLogValue = excluded.Any() ? string.Join("\nExcluded trusted assembly: ", excluded) : "none";
-        onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Trace, $"Excluded trusted platform assembly: {excludedLogValue}");
-
-        var includedLogValue = filtered.Any() ? string.Join("\nIncluded trusted platform assembly: ", filtered) : "none";
-        onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Trace, $"Included trusted platform assembly: {includedLogValue}");
-        return filtered;
+        return result;
     }
 
     // context: roslyn, build
-    internal static string[] FetchCurrentDomainPaths(SemanticFilters semanticFilters, OnWriteLog? onWriteLog)
+    private static string[] FetchCurrentDomainPaths(IAppLogger<AppLevel> logger)
     {
         var domainAssemblies = AssemblyLoadContext.Default.Assemblies.ToArray();
-
-        var excluded = PathFilter.FilterPaths(domainAssemblies, semanticFilters.ExcludedAssemblyNamesPatterns, (theAssembly) => (theAssembly.Location));
-        var filtered = PathFilter.FilteroutPaths(domainAssemblies, semanticFilters.ExcludedAssemblyNamesPatterns, (theAssembly) => (theAssembly.Location));
         var result = new List<string>();
-        foreach (var path in filtered)
+
+        foreach (var assembly in domainAssemblies)
         {
             try
             {
-                if (!path.IsDynamic)
+                if (assembly.IsDynamic)
                 {
-                    result.Add(path.Location);
+                    logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"[SKIP] Dynamic assembly {assembly.FullName}");
                 }
                 else
                 {
-                    onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Trace, $"[SKIP] Dynamic assembly {path}");
+                    result.Add(assembly.Location);
                 }
             }
             catch (Exception ex)
             {
-                onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Exception, $"Ошибка при загрузке сборки {path}: {ex.Message}");
+                logger.WriteLog(AppLevel.R_Dll, LogLevel.Exception, $"Ошибка при загрузке сборки {assembly.FullName}: {ex.Message}");
             }
         }
 
-        var excludedLogValue = excluded.Any() ? string.Join("\nExcluded current domain assembly: ", excluded.Select(a => a.Location)) : "none";
-        onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Trace, $"Excluded current domain assembly: {excludedLogValue}");
-
-        var includedLogValue = result.Any() ? string.Join("\nIncluded current domain assembly: ", result.Select(a => a)) : "none";
-        onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Trace, $"Included current domain assembly: {includedLogValue}");
         return result.ToArray();
     }
 
     // context: roslyn, build
-    internal static string[] FetchRuntimeDirectoryAssemblyPaths(SemanticFilters semanticFilters, OnWriteLog? onWriteLog)
+    private static string[] FetchRuntimeDirectoryAssemblyPaths(IAppLogger<AppLevel> logger)
     {
         var runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
         if (string.IsNullOrWhiteSpace(runtimeDirectory))
         {
-            onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Warn, "[MISS]: Не найден путь assembly для typeof(object)");
+            logger.WriteLog(AppLevel.R_Dll, LogLevel.Warn, "[MISS]: Не найден путь assembly для typeof(object)");
             return Array.Empty<string>();
         }
 
-        var runtimeDirectoryPaths = Directory.GetFiles(runtimeDirectory);
-        var result = PathFilter.FilterPaths(runtimeDirectoryPaths, semanticFilters.RuntimeAssemblyFilenamePatterns, (p) => p);
-        var includedLogValue = result.Any() ? string.Join("\nIncluded Runtime directory assembly: ", result.Select(a => a)) : "none";
-        onWriteLog?.Invoke(AppLevel.R_Dll, LogLevel.Trace, $"Included Runtime directory assembly: {includedLogValue}");
-        return result;
+        var result = Directory.GetFiles(runtimeDirectory, "*.dll", SearchOption.TopDirectoryOnly).ToList();
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            result.AddRange(Directory.GetFiles(runtimeDirectory, "*.exe", SearchOption.TopDirectoryOnly));
+        }
+
+        return result.ToArray();
+    }
+
+    internal static IEnumerable<string> ApplyFilters(string[] paths, FilterPatterns filterPatterns)
+    {
+        // из всего списка оставляем только те, что нужны
+        var filteredInPaths = PathFilter.FilterPaths(items: paths, filter: filterPatterns.Included, pathSelector: (thePath) => thePath);
+
+        // из оставшегося списка убираем те, что не нужны
+        return PathFilter.FilteroutPaths(items: filteredInPaths, filter: filterPatterns.Excluded, pathSelector: (thePath) => thePath);
     }
 }

@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Extensions;
+﻿using System.Collections.Generic;
+using ContextBrowserKit.Extensions;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;

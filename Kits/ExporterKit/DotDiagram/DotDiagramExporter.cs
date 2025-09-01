@@ -1,4 +1,7 @@
-﻿using UmlKit.Builders.Model;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UmlKit.Builders.Model;
 
 namespace ExporterKit.DotDiagram;
 

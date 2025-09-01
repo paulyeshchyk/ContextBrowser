@@ -1,4 +1,7 @@
-﻿namespace UmlKit.Model;
+﻿using System.Collections.Generic;
+using System.IO;
+
+namespace UmlKit.Model;
 
 // context: model, uml
 // pattern: Composite leaf

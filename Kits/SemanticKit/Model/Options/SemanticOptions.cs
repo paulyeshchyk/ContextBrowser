@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using ContextBrowserKit.Extensions;
+
 namespace SemanticKit.Model.Options;
 
 // pattern: configuration
@@ -20,7 +25,9 @@ public record SemanticOptions
 
     public bool CreateFailedCallees { get; set; }
 
-    public SemanticFilters SemanticFilters { get; set; }
+    public AssemblyPathFilterPatterns SemanticFilters { get; set; }
+
+    public string GlobalUsings { get; set; }
 
     /// <summary>
     /// if true then error CS8915 occured
@@ -37,7 +44,8 @@ public record SemanticOptions
         IEnumerable<string> customAssembliesPaths,
         bool createFailedCallees,
         bool includePseudoCode,
-        SemanticFilters semanticFilters
+        string globalUsings,
+        AssemblyPathFilterPatterns semanticFilters
     )
     {
         ExternalNamespaceName = externalNamespaceName;
@@ -49,21 +57,9 @@ public record SemanticOptions
         CustomAssembliesPaths = customAssembliesPaths;
         CreateFailedCallees = createFailedCallees;
         IncludePseudoCode = includePseudoCode;
+        GlobalUsings = globalUsings;
         SemanticFilters = semanticFilters;
     }
-}
-
-public record SemanticFilters
-{
-    public string ExcludedAssemblyNamesPatterns { get; }
-    public string RuntimeAssemblyFilenamePatterns { get; }
-
-    public SemanticFilters(string excludedAssemblyNamesPatterns, string runtimeAssemblyFilenamePatterns)
-    {
-        ExcludedAssemblyNamesPatterns = excludedAssemblyNamesPatterns;
-        RuntimeAssemblyFilenamePatterns = runtimeAssemblyFilenamePatterns;
-    }
-
 }
 
 // parsing: error

@@ -1,3 +1,4 @@
+using System;
 using HtmlKit.Model;
 
 namespace HtmlKit.Model.Tabsheet;

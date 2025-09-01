@@ -1,4 +1,7 @@
-﻿namespace HtmlKit.Builders.Core;
+﻿using System;
+using System.IO;
+
+namespace HtmlKit.Builders.Core;
 
 // pattern: Decorator
 // pattern note: weak

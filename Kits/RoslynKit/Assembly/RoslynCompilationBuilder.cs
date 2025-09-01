@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
@@ -33,23 +38,45 @@ public class RoslynCompilationBuilder : ICompilationBuilder
         var compilation = BuildCompilation(options, syntaxTrees, options.CustomAssembliesPaths);
 
         // 3. Формируем модель для каждого дерева
+        var result = BuildSemanticCompilationMap(syntaxTrees, compilation);
+
+        return result;
+    }
+
+    private SemanticCompilationMap BuildSemanticCompilationMap(List<RoslynSyntaxTreeWrapper> syntaxTrees, ICompilationWrapper compilation)
+    {
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Compilation map building", LogLevelNode.Start);
         var result = new SemanticCompilationMap();
         foreach (var tree in syntaxTrees)
         {
-            var model = compilation.GetSemanticModel(tree);
-            var compilationMap = new CompilationMap(tree, model);
+            var compilationMap = BuildCompilationMap(compilation, tree);
             result.Add(compilationMap);
         }
-
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Compilation map build done", LogLevelNode.End);
         return result;
+    }
+
+    private CompilationMap BuildCompilationMap(ICompilationWrapper compilation, RoslynSyntaxTreeWrapper tree)
+    {
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Compilation map building for: {tree.FilePath}");
+        var model = compilation.GetSemanticModel(tree);
+        var compilationMap = new CompilationMap(tree, model);
+        return compilationMap;
     }
 
     // context: roslyn, build
     public ICompilationWrapper BuildCompilation(SemanticOptions options, IEnumerable<ISyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name = "Parser")
     {
-        var referencesToLoad = RoslynAssemblyFetcher.Fetch(options.SemanticFilters, _logger.WriteLog);
+        var referencesToLoad = RoslynAssemblyFetcher.Fetch(options.SemanticFilters, _logger);
+        var usings = GetValidatedUsingsFromOptions(options);
+        var compilationOptions = new CSharpCompilationOptions
+        (
+            OutputKind.DynamicallyLinkedLibrary,
+            nullableContextOptions: NullableContextOptions.Enable,
+            usings: usings
+        );
 
-        var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable);
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Compilation loading", LogLevelNode.Start);
         var compilation = CSharpCompilation.Create(name, options: compilationOptions)
                     .AddSyntaxTrees(syntaxTrees.Select(st => st.Tree).Cast<SyntaxTree>())
                     .AddReferences(referencesToLoad);
@@ -60,7 +87,7 @@ public class RoslynCompilationBuilder : ICompilationBuilder
             _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Loaded reference: {reference.Display}");
         }
 
-        var diagnostics = compilation.GetDiagnostics();
+        var diagnostics = compilation.GetDiagnostics().ToList();
         var diagnosticErrors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
         foreach (var diagnostic in diagnosticErrors)
         {
@@ -72,9 +99,23 @@ public class RoslynCompilationBuilder : ICompilationBuilder
         {
             _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Diagnostics: {diagnostic}");
         }
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Compilation loaded", LogLevelNode.End);
 
         return new RoslynCompilationWrapper(compilation);
     }
+
+    private static string[] GetValidatedUsingsFromOptions(SemanticOptions options)
+    {
+        string[] SDefaultUsing = new string[] { "System" };
+
+        var result = string.IsNullOrWhiteSpace(options.GlobalUsings)
+            ? SDefaultUsing
+            : options.GlobalUsings.Split(";").Select(s => s.Trim()).ToArray();
+        return (result.Length == 0)
+            ? SDefaultUsing
+            : result;
+    }
+
 
     private string PsoudoCodeInject(SemanticOptions _options, string filePath)
     {

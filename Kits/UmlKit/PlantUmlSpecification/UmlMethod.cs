@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace UmlKit.Model;
 
 public class UmlMethod : IUmlElement
