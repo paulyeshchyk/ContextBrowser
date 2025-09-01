@@ -44,8 +44,10 @@ public class AppOptions
 
         semanticOptions: new(
             semanticFilters: new(
-                excludedAssemblyNamesPatterns: "**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*",
-                runtimeAssemblyFilenamePatterns: "**/System.Diagnostics.Process.dll;**/System.Net.NetworkInformation.dll;**/System.Net.Primitives.dll;"), //**/ System.Resources.ResourceManager.dll;**/System.Globalization.dll
+                trustedFilters: new(included: string.Empty, excluded: string.Empty),
+                domainFilters: new(included: string.Empty, excluded: "**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*"),
+                runtimeFilters: new(included: "**/System.Diagnostics.Process.dll;**/System.Net.NetworkInformation.dll;**/System.Net.Primitives.dll;", excluded: string.Empty)////**/ System.Resources.ResourceManager.dll;**/System.Globalization.dll
+                ), 
             methodModifierTypes: new()
             {
                 SemanticAccessorModifierType.@public,
