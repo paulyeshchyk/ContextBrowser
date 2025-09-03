@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<BaseOutputPath>../../bin</BaseOutputPath>
@@ -32,6 +32,12 @@
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Builders\" />
+	  <Folder Include="Html\Pages\MatrixCellSummaryRowAction\" />
+	  <Folder Include="Html\Pages\MatrixCellSummaryRowDomain\" />
+	  <Folder Include="UmlDiagrams\" />
 	</ItemGroup>
 
 </Project>

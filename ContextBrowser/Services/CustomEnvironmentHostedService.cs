@@ -26,8 +26,8 @@ public class CustomEnvironmentHostedService : IHostedService
             await _startSignal.WaitForSignalAsync();
 
             var appOptions = _optionsStore.Options();
-            CustomEnvironment.CopyResources(appOptions.Export.Paths.OutputDirectory);
-            CustomEnvironment.RunServers(appOptions.Export.Paths.OutputDirectory);
+            CustomEnvironment.CopyResources(appOptions.Export.FilePaths.OutputDirectory);
+            CustomEnvironment.RunServers(appOptions.Export.FilePaths.OutputDirectory);
         }, cancellationToken);
 
         return Task.CompletedTask;

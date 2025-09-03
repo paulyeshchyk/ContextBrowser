@@ -36,13 +36,13 @@ public static class TabRegistration
     /// TModel — конкретная реализация модели (реализует TContract и IHtmlTabsheetDataModel),
     /// TContract — интерфейс-контракт, под которым вкладка будет доступна провайдеру.
     /// </summary>
-    public static IHtmlTabRegistration For<TModel, TContract>(
+    public static IHtmlTabRegistration For< TContract>(
         string tabId,
         string caption,
         bool isActive,
-        TModel model,
-        Action<TextWriter, TModel, HtmlContextInfoDataCell> build)
-        where TModel : class, TContract
+        TContract model,
+        Action<TextWriter, TContract, HtmlContextInfoDataCell> build)
+        // where TModel : class, TContract
         where TContract : IHtmlTabsheetDataModel
     {
         if (string.IsNullOrWhiteSpace(tabId)) throw new ArgumentException("tabId required", nameof(tabId));
@@ -57,7 +57,7 @@ public static class TabRegistration
             buildHtmlTab: (writer, tabsheetProvider, dto) =>
             {
                 var resolved = tabsheetProvider.GetTabsheetDataModel<TContract>();
-                build(writer, (TModel)resolved, dto);
+                build(writer, (TContract)resolved, dto);
             },
             isActive: isActive
         );

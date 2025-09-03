@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using HtmlKit.Builders.Core;
 using HtmlKit.Builders.Tag;
 using HtmlKit.Classes;
@@ -40,7 +44,9 @@ public static class HtmlBuilderFactory
     public static readonly IHtmlBuilder P = new HtmlBuilderP("p");
     public static readonly IHtmlBuilder Ul = new HtmlBuilderUl("ul");
     public static readonly IHtmlBuilder Li = new HtmlBuilderLi("li");
+    public static readonly IHtmlBuilder A = new HtmlBuilderAnchor(string.Empty);
     public static readonly IHtmlCellBuilder Raw = new RawBuilder();
+    public static HtmlBuilder Puml(string content, string server, string? rendererMode = null) => new PumlHtmlBuilder(content, server, rendererMode);
 
     // pattern: Abstract Factory
     // pattern note: weak
@@ -75,7 +81,7 @@ public static class HtmlBuilderFactory
         }
 
         // Cell метод не всегда применим для произвольных тегов (html, head, body, table)
-        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "")
+        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
         {
             throw new NotSupportedException($"Cell method is not supported for <{Tag}> tag in StandardTagBuilder. Use Start/End instead.");
         }
@@ -89,10 +95,6 @@ public static class HtmlBuilderFactory
         {
         }
 
-        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "")
-        {
-            WriteContentTag(sb, innerHtml, style, className);
-        }
     }
 
     // Специализированный билдер для <meta>
@@ -115,6 +117,16 @@ public static class HtmlBuilderFactory
         public HtmlBuilderScript(string tag) : base(tag, string.Empty)
         {
         }
+
+        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
+        {
+            var content = !string.IsNullOrWhiteSpace(innerHtml)
+                ? innerHtml
+                : string.Empty;
+
+            WriteContentTag(sb, attributes, content, isEncodable);
+        }
+
     }
 
     // Специализированный билдер для <style>
@@ -125,10 +137,44 @@ public static class HtmlBuilderFactory
         {
         }
 
-        public override void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "")
+        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
         {
             if (!string.IsNullOrWhiteSpace(innerHtml))
-                sb.WriteLine($"<style>{innerHtml}</style>");
+                sb.WriteLine($"<style>\n{innerHtml}\n</style>");
+        }
+    }
+
+    // Специализированный билдер для <render-plantuml>
+    public class PumlHtmlBuilder : HtmlBuilder
+    {
+        private const string SRenderPlantumlJs = "<script type=\"module\">import enableElement from \"./../render-plantuml.js\";enableElement({{serverURL: \"{0}\"}});</script>";
+
+        public string RendererMode { get; set; }
+        public string Server { get; set; }
+        public string Content { get; set; }
+
+        public PumlHtmlBuilder(string content, string server, string? rendererMode = null) : base("render-plantuml", string.Empty)
+        {
+            Content = content;
+            Server = server;
+            RendererMode = string.IsNullOrEmpty(rendererMode) ? "svg" : rendererMode;
+        }
+
+        public override void Start(TextWriter sb, IHtmlTagAttributes? attrs = null)
+        {
+            sb.Write(string.Format(SRenderPlantumlJs, Server));
+        }
+
+        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
+        {
+            var rendererAttributes = new HtmlTagAttributes() { { "rendererMode", RendererMode }, { "server", Server } };
+
+            WriteContentTag(sb, rendererAttributes, Content, isEncodable: false);
+        }
+
+        public override void End(TextWriter sb)
+        {
+            // nothing to do and noting to override
         }
     }
 
@@ -153,13 +199,16 @@ public static class HtmlBuilderFactory
         {
         }
 
-        protected override void WriteContentTag(TextWriter sb, string? content = "", string? style = null, string className = "")
+        protected override void WriteContentTag(TextWriter sb, IHtmlTagAttributes? attributes, string? content = "", bool isEncodable = true)
         {
-            string classAttr = HtmlBuilderTagAttribute.BuildClassAttribute(className);
-            string styleAttr = HtmlBuilderTagAttribute.BuildStyleAttribute(style);
-            string onClickAttr = HtmlBuilderTagAttribute.BuildOnClickAttribute(_onClickEvent);
+            var innerAttrs = new HtmlTagAttributes() { { "onClick", _onClickEvent } };
+            innerAttrs.Concat(attributes);
 
-            sb.WriteLine($"<{Tag}{classAttr}{styleAttr}{onClickAttr}>{content}</{Tag}>");
+            var attributesString = innerAttrs.ToString();
+            var theContent = isEncodable
+                ? WebUtility.HtmlEncode(content)
+                : string.IsNullOrEmpty(content) ? string.Empty : content;
+            sb.WriteLine($"<{Tag} {attributesString}>{theContent}</{Tag}>");
         }
     }
 
@@ -173,6 +222,13 @@ public static class HtmlBuilderFactory
     private class HtmlBuilderUl : HtmlBuilder
     {
         public HtmlBuilderUl(string tag) : base(tag, string.Empty)
+        {
+        }
+    }
+
+    private class HtmlBuilderAnchor : HtmlBuilder
+    {
+        public HtmlBuilderAnchor(string className) : base("a", className)
         {
         }
     }
@@ -202,10 +258,12 @@ public static class HtmlBuilderFactory
     public readonly struct RawBuilder : IHtmlCellBuilder
     {
         // context: html, build
-        public void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "")
+        public void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
         {
-            if (!string.IsNullOrWhiteSpace(innerHtml))
-                sb.WriteLine(innerHtml);
+            if (string.IsNullOrWhiteSpace(innerHtml))
+                return;
+
+            sb.WriteLine(innerHtml);
         }
 
         // context: html, build

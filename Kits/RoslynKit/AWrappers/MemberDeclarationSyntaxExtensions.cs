@@ -8,7 +8,8 @@ namespace RoslynKit.Extensions;
 
 internal static class MemberDeclarationSyntaxExtensions
 {
-    private const string SFakeDeclaration = "FakeDeclaration";
+    private const string SFakeIdentifier = "FakeIdentifier";
+    private const string SFakeName = "FakeName";
 
     public static string GetIdentifier(this SyntaxNode member) =>
         member switch
@@ -19,7 +20,7 @@ internal static class MemberDeclarationSyntaxExtensions
             EnumDeclarationSyntax e => e.Identifier.Text,
             MethodDeclarationSyntax m => m.Identifier.Text,
             BaseNamespaceDeclarationSyntax nn => nn.Name.ToFullString(),
-            _ => SFakeDeclaration
+            _ => SFakeIdentifier
         };
 
     public static string GetName(this SyntaxNode member) =>
@@ -31,7 +32,7 @@ internal static class MemberDeclarationSyntaxExtensions
             EnumDeclarationSyntax e => e.Identifier.Text,
             MethodDeclarationSyntax m => m.Identifier.Text,
             BaseNamespaceDeclarationSyntax nn => nn.Name.ToFullString(),
-            _ => SFakeDeclaration
+            _ => SFakeName
         };
 
     public static SemanticAccessorModifierType? GetModifierType(this MethodDeclarationSyntax method)

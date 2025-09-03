@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using ContextBrowser.Infrastructure;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using ExporterKit.DiagramCompiler;
-using ExporterKit.HtmlPageSamples;
+using ExporterKit.Uml;
 using LoggerKit;
 
 namespace ContextBrowser.Services;
@@ -15,11 +14,11 @@ public interface IDiagramCompilerOrchestrator
 
 public class DiagramCompilerOrchestrator : IDiagramCompilerOrchestrator
 {
-    private readonly IEnumerable<IDiagramCompiler> _compilers;
+    private readonly IEnumerable<IUmlDiagramCompiler> _compilers;
     private readonly IAppLogger<AppLevel> _appLogger;
 
     public DiagramCompilerOrchestrator(
-        IEnumerable<IDiagramCompiler> compilers,
+        IEnumerable<IUmlDiagramCompiler> compilers,
         IAppLogger<AppLevel> appLogger)
     {
         _compilers = compilers;

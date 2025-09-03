@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using ContextKit.Model.Matrix;
 using HtmlKit.Builders.Core;
 using HtmlKit.Page;
@@ -17,10 +18,11 @@ internal class CellWithCoverageBuilder
 
         using var sw = new StringWriter();
 
-        Page.HtmlBuilderFactory.Table.With(sw, () =>
+        var attributes = new HtmlTagAttributes() { { "class", "embedded-table" } };
+        Page.HtmlBuilderFactory.Table.With(sw, attributes, () =>
         {
             WriteRow(sw, cnt.ToString());
-        }, className: "embedded-table");
+        });
 
         return sw.ToString();
     }
@@ -29,7 +31,7 @@ internal class CellWithCoverageBuilder
     {
         HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(writer, () =>
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(writer, label);
+            HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(writer, innerHtml: label, isEncodable: false);
         });
     }
 }

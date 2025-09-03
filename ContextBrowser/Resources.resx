@@ -120,14 +120,4 @@
   <data name="DefaultLogLevelConfigJson" xml:space="preserve">
     <value>{"LogLevels":[{"AppLevel":"file","LogLevel":"Err"},{"AppLevel":"Roslyn","LogLevel":"Dbg"},{"AppLevel":"Puml","LogLevel":"Dbg"},{"AppLevel":"PumlTransition","LogLevel":"Dbg"},{"AppLevel":"Html","LogLevel":"Err"}]}</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="favicon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Infrastructure\Picoweb\favicon.ico;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="plantuml_1_2025_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Infrastructure\Picoweb\plantuml-1.2025.4.jar;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="render_plantuml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Infrastructure\Picoweb\render-plantuml.js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
 </root>

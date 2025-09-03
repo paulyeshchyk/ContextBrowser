@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using HtmlKit.Builders.Tag;
 
@@ -21,24 +24,14 @@ public abstract class HtmlBuilder : IHtmlBuilder
         ClassName = className;
     }
 
-    public virtual void Start(TextWriter sb)
+    public virtual void Start(TextWriter sb, IHtmlTagAttributes? attrs = null)
     {
-        string classAttr = HtmlBuilderTagAttribute.BuildClassAttribute(ClassName);
-        sb.WriteLine($"<{Tag}{classAttr}>");
-    }
+        var attributes = new HtmlTagAttributes(StringComparer.OrdinalIgnoreCase);
+        attributes.Concat(attrs);
+        attributes.AddIfNotExists("class", ClassName);
 
-    public void Start(TextWriter sb, string? className, string? id)
-    {
-        string classAttr = HtmlBuilderTagAttribute.BuildClassAttribute(className);
-        string idAttr = HtmlBuilderTagAttribute.BuildIdAttribute(id);
-        if (IsClosable)
-        {
-            sb.WriteLine($"<{Tag}{classAttr}{idAttr}>");
-        }
-        else
-        {
-            sb.WriteLine($"<{Tag}{classAttr}{idAttr}/>");
-        }
+        var attributesStr = attributes.ToString();
+        sb.WriteLine($"<{Tag} {attributesStr}>");
     }
 
     public virtual void End(TextWriter sb)
@@ -48,14 +41,17 @@ public abstract class HtmlBuilder : IHtmlBuilder
             sb.WriteLine($"</{Tag}>");
         }
     }
-
-    public virtual void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "")
+    public virtual void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
     {
-        var content = string.IsNullOrWhiteSpace(href)
-            ? (isRaw ? innerHtml : WebUtility.HtmlEncode(innerHtml))
-            : new HtmlBuilderEncodedAnchorSpecial(href, innerHtml).ToString();
+        var content = !string.IsNullOrWhiteSpace(innerHtml)
+            ? innerHtml
+            : string.Empty;
+        var attrs = new HtmlTagAttributes(StringComparer.OrdinalIgnoreCase);
+        attrs.Concat(attributes);
+        attrs.AddIfNotExists("class", ClassName);
 
-        WriteContentTag(sb, content, style, className);
+
+        WriteContentTag(sb, attrs, content, isEncodable);
     }
 
     public virtual HtmlBuilder OnClick(string eventScript)
@@ -64,11 +60,13 @@ public abstract class HtmlBuilder : IHtmlBuilder
         return this;
     }
 
-    protected virtual void WriteContentTag(TextWriter sb, string? content = "", string? style = null, string className = "")
+    protected virtual void WriteContentTag(TextWriter sb, IHtmlTagAttributes? attributes, string content = "", bool isEncodable = true)
     {
-        string classAttr = HtmlBuilderTagAttribute.BuildClassAttribute(className);
-        string styleAttr = HtmlBuilderTagAttribute.BuildStyleAttribute(style);
+        var str = attributes?.ToString();
+        var theContent = isEncodable
+            ? WebUtility.HtmlEncode(content)
+            : content;
 
-        sb.WriteLine($"<{Tag}{classAttr}{styleAttr}>{content}</{Tag}>");
+        sb.WriteLine($"<{Tag}{(string.IsNullOrWhiteSpace(str) ? "" : " ")}{str}>{theContent}</{Tag}>");
     }
 }

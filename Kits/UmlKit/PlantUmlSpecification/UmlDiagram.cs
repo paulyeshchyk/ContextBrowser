@@ -11,6 +11,8 @@ namespace UmlKit.PlantUmlSpecification;
 public abstract class UmlDiagram<P>
     where P : IUmlParticipant
 {
+    public bool IsUmlTagEnabled { get; set; } = true;
+
     // context: create, uml
     public abstract P AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
 
@@ -128,14 +130,18 @@ public abstract class UmlDiagram<P>
     // context: uml, update
     protected virtual void WriteStart(TextWriter writer)
     {
-        writer.Write(SUmlStartTag);
-        writer.WriteLine($" {{id={DiagramId}}}");
+        if (IsUmlTagEnabled)
+            writer.Write($"{SUmlStartTag}");
+        writer.Write($" {{id={DiagramId}}}");
+        writer.WriteLine();
     }
 
     // context: uml, update
     protected virtual void WriteEnd(TextWriter writer)
     {
-        writer.WriteLine(SUmlEndTag);
+        if (IsUmlTagEnabled)
+            writer.Write(SUmlEndTag);
+        writer.WriteLine();
     }
 
     protected virtual void WriteSeparator(TextWriter writer)

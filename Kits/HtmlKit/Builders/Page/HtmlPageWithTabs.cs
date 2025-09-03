@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -43,33 +44,39 @@ public class HtmlPageWithTabsBuilder
             );
 
             var filename = onGetFileName(cellData);
-            var filePath = ExportPathBuilder.BuildPath(_exportOptions.Paths, ExportPathType.pages, filename);
+            var filePath = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.pages, filename);
             var title = $" {cellData.DataCell.Action}  ->  {cellData.DataCell.Domain} ";
 
             using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
 
-            HtmlBuilderFactory.Raw.Cell(writer, "<!DOCTYPE html>");
+            HtmlBuilderFactory.Raw.Cell(writer, innerHtml: "<!DOCTYPE html>");
             HtmlBuilderFactory.Html.With(writer, () =>
             {
                 HtmlBuilderFactory.Head.With(writer, () =>
                 {
-                    HtmlBuilderFactory.Meta.Cell(writer, style: "charset=\"UTF-8\"");
+                    var attributes = new HtmlTagAttributes() { { "charset", "UTF-8" } };
+                    HtmlBuilderFactory.Meta.Cell(writer, attributes: attributes);
 
+                    HtmlBuilderFactory.Title.Cell(writer, innerHtml: title);
 
-                    HtmlBuilderFactory.Title.Cell(writer, title);
-
-                    HtmlBuilderFactory.Script.Cell(writer, HtmlBuilderFactory.JsScripts.JsShowTabsheetTabScript);
-                    HtmlBuilderFactory.Style.Cell(writer, HtmlBuilderFactory.CssStyles.CssTabsheet);
+                    HtmlBuilderFactory.Script.Cell(writer, innerHtml: HtmlBuilderFactory.JsScripts.JsShowTabsheetTabScript, isEncodable: false);
+                    HtmlBuilderFactory.Style.Cell(writer, innerHtml: HtmlBuilderFactory.CssStyles.CssTabsheet, isEncodable: false);
                 });
 
                 HtmlBuilderFactory.Body.With(writer, () =>
                 {
-                    HtmlBuilderFactory.P.Cell(writer, "index", "..\\index.html");
+                    HtmlBuilderFactory.P.With(writer, () =>
+                    {
+                        var attributes = new HtmlTagAttributes() { { "href", "..\\index.html" } };
+                        HtmlBuilderFactory.A.Cell(writer, attributes, "index");
+                    });
 
-                    HtmlBuilderFactory.Div.With(writer, () =>
+                    var attributes = new HtmlTagAttributes() { { "class", "tabs-container" } };
+
+                    HtmlBuilderFactory.Div.With(writer, attributes, () =>
                     {
                         HtmlTabsheetBuilder.Build(writer, _tabsheetDataProvider, cellData);
-                    }, className: "tabs-container");
+                    });
                 });
             });
         }

@@ -12,7 +12,25 @@ using UmlKit.PlantUmlSpecification;
 
 namespace ContextBrowser.Infrastructure.Compiler;
 
-public class UmlStateDiagramCompiler
+public class UmlStateDiagramCompilerAction : UmlStateDiagramCompiler
+{
+    protected override FetchType _fetchType => FetchType.FetchAction;
+
+    public UmlStateDiagramCompilerAction(IContextClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, OnWriteLog? onWriteLog) : base(classifier, options, builder, exportOptions, renderer, onWriteLog)
+    {
+    }
+}
+
+public class UmlStateDiagramCompilerDomain : UmlStateDiagramCompiler
+{
+    protected override FetchType _fetchType => FetchType.FetchDomain;
+
+    public UmlStateDiagramCompilerDomain(IContextClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, OnWriteLog? onWriteLog) : base(classifier, options, builder, exportOptions, renderer, onWriteLog)
+    {
+    }
+}
+
+public abstract class UmlStateDiagramCompiler
 {
     // Свойства класса, инициализируемые в конструкторе
     private readonly IContextClassifier _classifier;
@@ -21,6 +39,8 @@ public class UmlStateDiagramCompiler
     private readonly ExportOptions _exportOptions;
     private readonly SequenceDiagramGenerator<UmlState> _renderer;
     private readonly OnWriteLog? _onWriteLog;
+
+    protected abstract FetchType _fetchType { get; }
 
     /// <summary>
     /// Создает новый экземпляр компилятора.
@@ -52,7 +72,7 @@ public class UmlStateDiagramCompiler
     /// </summary>
     /// <param name="metaItem">Имя домена.</param>
     /// <param name="allContexts">Список всех контекстных элементов.</param>
-    public bool CompileDomain(string metaItem, string diagramId, string diagramFileName, List<ContextInfo> allContexts)
+    public bool Compile(string metaItem, string diagramId, string diagramFileName, List<ContextInfo> allContexts)
     {
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile state for [{metaItem}]", LogLevelNode.Start);
 
@@ -62,45 +82,14 @@ public class UmlStateDiagramCompiler
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
 
         // Используем фабрику для создания построителя диаграмм
-        var transitions = _builder.Build(metaItem, fetchType: FetchType.FetchDomain, allContexts, _classifier);
+        var transitions = _builder.Build(metaItem, fetchType: _fetchType, allContexts, _classifier);
 
         var rendered = _renderer.Generate(diagram, transitions, metaItem);
 
         if (rendered)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
-            var path = ExportPathBuilder.BuildPath(_exportOptions.Paths, ExportPathType.puml, diagramFileName);
-            diagram.WriteToFile(path);
-        }
-
-        _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
-
-        return true;
-    }
-
-    /// <summary>
-    /// Компилирует и рендерит диаграмму состояний для заданного домена и всех контекстов.
-    /// </summary>
-    /// <param name="metaItem">Имя домена.</param>
-    /// <param name="allContexts">Список всех контекстных элементов.</param>
-    public bool CompileAction(string metaItem, string diagramId, string diagramFileName, List<ContextInfo> allContexts)
-    {
-        _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile state for [{metaItem}]", LogLevelNode.Start);
-
-        var diagram = new UmlDiagramState(_options, diagramId: diagramId);
-        diagram.SetTitle($"Context: {metaItem}");
-        diagram.SetSkinParam("componentStyle", "rectangle");
-        diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
-
-        // Используем фабрику для создания построителя диаграмм
-        var transitions = _builder.Build(metaItem, fetchType: FetchType.FetchAction, allContexts, _classifier);
-
-        var rendered = _renderer.Generate(diagram, transitions, metaItem);
-
-        if (rendered)
-        {
-            // Если рендеринг успешен, записываем диаграмму в файл
-            var path = ExportPathBuilder.BuildPath(_exportOptions.Paths, ExportPathType.puml, diagramFileName);
+            var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, diagramFileName);
             diagram.WriteToFile(path);
         }
 

@@ -47,7 +47,7 @@ public class ParsingOrchestrator : IParsingOrchestrator
     // context: parsing, build
     public async Task<IEnumerable<ContextInfo>> GetParsedContextsAsync(AppOptions options, CancellationToken cancellationToken)
     {
-        var cacheModel = options.Export.Paths.CacheModel;
+        var cacheModel = options.Export.FilePaths.CacheModel;
 
         // Try to read from cache first
         var contextsFromCache = await _contextInfoCacheService.ReadContextsFromCache(

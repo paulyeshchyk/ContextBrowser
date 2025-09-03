@@ -5,6 +5,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using RoslynKit.Extensions;
 using SemanticKit.Model;
 
 namespace RoslynKit.Wrappers;
@@ -34,7 +35,7 @@ public static class CSharpSymbolLoader
         }
         catch (Exception ex)
         {
-            onWriteLog?.Invoke(AppLevel.R_Symbol, LogLevel.Exception, $"[CSharpSymbolLoader] {ex.Message}");
+            onWriteLog?.Invoke(AppLevel.R_Symbol, LogLevel.Exception, $"{syntax.GetIdentifier()} - {ex.Message}");
             onWriteLog?.Invoke(AppLevel.R_Symbol, LogLevel.Trace, $"{syntax}");
             return default;
         }

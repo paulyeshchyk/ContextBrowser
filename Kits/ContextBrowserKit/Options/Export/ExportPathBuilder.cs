@@ -9,13 +9,13 @@ namespace ContextBrowserKit.Options.Export;
 public static class ExportPathBuilder
 {
     // context:export, build
-    public static ExportPaths BuildFullPath(this ExportPaths config)
+    public static ExportPaths BuildFullPath1(this ExportPaths config)
     {
-        var outputDirectory = Path.GetFullPath(config.OutputDirectory);
+        var outputDirectory = config.BuildAbsolutePath(config.OutputDirectory);
 
         var finalPaths = new Dictionary<ExportPathType, string>();
-        var outputPath = string.IsNullOrEmpty(config.CacheModel.Output) ? string.Empty : Path.GetFullPath(config.CacheModel.Output);
-        var inputPath = string.IsNullOrEmpty(config.CacheModel.Input) ? string.Empty : Path.GetFullPath(config.CacheModel.Input);
+        var outputPath = string.IsNullOrEmpty(config.CacheModel.Output) ? string.Empty : config.BuildAbsolutePath(config.CacheModel.Output);
+        var inputPath = string.IsNullOrEmpty(config.CacheModel.Input) ? string.Empty : config.BuildAbsolutePath(config.CacheModel.Input);
 
         var finalCache = new CacheJsonModel(output: outputPath, input: inputPath, renewCache: config.CacheModel.RenewCache);
 
@@ -24,22 +24,7 @@ public static class ExportPathBuilder
             finalPaths[type] = Path.Combine(outputDirectory, relativePath);
         }
 
-        return new ExportPaths(outputDirectory, config.CacheModel, finalPaths);
-    }
-
-    // context:export, build
-    public static string GetPath(this ExportPaths config, ExportPathType pathType)
-    {
-        var output = Path.GetFullPath(config.OutputDirectory);
-        var folder = config.GetPath(pathType);
-        return Path.Combine(output, folder);
-    }
-
-    // context:export, build
-    public static string BuildPath(this ExportPaths config, ExportPathType pathType, string filename)
-    {
-        var folder = GetPath(config, pathType);
-        return Path.Combine(folder, filename);
+        return new ExportFilePaths(outputDirectory, config.CacheModel, finalPaths);
     }
 }
 
@@ -49,11 +34,11 @@ public static class ExportPathDirectoryPreparer
     // context:export, build
     public static void Prepare(this ExportPaths config, OnWriteLog? onWriteLog = null)
     {
-        DirectoryUtils.Prepare(config.OutputDirectory, onWriteLog);
+        DirectoryUtils.Prepare(config.BuildAbsolutePath(config.OutputDirectory), onWriteLog);
 
         foreach (var path in config.GetPaths())
         {
-            DirectoryUtils.Prepare(path, onWriteLog);
+            DirectoryUtils.Prepare(config.BuildAbsolutePath(path), onWriteLog);
         }
     }
 }

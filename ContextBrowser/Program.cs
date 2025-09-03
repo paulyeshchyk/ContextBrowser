@@ -12,8 +12,7 @@ using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
 using ContextKit.Stategies;
-using ExporterKit.DiagramCompiler;
-using ExporterKit.HtmlPageSamples;
+using ExporterKit.Html.Pages.MatrixCellSummary;
 using ExporterKit.Uml;
 using HtmlKit.Page.Compiler;
 using LoggerKit;
@@ -25,6 +24,8 @@ using RoslynKit.Phases.Invocations;
 using RoslynKit.Tree;
 using RoslynKit.Wrappers.Extractor;
 using SemanticKit.Model;
+using UmlKit.Exporter;
+using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser.ContextCommentsParser;
 
@@ -65,22 +66,25 @@ public static class Program
         hab.Services.AddTransient<IDeclarationParserFactory, DeclarationParserFactory>();
         hab.Services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
 
-        hab.Services.AddTransient<IDiagramCompiler, UmlComponentDiagramCompiler>();
-        hab.Services.AddTransient<IDiagramCompiler, UmlActionPerDomainDiagramCompiler>();
-        hab.Services.AddTransient<IDiagramCompiler, UmlStateActionDiagramCompiler>();
-        hab.Services.AddTransient<IDiagramCompiler, UmlSequenceActionDiagramCompiler>();
-        hab.Services.AddTransient<IDiagramCompiler, UmlSequenceDomainDiagramCompiler>();
-        hab.Services.AddTransient<IDiagramCompiler, UmlExtraDiagramsCompiler>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerActionPerDomain>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlStateActionDiagramCompiler>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlStateDomainDiagramCompiler>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlSequenceActionDiagramCompiler>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlSequenceDomainDiagramCompiler>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerPackages>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerMethodsList>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerMethodPerActionDomain>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerRelation>();
 
         hab.Services.AddTransient<IDiagramCompilerOrchestrator, DiagramCompilerOrchestrator>();
 
         hab.Services.AddTransient<IHtmlPageCompiler, ActionPerDomainHtmlPageCompiler>();
         hab.Services.AddTransient<IHtmlPageCompiler, ActionOnlyHtmlPageCompiler>();
         hab.Services.AddTransient<IHtmlPageCompiler, DomainOnlyHtmlPageCompiler>();
+        hab.Services.AddTransient<IHtmlPageCompiler, ActionPerDomainSummaryHtmlPageCompiler>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlIndexBuilder>();
 
         hab.Services.AddTransient<IHtmlCompilerOrchestrator, HtmlCompilerOrchestrator>();
-
 
         hab.Services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(provider =>
         {
@@ -99,12 +103,12 @@ public static class Program
 
         var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
         Console.CancelKeyPress += (sender, e) =>
-         {
-             Console.WriteLine("Прервано по требованию");
-             e.Cancel = true;
-             lifetime.StopApplication();
-             tokenSource.Cancel();
-         };
+        {
+            Console.WriteLine("Прервано по требованию");
+            e.Cancel = true;
+            lifetime.StopApplication();
+            tokenSource.Cancel();
+        };
 
         var parser = host.Services.GetRequiredService<ICommandlineArgumentsParserService>();
         var options = parser.Parse<AppOptions>(args);
@@ -129,6 +133,10 @@ public static class Program
         }
         catch (OperationCanceledException)
         {
+        }
+        catch (Exception)
+        {
+            throw;
         }
         finally
         {

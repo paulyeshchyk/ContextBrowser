@@ -57,10 +57,16 @@ internal static class CSharpExpressionSyntaxExtensionConverter
         nameParts.Reverse();
 
         string manualFullName = string.Join(".", nameParts);
-
-        // В этом случае namespace и ownerName не могут быть надежно определены.
-        string namespaceName = options.ExternalNamespaceName;
-        var raw = $"{namespaceName}.{manualFullName}()";
-        return (raw, isPartial);
+        if (nameParts.Count == 1)
+        { 
+            // предположим, что это функция(напр, nameof)
+            return($"{manualFullName}()",isPartial); 
+        } else
+        {
+            // В этом случае namespace и ownerName не могут быть надежно определены.
+            string namespaceName = options.ExternalNamespaceName;
+            var raw = $"{namespaceName}.{manualFullName}()";
+            return (raw, isPartial);
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -76,7 +75,7 @@ public class UmlSequenceDiagramCompiler
 
         if (result)
         {
-            var path = ExportPathBuilder.BuildPath(_exportOptions.Paths, ExportPathType.puml, outputFileName);
+            var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, outputFileName);
             diagram.WriteToFile(path);
         }
 

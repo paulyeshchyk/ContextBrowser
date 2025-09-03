@@ -12,6 +12,7 @@
 		<ProjectReference Include="..\Kits\CommandlineKit\CommandlineKit.csproj" />
 		<ProjectReference Include="..\Kits\ContextBrowserKit\ContextBrowserKit.csproj" />
 		<ProjectReference Include="..\Kits\ContextKit\ContextKit.csproj" />
+		<ProjectReference Include="..\Kits\CustomServers\CustomServers.csproj" />
 		<ProjectReference Include="..\Kits\ExporterKit\ExporterKit.csproj" />
 		<ProjectReference Include="..\Kits\GraphKit\GraphKit.csproj" />
 		<ProjectReference Include="..\Kits\HtmlKit\HtmlKit.csproj" />

@@ -6,6 +6,7 @@ using ContextKit.Model;
 using ContextKit.Model.Matrix;
 using HtmlKit.Builders.Core;
 using HtmlKit.Document.Coverage;
+using HtmlKit.Helpers;
 using HtmlKit.Options;
 using HtmlKit.Page;
 using HtmlKit.Writer;
@@ -45,9 +46,12 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
     //context: htmlmatrix, build
     protected override void WriteContent(TextWriter tw)
     {
+        var hrefManager = new HrefManager();
+        var fixedHtmlManager = new FixedHtmlContentManager();
+
         HtmlBuilderFactory.Table.With(tw, () =>
         {
-            new HtmlMatrixWriter(this, _options)
+            new HtmlMatrixWriter(htmlPageMatrix: this, hrefManager: hrefManager, fixedHtmlContentManager: fixedHtmlManager, options: _options)
                 .WriteHeaderRow(tw)
                 .WriteSummaryRowIf(tw, SummaryPlacementType.AfterFirst)
                 .WriteAllDataRows(tw)

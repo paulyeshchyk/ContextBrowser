@@ -16,8 +16,6 @@ using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
 using ContextKit.Stategies;
-using ExporterKit.HtmlPageSamples;
-using ExporterKit.Puml;
 using ExporterKit.Uml;
 using HtmlKit.Model;
 using HtmlKit.Page.Compiler;
@@ -53,7 +51,6 @@ public class MainService : IMainService
     private readonly IHtmlCompilerOrchestrator _htmlCompilerOrchestrator;
     private readonly IServerStartSignal _serverStartSignal;
 
-
     public MainService(
         IAppLogger<AppLevel> appLogger,
         IAppOptionsStore optionsStore,
@@ -76,7 +73,7 @@ public class MainService : IMainService
     public async Task RunAsync(CancellationToken cancellationToken)
     {
         var appOptions = _optionsStore.Options();
-        ExportPathDirectoryPreparer.Prepare(appOptions.Export.Paths);
+        ExportPathDirectoryPreparer.Prepare(appOptions.Export.FilePaths);
 
         // парсинг кода
         var contextsList = await _parsingOrchestrant.GetParsedContextsAsync(appOptions, cancellationToken);
@@ -88,7 +85,7 @@ public class MainService : IMainService
         _diagramCompilerOrchestrator.CompileAll(contextInfoDataset, appOptions);
 
         // компиляция html
-        _htmlCompilerOrchestrator.CompileAll(contextInfoDataset, appOptions.Export);
+        _htmlCompilerOrchestrator.CompileAll(contextInfoDataset, appOptions.Classifier, appOptions.Export);
 
         // запуск кастомных html & puml серверов
         _serverStartSignal.Signal();

@@ -1,11 +1,66 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ContextBrowserKit.Options.Export;
 
-public record ExportPaths
+public sealed class ExportFilePaths : ExportPaths
+{
+    public ExportFilePaths(string outputDirectory, CacheJsonModel cacheModel, IReadOnlyDictionary<ExportPathType, string> paths) : base(outputDirectory, cacheModel, paths)
+    {
+    }
+
+    public ExportFilePaths(string outputDirectory, CacheJsonModel cacheModel, params ExportPathItem[] paths) : base(outputDirectory, cacheModel, ConvertToDictionary(paths))
+    {
+    }
+
+    public override string BuildAbsolutePath(string from, params string[] files)
+    {
+        string filesPath = Path.Combine(files);
+
+        string combinedPath = OutputDirectory.Equals(from)
+            ? Path.Combine(from, filesPath)
+            : Path.Combine(OutputDirectory, from, filesPath);
+
+        return Path.GetFullPath(combinedPath);
+    }
+
+}
+
+public sealed class ExportWebPaths : ExportPaths
+{
+    public ExportWebPaths(string outputDirectory, CacheJsonModel cacheModel, IReadOnlyDictionary<ExportPathType, string> paths) : base(outputDirectory, cacheModel, paths)
+    {
+    }
+
+    public ExportWebPaths(string outputDirectory, CacheJsonModel cacheModel, params ExportPathItem[] paths) : base(outputDirectory, cacheModel, ConvertToDictionary(paths))
+    {
+    }
+
+    public override string BuildAbsolutePath(string from, params string[] files)
+    {
+        string relativePathFromFiles = string.Join("/", files);
+
+        string baseUrl;
+        if (from.Equals(OutputDirectory))
+        {
+            baseUrl = OutputDirectory.TrimEnd('/');
+        }
+        else
+        {
+            string cleanedFrom = from.Replace("\\", "/").Replace("//", "/").TrimStart('.', '/');
+            baseUrl = $"{OutputDirectory.TrimEnd('/')}/{cleanedFrom}";
+        }
+
+        string cleanedRelativePath = relativePathFromFiles.Replace("\\", "/").Replace("//", "/").TrimStart('.', '/');
+
+        return $"{baseUrl}/{cleanedRelativePath}";
+    }
+}
+
+public abstract class ExportPaths
 {
     public string OutputDirectory { get; set; }
 
@@ -20,20 +75,16 @@ public record ExportPaths
         RelativePaths = paths;
     }
 
-    public ExportPaths(string outputDirectory, CacheJsonModel cacheModel, params ExportPathItem[] paths)
-    {
-        OutputDirectory = outputDirectory;
-        CacheModel = cacheModel;
+    public abstract string BuildAbsolutePath(string from, params string[] files);
 
-        var d = new Dictionary<ExportPathType, string>();
-        foreach (var pathItem in paths)
-        {
-            d[pathItem.Type] = pathItem.Path;
-        }
-        RelativePaths = d;
+    public string BuildAbsolutePath(ExportPathType pathType, params string[] files)
+    {
+        var p = GetRelativePath(pathType);
+        var result = BuildAbsolutePath(p, files);
+        return result;
     }
 
-    public string GetPath(ExportPathType type)
+    public string GetRelativePath(ExportPathType type)
     {
         if (RelativePaths.TryGetValue(type, out var path)) return path;
         throw new InvalidOperationException($"Export path not found for {type}");
@@ -47,6 +98,17 @@ public record ExportPaths
     public string[] GetPaths()
     {
         return RelativePaths.Values.ToArray();
+    }
+
+    internal static Dictionary<ExportPathType, string> ConvertToDictionary(ExportPathItem[] paths)
+    {
+        var d = new Dictionary<ExportPathType, string>();
+        foreach (var pathItem in paths)
+        {
+            d[pathItem.Type] = pathItem.Path;
+        }
+
+        return d;
     }
 }
 

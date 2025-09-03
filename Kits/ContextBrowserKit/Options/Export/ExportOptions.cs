@@ -5,11 +5,17 @@ public record ExportOptions
 {
     public ExportMatrixOptions ExportMatrix { get; set; }
 
-    public ExportPaths Paths { get; set; }
+    public ExportPaths FilePaths { get; set; }
 
-    public ExportOptions(ExportMatrixOptions exportMatrix, ExportPaths paths)
+    public ExportPaths WebPaths { get; set; }
+
+    public ExportPumlOptions PumlOptions { get; }
+
+    public ExportOptions(ExportMatrixOptions exportMatrix, ExportFilePaths filePaths, ExportWebPaths webPaths, ExportPumlOptions pumlOptions)
     {
         ExportMatrix = exportMatrix;
-        Paths = paths;
+        FilePaths = filePaths;
+        PumlOptions = pumlOptions;
+        WebPaths = webPaths;
     }
 }

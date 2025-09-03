@@ -35,8 +35,7 @@ public class AppOptions
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Tran, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err }
-        }
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err } }
     };
 
     [CommandLineArgument("roslyn-options", "The source code path.")]
@@ -45,7 +44,7 @@ public class AppOptions
         semanticOptions: new(
             semanticFilters: new(
                 trustedFilters: new(included: string.Empty, excluded: string.Empty),
-                domainFilters: new(included: "**/*", excluded: "**/net6.0/System.Text.Json.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*"),
+                domainFilters: new(included: "**/*", excluded: "**/net6.0/System.Text.Json.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*;**/api-ms-*;"),
                 runtimeFilters: new(included: "**/System.Diagnostics.Process.dll;**/System.Net.NetworkInformation.dll;**/System.Net.Primitives.dll;", excluded: string.Empty)////**/ System.Resources.ResourceManager.dll;**/System.Globalization.dll
                 ),
             methodModifierTypes: new()
@@ -64,13 +63,12 @@ public class AppOptions
             },
             memberTypes: new()
             {
-                //RoslynCodeParserMemberType.@enum,
+                SemanticMemberType.@enum,
                 SemanticMemberType.@class,
                 SemanticMemberType.@interface,
                 SemanticMemberType.@delegate,
                 SemanticMemberType.@record,
-
-                //RoslynCodeParserMemberType.@struct
+                SemanticMemberType.@struct
             },
             externalNamespaceName: "ExternalNS",
             fakeOwnerName: "privateTYPE",
@@ -78,9 +76,7 @@ public class AppOptions
             customAssembliesPaths: new List<string>() { "." },
             createFailedCallees: true,
             includePseudoCode: false,
-            globalUsings: "System.Text.Json; System.Diagnostics; System.Diagnostics.Process; System.Collections; System.Collections.Immutable; System.Collections.Generic; System.IO; System.Linq; System.Net.Http; System.Threading; System.Threading.Tasks"
-        )
-    );
+            globalUsings: "System.Text.Json; System.Diagnostics; System.Diagnostics.Process; System.Collections; System.Collections.Immutable; System.Collections.Generic; System.IO; System.Linq; System.Net.Http; System.Threading; System.Threading.Tasks"));
 
     [CommandLineArgument("import-options", "Параметры импорта")]
     public ImportOptions Import { get; set; } = new(
@@ -103,16 +99,21 @@ public class AppOptions
                             htmlTable: new HtmlTableOptions(
                                 summaryPlacement: SummaryPlacementType.AfterFirst,
                                      orientation: MatrixOrientationType.DomainRows)),
-        paths: new ExportPaths(
+        filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
                  cacheModel: new CacheJsonModel(
-                    renewCache: true,
-                         input: ".//cache//roslyn.json",
-                        output: ".//cache//roslyn.json"),
-            new ExportPathItem(ExportPathType.index, "."),
-            new ExportPathItem(ExportPathType.puml, "puml"),
-            new ExportPathItem(ExportPathType.pages, "pages"),
-            new ExportPathItem(ExportPathType.pumlExtra, "puml/extra")).BuildFullPath());
+                    renewCache: false, input: ".//cache//roslyn.json", output: ".//cache//roslyn.json"),
+                     paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } }
+        ),
+        webPaths: new ExportWebPaths(
+            outputDirectory: "http://localhost:5500",
+                 cacheModel: new CacheJsonModel(
+                    renewCache: false, input: ".//cache//roslyn.json", output: ".//cache//roslyn.json"),
+                     paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } }
+        ),
+        pumlOptions: new ExportPumlOptions(
+            injectionType: PumlInjectionType.inject
+        ));
 
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(
@@ -133,5 +134,6 @@ public class AppOptions
              fakeDomain: "_fakeDomain",
         standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" },
               metaItems: new[] { "Action;Domain;Elements" })
-    { };
+    {
+    };
 }

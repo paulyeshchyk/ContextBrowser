@@ -20,16 +20,17 @@ public abstract class HtmlPage
         {
             HtmlBuilderFactory.Head.With(writer, () =>
             {
-                HtmlBuilderFactory.Meta.Cell(writer, style: "charset =\"UTF-8\"");
-                HtmlBuilderFactory.Title.Cell(writer, Title);
-                HtmlBuilderFactory.Style.Cell(writer, Resources.HtmlProducerContentStyle);
+                var attrs = new HtmlTagAttributes() { { "charset", "UTF-8" } };
+                HtmlBuilderFactory.Meta.Cell(writer, attributes: attrs, isEncodable: false);
+                HtmlBuilderFactory.Title.Cell(writer, innerHtml:Title);
+                HtmlBuilderFactory.Style.Cell(writer, innerHtml:Resources.HtmlProducerContentStyle, isEncodable: false);
 
                 foreach (var script in GetScripts())
-                    HtmlBuilderFactory.Script.Cell(writer, script);
+                    HtmlBuilderFactory.Script.Cell(writer,innerHtml:script, isEncodable: false);
 
                 HtmlBuilderFactory.Body.With(writer, () =>
                 {
-                    HtmlBuilderFactory.H1.Cell(writer, Title);
+                    HtmlBuilderFactory.H1.Cell(writer, innerHtml:Title);
                     WriteContent(writer);
                 });
             });

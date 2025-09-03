@@ -33,8 +33,10 @@ public class SemanticReferenceBuilderValidator<TContext, TInvocationExpressionSy
         var callerSyntaxNode = callerContext.SyntaxWrapper;
         if (callerSyntaxNode == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] SyntaxNode is not defined for {callerContext.FullName}");
-            return null;
+            // срабатывает для функций, напр, nameof()
+            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] SyntaxNode is not defined for {callerContext.FullName}");
+#warning to be checked twice
+            return new SemanticReferenceBuilderValidationResult<TContext, TInvocationExpressionSyntax>(callerContextInfo, Enumerable.Empty<TInvocationExpressionSyntax>());
         }
 
         var canRaiseNoInvocationError = !(

@@ -1,9 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace HtmlKit.Builders.Core;
 
 // pattern: Template method
 public interface IHtmlCellBuilder
 {
-    void Cell(TextWriter sb, string? innerHtml = "", string? href = null, string? style = null, string className = "");
+    void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true);
 }

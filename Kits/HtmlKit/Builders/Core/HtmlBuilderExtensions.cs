@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace HtmlKit.Builders.Core;
@@ -21,9 +22,9 @@ public static class HtmlBuilderExtensions
         builder.End(sb);
     }
 
-    public static void With(this IHtmlBuilder builder, TextWriter writer, Action body, string? className, string? id = null)
+    public static void With(this IHtmlBuilder builder, TextWriter writer, IHtmlTagAttributes? attributes, Action body)
     {
-        builder.Start(writer, className, id);
+        builder.Start(writer, attributes);
         body();
         builder.End(writer);
     }

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -129,7 +129,7 @@
   --hover-background-dark: #e0e0e0;
 
   --cell-padding: 6px 10px;
-  --alt-cell-padding: 1px 1px; 
+  --alt-cell-padding: 1px 1px;
 
   --link-text-decoration: none;
   --link-text-align: inherit;
@@ -184,7 +184,7 @@
 }
 
 .cell_data .embedded-table tr {
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .cell_data .embedded-table td {
@@ -370,56 +370,54 @@ td.hover-col.hover-cell {
 }</value>
   </data>
   <data name="HtmlProducerContentStyleScript" xml:space="preserve">
-    <value>document.addEventListener('DOMContentLoaded', () =&gt; {
- const table = document.querySelector('table');
- const rows = Array.from(table.rows);
+    <value>
+    document.addEventListener('DOMContentLoaded', () => {
+  const table = document.querySelector('table');
+  const rows = Array.from(table.rows);
+  const headerRow = rows[0];
 
- rows.forEach(row =&gt; {
-  Array.from(row.cells).forEach((cell, colIndex) =&gt; {
-   cell.addEventListener('mouseenter', () =&gt; {
-    rows.forEach(r =&gt; {
-     if (r.cells[colIndex])
-      r.cells[colIndex].classList.add('hover-col');
+  rows.forEach(row => {
+    Array.from(row.cells).forEach((cell, colIndex) => {
+      // Здесь переменная cell доступна
+
+      cell.addEventListener('mouseenter', () => {
+        // Логика подсветки колонок в теле
+        rows.forEach(r => {
+          if (r.cells[colIndex]) {
+            r.cells[colIndex].classList.add('hover-col');
+          }
+        });
+
+        // Логика подсветки заголовка
+        if (headerRow.cells[colIndex]) {
+          headerRow.cells[colIndex].classList.add('hover-col');
+        }
+
+        // Логика подсветки самой ячейки
+        cell.classList.add('hover-cell');
+      });
+
+      cell.addEventListener('mouseleave', () => {
+        // Логика снятия подсветки колонок в теле
+        rows.forEach(r => {
+          if (r.cells[colIndex]) {
+            r.cells[colIndex].classList.remove('hover-col');
+          }
+        });
+
+        // Логика снятия подсветки заголовка
+        if (headerRow.cells[colIndex]) {
+          headerRow.cells[colIndex].classList.remove('hover-col');
+        }
+
+        // Логика снятия подсветки самой ячейки
+        cell.classList.remove('hover-cell');
+      });
     });
-    cell.classList.add('hover-cell');
-   });
-
-   cell.addEventListener('mouseleave', () =&gt; {
-    rows.forEach(r =&gt; {
-     if (r.cells[colIndex])
-      r.cells[colIndex].classList.remove('hover-col');
-    });
-    cell.classList.remove('hover-cell');
-   });
   });
- });
+});
 
- const headerRow = rows[0]; // первая строка — заголовки
-
- cell.addEventListener('mouseenter', () =&gt; {
-  rows.forEach((r, rowIndex) =&gt; {
-   if (r.cells[colIndex])
-    r.cells[colIndex].classList.add('hover-col');
-  });
-  if (headerRow.cells[colIndex])
-   headerRow.cells[colIndex].classList.add('hover-col');
-
-  cell.classList.add('hover-cell');
- });
-
- cell.addEventListener('mouseleave', () =&gt; {
-  rows.forEach((r, rowIndex) =&gt; {
-   if (r.cells[colIndex])
-    r.cells[colIndex].classList.remove('hover-col');
-  });
-  if (headerRow.cells[colIndex])
-   headerRow.cells[colIndex].classList.remove('hover-col');
-
-  cell.classList.remove('hover-cell');
- });
-
-
-});</value>
+    </value>
   </data>
   <data name="ScriptAutoFontShrink" xml:space="preserve">
     <value>(function shrinkEmbeddedFonts() {

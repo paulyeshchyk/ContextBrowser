@@ -13,7 +13,16 @@ internal static class SignatureUtils
         var nsMatch = regex.Match(input);
         if (nsMatch == null || !nsMatch.Success)
         {
-            throw new ArgumentException("Не удалось разобрать часть с Namespace", nameof(input));
+            // предположим, что это функция, напр, nameof()
+            return new CSharpMethodSignature(
+                ResultType: "void",
+                Namespace: "FakeNs",
+                ClassName: "FakeClass",
+                MethodName: input,
+                Arguments: string.Empty,
+                Raw: input
+                );
+            //throw new ArgumentException("Не удалось разобрать часть с Namespace", nameof(input));
         }
 
         var index = nsMatch.Index;
