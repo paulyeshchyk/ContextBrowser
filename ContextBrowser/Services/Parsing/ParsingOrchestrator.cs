@@ -10,7 +10,6 @@ using ContextBrowser.Roslyn;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using ContextBrowserKitSourceAttribute.TraceGenerator;
 using ContextKit.Model;
 using LoggerKit;
 
@@ -51,9 +50,6 @@ public class ParsingOrchestrator : IParsingOrchestrator
     {
         var cacheModel = options.Export.Paths.CacheModel;
 
-        Test(_logger.WriteLog);
-
-
         // Try to read from cache first
         var contextsFromCache = await _contextInfoCacheService.ReadContextsFromCache(
             cacheModel,
@@ -92,12 +88,5 @@ public class ParsingOrchestrator : IParsingOrchestrator
             return Enumerable.Empty<ContextInfo>();
         }
         return result;
-    }
-
-
-    [TraceMethodStart("onWriteLog", (int)AppLevel.R_Dll, (int)LogLevel.Cntx, "Compilation map building for: z")]
-    internal static void Test(OnWriteLog? onWriteLog)
-    {
-        onWriteLog?.Invoke(AppLevel.App, LogLevel.Cntx, "test2")
     }
 }

@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,10 @@ using ContextBrowser.Infrastructure;
 using ContextBrowser.Model;
 using ContextBrowser.Roslyn;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Log;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using ContextBrowserKitSourceAttribute.TraceGenerator;
 using ContextKit.Model;
 using LoggerKit;
 
@@ -33,6 +35,7 @@ public class CodeParseService : ICodeParseService
     // context: app
     public Task<IEnumerable<ContextInfo>> Parse(IContextParser<ContextInfo> contextParser, CancellationToken cancellationToken)
     {
+        Test(_logger.WriteLog);
         var importOptions = _optionsStore.Options().Import;
         var parsingOptions = _optionsStore.Options().ParsingOptions;
 
@@ -44,5 +47,11 @@ public class CodeParseService : ICodeParseService
             throw new Exception("No files to parse");
         }
         return contextParser.ParseAsync(filtered, parsingOptions.SemanticOptions, cancellationToken);
+    }
+
+    [TraceMethodStart("onWriteLog", (int)AppLevel.App, (int)LogLevel.Cntx, "Text111")]
+    internal static void Test(OnWriteLog? onWriteLog)
+    {
+
     }
 }
