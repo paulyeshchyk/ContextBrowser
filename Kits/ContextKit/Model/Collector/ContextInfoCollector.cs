@@ -22,9 +22,32 @@ public class ContextInfoCollector<TContext> : IContextCollector<TContext>
     public IEnumerable<TContext> GetAll() => Collection;
 
     // context: ContextInfo, build
+    public bool AddIfNotExists(TContext info)
+    {
+        if (BySymbolDisplayName.TryGetValue(info.FullName, out var available))
+        {
+            return false;
+        }
+
+        Add(info);
+
+        if (!string.IsNullOrWhiteSpace(info.FullName))
+            BySymbolDisplayName[info.FullName] = info;
+
+        return true;
+    }
+
+    public TContext? GetItem(string predicate)
+    {
+        BySymbolDisplayName.TryGetValue(predicate, out TContext? result);
+        return result;
+    }
+
+    // context: ContextInfo, build
     public void Add(TContext info)
     {
         Collection.Add(info);
+
         if (!string.IsNullOrWhiteSpace(info.FullName))
             BySymbolDisplayName[info.FullName] = info;
     }
@@ -40,7 +63,7 @@ public class ContextInfoCollector<TContext> : IContextCollector<TContext>
     {
         foreach (var item in FakeCollection)
         {
-            Add(item);
+            AddIfNotExists(item);
         }
         FakeCollection.Clear();
     }
@@ -72,6 +95,18 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
         BySymbolDisplayName = ContextInfoFullNameIndexBuilder.Build(_existing);
     }
 
+    public TContext? GetItem(string predicate)
+    {
+        BySymbolDisplayName.TryGetValue(predicate, out TContext? result);
+        return result;
+    }
+
+    public bool AddIfNotExists(TContext item)
+    {
+        // намеренно ничего не делаем — коллектор только читает
+        return true;
+    }
+
     public void Add(TContext item)
     {
         // намеренно ничего не делаем — коллектор только читает
@@ -88,10 +123,11 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
 
     public void MergeFakeItems()
     {
-        foreach (var item in FakeCollection)
-        {
-            _existing.Add(item);
-        }
+        var legacy = FakeCollection.Where(item => _existing.Any(existingItem => existingItem.FullName == item.FullName)).ToList();
+        Console.WriteLine(legacy);
+        var newItems = FakeCollection.Where(item => !_existing.Any(existingItem => existingItem.FullName == item.FullName)).ToList();
+        _existing.AddRange(newItems);
+
         FakeCollection.Clear();
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
@@ -46,6 +47,10 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
     protected virtual TContext? BuildContextInfo(TContext? ownerContext, IContextInfo dto)
     {
         _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");
+
+        var availableItem = _collector.GetItem(dto.FullName);
+        if (availableItem != null)
+            return availableItem;
 
         var result = _factory.Create(contextInfo: dto);
 

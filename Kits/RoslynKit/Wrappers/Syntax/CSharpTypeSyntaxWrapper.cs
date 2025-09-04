@@ -68,11 +68,13 @@ public record CSharpTypeSyntaxWrapper : ISyntaxWrapper
         }
         else
         {
-            FullName = syntaxWrapper.FullName;
-            Identifier = syntaxWrapper.Identifier;
-            ShortName = syntaxWrapper.ShortName;
-            Name = syntaxWrapper.Name;
-            Namespace = syntaxWrapper.Namespace;
+            var parsedSignature = SignatureUtils.Parse(syntaxWrapper.FullName);
+
+            FullName = $"{parsedSignature.Namespace}.{parsedSignature.ClassName}";
+            Identifier = $"{parsedSignature.Namespace}.{parsedSignature.ClassName}";
+            ShortName = parsedSignature.ClassName;
+            Name = parsedSignature.ClassName;
+            Namespace = parsedSignature.Namespace;
         }
     }
 
