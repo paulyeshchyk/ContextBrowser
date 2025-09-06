@@ -44,7 +44,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         var diagramId = $"class_{contextInfoKey.Action}_{contextInfoKey.Domain}".AlphanumericOnly();
         var diagramTitle = $"{contextInfoKey.Action.ToUpper()} -> {contextInfoKey.Domain}";
 
-        var diagram = new UmlClassDiagram(diagramBuilderOptions, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
         diagram.SetTitle(diagramTitle);
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
         diagram.SetSkinParam("componentStyle", "rectangle");
@@ -67,7 +67,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
                 foreach (var cls in classGroup)
                 {
                     string? htmlUrl = UmlUrlBuilder.BuildClassUrl(cls);
-                    var umlClass = new UmlClass(classGroup.Key, classGroup.Key.AlphanumericOnly(), url: htmlUrl);
+                    var umlClass = new UmlEntity(UmlEntityType.@class, classGroup.Key, classGroup.Key.AlphanumericOnly(), url: htmlUrl);
                     package.Add(umlClass);
 
                     foreach (var element in classGroup)

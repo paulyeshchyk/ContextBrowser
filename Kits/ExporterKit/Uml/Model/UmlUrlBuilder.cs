@@ -8,7 +8,7 @@ namespace ExporterKit.Uml.Model;
 
 public static class UmlUrlBuilder
 {
-    public static string BuildUrl(ContextInfo contextInfo)
+    public static string BuildClassUrl(IContextInfo contextInfo)
     {
         return $"class_only_{contextInfo.FullName.AlphanumericOnly()}.html";
     }

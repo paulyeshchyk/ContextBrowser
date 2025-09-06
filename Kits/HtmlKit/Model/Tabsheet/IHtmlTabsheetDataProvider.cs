@@ -7,7 +7,7 @@ namespace HtmlKit.Model.Tabsheet;
 
 public interface IHtmlTabsheetDataProvider<DTO> : IHtmlDataProvider
 {
-    IEnumerable<HtmlTabsheetTabInfoWithDataModelType<DTO>> Tabsheets { get; }
+    IEnumerable<IHtmlTabsheetTabInfoWithDataModelType<DTO>> Tabsheets { get; }
 
     T GetTabsheetDataModel<T>() where T : IHtmlTabsheetDataModel;
 }

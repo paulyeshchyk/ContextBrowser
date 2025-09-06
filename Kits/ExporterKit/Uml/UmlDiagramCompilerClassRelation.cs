@@ -25,7 +25,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
 
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.pumlExtra, "uml.4.links.puml");
         var diagramId = $"relation_{outputPath}".AlphanumericOnly();
-        var diagram = new UmlClassDiagram(options, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(options, diagramId: diagramId);
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
@@ -38,7 +38,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
         return new Dictionary<string, bool>();
     }
 
-    private static void AddRelation(DiagramBuilderOptions options, UmlClassDiagram diagram, string from, string to)
+    private static void AddRelation(DiagramBuilderOptions options, UmlDiagramClass diagram, string from, string to)
     {
         var arrow = new UmlArrow(flowType: options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync);
         var relation = new UmlRelation(from, to, arrow);

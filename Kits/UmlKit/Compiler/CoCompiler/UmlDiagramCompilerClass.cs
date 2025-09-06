@@ -32,7 +32,7 @@ public class UmlDiagramCompilerClass
     {
         var diagramId = $"actionPerDomain_{_outputPath}".AlphanumericOnly();
 
-        var diagram = new UmlClassDiagram(_options, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(_options, diagramId: diagramId);
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
@@ -49,7 +49,7 @@ public class UmlDiagramCompilerClass
         diagram.WriteToFile(_outputPath);
     }
 
-    private static void AddPackage(Func<string, string, string> linkGenerator, UmlClassDiagram diagram, IContextKey cell, int count)
+    private static void AddPackage(Func<string, string, string> linkGenerator, UmlDiagramClass diagram, IContextKey cell, int count)
     {
         var packageId = $"{cell.Action}_{cell.Domain}";
         var label = $"{packageId}\\nMethods: {count}";

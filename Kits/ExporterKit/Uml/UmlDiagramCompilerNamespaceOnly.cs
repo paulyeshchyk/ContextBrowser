@@ -5,6 +5,7 @@ using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ExporterKit.Infrastucture;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using UmlKit.Compiler;
@@ -25,15 +26,15 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
 
     public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
-        var namespaces = GetNamespaces(contextInfoDataset);
+        var namespaces = GetNamespaces(contextInfoDataset).ToList();
         foreach (var nameSpace in namespaces)
         {
-            Build(nameSpace: nameSpace,
-              exportOptions: exportOptions,
-      diagramBuilderOptions: diagramBuilderOptions,
-                classes: GetClassesForNamespace(contextInfoDataset),
-                    methods: GetMethods(contextInfoDataset),
-                 properties: GetProperties(contextInfoDataset));
+            Build(diagramBuilderOptions: diagramBuilderOptions,
+                          exportOptions: exportOptions,
+                              nameSpace: nameSpace,
+                                classes: GetClassesForNamespace(contextInfoDataset),
+                                methods: GetMethods(contextInfoDataset),
+                             properties: GetProperties(contextInfoDataset));
         }
         return new Dictionary<string, bool> { };
     }
@@ -68,7 +69,7 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
         var diagramId = $"namespace_only_{nameSpace.AlphanumericOnly()}";
         var diagramTitle = $"Package diagram -> {nameSpace}";
 
-        var diagram = new UmlClassDiagram(diagramBuilderOptions, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
         diagram.SetTitle(diagramTitle);
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
@@ -79,7 +80,9 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
         var classesList = classes(nameSpace);
         foreach (var contextInfo in classesList)
         {
-            var umlClass = new UmlClass(contextInfo.Name, contextInfo.Name.AlphanumericOnly(), url: null);
+            string? htmlUrl = UmlUrlBuilder.BuildClassUrl(contextInfo);
+            var entityType = ContextInfoExt.ConvertToUmlEntityType(contextInfo.ElementType);
+            var umlClass = new UmlEntity(entityType, contextInfo.Name, contextInfo.Name.AlphanumericOnly(), url: htmlUrl);
             package.Add(umlClass);
 
             //var classMethods = methods(contextInfo);

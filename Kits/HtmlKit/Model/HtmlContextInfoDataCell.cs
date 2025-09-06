@@ -18,7 +18,6 @@ public class NamespacenameContainer : BaseKeyAndDataContainer<string>
     }
 }
 
-
 public class EntitynameContainer : BaseKeyAndDataContainer<string>
 {
     public EntitynameContainer(string contextKey, IEnumerable<IContextInfo> contextInfoList) : base(contextKey, contextInfoList)

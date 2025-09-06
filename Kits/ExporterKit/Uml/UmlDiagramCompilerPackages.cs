@@ -23,7 +23,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.pumlExtra, "uml.packages.domains.puml");
         var diagramId = $"packages_{outputPath}".AlphanumericOnly();
 
-        var diagram = new UmlClassDiagram(options, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(options, diagramId: diagramId);
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
         diagram.SetSeparator("none");
 
@@ -44,7 +44,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
         return new Dictionary<string, bool>();
     }
 
-    private static void AddPackage(UmlClassDiagram diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> nsGroup)
+    private static void AddPackage(UmlDiagramClass diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> nsGroup)
     {
         var package = new UmlPackage(nsGroup.Key, alias: nsGroup.Key.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key));
 

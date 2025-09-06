@@ -13,6 +13,27 @@ public abstract class UmlDiagram<P>
 {
     protected readonly HashSet<IUmlElement> Meta = new();
 
+    protected virtual string SUmlStartTag { get => "@startuml"; }
+
+    protected virtual string SUmlEndTag { get => "@enduml"; }
+
+    protected int _nextOrder = 0;
+    protected readonly SortedList<int, IUmlElement> _elements = new();
+    protected readonly Dictionary<string, string> _skinParams = new();
+    protected readonly List<IUmlElement> _relations = new();
+
+    //none; . ; :;
+    protected string? _separator; //по-умолчанию null
+    protected string? _title;
+    protected readonly DiagramBuilderOptions _options;
+
+    public string DiagramId { get; private set; }
+
+    public UmlDiagram(DiagramBuilderOptions options, string diagramId)
+    {
+        _options = options;
+        DiagramId = diagramId;
+    }
     // context: model, uml
     public bool IsUmlTagEnabled { get; set; } = true;
 
@@ -80,31 +101,6 @@ public abstract class UmlDiagram<P>
         }
         return result;
     }
-
-    public string DiagramId { get; private set; }
-
-    public UmlDiagram(DiagramBuilderOptions options, string diagramId)
-    {
-        _options = options;
-        DiagramId = diagramId;
-    }
-
-    protected virtual string SUmlStartTag { get => "@startuml"; }
-
-    protected virtual string SUmlEndTag { get => "@enduml"; }
-
-    protected int _nextOrder = 0;
-
-    protected readonly SortedList<int, IUmlElement> _elements = new();
-
-    protected readonly Dictionary<string, string> _skinParams = new();
-
-    protected readonly List<IUmlElement> _relations = new();
-
-    //none; . ; :;
-    protected string? _separator; //по-умолчанию null
-    protected string? _title;
-    protected readonly DiagramBuilderOptions _options;
 
     // context: uml, create
     public void Add(IUmlElement element)

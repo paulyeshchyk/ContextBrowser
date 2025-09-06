@@ -28,7 +28,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
                 .ToList();
 
         var diagramId = $"methods_only_{outputPath}".AlphanumericOnly();
-        var diagram = new UmlClassDiagram(options, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(options, diagramId: diagramId);
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
 
         foreach (var method in methods)
@@ -51,7 +51,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
         return new Dictionary<string, bool>();
     }
 
-    private static void AddTransitionState(UmlClassDiagram diagram, ContextInfo method, ContextInfo callee)
+    private static void AddTransitionState(UmlDiagramClass diagram, ContextInfo method, ContextInfo callee)
     {
         var state1 = new UmlState(method.Name ?? "<unknown method>", null);
         var state2 = new UmlState(callee?.Name ?? "<unknown callee>", null);

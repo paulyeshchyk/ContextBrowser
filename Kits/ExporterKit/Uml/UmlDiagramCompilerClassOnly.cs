@@ -6,6 +6,7 @@ using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ExporterKit.Infrastucture;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using UmlKit.Compiler;
@@ -60,7 +61,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         var diagramId = $"class_only_{contextInfo.FullName.AlphanumericOnly()}";
         var diagramTitle = $"Class diagram -> {contextInfo.Name}";
 
-        var diagram = new UmlClassDiagram(diagramBuilderOptions, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
         diagram.SetTitle(diagramTitle);
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
@@ -68,7 +69,8 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         var package = new UmlPackage(contextInfo.Namespace, alias: contextInfo.Namespace.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(contextInfo.Namespace));
         diagram.Add(package);
 
-        var umlClass = new UmlClass(contextInfo.Name, contextInfo.Name.AlphanumericOnly(), url: null);
+        var entityType = ContextInfoExt.ConvertToUmlEntityType(contextInfo.ElementType);
+        var umlClass = new UmlEntity(entityType, contextInfo.Name, contextInfo.Name.AlphanumericOnly(), url: null);
         package.Add(umlClass);
 
         var classMethods = methods(contextInfo);

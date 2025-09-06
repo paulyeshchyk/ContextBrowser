@@ -9,7 +9,7 @@ namespace HtmlKit.Model.Tabsheet;
 public class BaseHtmlTabsheetDataProvider<DTO> : IHtmlTabsheetDataProvider<DTO>
 {
     private readonly Dictionary<Type, IHtmlTabsheetDataModel> _dataModels;
-    public IEnumerable<HtmlTabsheetTabInfoWithDataModelType<DTO>> Tabsheets { get; }
+    public IEnumerable<IHtmlTabsheetTabInfoWithDataModelType<DTO>> Tabsheets { get; }
 
     public BaseHtmlTabsheetDataProvider(Dictionary<Type, IHtmlTabsheetDataModel> dataModels, IEnumerable<HtmlTabsheetTabInfoWithDataModelType<DTO>> tabs)
     {

@@ -128,7 +128,6 @@ public static class TabsheetFactory
             });
     }
 
-
     public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyMethodsTabRegistration()
     {
         // Вкладка: Методы

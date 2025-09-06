@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
 using UmlKit.Compiler;
@@ -23,26 +24,22 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
     public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
-        var domainContexts = contextInfoDataset
-            .SelectMany(cell => cell.Value) // Flatten the list of lists into a single list of ContextInfo
-            .GroupBy(context => context.Domains.FirstOrDefault()) // Group by the first domain in the list
-            .Where(group => group.Key != null);
+        CompileDomainGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
+        CompileNoDomainGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
 
-        foreach (var group in domainContexts)
-        {
-            var domain = group.Key; // The unique domain string
-            var contexts = group.ToList(); // The list of all ContextInfo for that domain
+        CompileActionGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
+        CompileNoActionGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
 
-            BuildPackageDomain(contexts, exportOptions, diagramBuilderOptions, domain, "?");
-        }
+        return new Dictionary<string, bool>();
+    }
 
-        // 1. Группировка данных
+    private static void CompileActionGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    {
         var actionContexts = contextInfoDataset
             .SelectMany(cell => cell.Value.Select(context => (action: cell.Key.Action, context: context)))
             .GroupBy(item => item.action)
             .Where(group => !string.IsNullOrWhiteSpace(group.Key));
 
-        // 2. Итерация по группам
         foreach (var group in actionContexts)
         {
             var action = group.Key;
@@ -53,7 +50,46 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
                 BuildPackageAction(contexts, exportOptions, diagramBuilderOptions, action, "?");
             }
         }
-        return new Dictionary<string, bool>();
+    }
+
+    private static void CompileNoActionGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    {
+        var actionContexts = contextInfoDataset
+                .SelectMany(cell => cell.Value)
+                .Where(context => string.IsNullOrWhiteSpace(context.Action))
+                .ToList();
+
+        BuildPackageAction(actionContexts, exportOptions, diagramBuilderOptions, "NoAction", "?");
+    }
+
+    private static void CompileDomainGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    {
+        var domainContexts = contextInfoDataset
+            .SelectMany(cell => cell.Value)
+            .GroupBy(context => context.Domains.FirstOrDefault())
+            .Where(group => group.Key != null);
+
+        foreach (var group in domainContexts)
+        {
+            var domain = group.Key; // The unique domain string
+            var contexts = group.ToList(); // The list of all ContextInfo for that domain
+
+            BuildPackageDomain(contexts, exportOptions, diagramBuilderOptions, domain, "?");
+        }
+    }
+
+    private static void CompileNoDomainGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    {
+        var domainContexts = contextInfoDataset
+            .SelectMany(cell => cell.Value)
+            .Where(context => !context.Domains.Any())
+            .ToList();
+
+        if (domainContexts.Any())
+        {
+            // Вместо группировки - просто передаём список
+            BuildPackageDomain(domainContexts, exportOptions, diagramBuilderOptions, "NoDomain", "?");
+        }
     }
 
     private static void BuildPackageDomain(IEnumerable<ContextInfo> items, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, string domain, string blockLabel)
@@ -75,7 +111,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
     private static void BuildPackageDiagram(DiagramBuilderOptions diagramBuilderOptions, string blockLabel, IEnumerable<ContextInfo> items, string outputPath, string diagramId)
     {
         // Создаем новую диаграмму
-        var diagram = new UmlClassDiagram(diagramBuilderOptions, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
         diagram.SetAllowMixing();
@@ -101,8 +137,10 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
             foreach (var cls in classesInNamespace)
             {
-                string? htmlUrl = UmlUrlBuilder.BuildUrl(cls);
-                var umlClass = new UmlClass(cls.Name, cls.FullName.AlphanumericOnly(), url: htmlUrl);
+                string? htmlUrl = UmlUrlBuilder.BuildClassUrl(cls);
+
+                var entityType = ContextInfoExt.ConvertToUmlEntityType(cls.ElementType);
+                var umlClass = new UmlEntity(entityType, cls.Name, cls.FullName.AlphanumericOnly(), url: htmlUrl);
                 var propsList = propssonly.Where(p => p.ClassOwner?.FullName.Equals(cls?.FullName) ?? false).Distinct();
                 foreach (var element in propsList)
                 {
