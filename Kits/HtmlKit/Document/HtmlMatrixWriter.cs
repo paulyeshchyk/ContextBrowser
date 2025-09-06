@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using ContextBrowserKit.Options;
-using ContextKit.Model.Matrix;
+using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Extensions;
 using HtmlKit.Helpers;
@@ -167,18 +167,20 @@ internal class HtmlMatrixWriter
             if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
                 WriteRowSummaryCell(textWriter, row);
 
+            var indexMap = _htmlPageMatrix.IndexMap;
+
             foreach (var col in _htmlPageMatrix.UiMatrix.cols)
             {
                 var cell = _options.Orientation == MatrixOrientationType.ActionRows
-                    ? new ContextInfoDataCell(row, col)
-                    : new ContextInfoDataCell(col, row);
+                    ? new ContextKey(row, col)
+                    : new ContextKey(col, row);
 
                 var data = _htmlPageMatrix.ProduceData(cell);
                 _htmlPageMatrix.ContextsMatrix.TryGetValue(cell, out var methods);
 
                 HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, () =>
                 {
-                    var style = _htmlPageMatrix.CoverageManager.BuildCellStyle(cell, methods, _htmlPageMatrix.ContextsLookup);
+                    var style = _htmlPageMatrix.CoverageManager.BuildCellStyle(cell, methods, indexMap);
                     var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, _options) } };
                     if (!string.IsNullOrWhiteSpace(style))
                         attrs["style"] = style;

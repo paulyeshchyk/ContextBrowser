@@ -102,14 +102,17 @@ public class AppOptions
         filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
                  cacheModel: new CacheJsonModel(
-                    renewCache: false, input: ".//cache//roslyn.json", output: ".//cache//roslyn.json"),
+                    renewCache: false,
+                         input: ".//cache//roslyn.json", output: ".//cache//roslyn.json"),
                      paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } }
         ),
         webPaths: new ExportWebPaths(
             outputDirectory: "http://localhost:5500",
+                      paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
                  cacheModel: new CacheJsonModel(
-                    renewCache: false, input: ".//cache//roslyn.json", output: ".//cache//roslyn.json"),
-                     paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } }
+                    renewCache: false,
+                         input: ".//cache//roslyn.json", output: ".//cache//roslyn.json"
+                 )
         ),
         pumlOptions: new ExportPumlOptions(
             injectionType: PumlInjectionType.inject

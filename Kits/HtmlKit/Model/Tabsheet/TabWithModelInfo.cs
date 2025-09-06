@@ -3,12 +3,12 @@ using HtmlKit.Model;
 
 namespace HtmlKit.Model.Tabsheet;
 
-public class HtmlTabsheetTabInfoWithDataModelType
+public class HtmlTabsheetTabInfoWithDataModelType<DTO>
 {
-    public HtmlTabsheetTabInfo TabInfo { get; }
+    public HtmlTabsheetTabInfo<DTO> TabInfo { get; }
     public Type DataModelType { get; }
 
-    public HtmlTabsheetTabInfoWithDataModelType(HtmlTabsheetTabInfo tabInfo, Type dataModelType)
+    public HtmlTabsheetTabInfoWithDataModelType(HtmlTabsheetTabInfo<DTO> tabInfo, Type dataModelType)
     {
         TabInfo = tabInfo;
         DataModelType = dataModelType;

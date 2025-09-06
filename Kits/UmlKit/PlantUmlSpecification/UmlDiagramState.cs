@@ -12,7 +12,6 @@ namespace UmlKit.PlantUmlSpecification;
 // pattern note: subclassing
 public class UmlDiagramState : UmlDiagram<UmlState>
 {
-    private readonly HashSet<IUmlElement> _meta = new();
     private readonly HashSet<UmlState> _states = new();
     private readonly HashSet<UmlTransitionState> _transitions = new();
 
@@ -20,14 +19,9 @@ public class UmlDiagramState : UmlDiagram<UmlState>
     {
     }
 
-    public void SetLayoutDirection(UmlLayoutDirection.Direction direction)
-    {
-        _meta.Add(new UmlLayoutDirection(direction));
-    }
-
     public override void AddCallbreakNote(string name)
     {
-        _meta.Add(new UmlNote(name, UmlNotePosition.Left, $"{name} -> {name}:"));
+        Meta.Add(new UmlNote(name, UmlNotePosition.Left, $"{name} -> {name}:"));
     }
 
     public override void AddSelfCallContinuation(string name, string methodName)
@@ -100,18 +94,17 @@ public class UmlDiagramState : UmlDiagram<UmlState>
 
     public override void WriteBody(TextWriter writer)
     {
-        if (!_states.Any() || !_transitions.Any() || !_meta.Any())
+        if (!_states.Any() || !_transitions.Any() || !Meta.Any())
         {
             //рисовать нечего
             return;
         }
 
         // 0. Meta
-        foreach (var meta in _meta.Distinct())
+        foreach (var meta in Meta.Distinct())
             meta.WriteTo(writer);
 
         writer.WriteLine();
-
 
         // 1. Объявляем состояния
         foreach (var state in _states.Distinct())

@@ -12,5 +12,8 @@
 		<ProjectReference Include="..\CommandlineKit\CommandlineKit.csproj" />
 		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Model/ContextInfoData/" />
+	</ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using ContextKit.Model.Matrix;
+using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Page;
 
@@ -9,7 +9,7 @@ namespace HtmlKit.Writer;
 // pattern: Builder
 internal class CellWithCoverageBuilder
 {
-    public static string Build(ContextInfoDataCell container, int cnt)
+    public static string Build(IContextKey container, int cnt)
     {
         if (cnt == 0)
         {

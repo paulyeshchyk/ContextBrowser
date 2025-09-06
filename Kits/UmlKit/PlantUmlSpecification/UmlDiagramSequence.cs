@@ -134,6 +134,11 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
     {
         writer.WriteLine("autonumber");
 
+        foreach (var meta in Meta.Distinct())
+            meta.WriteTo(writer);
+
+        writer.WriteLine();
+
         // Уже отсортировано при добавлении
         foreach (var element in _elements.OrderBy(e => e.Key).Select(e => e.Value))
         {

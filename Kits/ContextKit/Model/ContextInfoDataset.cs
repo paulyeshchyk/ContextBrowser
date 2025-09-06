@@ -1,27 +1,60 @@
-﻿using System.Collections.Generic;
-using ContextKit.Model;
-using ContextKit.Model.Matrix;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ContextKit.Model;
 
-public interface IContextInfoDataset
+// context: ContextInfoMatrix, model
+public partial class ContextInfoDataset : IContextInfoDataset
 {
-    List<ContextInfo> ContextsList { get; }
-    IContextInfoData ContextInfoData { get; }
-    Dictionary<string, ContextInfo> ContextLookup { get; }
-}
+    private readonly Dictionary<IContextKey, List<ContextInfo>> _data = new();
 
-// context: ContextInfo, ContextInfoMatrix, model
-public class ContextInfoDataset : IContextInfoDataset
-{
-    public List<ContextInfo> ContextsList { get; private set; }
-    public IContextInfoData ContextInfoData { get; private set; }
-    public Dictionary<string, ContextInfo> ContextLookup { get; private set; }
+    // context: ContextInfoMatrix, read
+    public IEnumerable<string> GetDomains() => _data.Select(k => k.Key.Domain);
 
-    public ContextInfoDataset(List<ContextInfo> contextsList, IContextInfoData matrix, Dictionary<string, ContextInfo> contextLookup)
+    // context: ContextInfoMatrix, read
+    public IEnumerable<string> GetActions() => _data.Select(k => k.Key.Action);
+
+    // context: ContextInfoMatrix, read
+    public List<ContextInfo> GetMethodsByAction(string action) => _data.Where(kvp => kvp.Key.Action == action).SelectMany(kvp => kvp.Value).Distinct().ToList();
+
+    // context: ContextInfoMatrix, read
+    public List<ContextInfo> GetMethodsByDomain(string domain) => _data.Where(kvp => kvp.Key.Domain == domain).SelectMany(kvp => kvp.Value).Distinct().ToList();
+
+    public IEnumerable<ContextInfo> GetAll() => _data.SelectMany(pair => pair.Value);
+
+    // context: ContextInfoMatrix, update
+    public void Add(ContextInfo? item, IContextKey toCell)
     {
-        ContextsList = contextsList;
-        ContextInfoData = matrix;
-        ContextLookup = contextLookup;
+        if (!_data.ContainsKey(toCell))
+            _data[toCell] = new List<ContextInfo>();
+        if (item != null)
+        {
+            _data[toCell].Add(item);
+        }
+    }
+
+    // context: ContextInfoMatrix, read
+    public bool TryGetValue(IContextKey key, out List<ContextInfo> value)
+    {
+        var extracted = _data.TryGetValue(key, out var theValue);
+        value = extracted
+            ? theValue!
+            : new List<ContextInfo>();
+        return extracted;
+    }
+
+    // context: ContextInfoMatrix, read
+    public IEnumerator<KeyValuePair<IContextKey, List<ContextInfo>>> GetEnumerator()
+    {
+        foreach (var entry in _data)
+        {
+            yield return entry;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return _data.GetEnumerator();
     }
 }

@@ -11,6 +11,9 @@ namespace UmlKit.PlantUmlSpecification;
 public abstract class UmlDiagram<P>
     where P : IUmlParticipant
 {
+    protected readonly HashSet<IUmlElement> Meta = new();
+
+    // context: model, uml
     public bool IsUmlTagEnabled { get; set; } = true;
 
     // context: create, uml
@@ -18,6 +21,11 @@ public abstract class UmlDiagram<P>
 
     // context: create, uml
     public abstract UmlDiagram<P> AddParticipant(P participant, string alias);
+
+    public void SetLayoutDirection(UmlLayoutDirection.Direction direction)
+    {
+        Meta.Add(new UmlLayoutDirection(direction));
+    }
 
     public abstract void AddCallbreakNote(string name);
 
@@ -91,6 +99,8 @@ public abstract class UmlDiagram<P>
 
     protected readonly Dictionary<string, string> _skinParams = new();
 
+    protected readonly List<IUmlElement> _relations = new();
+
     //none; . ; :;
     protected string? _separator; //по-умолчанию null
     protected string? _title;
@@ -102,6 +112,11 @@ public abstract class UmlDiagram<P>
         _elements.Add(_nextOrder++, element);
     }
 
+    public void AddRelations(IEnumerable<IUmlElement> relations)
+    {
+        _relations.AddRange(relations);
+    }
+
     // context: uml, update
     public void SetTitle(string title) => _title = title;
 
@@ -109,6 +124,13 @@ public abstract class UmlDiagram<P>
     public void SetSkinParam(string name, string value)
     {
         _skinParams[name] = value;
+    }
+
+    private bool _allowMixing = false;
+
+    public void SetAllowMixing(bool value = true)
+    {
+        _allowMixing = value;
     }
 
     public void SetSeparator(string separtor)
@@ -120,6 +142,7 @@ public abstract class UmlDiagram<P>
     public virtual void WriteTo(TextWriter writer)
     {
         WriteStart(writer);
+        WriteAllowMixing(writer);
         WriteSkinElements(writer);
         WriteSeparator(writer);
         WriteTitle(writer);
@@ -130,13 +153,24 @@ public abstract class UmlDiagram<P>
     // context: uml, update
     protected virtual void WriteStart(TextWriter writer)
     {
+        writer.WriteLine();
+
         if (IsUmlTagEnabled)
             writer.Write($"{SUmlStartTag}");
         writer.Write($" {{id={DiagramId}}}");
         writer.WriteLine();
     }
 
+    private void WriteAllowMixing(TextWriter writer)
+    {
+        if (_allowMixing)
+        {
+            writer.WriteLine("allowmixing");
+        }
+    }
+
     // context: uml, update
+
     protected virtual void WriteEnd(TextWriter writer)
     {
         if (IsUmlTagEnabled)
@@ -151,6 +185,7 @@ public abstract class UmlDiagram<P>
             writer.WriteLine($"set separator {_separator}");
         }
     }
+
     // context: uml, update
     protected virtual void WriteSkinElements(TextWriter writer)
     {

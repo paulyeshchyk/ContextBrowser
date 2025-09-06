@@ -1,6 +1,6 @@
 ﻿using System;
 using ContextBrowserKit.Options;
-using ContextKit.Model.Matrix;
+using ContextKit.Model;
 using HtmlKit.Options;
 
 namespace HtmlKit.Helpers;
@@ -34,7 +34,7 @@ internal class HrefManager : IHrefManager
             ? $"pages\\composite_action_{key}.html?v={TimeStamp}"
             : $"pages\\composite_domain_{key}.html?v={TimeStamp}";
 
-    public string GetHrefCell(ContextInfoDataCell cell, HtmlTableOptions _options) =>
+    public string GetHrefCell(IContextKey cell, HtmlTableOptions _options) =>
         $"pages\\composite_{cell.Action}_{cell.Domain}.html?v={TimeStamp}";
 
     public string GetHrefSummary(HtmlTableOptions _options) =>

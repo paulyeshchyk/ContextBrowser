@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using ContextKit.Model.Matrix;
 
 namespace ExporterKit.Csv;
 
@@ -12,7 +11,7 @@ namespace ExporterKit.Csv;
 public static class CsvGenerator
 {
     //context: build, csv, heatmap
-    public static void GenerateHeatmapCsv(IContextClassifier contextClassifier, Dictionary<ContextInfoDataCell, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
+    public static void GenerateHeatmapCsv(IContextClassifier contextClassifier, Dictionary<IContextKey, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 
@@ -33,7 +32,7 @@ public static class CsvGenerator
             var row = new List<string> { action };
             foreach (var domain in domains)
             {
-                var key = (action, domain);
+                var key = new ContextKey(action, domain);
                 var count = matrix.TryGetValue(key, out var methods) ? methods.Count : 0;
                 row.Add(count.ToString());
             }
@@ -42,10 +41,11 @@ public static class CsvGenerator
 
         var includeUnclassified = unclassifiedPriority != UnclassifiedPriorityType.None;
 
+        var unclassified = new ContextKey(contextClassifier.EmptyAction, contextClassifier.EmptyDomain);
         // Добавим строку для нераспознанных, если нужно
-        if (includeUnclassified && matrix.ContainsKey((contextClassifier.EmptyAction, contextClassifier.EmptyDomain)))
+        if (includeUnclassified && matrix.ContainsKey(unclassified))
         {
-            var unclassifiedCount = matrix[(contextClassifier.EmptyAction, contextClassifier.EmptyDomain)].Count;
+            var unclassifiedCount = matrix[unclassified].Count;
             var row = new List<string> { contextClassifier.EmptyAction };
 
             // Заполняем пустыми значениями для всех доменов

@@ -1,12 +1,13 @@
+using System;
 using System.Collections.Generic;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 
 namespace HtmlKit.Model.Tabsheet;
 
-public interface IHtmlTabsheetDataProvider : IHtmlDataProvider
+public interface IHtmlTabsheetDataProvider<DTO> : IHtmlDataProvider
 {
-    IEnumerable<HtmlTabsheetTabInfoWithDataModelType> Tabsheets { get; }
+    IEnumerable<HtmlTabsheetTabInfoWithDataModelType<DTO>> Tabsheets { get; }
 
     T GetTabsheetDataModel<T>() where T : IHtmlTabsheetDataModel;
 }

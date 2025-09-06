@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using HtmlKit.Builders.Core;
@@ -9,7 +10,7 @@ namespace HtmlKit.Builders.Page;
 
 public static class HtmlTabsheetBuilder
 {
-    public static void Build(StreamWriter writer, IHtmlTabsheetDataProvider tabsDataProvider, HtmlContextInfoDataCell cellData)
+    public static void Build<DTO>(StreamWriter writer, IHtmlTabsheetDataProvider<DTO> tabsDataProvider, DTO cellData)
     {
         var tabAttributes = new HtmlTagAttributes() { { "class", "tabs" } };
         // Build the tab buttons first

@@ -24,6 +24,8 @@ using RoslynKit.Phases.Invocations;
 using RoslynKit.Tree;
 using RoslynKit.Wrappers.Extractor;
 using SemanticKit.Model;
+using UmlKit.Compiler;
+using UmlKit.Compiler.Orchestrant;
 using UmlKit.Exporter;
 using UmlKit.Infrastructure.Options;
 
@@ -66,23 +68,27 @@ public static class Program
         hab.Services.AddTransient<IDeclarationParserFactory, DeclarationParserFactory>();
         hab.Services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
 
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerActionPerDomain>();
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlStateActionDiagramCompiler>();
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlStateDomainDiagramCompiler>();
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlSequenceActionDiagramCompiler>();
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlSequenceDomainDiagramCompiler>();
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerPackages>();
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerMethodsList>();
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerMethodPerActionDomain>();
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlClassDiagramCompilerRelation>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassActionPerDomain>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerNamespaceOnly>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassMethodsList>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassRelation>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassOnly>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerPackageMethodPerActionDomain>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerPackages>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerSequenceAction>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerSequenceDomain>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerStateAction>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerStateDomain>();
 
-        hab.Services.AddTransient<IDiagramCompilerOrchestrator, DiagramCompilerOrchestrator>();
+        hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
 
-        hab.Services.AddTransient<IHtmlPageCompiler, ActionPerDomainHtmlPageCompiler>();
-        hab.Services.AddTransient<IHtmlPageCompiler, ActionOnlyHtmlPageCompiler>();
-        hab.Services.AddTransient<IHtmlPageCompiler, DomainOnlyHtmlPageCompiler>();
-        hab.Services.AddTransient<IHtmlPageCompiler, ActionPerDomainSummaryHtmlPageCompiler>();
-        hab.Services.AddTransient<IHtmlPageCompiler, HtmlIndexBuilder>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerIndex>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerNamespaceOnly>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerClassOnly>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerActionPerDomain>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerActionOnly>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerDomainOnly>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerActionPerDomainSummary>();
 
         hab.Services.AddTransient<IHtmlCompilerOrchestrator, HtmlCompilerOrchestrator>();
 

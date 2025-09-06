@@ -15,13 +15,13 @@ public record TabsheetTabInfo
     }
 }
 
-public class HtmlTabsheetTabInfo
+public class HtmlTabsheetTabInfo<DTO>
 {
     public TabsheetTabInfo Info { get; }
-    public Action<StreamWriter, IHtmlTabsheetDataProvider, HtmlContextInfoDataCell> BuildHtmlTab { get; set; }
+    public Action<StreamWriter, IHtmlTabsheetDataProvider<DTO>, DTO> BuildHtmlTab { get; set; }
     public bool IsActive { get; set; }
 
-    public HtmlTabsheetTabInfo(TabsheetTabInfo info, Action<StreamWriter, IHtmlTabsheetDataProvider, HtmlContextInfoDataCell> buildHtmlTab, bool isActive)
+    public HtmlTabsheetTabInfo(TabsheetTabInfo info, Action<StreamWriter, IHtmlTabsheetDataProvider<DTO>, DTO> buildHtmlTab, bool isActive)
     {
         Info = info;
         BuildHtmlTab = buildHtmlTab;

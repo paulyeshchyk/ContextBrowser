@@ -6,12 +6,12 @@ using HtmlKit.Model.Tabsheet;
 
 namespace HtmlKit.Model.Tabsheet;
 
-public class BaseHtmlTabsheetDataProvider : IHtmlTabsheetDataProvider
+public class BaseHtmlTabsheetDataProvider<DTO> : IHtmlTabsheetDataProvider<DTO>
 {
     private readonly Dictionary<Type, IHtmlTabsheetDataModel> _dataModels;
-    public IEnumerable<HtmlTabsheetTabInfoWithDataModelType> Tabsheets { get; }
+    public IEnumerable<HtmlTabsheetTabInfoWithDataModelType<DTO>> Tabsheets { get; }
 
-    public BaseHtmlTabsheetDataProvider(Dictionary<Type, IHtmlTabsheetDataModel> dataModels, IEnumerable<HtmlTabsheetTabInfoWithDataModelType> tabs)
+    public BaseHtmlTabsheetDataProvider(Dictionary<Type, IHtmlTabsheetDataModel> dataModels, IEnumerable<HtmlTabsheetTabInfoWithDataModelType<DTO>> tabs)
     {
         _dataModels = dataModels ?? throw new ArgumentNullException(nameof(dataModels));
         Tabsheets = tabs;

@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <root>
-  <!--
-    Microsoft ResX Schema
+	<!-- Microsoft ResX Schema
 
     Version 2.0
 
@@ -13,19 +12,7 @@
     Example:
 
     ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
+    <resheader name="resmimetype">text/microsoft-resx</resheader><resheader name="version">2.0</resheader><resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader><resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader><data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data><data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data><data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64"><value>[base64 mime encoded serialized .NET Framework object]</value></data><data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64"><value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value><comment>This is a comment</comment></data>
 
     There are any number of "resheader" rows that contain simple
     name/value pairs.
@@ -57,68 +44,71 @@
     mimetype: application/x-microsoft.net.object.bytearray.base64
     value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="HtmlProducerContentStyle" xml:space="preserve">
-    <value>:root {
+            : and then encoded with base64 encoding. -->
+	<xsd:schema id="root"
+		xmlns=""
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace"></xsd:import>
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0"></xsd:element>
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string"></xsd:attribute>
+							<xsd:attribute name="type" type="xsd:string"></xsd:attribute>
+							<xsd:attribute name="mimetype" type="xsd:string"></xsd:attribute>
+							<xsd:attribute ref="xml:space"></xsd:attribute>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string"></xsd:attribute>
+							<xsd:attribute name="name" type="xsd:string"></xsd:attribute>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"></xsd:element>
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"></xsd:element>
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"></xsd:attribute>
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"></xsd:attribute>
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"></xsd:attribute>
+							<xsd:attribute ref="xml:space"></xsd:attribute>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"></xsd:element>
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="HtmlProducerContentStyle" xml:space="preserve">
+		<value>
+:root {
   --link-color: #0077cc;
   --cell-border-color: #cccccc;
   --cell-border-color-dark: #c0c0c0;
@@ -367,60 +357,61 @@ td.hover-col.hover-cell {
   border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
   border-right: 1px solid var(--cell-border-color-dark);   /* Право */
   background-color: var(--border-summary);
-}</value>
-  </data>
-  <data name="HtmlProducerContentStyleScript" xml:space="preserve">
-    <value>
-    document.addEventListener('DOMContentLoaded', () => {
-  const table = document.querySelector('table');
-  const rows = Array.from(table.rows);
-  const headerRow = rows[0];
+}
+</value>
+	</data>
+	<data name="HtmlProducerContentStyleScript" xml:space="preserve">
+		<value>
+document.addEventListener('DOMContentLoaded', () =&gt; {
+	const table = document.querySelector('table');
+	const rows = Array.from(table.rows);
+	const headerRow = rows[0];
 
-  rows.forEach(row => {
-    Array.from(row.cells).forEach((cell, colIndex) => {
-      // Здесь переменная cell доступна
+	rows.forEach(row =&gt; {
+		Array.from(row.cells).forEach((cell, colIndex) =&gt; {
+			// Здесь переменная cell доступна
 
-      cell.addEventListener('mouseenter', () => {
-        // Логика подсветки колонок в теле
-        rows.forEach(r => {
-          if (r.cells[colIndex]) {
-            r.cells[colIndex].classList.add('hover-col');
-          }
-        });
+			cell.addEventListener('mouseenter', () =&gt; {
+				// Логика подсветки колонок в теле
+				rows.forEach(r =&gt; {
+					if (r.cells[colIndex]) {
+						r.cells[colIndex].classList.add('hover-col');
+					}
+				});
 
-        // Логика подсветки заголовка
-        if (headerRow.cells[colIndex]) {
-          headerRow.cells[colIndex].classList.add('hover-col');
-        }
+				// Логика подсветки заголовка
+				if (headerRow.cells[colIndex]) {
+					headerRow.cells[colIndex].classList.add('hover-col');
+				}
 
-        // Логика подсветки самой ячейки
-        cell.classList.add('hover-cell');
-      });
+				// Логика подсветки самой ячейки
+				cell.classList.add('hover-cell');
+			});
 
-      cell.addEventListener('mouseleave', () => {
-        // Логика снятия подсветки колонок в теле
-        rows.forEach(r => {
-          if (r.cells[colIndex]) {
-            r.cells[colIndex].classList.remove('hover-col');
-          }
-        });
+			cell.addEventListener('mouseleave', () =&gt; {
+				// Логика снятия подсветки колонок в теле
+				rows.forEach(r =&gt; {
+					if (r.cells[colIndex]) {
+						r.cells[colIndex].classList.remove('hover-col');
+					}
+				});
 
-        // Логика снятия подсветки заголовка
-        if (headerRow.cells[colIndex]) {
-          headerRow.cells[colIndex].classList.remove('hover-col');
-        }
+				// Логика снятия подсветки заголовка
+				if (headerRow.cells[colIndex]) {
+					headerRow.cells[colIndex].classList.remove('hover-col');
+				}
 
-        // Логика снятия подсветки самой ячейки
-        cell.classList.remove('hover-cell');
-      });
-    });
-  });
+				// Логика снятия подсветки самой ячейки
+				cell.classList.remove('hover-cell');
+			});
+		});
+	});
 });
-
-    </value>
-  </data>
-  <data name="ScriptAutoFontShrink" xml:space="preserve">
-    <value>(function shrinkEmbeddedFonts() {
+</value>
+	</data>
+	<data name="ScriptAutoFontShrink" xml:space="preserve">
+		<value>
+(function shrinkEmbeddedFonts() {
     const tables = document.querySelectorAll(".embedded-table");
     tables.forEach(table =&gt; {
         const cells = table.querySelectorAll("td");
@@ -450,9 +441,10 @@ td.hover-col.hover-cell {
     });
 })();
 </value>
-  </data>
-  <data name="ScriptAutoShrinkEmbeddedTable" xml:space="preserve">
-    <value>function autoResizeEmbeddedTables() {
+	</data>
+	<data name="ScriptAutoShrinkEmbeddedTable" xml:space="preserve">
+		<value>
+function autoResizeEmbeddedTables() {
     const tables = document.querySelectorAll(".embedded-table");
     tables.forEach(table =&gt; {
         let size = 0.7;
@@ -468,26 +460,28 @@ td.hover-col.hover-cell {
         }
     });
 }
-
 document.addEventListener("DOMContentLoaded", autoResizeEmbeddedTables);
 </value>
-  </data>
-  <data name="JsShowTabseetTabScript" xml:space="preserve">
-    <value>function showTab(tabId, clickedButton) {
-            document.querySelectorAll(".tab-content").forEach(content =&gt; {
-                content.classList.remove("active");
-            });
+	</data>
+	<data name="JsShowTabseetTabScript" xml:space="preserve">
+		<value>
+function showTab(tabId, clickedButton) {
+    document.querySelectorAll(".tab-content").forEach(content =&gt; {
+        content.classList.remove("active");
+    });
 
-            document.querySelectorAll(".tab-button").forEach(button =&gt; {
-                button.classList.remove("active");
-            });
+    document.querySelectorAll(".tab-button").forEach(button =&gt; {
+        button.classList.remove("active");
+    });
 
-            document.getElementById(tabId).classList.add("active");
-            clickedButton.classList.add("active");
-        }</value>
-  </data>
-  <data name="CssTabsheetTabs" xml:space="preserve">
-    <value>.tabs {
+    document.getElementById(tabId).classList.add("active");
+    clickedButton.classList.add("active");
+}
+    </value>
+	</data>
+	<data name="CssTabsheetTabs" xml:space="preserve">
+		<value>
+.tabs {
   display: flex;
   flex-wrap: wrap;
   border-bottom: 1px solid #ccc;
@@ -517,6 +511,6 @@ document.addEventListener("DOMContentLoaded", autoResizeEmbeddedTables);
 .tab-content.active {
   display: block;
 }
-</value>
-  </data>
+    </value>
+	</data>
 </root>

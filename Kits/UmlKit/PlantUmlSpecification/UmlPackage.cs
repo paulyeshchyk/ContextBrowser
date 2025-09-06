@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using UmlKit.PlantUmlSpecification.Attributes;
 
 namespace UmlKit.Model;
 
@@ -9,13 +11,30 @@ public class UmlPackage : IUmlElement, IUmlDeclarable
 {
     public string Name { get; }
 
+    public string Alias { get; }
+
+    public string? Url { get; }
+
+    public string Declaration => $"package \"{Name}\" as {Alias} ";
+
     public List<IUmlElement> Elements { get; } = new();
 
-    public UmlPackage(string name) => Name = name;
+    public UmlPackage(string name, string alias, string? url)
+    {
+        Name = name;
+        Alias = alias;
+        Url = url;
+    }
 
-    public string Declaration => $"package \"{Name}\"";
+    private string GetUrl()
+    {
+        return ClassAttributesBuilder.BuildUrl(Url) ?? string.Empty;
+    }
 
-    public string Alias => Name;
+    public UmlComponent? FindElement(string predicate)
+    {
+        return Elements.Cast<UmlComponent>().FirstOrDefault(e => e.Name.Equals(predicate));
+    }
 
     // context: uml, create
     public void Add(IUmlElement e) => Elements.Add(e);
@@ -24,7 +43,8 @@ public class UmlPackage : IUmlElement, IUmlDeclarable
     public void WriteTo(TextWriter writer)
     {
         writer.WriteLine();
-        writer.WriteLine($"{Declaration} {{");
+        writer.WriteLine($"{Declaration} {GetUrl()}");
+        writer.WriteLine("{");
         foreach (var element in Elements)
             element.WriteTo(writer);
         writer.WriteLine("}");

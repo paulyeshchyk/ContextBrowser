@@ -52,6 +52,9 @@ public class UmlJoin : IUmlElement
             case UmlArrowDirection.ToRight:
                 writer.Write($"-{theStyle}->");
                 break;
+            case UmlArrowDirection.None:
+                writer.Write($"-{theStyle}-");
+                break;
             default:
                 throw new NotImplementedException();
         }

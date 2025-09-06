@@ -70,7 +70,8 @@ public enum UmlArrowFlowType
 public enum UmlArrowDirection
 {
     ToLeft,
-    ToRight
+    ToRight,
+    None
 }
 
 public enum UmlArrowPosition

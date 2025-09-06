@@ -124,7 +124,7 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     public void MergeFakeItems()
     {
         var legacy = FakeCollection.Where(item => _existing.Any(existingItem => existingItem.FullName == item.FullName)).ToList();
-        Console.WriteLine(legacy);
+
         var newItems = FakeCollection.Where(item => !_existing.Any(existingItem => existingItem.FullName == item.FullName)).ToList();
         _existing.AddRange(newItems);
 

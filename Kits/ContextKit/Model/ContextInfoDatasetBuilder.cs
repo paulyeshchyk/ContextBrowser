@@ -6,7 +6,6 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
-using ContextKit.Model.Matrix;
 using LoggerKit;
 
 namespace ExporterKit.Uml;
@@ -31,12 +30,81 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
     // context: ContextInfo, ContextInfoMatrix, build
     public IContextInfoDataset Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier)
     {
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
 
-        var matrixBuilder = new ContextInfoDataBuilder(contextClassifier, matrixOptions);
-        var matrix = matrixBuilder.BuildMatrix(contextsList.ToList());
+        var elements = contextsList.ToList();
+        var map = new ContextInfoDataset();
 
-        var contextLookup = ContextInfoElementTypeAndNameIndexBuilder.Build(contextsList.ToList());
-        return new ContextInfoDataset(contextsList.ToList(), matrix, contextLookup);
+        PopulateMatrixWithElements(map, elements, matrixOptions, contextClassifier);
+
+        AddEmptyCells(map, elements, matrixOptions, contextClassifier);
+
+        return map;
+    }
+
+
+    private static void PopulateMatrixWithElements(IContextInfoDataset contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IContextClassifier contextClassifier)
+    {
+        bool includeUnclassified = _matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
+
+        foreach (var item in elements)
+        {
+            var verbs = item.Contexts.Where(contextClassifier.IsVerb).Distinct().ToList();
+            var nouns = item.Contexts.Where(contextClassifier.IsNoun).Distinct().ToList();
+
+            if (verbs.Any() && nouns.Any())
+            {
+                foreach (var action in verbs)
+                    foreach (var domain in nouns)
+                        contextInfoData.Add(item, new ContextKey(Action: action, Domain: domain));
+            }
+            else if (verbs.Any())
+            {
+                foreach (var action in verbs)
+                    contextInfoData.Add(item, new ContextKey(Action: action, Domain: contextClassifier.EmptyDomain));
+            }
+            else if (nouns.Any() && includeUnclassified)
+            {
+                foreach (var domain in nouns)
+                    contextInfoData.Add(item, new ContextKey(Action: contextClassifier.EmptyAction, Domain: domain));
+            }
+            else if (includeUnclassified)
+            {
+                contextInfoData.Add(item, new ContextKey(Action: contextClassifier.EmptyAction, Domain: contextClassifier.EmptyDomain));
+            }
+        }
+    }
+
+    private static void AddEmptyCells(IContextInfoDataset contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IContextClassifier contextClassifier)
+    {
+        if (!_matrixOptions.IncludeAllStandardActions)
+            return;
+
+        var allVerbs = contextClassifier.GetCombinedVerbs(elements.SelectMany(e => e.Contexts).Where(contextClassifier.IsVerb).Distinct().ToList()).ToList();
+        var allNouns = elements.SelectMany(e => e.Contexts).Where(contextClassifier.IsNoun).Distinct().ToList();
+
+        bool includeUnclassified = _matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
+
+        var nounsToUse = includeUnclassified
+            ? allNouns.Append(contextClassifier.EmptyDomain)
+            : allNouns;
+
+        foreach (var action in allVerbs)
+        {
+            foreach (var domain in nounsToUse)
+            {
+                contextInfoData.Add(null, new ContextKey(Action: action, Domain: domain));
+            }
+        }
+
+        if (includeUnclassified)
+        {
+            foreach (var noun in allNouns)
+            {
+                contextInfoData.Add(null, new ContextKey(Action: contextClassifier.EmptyAction, Domain: noun));
+            }
+
+            contextInfoData.Add(null, new ContextKey(Action: contextClassifier.EmptyAction, Domain: contextClassifier.EmptyDomain));
+        }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using ContextKit.Model.Matrix;
 
 namespace ExporterKit.Html.Matrix;
 
@@ -12,10 +11,10 @@ namespace ExporterKit.Html.Matrix;
 public static class HtmlMatrixGenerator
 {
     // context: build, htmlmatrix
-    public static HtmlMatrix Generate(IContextClassifier contextClassifier, IContextInfoData matrix, MatrixOrientationType matrixOrientation, UnclassifiedPriorityType priority)
+    public static HtmlMatrix Generate(IContextClassifier contextClassifier, IContextKeyMap contextKeyMap, MatrixOrientationType matrixOrientation, UnclassifiedPriorityType priority)
     {
-        var rows = SortList(matrix.GetActions().Distinct().ToList(), contextClassifier.EmptyAction, priority);
-        var cols = SortList(matrix.GetDomains().Distinct().ToList(), contextClassifier.EmptyDomain, priority);
+        var rows = SortList(contextKeyMap.GetActions().Distinct().ToList(), contextClassifier.EmptyAction, priority);
+        var cols = SortList(contextKeyMap.GetDomains().Distinct().ToList(), contextClassifier.EmptyDomain, priority);
 
         var resultMatrix = new HtmlMatrix(rows, cols);
 

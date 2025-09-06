@@ -12,7 +12,7 @@ using HtmlKit.Model.Tabsheet;
 /// Регистрация одной вкладки: связывает контракт модели (DataModelType),
 /// конкретную модель (Model) и уже готовую HtmlTabsheetTabInfoWithDataModelType (Tab).
 /// </summary>
-public interface IHtmlTabRegistration
+public interface IHtmlTabRegistration<DTO>
 {
     /// <summary>Тип контракта модели (ключ в словаре провайдера).</summary>
     Type DataModelType { get; }
@@ -21,7 +21,7 @@ public interface IHtmlTabRegistration
     IHtmlTabsheetDataModel Model { get; }
 
     /// <summary>Готовая информация о вкладке, содержащая делегат рендера и прочее.</summary>
-    HtmlTabsheetTabInfoWithDataModelType Tab { get; }
+    HtmlTabsheetTabInfoWithDataModelType<DTO> Tab { get; }
 }
 
 /// <summary>
@@ -33,16 +33,14 @@ public static class TabRegistration
 {
     /// <summary>
     /// Создать регистрацию вкладки, где:
-    /// TModel — конкретная реализация модели (реализует TContract и IHtmlTabsheetDataModel),
     /// TContract — интерфейс-контракт, под которым вкладка будет доступна провайдеру.
     /// </summary>
-    public static IHtmlTabRegistration For< TContract>(
+    public static IHtmlTabRegistration<DTO> For<TContract, DTO>(
         string tabId,
         string caption,
         bool isActive,
         TContract model,
-        Action<TextWriter, TContract, HtmlContextInfoDataCell> build)
-        // where TModel : class, TContract
+        Action<TextWriter, TContract, DTO> build)
         where TContract : IHtmlTabsheetDataModel
     {
         if (string.IsNullOrWhiteSpace(tabId)) throw new ArgumentException("tabId required", nameof(tabId));
@@ -51,7 +49,7 @@ public static class TabRegistration
 
         var tabsheetTabInfo = new TabsheetTabInfo(tabId: tabId, caption: caption);
 
-        var htmlTab = new HtmlTabsheetTabInfo
+        var htmlTab = new HtmlTabsheetTabInfo<DTO>
         (
             info: tabsheetTabInfo,
             buildHtmlTab: (writer, tabsheetProvider, dto) =>
@@ -62,20 +60,20 @@ public static class TabRegistration
             isActive: isActive
         );
 
-        return new HtmlTabRegistrationImpl(
+        return new HtmlTabRegistrationImpl<DTO>(
             dataModelType: typeof(TContract),
             model: model,
-            tab: new HtmlTabsheetTabInfoWithDataModelType(htmlTab, typeof(TContract))
+            tab: new HtmlTabsheetTabInfoWithDataModelType<DTO>(htmlTab, typeof(TContract))
         );
     }
 
-    private sealed class HtmlTabRegistrationImpl : IHtmlTabRegistration
+    private sealed class HtmlTabRegistrationImpl<DTO> : IHtmlTabRegistration<DTO>
     {
         public Type DataModelType { get; }
         public IHtmlTabsheetDataModel Model { get; }
-        public HtmlTabsheetTabInfoWithDataModelType Tab { get; }
+        public HtmlTabsheetTabInfoWithDataModelType<DTO> Tab { get; }
 
-        public HtmlTabRegistrationImpl(Type dataModelType, IHtmlTabsheetDataModel model, HtmlTabsheetTabInfoWithDataModelType tab)
+        public HtmlTabRegistrationImpl(Type dataModelType, IHtmlTabsheetDataModel model, HtmlTabsheetTabInfoWithDataModelType<DTO> tab)
         {
             DataModelType = dataModelType ?? throw new ArgumentNullException(nameof(dataModelType));
             Model = model ?? throw new ArgumentNullException(nameof(model));
@@ -87,12 +85,11 @@ public static class TabRegistration
 /// <summary>
 /// Провайдер, построенный из набора регистраций. Внутренне адаптируется к BaseHtmlTabsheetDataProvider
 /// </summary>
-public sealed class ComposableTabsheetDataProvider : BaseHtmlTabsheetDataProvider
+public sealed class ComposableTabsheetDataProvider<DTO> : BaseHtmlTabsheetDataProvider<DTO>
 {
-    public ComposableTabsheetDataProvider(IEnumerable<IHtmlTabRegistration> registrations)
+    public ComposableTabsheetDataProvider(IEnumerable<IHtmlTabRegistration<DTO>> registrations)
         : base(
-            dataModels: (registrations ?? throw new ArgumentNullException(nameof(registrations)))
-                         .ToDictionary(r => r.DataModelType, r => r.Model),
+            dataModels: (registrations ?? throw new ArgumentNullException(nameof(registrations))).ToDictionary(r => r.DataModelType, r => r.Model),
             tabs: registrations.Select(r => r.Tab)
           )
     {

@@ -3,7 +3,6 @@ using System.IO;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using ContextKit.Model.Matrix;
 using HtmlKit.Builders.Core;
 using HtmlKit.Document.Coverage;
 using HtmlKit.Helpers;
@@ -16,24 +15,24 @@ namespace HtmlKit.Document;
 //context: htmlmatrix, model
 public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
 {
-    public Dictionary<string, ContextInfo> ContextsLookup { get; }
+    public Dictionary<string, ContextInfo> IndexMap { get; }
 
     private HtmlTableOptions _options { get; }
 
     public HtmlMatrix UiMatrix { get; }
 
-    public IContextInfoData ContextsMatrix { get; }
+    public IContextInfoDataset ContextsMatrix { get; }
 
     private readonly CoverManager _coverManager = new CoverManager();
 
     public ICoverageManager CoverageManager => _coverManager;
 
-    public HtmlPageMatrix(HtmlMatrix uiMatrix, IContextInfoData matrix, HtmlTableOptions options, Dictionary<string, ContextInfo> contextLookup) : base()
+    public HtmlPageMatrix(HtmlMatrix uiMatrix, IContextInfoDataset matrix, HtmlTableOptions options, Dictionary<string, ContextInfo> indexMap) : base()
     {
         UiMatrix = uiMatrix;
         ContextsMatrix = matrix;
         _options = options;
-        ContextsLookup = contextLookup;
+        IndexMap = indexMap;
     }
 
     protected override IEnumerable<string> GetScripts()
@@ -60,7 +59,7 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
     }
 
     //context: ContextInfoMatrix, build
-    public string ProduceData(ContextInfoDataCell container)
+    public string ProduceData(IContextKey container)
     {
         ContextsMatrix.TryGetValue(container, out var methods);
         var cnt = methods?.Count ?? 0;

@@ -1,17 +1,27 @@
 using System.Collections.Generic;
 using ContextKit.Model;
-using ContextKit.Model.Matrix;
 
 namespace HtmlKit.Model;
 
-public class HtmlContextInfoDataCell
-{
-    public ContextInfoDataCell DataCell { get; init; }
-    public IEnumerable<ContextInfo> Methods { get; init; }
 
-    public HtmlContextInfoDataCell(ContextInfoDataCell dataCell, IEnumerable<ContextInfo> methods)
+public class ContextKeyContainer : BaseKeyAndDataContainer<IContextKey>
+{
+    public ContextKeyContainer(IContextKey contextKey, IEnumerable<IContextInfo> contextInfoList) : base(contextKey, contextInfoList)
     {
-        DataCell = dataCell;
-        Methods = methods;
+    }
+}
+
+public class NamespacenameContainer : BaseKeyAndDataContainer<string>
+{
+    public NamespacenameContainer(string contextKey, IEnumerable<IContextInfo> contextInfoList) : base(contextKey, contextInfoList)
+    {
+    }
+}
+
+
+public class EntitynameContainer : BaseKeyAndDataContainer<string>
+{
+    public EntitynameContainer(string contextKey, IEnumerable<IContextInfo> contextInfoList) : base(contextKey, contextInfoList)
+    {
     }
 }

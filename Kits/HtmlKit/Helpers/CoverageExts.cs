@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using ContextKit.Model;
-using ContextKit.Model.Matrix;
 
 namespace HtmlKit.Helpers;
 
 public static class CoverageExts
 {
     //context: color, ContextInfo, build
-    public static string? GetCoverageColorForCell(ContextInfoDataCell cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
+    public static string? GetCoverageColorForCell(IContextKey cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo> contextLookup, Func<ContextInfo?, int> DimensionValueExtractor)
     {
         if (methods != null && methods.Count > 0)
         {

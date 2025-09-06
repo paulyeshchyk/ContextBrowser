@@ -1,13 +1,13 @@
 ﻿using System;
 using ContextBrowserKit.Options;
-using ContextKit.Model.Matrix;
+using ContextKit.Model;
 using HtmlKit.Options;
 
 namespace HtmlKit.Helpers;
 
 public interface IHrefManager
 {
-    string GetHrefCell(ContextInfoDataCell cell, HtmlTableOptions _options);
+    string GetHrefCell(IContextKey cell, HtmlTableOptions _options);
 
     string GetHrefColSummary(string key, HtmlTableOptions _options);
 

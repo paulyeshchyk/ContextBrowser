@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 
@@ -107,11 +108,23 @@ public class UmlClassDiagram : UmlDiagram<UmlState>
     // context: uml, share
     public override void WriteBody(TextWriter writer)
     {
+        foreach (var meta in Meta.Distinct())
+            meta.WriteTo(writer);
+
         writer.WriteLine();
 
+        // объекты
+        writer.WriteLine();
         foreach (var element in _elements.Values)
         {
             element.WriteTo(writer);
+        }
+
+        // связи
+        writer.WriteLine();
+        foreach (var relation in _relations)
+        {
+            relation.WriteTo(writer);
         }
     }
 

@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 using ContextBrowserKit.Matrix;
 using ContextKit.Model;
-using ContextKit.Model.Matrix;
 using HtmlKit.Document.Coverage;
 
 namespace HtmlKit.Document;
 
 public interface IHtmlPageMatrix
 {
-    IContextInfoData ContextsMatrix { get; }
+    IContextInfoDataset ContextsMatrix { get; }
 
     HtmlMatrix UiMatrix { get; }
 
-    Dictionary<string, ContextInfo> ContextsLookup { get; }
+    Dictionary<string, ContextInfo> IndexMap { get; }
 
     ICoverageManager CoverageManager { get; }
 
-    string ProduceData(ContextInfoDataCell container);
+    string ProduceData(IContextKey container);
 }
