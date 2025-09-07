@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- Microsoft ResX Schema
 
@@ -45,49 +45,49 @@
     value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding. -->
-	<xsd:schema id="root"
-		xmlns=""
-		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	<xsd:schema id="root" 
+		xmlns="" 
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
 		xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace"></xsd:import>
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
 		<xsd:element name="root" msdata:IsDataSet="true">
 			<xsd:complexType>
 				<xsd:choice maxOccurs="unbounded">
 					<xsd:element name="metadata">
 						<xsd:complexType>
 							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0"></xsd:element>
+								<xsd:element name="value" type="xsd:string" minOccurs="0"/>
 							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string"></xsd:attribute>
-							<xsd:attribute name="type" type="xsd:string"></xsd:attribute>
-							<xsd:attribute name="mimetype" type="xsd:string"></xsd:attribute>
-							<xsd:attribute ref="xml:space"></xsd:attribute>
+							<xsd:attribute name="name" use="required" type="xsd:string"/>
+							<xsd:attribute name="type" type="xsd:string"/>
+							<xsd:attribute name="mimetype" type="xsd:string"/>
+							<xsd:attribute ref="xml:space"/>
 						</xsd:complexType>
 					</xsd:element>
 					<xsd:element name="assembly">
 						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string"></xsd:attribute>
-							<xsd:attribute name="name" type="xsd:string"></xsd:attribute>
+							<xsd:attribute name="alias" type="xsd:string"/>
+							<xsd:attribute name="name" type="xsd:string"/>
 						</xsd:complexType>
 					</xsd:element>
 					<xsd:element name="data">
 						<xsd:complexType>
 							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"></xsd:element>
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"></xsd:element>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
 							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"></xsd:attribute>
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"></xsd:attribute>
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"></xsd:attribute>
-							<xsd:attribute ref="xml:space"></xsd:attribute>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+							<xsd:attribute ref="xml:space"/>
 						</xsd:complexType>
 					</xsd:element>
 					<xsd:element name="resheader">
 						<xsd:complexType>
 							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"></xsd:element>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
 							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+							<xsd:attribute name="name" type="xsd:string" use="required"/>
 						</xsd:complexType>
 					</xsd:element>
 				</xsd:choice>
@@ -336,18 +336,18 @@ td.hover-col.hover-cell {
 }
 
 .cell_colsummary {
-  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-  border-left: 1px solid var(--cell-border-color);    /* Лево */
-  border-right: 1px solid var(--cell-border-color);   /* Право */
+  border-top: 1px solid var(--cell-border-color-dark);    /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark); /* Низ */
+  border-left: 1px solid var(--cell-border-color);        /* Лево */
+  border-right: 1px solid var(--cell-border-color);       /* Право */
   background-color: var(--border-summary);
 }
 
 .cell_rowsummary {
-  border-top: 1px solid var(--cell-border-color);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-  border-left: 1px solid var(--cell-border-color-dark);       /* Лево */
-  border-right: 1px solid var(--cell-border-color-dark);      /* Право */
+  border-top: 1px solid var(--cell-border-color);         /* Верх */
+  border-bottom: 1px solid var(--cell-border-color);      /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark);   /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark);  /* Право */
   background-color: var(--border-summary);
 }
 
@@ -358,7 +358,60 @@ td.hover-col.hover-cell {
   border-right: 1px solid var(--cell-border-color-dark);   /* Право */
   background-color: var(--border-summary);
 }
-</value>
+
+.nav-link-span
+{
+    display: none;
+}
+
+.nav-link {
+    border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+    border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+    border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+    border-right: 0px solid var(--cell-border-color-dark);   /* Право */
+    background-color: var(--border-summary);
+    border-radius: 0px;
+}
+
+.nav-link-current {
+    border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
+    border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
+    border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
+    border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+    background-color: var(--border-summary);
+    border-radius: 0px;
+    border-radius: 0px;
+}
+
+.nav-link,
+.nav-link-current {
+    display: inline-block; /* Чтобы элемент мог принимать отступы и размеры */
+    padding: 5px 10px; /* Отступ внутри прямоугольника */
+    margin: 5px 0px; /* Отступ между элементами */
+    text-decoration: none; /* Убираем подчёркивание */
+    color: inherit; /* Наследуем цвет текста от родителя */
+    cursor: pointer; /* Делаем курсор "указатель" для всех элементов */
+}
+
+.nav-link:hover,
+.nav-link:active,
+.nav-link:visited {
+    background-color: #f0f0f0; /* Возвращаем светло-серый фон */
+    color: #0077cc;
+    text-decoration: none;
+}
+.nav-link:hover {
+    background-color: #e0e0e0; /* Делаем темнее */
+}
+
+/* Стили для текущего, некликабельного элемента */
+.nav-link-current {
+    background-color: #e0e0e0; /* Более тёмный фон для текущего элемента */
+    cursor: default; /* Возвращаем стандартный курсор */
+    pointer-events: none; /* Полностью отключаем события мыши, чтобы нельзя было нажать */
+}
+
+    </value>
 	</data>
 	<data name="HtmlProducerContentStyleScript" xml:space="preserve">
 		<value>
@@ -407,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () =&gt; {
 		});
 	});
 });
-</value>
+    </value>
 	</data>
 	<data name="ScriptAutoFontShrink" xml:space="preserve">
 		<value>
@@ -440,7 +493,102 @@ document.addEventListener('DOMContentLoaded', () =&gt; {
         table.style.fontSize = fontSize + "em";
     });
 })();
-</value>
+    </value>
+	</data>
+	<data name="JsBreadcrumbScript" xml:space="preserve">
+		<value>
+// This script will be included on every page
+document.addEventListener(&apos;DOMContentLoaded&apos;, (event) =&gt; {
+    const pageDataElement = document.getElementById(&apos;page-data&apos;);
+    if (!pageDataElement) return;
+
+    const currentPageInfo = JSON.parse(pageDataElement.innerText);
+    const currentPageUrl = currentPageInfo.Url;
+    const currentPageName = currentPageInfo.Name;
+
+    let navStack = JSON.parse(sessionStorage.getItem(&apos;navStack&apos;)) || [];
+
+    // Find if the current page already exists in the stack
+    const existingIndex = navStack.findIndex(item =&gt; item.Url === currentPageUrl);
+
+    if (currentPageUrl === &apos;index.html&apos; || currentPageUrl === &apos;/&apos;) {
+        // Case 1: User is on the home page. Reset the stack to just &apos;Home&apos;.
+        navStack = [{ Url: currentPageUrl, Name: currentPageName }];
+    } else if (existingIndex !== -1) {
+        // Case 2: The page exists in the stack. This happens when the user uses the back button or clicks a breadcrumb.
+        // We trim the stack to that point. This is the fix you need.
+        navStack = navStack.slice(0, existingIndex + 1);
+
+        // This is a subtle but important detail: the logic for a &quot;new&quot; page
+        // has to be handled differently. If the user clicks a breadcrumb,
+        // we&apos;ve already done our job. If they navigate to a new page,
+        // the stack should grow. Let&apos;s make that explicit below.
+    } else {
+        // Case 3: The page is a new, unvisited one in this session.
+        // We add it to the end of the stack.
+        navStack.push({ Url: currentPageUrl, Name: currentPageName });
+    }
+
+    // Save the updated stack to session storage
+    sessionStorage.setItem(&apos;navStack&apos;, JSON.stringify(navStack));
+
+    // --- Rendering Logic (Re-render the panel dynamically) ---
+    // (This part remains the same)
+    const navPanel = document.getElementById(&apos;nav-panel&apos;);
+    if (!navPanel) return;
+
+    navPanel.innerHTML = &apos;&apos;; // Clear content
+
+    // вставка элемента, позволяющего сократить отображаемый список навигационных элементов
+    const maxItemsToShow = 4; // Максимальное количество элементов для показа
+    const stackLength = navStack.length;
+
+    // Определяем, нужно ли показывать многоточие
+    const needsEllipsis = stackLength &gt; maxItemsToShow;
+
+    let itemsToRender = navStack;
+
+    if (needsEllipsis) {
+        const homePage = navStack[0];
+        const lastTwo = navStack.slice(-2);
+
+        // Вставляем многоточие
+        const ellipsis = {
+            Url: navStack[stackLength - maxItemsToShow].Url, // Ссылка на последний скрытый элемент
+            Name: &quot;...&quot;
+        };
+
+        itemsToRender = [homePage, ellipsis, ...lastTwo];
+    }
+
+    itemsToRender.forEach((item, index) =&gt; {
+        const name = item.Name || item.Url;
+
+        // Проверяем, является ли это последним элементом
+        if (index === itemsToRender.length - 1) {
+            // Если это текущая страница, создаём &lt;span&gt; вместо &lt;a&gt;
+            const span = document.createElement(&apos;span&apos;);
+            span.textContent = name;
+            span.classList.add(&apos;nav-link-current&apos;);
+            navPanel.appendChild(span);
+        } else {
+            // Если это не текущая страница, создаём кликабельную &lt;a&gt;
+            const link = document.createElement(&apos;a&apos;);
+            link.href = item.Url;
+            link.textContent = name;
+            link.classList.add(&apos;nav-link&apos;);
+            navPanel.appendChild(link);
+        }
+
+        if (index &lt; itemsToRender.length - 1) {
+            const separator = document.createElement(&apos;span&apos;);
+            separator.classList.add(&apos;nav-link-span&apos;);
+            separator.textContent = &apos; &gt; &apos;;
+            navPanel.appendChild(separator);
+        }
+    });
+});
+		</value>
 	</data>
 	<data name="ScriptAutoShrinkEmbeddedTable" xml:space="preserve">
 		<value>
@@ -461,7 +609,7 @@ function autoResizeEmbeddedTables() {
     });
 }
 document.addEventListener("DOMContentLoaded", autoResizeEmbeddedTables);
-</value>
+    </value>
 	</data>
 	<data name="JsShowTabseetTabScript" xml:space="preserve">
 		<value>

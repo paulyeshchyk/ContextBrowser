@@ -21,7 +21,6 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompiler
 {
     //context: build, uml
-
     public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         CompileDomainGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);

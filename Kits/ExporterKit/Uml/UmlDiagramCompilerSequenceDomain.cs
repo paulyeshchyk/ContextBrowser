@@ -17,7 +17,7 @@ using UmlKit.Infrastructure.Options;
 
 namespace ExporterKit.Uml;
 
-// context: generator, sequence, domain
+// context: uml, sequence, build, domain
 public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
 {
     protected readonly IAppLogger<AppLevel> _logger;

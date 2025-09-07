@@ -12,7 +12,7 @@ using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Exporter;
 
-// context: links, build
+// context: uml, links, build
 // pattern: Builder
 public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
 {

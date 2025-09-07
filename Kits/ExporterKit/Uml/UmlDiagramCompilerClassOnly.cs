@@ -16,6 +16,7 @@ using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Exporter;
 
+// context: uml, build
 public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;

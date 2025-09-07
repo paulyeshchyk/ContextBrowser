@@ -8,10 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HtmlKit {
+namespace HtmlKit
+{
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,44 +23,52 @@ namespace HtmlKit {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
-        
+    internal class Resources
+    {
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal Resources()
+        {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        internal static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HtmlKit.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
+        internal static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to :root {
         ///  --link-color: #0077cc;
@@ -312,12 +321,14 @@ namespace HtmlKit {
         ///  background-color: var(--border-summary);
         ///}.
         /// </summary>
-        internal static string HtmlProducerContentStyle {
-            get {
+        internal static string HtmlProducerContentStyle
+        {
+            get
+            {
                 return ResourceManager.GetString("HtmlProducerContentStyle", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to document.addEventListener('DOMContentLoaded', () => {
         ///	const table = document.querySelector('table');
@@ -365,12 +376,14 @@ namespace HtmlKit {
         ///	});
         ///});.
         /// </summary>
-        internal static string HtmlProducerContentStyleScript {
-            get {
+        internal static string HtmlProducerContentStyleScript
+        {
+            get
+            {
                 return ResourceManager.GetString("HtmlProducerContentStyleScript", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to (function shrinkEmbeddedFonts() {
         ///    const tables = document.querySelectorAll(".embedded-table");
@@ -402,12 +415,14 @@ namespace HtmlKit {
         ///    });
         ///})();.
         /// </summary>
-        internal static string ScriptAutoFontShrink {
-            get {
+        internal static string ScriptAutoFontShrink
+        {
+            get
+            {
                 return ResourceManager.GetString("ScriptAutoFontShrink", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to function autoResizeEmbeddedTables() {
         ///    const tables = document.querySelectorAll(".embedded-table");
@@ -428,12 +443,14 @@ namespace HtmlKit {
         ///
         ///document.addEventListener("DOMContentLoaded", autoResizeEmbeddedTables);.
         /// </summary>
-        internal static string ScriptAutoShrinkEmbeddedTable {
-            get {
+        internal static string ScriptAutoShrinkEmbeddedTable
+        {
+            get
+            {
                 return ResourceManager.GetString("ScriptAutoShrinkEmbeddedTable", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to function showTab(tabId, clickedButton) {
         ///            document.querySelectorAll(".tab-content").forEach(content => {
@@ -448,12 +465,14 @@ namespace HtmlKit {
         ///            clickedButton.classList.add("active");
         ///        }.
         /// </summary>
-        internal static string JsShowTabseetTabScript {
-            get {
+        internal static string JsShowTabseetTabScript
+        {
+            get
+            {
                 return ResourceManager.GetString("JsShowTabseetTabScript", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .tabs {
         ///  display: flex;
@@ -486,9 +505,18 @@ namespace HtmlKit {
         ///  display: block;
         ///}.
         /// </summary>
-        internal static string CssTabsheetTabs {
-            get {
+        internal static string CssTabsheetTabs
+        {
+            get
+            {
                 return ResourceManager.GetString("CssTabsheetTabs", resourceCulture);
+            }
+        }
+        internal static string JsBreadcrumbScript
+        {
+            get
+            {
+                return ResourceManager.GetString("JsBreadcrumbScript", resourceCulture);
             }
         }
     }

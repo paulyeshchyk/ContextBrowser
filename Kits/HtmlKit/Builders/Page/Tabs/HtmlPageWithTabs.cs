@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using HtmlKit;
 using HtmlKit.Builders.Core;
 using HtmlKit.Builders.Page;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 using HtmlKit.Page;
+using Microsoft.VisualBasic;
 
 namespace ExporterKit.Html;
 
@@ -54,16 +57,16 @@ public class HtmlTabbedPageBuilder<DTO>
                 HtmlBuilderFactory.Meta.Cell(writer, attributes: attributes);
                 HtmlBuilderFactory.Title.Cell(writer, innerHtml: title);
                 HtmlBuilderFactory.Script.Cell(writer, innerHtml: HtmlBuilderFactory.JsScripts.JsShowTabsheetTabScript, isEncodable: false);
+                HtmlBuilderFactory.Style.Cell(writer, innerHtml: HtmlBuilderFactory.CssStyles.CssBase, isEncodable: false);
                 HtmlBuilderFactory.Style.Cell(writer, innerHtml: HtmlBuilderFactory.CssStyles.CssTabsheet, isEncodable: false);
             });
 
+            var navItem = new BreadcrumbNavigationItem(filename, title);
             HtmlBuilderFactory.Body.With(writer, () =>
             {
-                HtmlBuilderFactory.P.With(writer, () =>
-                {
-                    var attributes = new HtmlTagAttributes() { { "href", "..\\index.html" } };
-                    HtmlBuilderFactory.A.Cell(writer, attributes, "index");
-                });
+                HtmlBuilderFactory.Breadcrumb(navItem).Cell(writer);
+
+                HtmlBuilderFactory.P.Cell(writer);
 
                 var attributes = new HtmlTagAttributes() { { "class", "tabs-container" } };
 

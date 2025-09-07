@@ -30,7 +30,7 @@ public class HtmlPageCompilerIndex : IHtmlPageCompiler
 
         var uiMatrix = HtmlMatrixGenerator.Generate(contextClassifier, dataset, exportOptions.ExportMatrix.HtmlTable.Orientation, exportOptions.ExportMatrix.UnclassifiedPriority);
         var producer = new HtmlPageMatrix(uiMatrix, dataset, exportOptions.ExportMatrix.HtmlTable, map);
-        producer.Title = "Контекстная матрица";
+        // producer.Title = "Контекстная матрица";
         var result = producer.ToHtmlString();
         var outputFile = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.index, "index.html");
 

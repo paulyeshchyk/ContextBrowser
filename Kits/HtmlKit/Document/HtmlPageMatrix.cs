@@ -43,18 +43,22 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
     }
 
     //context: htmlmatrix, build
-    protected override void WriteContent(TextWriter tw)
+    protected override void WriteContent(TextWriter writer)
     {
         var hrefManager = new HrefManager();
         var fixedHtmlManager = new FixedHtmlContentManager();
 
-        HtmlBuilderFactory.Table.With(tw, () =>
+        HtmlBuilderFactory.Breadcrumb(new BreadcrumbNavigationItem("..\\index.html", "Контекстная матрица")).Cell(writer);
+
+        HtmlBuilderFactory.P.Cell(writer);
+
+        HtmlBuilderFactory.Table.With(writer, () =>
         {
             new HtmlMatrixWriter(htmlPageMatrix: this, hrefManager: hrefManager, fixedHtmlContentManager: fixedHtmlManager, options: _options)
-                .WriteHeaderRow(tw)
-                .WriteSummaryRowIf(tw, SummaryPlacementType.AfterFirst)
-                .WriteAllDataRows(tw)
-                .WriteSummaryRowIf(tw, SummaryPlacementType.AfterLast);
+                .WriteHeaderRow(writer)
+                .WriteSummaryRowIf(writer, SummaryPlacementType.AfterFirst)
+                .WriteAllDataRows(writer)
+                .WriteSummaryRowIf(writer, SummaryPlacementType.AfterLast);
         });
     }
 
