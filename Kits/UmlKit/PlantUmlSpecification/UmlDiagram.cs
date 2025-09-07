@@ -8,7 +8,7 @@ namespace UmlKit.PlantUmlSpecification;
 // context: model, uml
 // pattern: Template method
 // parsing: error
-public abstract class UmlDiagram<P>
+public abstract class UmlDiagram<P> : IUmlElementCollection
     where P : IUmlParticipant
 {
     protected readonly HashSet<IUmlElement> Meta = new();
@@ -18,7 +18,6 @@ public abstract class UmlDiagram<P>
     protected virtual string SUmlEndTag { get => "@enduml"; }
 
     protected int _nextOrder = 0;
-    protected readonly SortedList<int, IUmlElement> _elements = new();
     protected readonly Dictionary<string, string> _skinParams = new();
     protected readonly List<IUmlElement> _relations = new();
 
@@ -28,6 +27,7 @@ public abstract class UmlDiagram<P>
     protected readonly DiagramBuilderOptions _options;
 
     public string DiagramId { get; private set; }
+    public SortedList<int, IUmlElement> Elements { get; } = new();
 
     public UmlDiagram(DiagramBuilderOptions options, string diagramId)
     {
@@ -38,6 +38,7 @@ public abstract class UmlDiagram<P>
     public bool IsUmlTagEnabled { get; set; } = true;
 
     // context: create, uml
+
     public abstract P AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
 
     // context: create, uml
@@ -105,7 +106,7 @@ public abstract class UmlDiagram<P>
     // context: uml, create
     public void Add(IUmlElement element)
     {
-        _elements.Add(_nextOrder++, element);
+        Elements.Add(_nextOrder++, element);
     }
 
     public void AddRelations(IEnumerable<IUmlElement> relations)
@@ -135,14 +136,14 @@ public abstract class UmlDiagram<P>
     }
 
     // context: uml, share
-    public virtual void WriteTo(TextWriter writer)
+    public virtual void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         WriteStart(writer);
         WriteAllowMixing(writer);
         WriteSkinElements(writer);
         WriteSeparator(writer);
         WriteTitle(writer);
-        WriteBody(writer);
+        WriteBody(writer, alignNameMaxWidth);
         WriteEnd(writer);
     }
 
@@ -197,19 +198,19 @@ public abstract class UmlDiagram<P>
     }
 
     // context: uml, update
-    public abstract void WriteBody(TextWriter writer);
+    public abstract void WriteBody(TextWriter writer, int alignNameMaxWidth);
 
     // context: uml, read
-    public string ToUmlString()
+    public string ToUmlString(int alignNameMaxWidth)
     {
         using var sw = new StringWriter();
-        WriteTo(sw);
+        WriteTo(sw, alignNameMaxWidth);
         return sw.ToString();
     }
 
     // context: uml, share
-    public void WriteToFile(string path)
+    public void WriteToFile(string path, int alignNameMaxWidth)
     {
-        File.WriteAllText(path, ToUmlString());
+        File.WriteAllText(path, ToUmlString(alignNameMaxWidth));
     }
 }

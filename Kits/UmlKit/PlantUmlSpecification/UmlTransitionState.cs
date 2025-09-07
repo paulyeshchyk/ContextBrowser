@@ -21,11 +21,11 @@ public class UmlTransitionState : IUmlTransition<UmlState>
         _arrow = arrow;
     }
 
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         var theLabel = Label is not null ? $" : {Label.AlphanumericOnly()}" : string.Empty;
         writer.Write($"{From.Alias} ");
-        _arrow.WriteTo(writer);
+        _arrow.WriteTo(writer, alignNameMaxWidth);
         writer.Write($" {To.Alias}");
         writer.Write(theLabel);
         writer.WriteLine();

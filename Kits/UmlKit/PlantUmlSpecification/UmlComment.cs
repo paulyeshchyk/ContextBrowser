@@ -11,7 +11,7 @@ public class UmlComment : IUmlElement
         Text = text;
     }
 
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine();
         writer.WriteLine($"' {Text}");

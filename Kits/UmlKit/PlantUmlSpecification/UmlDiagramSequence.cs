@@ -130,19 +130,19 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
         return deact;
     }
 
-    public override void WriteBody(TextWriter writer)
+    public override void WriteBody(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine("autonumber");
 
         foreach (var meta in Meta.Distinct())
-            meta.WriteTo(writer);
+            meta.WriteTo(writer, alignNameMaxWidth);
 
         writer.WriteLine();
 
         // Уже отсортировано при добавлении
-        foreach (var element in _elements.OrderBy(e => e.Key).Select(e => e.Value))
+        foreach (var element in Elements.OrderBy(e => e.Key).Select(e => e.Value))
         {
-            element.WriteTo(writer);
+            element.WriteTo(writer, alignNameMaxWidth);
         }
     }
 

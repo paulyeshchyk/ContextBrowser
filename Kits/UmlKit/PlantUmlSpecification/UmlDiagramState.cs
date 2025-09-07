@@ -92,7 +92,7 @@ public class UmlDiagramState : UmlDiagram<UmlState>
         return new UmlDeactivate(from.Alias);
     }
 
-    public override void WriteBody(TextWriter writer)
+    public override void WriteBody(TextWriter writer, int alignNameMaxWidth)
     {
         if (!_states.Any() || !_transitions.Any() || !Meta.Any())
         {
@@ -102,7 +102,7 @@ public class UmlDiagramState : UmlDiagram<UmlState>
 
         // 0. Meta
         foreach (var meta in Meta.Distinct())
-            meta.WriteTo(writer);
+            meta.WriteTo(writer, alignNameMaxWidth);
 
         writer.WriteLine();
 
@@ -135,20 +135,20 @@ public class UmlDiagramState : UmlDiagram<UmlState>
         foreach (var start in possibleStarts)
         {
             var startTransition = new UmlTransitionStateStart(new UmlArrow(), new UmlState(start, null));
-            startTransition.WriteTo(writer);
+            startTransition.WriteTo(writer, alignNameMaxWidth);
         }
 
         // 4. Основные переходы
         foreach (var transition in _transitions)
         {
-            transition.WriteTo(writer);
+            transition.WriteTo(writer, alignNameMaxWidth);
         }
 
         // 5. Финиш: от конечных к [*]
         foreach (var end in possibleEnds)
         {
             var startTransition = new UmlTransitionStateEnd(new UmlState(end, null), new UmlArrow());
-            startTransition.WriteTo(writer);
+            startTransition.WriteTo(writer, alignNameMaxWidth);
         }
     }
 

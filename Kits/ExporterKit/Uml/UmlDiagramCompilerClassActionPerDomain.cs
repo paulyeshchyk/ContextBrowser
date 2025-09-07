@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
@@ -53,11 +54,13 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         // Группируем по Namespace, затем по ClassOwnerFullName
         var allElements = UmlClassDiagramDataMapper.Map(contextInfoList);
 
+        int maxLength = UmlDiagramMaxNamelengthExtractor.Extract(allElements, new() { UmlDiagramMaxNamelengthExtractorType.@namespace, UmlDiagramMaxNamelengthExtractorType.@entity, UmlDiagramMaxNamelengthExtractorType.@method });
+
         var namespaces = allElements.GroupBy(e => e.Namespace);
 
         foreach (var nsGroup in namespaces)
         {
-            var package = new UmlPackage(nsGroup.Key, alias: nsGroup.Key.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key));
+            var package = new UmlPackage(nsGroup.Key.PadRight(maxLength), alias: nsGroup.Key.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key));
             diagram.Add(package);
 
             var classes = nsGroup.GroupBy(e => e.ClassName);
@@ -67,21 +70,22 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
                 foreach (var cls in classGroup)
                 {
                     string? htmlUrl = UmlUrlBuilder.BuildClassUrl(cls);
-                    var umlClass = new UmlEntity(UmlEntityType.@class, classGroup.Key, classGroup.Key.AlphanumericOnly(), url: htmlUrl);
+                    var umlClass = new UmlEntity(UmlEntityType.@class, classGroup.Key.PadRight(maxLength), classGroup.Key.AlphanumericOnly(), url: htmlUrl);
                     package.Add(umlClass);
 
                     foreach (var element in classGroup)
                     {
                         string? url = null;//UmlUrlBuilder.BuildUrl(element);
-                        var umlMethod = new UmlMethod(element.ContextInfo.Name, Visibility: UmlMemberVisibility.@public, url: url);
+                        var umlMethod = new UmlMethod(element.ContextInfo.Name + "()".PadRight(maxLength), Visibility: UmlMemberVisibility.@public, url: url);
                         umlClass.Add(umlMethod);
                     }
                 }
             }
-            diagram.AddRelations(package.Elements);
+            diagram.AddRelations(package.Elements.OrderBy(e => e.Key).Select(e => e.Value));
         }
         diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(g => g.Key.AlphanumericOnly())));
 
-        diagram.WriteToFile(fileName);
+        diagram.WriteToFile(fileName, maxLength);
     }
 }
+

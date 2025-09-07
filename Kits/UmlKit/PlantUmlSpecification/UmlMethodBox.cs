@@ -19,7 +19,7 @@ public class UmlMethodBox : IUmlElement
     }
 
     // context: uml, share
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine();
         if (!string.IsNullOrWhiteSpace(Stereotype))

@@ -78,7 +78,7 @@ public class UmlDiagramCompilerSequence
         if (result)
         {
             var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, outputFileName);
-            diagram.WriteToFile(path);
+            diagram.WriteToFile(path, -1);
         }
 
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);

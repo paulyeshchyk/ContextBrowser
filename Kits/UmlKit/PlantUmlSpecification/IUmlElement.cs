@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace UmlKit.Model;
 
@@ -6,7 +7,12 @@ namespace UmlKit.Model;
 // pattern: Composite
 public interface IUmlElement
 {
-    void WriteTo(TextWriter writer);
+    void WriteTo(TextWriter writer, int alignNameMaxWidth);
+}
+
+public interface IUmlElementCollection
+{
+    SortedList<int, IUmlElement> Elements { get; }
 }
 
 public interface IUmlDeclarable

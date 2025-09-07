@@ -17,46 +17,11 @@ public class UmlComponentRelation : IUmlElement
         _join = new UmlJoin(relationDirection, relationVisibility);
     }
 
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine();
         writer.Write($"\"{_leftObject}\"");
-        _join.WriteTo(writer);
+        _join.WriteTo(writer, alignNameMaxWidth);
         writer.Write($"\"{_rightObject}\"");
-    }
-}
-
-public class UmlJoin : IUmlElement
-{
-    private readonly UmlArrowDirection _direction;
-    private readonly string _style;
-
-    public UmlJoin(UmlArrowDirection direction, string style)
-    {
-        _direction = direction;
-        _style = style;
-    }
-
-    public void WriteTo(TextWriter writer)
-    {
-        var theStyle = string.Empty;
-        if (!string.IsNullOrEmpty(_style))
-        {
-            theStyle = $"[{_style}]";
-        }
-        switch (_direction)
-        {
-            case UmlArrowDirection.ToLeft:
-                writer.Write($"<-{theStyle}-");
-                break;
-            case UmlArrowDirection.ToRight:
-                writer.Write($"-{theStyle}->");
-                break;
-            case UmlArrowDirection.None:
-                writer.Write($"-{theStyle}-");
-                break;
-            default:
-                throw new NotImplementedException();
-        }
     }
 }

@@ -76,17 +76,17 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         var classMethods = methods(contextInfo);
         foreach (var element in classMethods)
         {
-            var umlMethod = new UmlMethod(element.Name, Visibility: UmlMemberVisibility.@public, url: null);
+            var umlMethod = new UmlMethod(element.Name + "()", Visibility: UmlMemberVisibility.@public, url: null);
             umlClass.Add(umlMethod);
         }
 
         var classProperties = properties(contextInfo);
         foreach (var element in classProperties)
         {
-            var umlMethod = new UmlMethod(element.Name, Visibility: UmlMemberVisibility.@public, url: null);
+            var umlMethod = new UmlMethod(element.Name + "()", Visibility: UmlMemberVisibility.@public, url: null);
             umlClass.Add(umlMethod);
         }
 
-        diagram.WriteToFile(fileName);
+        diagram.WriteToFile(fileName, -1);
     }
 }

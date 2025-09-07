@@ -28,6 +28,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
         diagram.SetSeparator("none");
 
         var elements = contextInfoDataset.GetAll();
+        int maxNameLength = UmlDiagramMaxNamelengthExtractor.Extract(elements, new() { UmlDiagramMaxNamelengthExtractorType.@method, UmlDiagramMaxNamelengthExtractorType.@namespace, UmlDiagramMaxNamelengthExtractorType.entity, UmlDiagramMaxNamelengthExtractorType.property });
 
         var classes = elements.Where(e => e.ElementType == ContextInfoElementType.@class).ToList();
         var methods = elements.Where(e => e.ElementType == ContextInfoElementType.method).ToList();
@@ -36,48 +37,48 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
 
         foreach (var nsGroup in grouped)
         {
-            AddPackage(diagram, methods, nsGroup);
+            AddPackage(diagram, methods, nsGroup, maxNameLength);
         }
 
-        diagram.WriteToFile(outputPath);
+        diagram.WriteToFile(outputPath, -1);
 
         return new Dictionary<string, bool>();
     }
 
-    private static void AddPackage(UmlDiagramClass diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> nsGroup)
+    private static void AddPackage(UmlDiagramClass diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> nsGroup, int maxnameLength)
     {
-        var package = new UmlPackage(nsGroup.Key, alias: nsGroup.Key.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key));
+        var package = new UmlPackage(nsGroup.Key, alias: nsGroup.Key.AlphanumericOnly().PadRight(maxnameLength), url: UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key));
 
         foreach (var cls in nsGroup)
         {
-            AddComponentGroup(methods, package, cls);
+            AddComponentGroup(methods, package, cls, maxnameLength);
         }
 
         diagram.Add(package);
         diagram.AddRelations(UmlSquaredLayout.Build(methods.Select(m => m.FullName)));
     }
 
-    private static void AddComponentGroup(List<ContextInfo> methods, UmlPackage package, ContextInfo cls)
+    private static void AddComponentGroup(List<ContextInfo> methods, UmlPackage package, ContextInfo cls, int maxnameLength)
     {
         var stereotype = cls.Contexts.Any()
             ? string.Join(", ", cls.Contexts.OrderBy(c => c))
             : "NoContext";
 
-        var compGroup = new UmlComponentGroup(CleanName(cls.Name), stereotype);
+        var compGroup = new UmlComponentGroup(CleanName(cls.Name.PadRight(maxnameLength)), stereotype);
 
         var methodsInClass = methods.Where(m => m.ClassOwner?.Name == cls.Name);
         foreach (var method in methodsInClass)
         {
-            AddMethodBox(compGroup, method);
+            AddMethodBox(compGroup, method, maxnameLength);
         }
 
         package.Add(compGroup);
     }
 
-    private static void AddMethodBox(UmlComponentGroup compGroup, ContextInfo method)
+    private static void AddMethodBox(UmlComponentGroup compGroup, ContextInfo method, int maxnameLength)
     {
         var methodStereotype = string.Join(", ", method.Contexts.Distinct().OrderBy(x => x));
-        var methodBox = new UmlMethodBox(CleanName(method.Name), methodStereotype);
+        var methodBox = new UmlMethodBox(CleanName(method.Name.PadRight(maxnameLength)), methodStereotype);
         compGroup.Add(methodBox);
     }
 

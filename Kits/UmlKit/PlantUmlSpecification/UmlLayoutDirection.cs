@@ -16,7 +16,7 @@ public class UmlLayoutDirection : IUmlElement
     {
         _direction = direction;
     }
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine();
         string line = _direction switch

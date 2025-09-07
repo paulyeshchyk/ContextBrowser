@@ -7,7 +7,7 @@ namespace UmlKit.Model;
 
 // context: model, uml
 // pattern: Composite leaf
-public class UmlPackage : IUmlElement, IUmlDeclarable
+public class UmlPackage : IUmlElement, IUmlDeclarable, IUmlElementCollection
 {
     public string Name { get; }
 
@@ -17,7 +17,7 @@ public class UmlPackage : IUmlElement, IUmlDeclarable
 
     public string Declaration => $"package \"{Name}\" as {Alias} ";
 
-    public List<IUmlElement> Elements { get; } = new();
+    public SortedList<int, IUmlElement> Elements { get; } = new();
 
     public UmlPackage(string name, string alias, string? url)
     {
@@ -37,16 +37,16 @@ public class UmlPackage : IUmlElement, IUmlDeclarable
     }
 
     // context: uml, create
-    public void Add(IUmlElement e) => Elements.Add(e);
+    public void Add(IUmlElement e) => Elements.Add(Elements.Count, e);
 
     // context: uml, share
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine();
         writer.WriteLine($"{Declaration} {GetUrl()}");
         writer.WriteLine("{");
-        foreach (var element in Elements)
-            element.WriteTo(writer);
+        foreach (var element in Elements.OrderBy(e => e.Key).Select(e => e.Value))
+            element.WriteTo(writer, alignNameMaxWidth);
         writer.WriteLine("}");
     }
 }

@@ -106,25 +106,25 @@ public class UmlDiagramClass : UmlDiagram<UmlState>
     }
 
     // context: uml, share
-    public override void WriteBody(TextWriter writer)
+    public override void WriteBody(TextWriter writer, int alignNameMaxWidth)
     {
         foreach (var meta in Meta.Distinct())
-            meta.WriteTo(writer);
+            meta.WriteTo(writer,alignNameMaxWidth);
 
         writer.WriteLine();
 
         // объекты
         writer.WriteLine();
-        foreach (var element in _elements.Values)
+        foreach (var element in Elements.Values)
         {
-            element.WriteTo(writer);
+            element.WriteTo(writer,alignNameMaxWidth);
         }
 
         // связи
         writer.WriteLine();
         foreach (var relation in _relations)
         {
-            relation.WriteTo(writer);
+            relation.WriteTo(writer,alignNameMaxWidth);
         }
     }
 

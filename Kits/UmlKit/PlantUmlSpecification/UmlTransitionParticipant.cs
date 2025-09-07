@@ -20,11 +20,11 @@ public class UmlTransitionParticipant : IUmlTransition<UmlParticipant>
         Arrow = arrow;
     }
 
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         var arrowL = Label is not null ? $" : {Label}" : string.Empty;
         writer.Write($"{From.Alias}");
-        Arrow.WriteTo(writer);
+        Arrow.WriteTo(writer, alignNameMaxWidth);
         writer.Write($"{To.Alias}{arrowL}");
         writer.WriteLine();
     }

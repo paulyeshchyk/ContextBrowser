@@ -64,7 +64,9 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
     //context: uml, build, heatmap, directory
     internal void Build(string nameSpace, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, Func<string, IEnumerable<IContextInfo>> classes, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties)
     {
-        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"namespace_only_{nameSpace.AlphanumericOnly()}.puml");
+
+        var classesList = classes(nameSpace);
+        var maxLength = Math.Max(nameSpace.Length, classesList.Any() ? classesList.Max(ns => ns.Name.Length) : 0);
 
         var diagramId = $"namespace_only_{nameSpace.AlphanumericOnly()}";
         var diagramTitle = $"Package diagram -> {nameSpace}";
@@ -74,31 +76,19 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
 
-        var package = new UmlPackage(nameSpace, alias: nameSpace.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(nameSpace));
+        var package = new UmlPackage(nameSpace.PadRight(maxLength), alias: nameSpace.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(nameSpace));
         diagram.Add(package);
 
-        var classesList = classes(nameSpace);
         foreach (var contextInfo in classesList)
         {
             string? htmlUrl = UmlUrlBuilder.BuildClassUrl(contextInfo);
             var entityType = ContextInfoExt.ConvertToUmlEntityType(contextInfo.ElementType);
-            var umlClass = new UmlEntity(entityType, contextInfo.Name, contextInfo.Name.AlphanumericOnly(), url: htmlUrl);
+            var calculatedName = contextInfo.Name.PadRight(maxLength);
+            var umlClass = new UmlEntity(entityType, calculatedName, contextInfo.Name.AlphanumericOnly(), url: htmlUrl);
             package.Add(umlClass);
-
-            //var classMethods = methods(contextInfo);
-            //foreach (var element in classMethods)
-            //{
-            //    var umlMethod = new UmlMethod(element.Name, Visibility: UmlMemberVisibility.@public, url: null);
-            //    umlClass.Add(umlMethod);
-            //}
-
-            //var classProperties = properties(contextInfo);
-            //foreach (var element in classProperties)
-            //{
-            //    var umlMethod = new UmlMethod(element.Name, Visibility: UmlMemberVisibility.@public, url: null);
-            //    umlClass.Add(umlMethod);
-            //}
         }
-        diagram.WriteToFile(fileName);
+
+        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"namespace_only_{nameSpace.AlphanumericOnly()}.puml");
+        diagram.WriteToFile(fileName, -1);
     }
 }

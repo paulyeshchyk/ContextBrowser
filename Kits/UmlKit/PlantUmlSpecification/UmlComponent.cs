@@ -23,7 +23,7 @@ public class UmlComponent : IUmlElement, IUmlDeclarable
     }
 
     // context: uml, share
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine();
         if (!string.IsNullOrWhiteSpace(Url))

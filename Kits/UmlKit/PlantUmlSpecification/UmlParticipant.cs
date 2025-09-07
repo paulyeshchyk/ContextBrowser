@@ -25,7 +25,7 @@ public class UmlParticipant : IUmlParticipant
         Keyword = keyword;
     }
 
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine(Declaration);
     }

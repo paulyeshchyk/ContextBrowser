@@ -16,7 +16,7 @@ public class UmlDeactivate : IUmlElement, IUmlDeclarable
 
     public string Alias => ParticipantName;
 
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine(Declaration);
         writer.WriteLine();

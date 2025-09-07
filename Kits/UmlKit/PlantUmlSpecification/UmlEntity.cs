@@ -9,7 +9,7 @@ namespace UmlKit.Model;
 
 // context: model, uml
 // pattern: Composite leaf
-public class UmlEntity : IUmlElement, IUmlDeclarable
+public class UmlEntity : IUmlElement, IUmlDeclarable, IUmlElementCollection
 {
     private const string SFakeClassName = "FakeClassName";
 
@@ -18,10 +18,9 @@ public class UmlEntity : IUmlElement, IUmlDeclarable
     public string Name { get; }
 
     public string Alias { get; }
+    public SortedList<int, IUmlElement> Elements { get; } = new();
 
     public UmlEntityType EntityType { get; }
-
-    public List<IUmlElement> Elements { get; } = new();
 
     public string? Url { get; }
 
@@ -35,16 +34,16 @@ public class UmlEntity : IUmlElement, IUmlDeclarable
         Url = url;
     }
 
-    public void Add(IUmlElement e) => Elements.Add(e);
+    public void Add(IUmlElement e) => Elements.Add(Elements.Count, e);
 
     // context: uml, share
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine();
         writer.WriteLine($"{Declaration} {ClassAttributesBuilder.BuildUrl(Url)}");
         writer.WriteLine("{");
-        foreach (var element in Elements)
-            element.WriteTo(writer);
+        foreach (var element in Elements.OrderBy(e => e.Key).Select(e => e.Value))
+            element.WriteTo(writer, alignNameMaxWidth);
         writer.WriteLine("}");
     }
 }

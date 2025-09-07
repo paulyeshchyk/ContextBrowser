@@ -117,6 +117,8 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         diagram.SetAllowMixing();
         diagram.SetSeparator("none");
 
+        int maxLength = UmlDiagramMaxNamelengthExtractor.Extract(items, new() { UmlDiagramMaxNamelengthExtractorType.@method, UmlDiagramMaxNamelengthExtractorType.@namespace, UmlDiagramMaxNamelengthExtractorType.entity, UmlDiagramMaxNamelengthExtractorType.property });
+
         var classesonly = items.Where(item => item.ElementType == ContextInfoElementType.@class).ToList();
         var methodsonly = items.Where(item => item.ElementType == ContextInfoElementType.@method).ToList();
         var propssonly = items.Where(item => item.ElementType == ContextInfoElementType.property).ToList();
@@ -140,19 +142,19 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
                 string? htmlUrl = UmlUrlBuilder.BuildClassUrl(cls);
 
                 var entityType = ContextInfoExt.ConvertToUmlEntityType(cls.ElementType);
-                var umlClass = new UmlEntity(entityType, cls.Name, cls.FullName.AlphanumericOnly(), url: htmlUrl);
+                var umlClass = new UmlEntity(entityType, cls.Name.PadRight(maxLength), cls.FullName.AlphanumericOnly(), url: htmlUrl);
                 var propsList = propssonly.Where(p => p.ClassOwner?.FullName.Equals(cls?.FullName) ?? false).Distinct();
                 foreach (var element in propsList)
                 {
                     string? url = null;// UmlUrlBuilder.BuildUrl(element);
-                    umlClass.Add(new UmlProperty(element.ShortName, visibility: UmlMemberVisibility.@public, url: url));
+                    umlClass.Add(new UmlProperty(element.ShortName.PadRight(maxLength), visibility: UmlMemberVisibility.@public, url: url));
                 }
 
                 var methodList = methodsonly.Where(m => m.ClassOwner?.FullName.Equals(cls?.FullName) ?? false).Distinct();
                 foreach (var element in methodList)
                 {
                     string? url = null;//UmlUrlBuilder.BuildUrl(element);
-                    umlClass.Add(new UmlMethod(element.ShortName, Visibility: UmlMemberVisibility.@public, url: url));
+                    umlClass.Add(new UmlMethod(element.ShortName + "()".PadRight(maxLength), Visibility: UmlMemberVisibility.@public, url: url));
                 }
 
                 umlPackage.Add(umlClass);
@@ -164,6 +166,6 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
         diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(ns => ns.AlphanumericOnly())));
 
-        diagram.WriteToFile(outputPath);
+        diagram.WriteToFile(outputPath, -1);
     }
 }

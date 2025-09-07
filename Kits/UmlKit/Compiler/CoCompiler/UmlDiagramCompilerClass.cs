@@ -46,7 +46,7 @@ public class UmlDiagramCompilerClass
             AddPackage(_linkGenerator, diagram, item.Key, count);
         }
 
-        diagram.WriteToFile(_outputPath);
+        diagram.WriteToFile(_outputPath, -1);
     }
 
     private static void AddPackage(Func<string, string, string> linkGenerator, UmlDiagramClass diagram, IContextKey cell, int count)

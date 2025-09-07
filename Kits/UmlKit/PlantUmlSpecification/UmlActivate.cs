@@ -22,7 +22,7 @@ public class UmlActivate : IUmlElement, IUmlDeclarable
 
     public string Alias => Destination;
 
-    public void WriteTo(TextWriter writer)
+    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
     {
         writer.WriteLine();
 

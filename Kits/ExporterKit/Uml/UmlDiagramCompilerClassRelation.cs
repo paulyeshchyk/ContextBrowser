@@ -34,7 +34,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
             AddRelation(options, diagram, from, to);
         }
 
-        diagram.WriteToFile(outputPath);
+        diagram.WriteToFile(outputPath, -1);
         return new Dictionary<string, bool>();
     }
 

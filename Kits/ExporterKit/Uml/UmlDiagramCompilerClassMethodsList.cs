@@ -27,12 +27,14 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
                 .Where(e => e.ElementType == ContextInfoElementType.method)
                 .ToList();
 
+        int maxLength = UmlDiagramMaxNamelengthExtractor.Extract(methods, new() { UmlDiagramMaxNamelengthExtractorType.@method });
+
         var diagramId = $"methods_only_{outputPath}".AlphanumericOnly();
         var diagram = new UmlDiagramClass(options, diagramId: diagramId);
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
 
         foreach (var method in methods)
-            diagram.Add(new UmlComponent(method.Name));
+            diagram.Add(new UmlComponent(method.Name.PadRight(maxLength)));
 
         foreach (var method in methods)
         {
@@ -46,7 +48,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
             }
         }
 
-        diagram.WriteToFile(outputPath);
+        diagram.WriteToFile(outputPath, -1);
 
         return new Dictionary<string, bool>();
     }

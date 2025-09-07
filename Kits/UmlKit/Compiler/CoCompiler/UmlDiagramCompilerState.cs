@@ -92,7 +92,7 @@ public abstract class UmlDiagramCompilerState
         {
             // Если рендеринг успешен, записываем диаграмму в файл
             var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, diagramFileName);
-            diagram.WriteToFile(path);
+            diagram.WriteToFile(path, -1);
         }
 
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
