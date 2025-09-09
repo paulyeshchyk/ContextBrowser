@@ -48,7 +48,8 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
             }
         }
 
-        diagram.WriteToFile(outputPath, -1);
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+        diagram.WriteToFile(outputPath, writeOptons);
 
         return new Dictionary<string, bool>();
     }

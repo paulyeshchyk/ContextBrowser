@@ -6,6 +6,7 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
+using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
@@ -40,14 +41,16 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
             AddPackage(diagram, methods, nsGroup, maxNameLength);
         }
 
-        diagram.WriteToFile(outputPath, -1);
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+        diagram.WriteToFile(outputPath, writeOptons);
 
         return new Dictionary<string, bool>();
     }
 
     private static void AddPackage(UmlDiagramClass diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> nsGroup, int maxnameLength)
     {
-        var package = new UmlPackage(nsGroup.Key, alias: nsGroup.Key.AlphanumericOnly().PadRight(maxnameLength), url: UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key));
+        var packageUrl = UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key);
+        var package = new UmlPackage(nsGroup.Key, alias: nsGroup.Key.AlphanumericOnly().PadRight(maxnameLength), url: packageUrl);
 
         foreach (var cls in nsGroup)
         {

@@ -1,6 +1,6 @@
 ﻿namespace ContextBrowserKit.Options.Export;
 
-// parsing: error
+// context: settings, model
 public record ExportOptions
 {
     public ExportMatrixOptions ExportMatrix { get; set; }

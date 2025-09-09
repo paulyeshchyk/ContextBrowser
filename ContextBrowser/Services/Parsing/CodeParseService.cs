@@ -13,11 +13,14 @@ using LoggerKit;
 
 namespace ContextBrowser.Services;
 
+// context: parsing, build
 public interface ICodeParseService
 {
+    // context: parsing, build
     Task<IEnumerable<ContextInfo>> Parse(IContextParser<ContextInfo> contextParser, CancellationToken cancellationToken);
 }
 
+// context: parsing, build
 public class CodeParseService : ICodeParseService
 {
     private readonly IAppLogger<AppLevel> _logger;
@@ -29,7 +32,7 @@ public class CodeParseService : ICodeParseService
         _optionsStore = optionsStore;
     }
 
-    // context: app
+    // context: parsing, build
     public Task<IEnumerable<ContextInfo>> Parse(IContextParser<ContextInfo> contextParser, CancellationToken cancellationToken)
     {
         var importOptions = _optionsStore.Options().Import;

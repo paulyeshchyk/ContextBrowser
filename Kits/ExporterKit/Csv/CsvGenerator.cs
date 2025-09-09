@@ -42,6 +42,7 @@ public static class CsvGenerator
         var includeUnclassified = unclassifiedPriority != UnclassifiedPriorityType.None;
 
         var unclassified = new ContextKey(contextClassifier.EmptyAction, contextClassifier.EmptyDomain);
+
         // Добавим строку для нераспознанных, если нужно
         if (includeUnclassified && matrix.ContainsKey(unclassified))
         {

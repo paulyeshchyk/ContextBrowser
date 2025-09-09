@@ -86,7 +86,6 @@ public static class ContextInfoRelationReferenceInjector
 
         _logger.WriteLog(AppLevel.R_Cntx, level, message);
     }
-
 }
 
 // context: relations, build

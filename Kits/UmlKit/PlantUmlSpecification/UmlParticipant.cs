@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ContextBrowserKit.Extensions;
 using UmlKit.Extensions;
 
@@ -13,19 +15,38 @@ public class UmlParticipant : IUmlParticipant
 
     public string Alias { get; }
 
-    public string FullName => $"\"{_raw}\" as {Alias}";
+    public string FullName => BuildFullName();
+
+    private string BuildFullName()
+    {
+        var list = new List<string?>();
+        list.Add($"\"{_raw}\"");
+        if (!string.IsNullOrWhiteSpace(Alias))
+        {
+            list.Add($"as {Alias}");
+        }
+        if (!string.IsNullOrWhiteSpace(Url))
+        {
+            list.Add($"[[.\\{Url}]]");
+        }
+        var result = string.Join(" ", list.Cast<string>());
+        return result;
+    }
 
     public string Declaration => $"{Keyword.ConvertToString()} {this.FullName}";
 
-    public UmlParticipant(string raw, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public string? Url { get; }
+
+    public UmlParticipant(string raw, string? alias = null, string? url = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
         _raw = string.IsNullOrWhiteSpace(raw) ? " " : raw;
+        Url = url;
         var theAlias = string.IsNullOrWhiteSpace(alias) ? _raw : alias;
         Alias = string.IsNullOrWhiteSpace(theAlias) ? theAlias : theAlias.AlphanumericOnly(replaceBy: "_");
         Keyword = keyword;
     }
 
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine(Declaration);
     }

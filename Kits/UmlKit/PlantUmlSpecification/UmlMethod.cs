@@ -18,12 +18,12 @@ public class UmlMethod : IUmlElement
         Url = url;
     }
 
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         List<string?> properties = new();
         properties.Add(Visibility.ToUmlString());
-        var textToWrite = (alignNameMaxWidth > 0)
-            ? Text.PadRight(alignNameMaxWidth)
+        var textToWrite = (writeOptions.AlignMaxWidth > 0)
+            ? Text.PadRight(writeOptions.AlignMaxWidth)
             : Text;
         properties.Add($"{textToWrite}");
 

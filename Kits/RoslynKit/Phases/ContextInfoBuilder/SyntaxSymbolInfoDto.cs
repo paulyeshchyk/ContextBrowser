@@ -21,5 +21,4 @@ public abstract class SyntaxSymbolInfoDto : ISymbolInfo
     public abstract void SetSyntax(object? syntax);
 
     public abstract S GetCoSyntax<S>();
-
 }

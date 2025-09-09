@@ -11,12 +11,10 @@ public class HtmlTagAttributes : Dictionary<string, string>, IHtmlTagAttributes
 {
     public HtmlTagAttributes() : base()
     {
-
     }
 
     public HtmlTagAttributes(StringComparer comparer) : base(comparer)
     {
-
     }
 
     public void AddIfNotExists(string key, string value)

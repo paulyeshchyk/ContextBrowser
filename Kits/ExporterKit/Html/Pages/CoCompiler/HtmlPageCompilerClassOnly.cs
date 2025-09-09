@@ -33,6 +33,7 @@ public class HtmlPageCompilerClassOnly : IHtmlPageCompiler
         var registrations = new List<IHtmlTabRegistration<EntitynameContainer>>
         {
             TabsheetFactory.ClassesTabRegistration(exportOptions),
+            TabsheetFactory.MindmapTabRegistration(exportOptions),
         };
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<EntitynameContainer>(registrations);

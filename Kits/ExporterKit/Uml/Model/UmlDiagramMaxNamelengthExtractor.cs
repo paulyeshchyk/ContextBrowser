@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ContextKit.Model;
 using ExporterKit.Uml.Model;
+using UmlKit.Builders.Model;
 
 namespace UmlKit.Exporter;
 

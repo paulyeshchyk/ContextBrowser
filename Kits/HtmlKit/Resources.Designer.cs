@@ -8,11 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HtmlKit
-{
+namespace HtmlKit {
     using System;
-
-
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,62 +22,84 @@ namespace HtmlKit
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources
-    {
-
+    internal class Resources {
+        
         private static global::System.Resources.ResourceManager resourceMan;
-
+        
         private static global::System.Globalization.CultureInfo resourceCulture;
-
+        
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources()
-        {
+        internal Resources() {
         }
-
+        
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager
-        {
-            get
-            {
-                if (object.ReferenceEquals(resourceMan, null))
-                {
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HtmlKit.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-
+        
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture
-        {
-            get
-            {
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
                 return resourceCulture;
             }
-            set
-            {
+            set {
                 resourceCulture = value;
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to :root {
+        ///   Looks up a localized string similar to 
+        ////* Общие стили для контейнеров */
+        ///.tabs-container {
+        ///    position: relative;
+        ///}
+        ///
+        ///.tabs {
+        ///    display: flex;
+        ///    flex-wrap: wrap;
+        ///    border-bottom: 1px solid #ccc; /* Возвращаем нижнюю границу контейнера */
+        ///}
+        ///
+        ////* Стили для кнопок */
+        ///.tab-button {
+        ///    position: relative; /* Необходимо для z-index */
+        ///    z-index: 1;
+        ///    padding: 10px 20px;
+        ///    cursor: pointer;
+        ///    background-color: #f1f1f1;
+        ///    border: 1px solid #ccc;
+        ///    border-bottom: none; /* Убираем собственную нижнюю границу кнопки */        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CssTabsheetTabs {
+            get {
+                return ResourceManager.GetString("CssTabsheetTabs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///:root {
         ///  --link-color: #0077cc;
         ///  --cell-border-color: #cccccc;
         ///  --cell-border-color-dark: #c0c0c0;
         ///  --border-summary: #f3f3f3;
         ///  --border-metadata: #f3f3f3;
         ///
-        ///  --hover-background-light: #f0f0f0;
-        ///  --hover-background-dark: #e0e0e0;
+        ///  --cell-background-light: #f0f0f0;
+        ///  --cell-background-dark: #e0e0e0;
         ///
         ///  --cell-padding: 6px 10px;
         ///  --alt-cell-padding: 1px 1px;
@@ -91,432 +112,149 @@ namespace HtmlKit
         ///  --link-text-overflow: ellipsis;
         ///}
         ///
-        ////* Встраиваемая таблица: полностью занимает контейнер */
-        ///.embedded-table {
-        ///    width: 100%;
-        ///    height: 100%;
-        ///    table-layout: fixed;           /* важен для ограничения размеров */
-        ///    border-collapse: collapse;
-        ///    font-size: 0.65em;             /* масштабируем шрифт */
-        ///    overflow: hidden;
-        ///    border: none;
-        ///    background-color: inherit;
-        ///}
-        ///
-        ////* Ячейки подтаблицы */
-        ///.embedded-table td {
-        ///    white-space: nowrap;
-        ///    overflow: hidden;
-        ///    text-overflow: ellipsis;
-        ///    padding: 1px 2px;
-        ///    font-size: inherit;
-        ///    background-color: inherit;     /* наследовать фон от родителя */
-        ///    border: none;                  /* убираем границы, чтобы визуально не рвали контейнер */
-        ///}
-        ///
-        ////* Строки */
-        ///.embedded-table tr {
-        ///    background-color: inherit;     /* наследуем фон */
-        ///    border: none;
-        ///}
-        ///
-        ///.cell_data a {
-        ///    display: block;
-        ///    width: 100%;
-        ///    height: 100%;
-        ///    text-decoration: none;
-        ///    color: inherit;
-        ///}
-        ///.some_special_cell_class a {
-        ///  padding: var(--alt-cell-padding); /* Используем новую переменную */
-        ///}
-        ///
-        ///.cell_data a:hover {
-        ///  background-color: color-mix(in srgb, var(--original-background-color) 90%, black 10%) !important;
-        ///}
-        ///
-        ///.cell_data .embedded-table tr {
-        ///    pointer-events: none;
-        ///}
-        ///
-        ///.cell_data .embedded-table td {
-        ///    pointer-events: none;
-        ///}
-        ///
-        ////* Отключаем hover-подсветку внутри встраиваемой таблицы */
-        ///.cell_data:hover .embedded-table td,
-        ///.cell_data:hover .embedded-table tr {
-        ///    background-color: inherit !important;
-        ///}
-        ///
-        ///tr:hover td .embedded-table th,
-        ///tr:hover td .embedded-table td,
-        ///tr:hover td .embedded-table tr {
-        ///  background-color: inherit !important;
-        ///}
-        ///
-        ///a:link,
-        ///a:visited,
-        ///a:hover,
-        ///a:active {
-        ///  color: var(--link-color);
-        ///  text-decoration: var(--link-text-decoration);
-        ///}
-        ///
-        ///table {
-        ///  border-collapse: collapse;
-        ///  border-spacing: 0;
-        ///  border: 1px solid var(--cell-border-color);
-        ///  width: auto;
-        ///  font-family: sans-serif;
-        ///}
-        ///
-        ///th,
-        ///td {
-        ///  border: 1px solid var(--cell-border-color);
-        ///}
-        ///
-        ///table,
-        ///th,
-        ///td {
-        ///  user-select: none;
-        ///}
-        ///
-        ///th {
-        ///  font-weight: normal;
-        ///  border: 1px solid var(--cell-border-color);
-        ///  padding: 0;
-        ///  text-align: center;
-        ///  position: relative;
-        ///}
-        ///
-        ///th.hover-col {
-        ///  background-color: var(--hover-background-light);
-        ///}
-        ///
-        ///td {
-        ///  border: 1px solid var(--cell-border-color);
-        ///  padding: 0;
-        ///  text-align: center;
-        ///  position: relative;
-        ///}
-        ///
-        ///th a,
-        ///td a {
-        ///  display: block;
-        ///  width: 100%;
-        ///  height: 100%;
-        ///  box-sizing: border-box;
-        ///  padding: var(--cell-padding);
-        ///  margin: 0;
-        ///  text-align: var(--link-text-align);
-        ///  white-space: var(--link-white-space);
-        ///  overflow: var(--link-overflow);
-        ///  text-overflow: var(--link-text-overflow);
-        ///}
-        ///
-        ///th:hover,
-        ///td:hover {
-        ///  background-color: var(--hover-background-light);
-        ///  cursor: pointer;
-        ///}
-        ///
-        ///tr:hover td {
-        ///  background-color: var(--hover-background-light);
-        ///}
-        ///
-        ///tr:hover th {
-        ///  background-color: var(--hover-background-light);
-        ///}
-        ///
-        ///td.hover-col {
-        ///  background-color: var(--hover-background-light);
-        ///}
-        ///
-        ///td.hover-col.hover-cell {
-        ///  background-color: var(--hover-background-dark);
-        ///}
-        ///
-        ///.row_meta {
-        ///  border-top: 1px solid var(--cell-border-color);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color);   /* Право */
-        ///  background-color: var(--border-metadata);
-        ///}
-        ///
-        ///.cell_summary_caption {
-        ///  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
-        ///  background-color: var(--border-summary);
-        ///}
-        ///
-        ///.cell_col_meta {
-        ///  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color);   /* Право */
-        ///}
-        ///
-        ///.cell_row_meta {
-        ///  border-top: 1px solid var(--cell-border-color);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
-        ///  background-color: var(--border-metadata);
-        ///}
-        ///
-        ///.row_summary {
-        ///  border-top: 1px solid var(--cell-border-color);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color);   /* Право */
-        ///}
-        ///
-        ///.cell_total_summary {
-        ///  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
-        ///  background-color: var(--border-summary);
-        ///}
-        ///
-        ///.cell_data {
-        ///  border-top: 1px solid var(--cell-border-color);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color);   /* Право */
-        ///}
-        ///
-        ///.row_data {
-        ///  border-top: 1px solid var(--cell-border-color);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color);   /* Право */
-        ///}
-        ///
-        ///.cell_colsummary {
-        ///  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color);   /* Право */
-        ///  background-color: var(--border-summary);
-        ///}
-        ///
-        ///.cell_rowsummary {
-        ///  border-top: 1px solid var(--cell-border-color);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color-dark);       /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color-dark);      /* Право */
-        ///  background-color: var(--border-summary);
-        ///}
-        ///
-        ///.cell_actiondomain {
-        ///  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-        ///  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-        ///  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-        ///  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
-        ///  background-color: var(--border-summary);
-        ///}.
+        ////* Вст [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string HtmlProducerContentStyle
-        {
-            get
-            {
+        internal static string HtmlProducerContentStyle {
+            get {
                 return ResourceManager.GetString("HtmlProducerContentStyle", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to document.addEventListener('DOMContentLoaded', () => {
-        ///	const table = document.querySelector('table');
+        ///   Looks up a localized string similar to 
+        ///document.addEventListener(&apos;DOMContentLoaded&apos;, () =&gt; {
+        ///	const table = document.querySelector(&apos;table&apos;);
         ///	const rows = Array.from(table.rows);
         ///	const headerRow = rows[0];
         ///
-        ///	rows.forEach(row => {
-        ///		Array.from(row.cells).forEach((cell, colIndex) => {
+        ///	rows.forEach(row =&gt; {
+        ///		Array.from(row.cells).forEach((cell, colIndex) =&gt; {
         ///			// Здесь переменная cell доступна
         ///
-        ///			cell.addEventListener('mouseenter', () => {
+        ///			cell.addEventListener(&apos;mouseenter&apos;, () =&gt; {
         ///				// Логика подсветки колонок в теле
-        ///				rows.forEach(r => {
+        ///				rows.forEach(r =&gt; {
         ///					if (r.cells[colIndex]) {
-        ///						r.cells[colIndex].classList.add('hover-col');
+        ///						r.cells[colIndex].classList.add(&apos;hover-col&apos;);
         ///					}
         ///				});
         ///
-        ///				// Логика подсветки заголовка
-        ///				if (headerRow.cells[colIndex]) {
-        ///					headerRow.cells[colIndex].classList.add('hover-col');
-        ///				}
-        ///
-        ///				// Логика подсветки самой ячейки
-        ///				cell.classList.add('hover-cell');
-        ///			});
-        ///
-        ///			cell.addEventListener('mouseleave', () => {
-        ///				// Логика снятия подсветки колонок в теле
-        ///				rows.forEach(r => {
-        ///					if (r.cells[colIndex]) {
-        ///						r.cells[colIndex].classList.remove('hover-col');
-        ///					}
-        ///				});
-        ///
-        ///				// Логика снятия подсветки заголовка
-        ///				if (headerRow.cells[colIndex]) {
-        ///					headerRow.cells[colIndex].classList.remove('hover-col');
-        ///				}
-        ///
-        ///				// Логика снятия подсветки самой ячейки
-        ///				cell.classList.remove('hover-cell');
-        ///			});
-        ///		});
-        ///	});
-        ///});.
+        ///	 [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string HtmlProducerContentStyleScript
-        {
-            get
-            {
+        internal static string HtmlProducerContentStyleScript {
+            get {
                 return ResourceManager.GetString("HtmlProducerContentStyleScript", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to (function shrinkEmbeddedFonts() {
-        ///    const tables = document.querySelectorAll(".embedded-table");
-        ///    tables.forEach(table => {
-        ///        const cells = table.querySelectorAll("td");
+        ///   Looks up a localized string similar to 
+        ///// This script will be included on every page
+        ///document.addEventListener(&apos;DOMContentLoaded&apos;, (event) =&gt; {
+        ///    const pageDataElement = document.getElementById(&apos;page-data&apos;);
+        ///    if (!pageDataElement) return;
+        ///
+        ///    const currentPageInfo = JSON.parse(pageDataElement.innerText);
+        ///    const currentPageUrl = currentPageInfo.Url;
+        ///    const currentPageName = currentPageInfo.Name;
+        ///
+        ///    let navStack = JSON.parse(sessionStorage.getItem(&apos;navStack&apos;)) || [];
+        ///
+        ///    // Find if the current page already exists in the [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string JsBreadcrumbScript {
+            get {
+                return ResourceManager.GetString("JsBreadcrumbScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///document.addEventListener(&apos;DOMContentLoaded&apos;, () =&gt; {
+        ///        const urlParams = new URLSearchParams(window.location.search);
+        ///        const tabIdFromUrl = urlParams.get(&apos;t&apos;);
+        ///
+        ///        if (tabIdFromUrl) {
+        ///            // Найдите кнопку, которая соответствует ID из URL (например, &apos;MethodsTab&apos;).
+        ///            const targetButton = document.querySelector(`[onclick*=&quot;${tabIdFromUrl}&quot;]`);
+        ///
+        ///            if (targetButton) {
+        ///                // Если кнопка найдена, напрямую вызываем вашу функцию showTab()
+        ///      [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string JsOpenRequestedTab {
+            get {
+                return ResourceManager.GetString("JsOpenRequestedTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///function showTab(tabId, clickedButton) {
+        ///    document.querySelectorAll(&quot;.tab-content&quot;).forEach(content =&gt; {
+        ///        content.classList.remove(&quot;active&quot;);
+        ///    });
+        ///
+        ///    document.querySelectorAll(&quot;.tab-button&quot;).forEach(button =&gt; {
+        ///        button.classList.remove(&quot;active&quot;);
+        ///    });
+        ///
+        ///    document.getElementById(tabId).classList.add(&quot;active&quot;);
+        ///    clickedButton.classList.add(&quot;active&quot;);
+        ///}
+        ///    .
+        /// </summary>
+        internal static string JsShowTabseetTabScript {
+            get {
+                return ResourceManager.GetString("JsShowTabseetTabScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///(function shrinkEmbeddedFonts() {
+        ///    const tables = document.querySelectorAll(&quot;.embedded-table&quot;);
+        ///    tables.forEach(table =&gt; {
+        ///        const cells = table.querySelectorAll(&quot;td&quot;);
         ///        let fontSize = 0.65;
         ///
-        ///        const testFits = () => {
-        ///            return [...cells].every(cell => {
+        ///        const testFits = () =&gt; {
+        ///            return [...cells].every(cell =&gt; {
         ///                const clone = cell.cloneNode(true);
-        ///                clone.style.position = "absolute";
-        ///                clone.style.visibility = "hidden";
-        ///                clone.style.whiteSpace = "nowrap";
-        ///                clone.style.textOverflow = "clip"; // отключаем троеточие
-        ///                clone.style.overflow = "visible";
-        ///                clone.style.fontSize = fontSize + "em";
-        ///                document.body.appendChild(clone);
-        ///                const fits = clone.scrollWidth <= cell.offsetWidth;
-        ///                document.body.removeChild(clone);
-        ///                return fits;
-        ///            });
-        ///        };
-        ///
-        ///        while (!testFits() && fontSize > 0.4) {
-        ///            fontSize -= 0.01;
-        ///        }
-        ///
-        ///        table.style.fontSize = fontSize + "em";
-        ///    });
-        ///})();.
+        ///                clone.style.position = &quot;absolute&quot;;
+        ///                clone.style.visibility = &quot;hidden&quot;;
+        ///                clone.style.whiteSpace = &quot;nowrap&quot;;
+        ///    [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ScriptAutoFontShrink
-        {
-            get
-            {
+        internal static string ScriptAutoFontShrink {
+            get {
                 return ResourceManager.GetString("ScriptAutoFontShrink", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to function autoResizeEmbeddedTables() {
-        ///    const tables = document.querySelectorAll(".embedded-table");
-        ///    tables.forEach(table => {
+        ///   Looks up a localized string similar to 
+        ///function autoResizeEmbeddedTables() {
+        ///    const tables = document.querySelectorAll(&quot;.embedded-table&quot;);
+        ///    tables.forEach(table =&gt; {
         ///        let size = 0.7;
         ///        const min = 0.4;
         ///
-        ///        while (size >= min) {
+        ///        while (size &gt;= min) {
         ///            table.style.fontSize = `${size}em`;
-        ///            const fits = [...table.querySelectorAll("td")].every(cell =>
-        ///                cell.scrollWidth <= cell.offsetWidth
+        ///            const fits = [...table.querySelectorAll(&quot;td&quot;)].every(cell =&gt;
+        ///                cell.scrollWidth &lt;= cell.offsetWidth
         ///            );
         ///            if (fits) break;
         ///            size -= 0.05;
         ///        }
         ///    });
         ///}
-        ///
-        ///document.addEventListener("DOMContentLoaded", autoResizeEmbeddedTables);.
+        ///document.addEvent [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ScriptAutoShrinkEmbeddedTable
-        {
-            get
-            {
+        internal static string ScriptAutoShrinkEmbeddedTable {
+            get {
                 return ResourceManager.GetString("ScriptAutoShrinkEmbeddedTable", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to function showTab(tabId, clickedButton) {
-        ///            document.querySelectorAll(".tab-content").forEach(content => {
-        ///                content.classList.remove("active");
-        ///            });
-        ///
-        ///            document.querySelectorAll(".tab-button").forEach(button => {
-        ///                button.classList.remove("active");
-        ///            });
-        ///
-        ///            document.getElementById(tabId).classList.add("active");
-        ///            clickedButton.classList.add("active");
-        ///        }.
-        /// </summary>
-        internal static string JsShowTabseetTabScript
-        {
-            get
-            {
-                return ResourceManager.GetString("JsShowTabseetTabScript", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to .tabs {
-        ///  display: flex;
-        ///  flex-wrap: wrap;
-        ///  border-bottom: 1px solid #ccc;
-        ///}
-        ///.tab-button {
-        ///  padding: 10px 20px;
-        ///  cursor: pointer;
-        ///  background-color: #f1f1f1;
-        ///  border: 1px solid #ccc;
-        ///  border-bottom: none;
-        ///  border-radius: 5px 5px 0 0;
-        ///  margin-right: 5px;
-        ///}
-        ///.tab-button.active {
-        ///  background-color: #fff;
-        ///  border-color: #ccc;
-        ///  border-bottom: 1px solid #fff;
-        ///}
-        ///.tab-content {
-        ///  display: none;
-        ///  padding: 20px;
-        ///  border: 1px solid #ccc;
-        ///  border-top: none;
-        ///  overflow-x: auto;
-        ///  overflow-y: auto;
-        ///}
-        ///.tab-content.active {
-        ///  display: block;
-        ///}.
-        /// </summary>
-        internal static string CssTabsheetTabs
-        {
-            get
-            {
-                return ResourceManager.GetString("CssTabsheetTabs", resourceCulture);
-            }
-        }
-        internal static string JsBreadcrumbScript
-        {
-            get
-            {
-                return ResourceManager.GetString("JsBreadcrumbScript", resourceCulture);
             }
         }
     }

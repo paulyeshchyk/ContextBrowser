@@ -26,7 +26,11 @@ public class LRUCache<TKey, TValue>
 
     public int Count
     {
-        get { lock (_sync) return _map.Count; }
+        get
+        {
+            lock (_sync)
+                return _map.Count;
+        }
     }
 
     public void Add(TKey key, TValue value)
@@ -69,12 +73,20 @@ public class LRUCache<TKey, TValue>
 
     public IEnumerable<TKey> Keys
     {
-        get { lock (_sync) return _map.Keys.ToList(); }
+        get
+        {
+            lock (_sync)
+                return _map.Keys.ToList();
+        }
     }
 
     public IEnumerable<TValue> Values
     {
-        get { lock (_sync) return _map.Values.Select(n => n.Value.Value).ToList(); }
+        get
+        {
+            lock (_sync)
+                return _map.Values.Select(n => n.Value.Value).ToList();
+        }
     }
 
     public void Clear()

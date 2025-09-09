@@ -29,9 +29,9 @@ public class UmlDiagramClass : UmlDiagram<UmlState>
     }
 
     // context: uml, create
-    public override UmlState AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public override UmlState AddParticipant(string name, string? alias = null, string? url = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
-        var result = new UmlState(name, alias);
+        var result = new UmlState(name, alias, url);
         _states.Add(result);
         return result;
     }
@@ -46,14 +46,6 @@ public class UmlDiagramClass : UmlDiagram<UmlState>
 
         throw new ArgumentException($"UmlState is supported only {nameof(participant)}");
     }
-
-    // context: uml, create
-    //public override IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null)
-    //{
-    //    var theFrom = new UmlState(from);
-    //    var theTo = new UmlState(to);
-    //    return AddTransition(theFrom, theTo, isAsync, label);
-    //}
 
     public override IUmlElement AddTransition(UmlState from, UmlState to, bool isAsync = false, string? label = null)
     {
@@ -106,10 +98,10 @@ public class UmlDiagramClass : UmlDiagram<UmlState>
     }
 
     // context: uml, share
-    public override void WriteBody(TextWriter writer, int alignNameMaxWidth)
+    public override void WriteBody(TextWriter writer, UmlWriteOptions writeOptions)
     {
         foreach (var meta in Meta.Distinct())
-            meta.WriteTo(writer,alignNameMaxWidth);
+            meta.WriteTo(writer, writeOptions);
 
         writer.WriteLine();
 
@@ -117,14 +109,14 @@ public class UmlDiagramClass : UmlDiagram<UmlState>
         writer.WriteLine();
         foreach (var element in Elements.Values)
         {
-            element.WriteTo(writer,alignNameMaxWidth);
+            element.WriteTo(writer, writeOptions);
         }
 
         // связи
         writer.WriteLine();
         foreach (var relation in _relations)
         {
-            relation.WriteTo(writer,alignNameMaxWidth);
+            relation.WriteTo(writer, writeOptions);
         }
     }
 

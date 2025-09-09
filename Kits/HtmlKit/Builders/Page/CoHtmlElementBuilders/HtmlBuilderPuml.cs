@@ -18,7 +18,9 @@ public static partial class HtmlBuilderFactory
         private const string SRenderPlantumlJs = "<script type=\"module\">import enableElement from \"./../render-plantuml.js\";enableElement({{serverURL: \"{0}\"}});</script>";
 
         public string RendererMode { get; set; }
+
         public string Server { get; set; }
+
         public string Content { get; set; }
 
         public HtmlBuilderPuml(string content, string server, string? rendererMode = null) : base("render-plantuml", string.Empty)

@@ -15,7 +15,7 @@ public class UmlJoin : IUmlElement
         _style = style;
     }
 
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         var theStyle = string.Empty;
         if (!string.IsNullOrEmpty(_style))

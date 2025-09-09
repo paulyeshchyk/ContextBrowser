@@ -43,7 +43,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
         Add(selfTransition);
     }
 
-    public override UmlParticipant AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public override UmlParticipant AddParticipant(string name, string? alias = null, string? url = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentNullException(nameof(name));
@@ -51,7 +51,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
         if (_participants.ContainsKey(name))
             return _participants[name];
 
-        var result = new UmlParticipant(name, alias, keyword);
+        var result = new UmlParticipant(name, alias, url, keyword);
         _participants[name] = result;
         Add(result);
         return result;
@@ -130,19 +130,19 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
         return deact;
     }
 
-    public override void WriteBody(TextWriter writer, int alignNameMaxWidth)
+    public override void WriteBody(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine("autonumber");
 
         foreach (var meta in Meta.Distinct())
-            meta.WriteTo(writer, alignNameMaxWidth);
+            meta.WriteTo(writer, writeOptions);
 
         writer.WriteLine();
 
         // Уже отсортировано при добавлении
         foreach (var element in Elements.OrderBy(e => e.Key).Select(e => e.Value))
         {
-            element.WriteTo(writer, alignNameMaxWidth);
+            element.WriteTo(writer, writeOptions);
         }
     }
 

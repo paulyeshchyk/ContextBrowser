@@ -1,11 +1,11 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace ContextBrowserKit.Options.Export;
 
+// context: file, update
 public sealed class ExportFilePaths : ExportPaths
 {
     public ExportFilePaths(string outputDirectory, CacheJsonModel cacheModel, IReadOnlyDictionary<ExportPathType, string> paths) : base(outputDirectory, cacheModel, paths)
@@ -26,9 +26,9 @@ public sealed class ExportFilePaths : ExportPaths
 
         return Path.GetFullPath(combinedPath);
     }
-
 }
 
+// context: file, update
 public sealed class ExportWebPaths : ExportPaths
 {
     public ExportWebPaths(string outputDirectory, CacheJsonModel cacheModel, IReadOnlyDictionary<ExportPathType, string> paths) : base(outputDirectory, cacheModel, paths)
@@ -39,6 +39,7 @@ public sealed class ExportWebPaths : ExportPaths
     {
     }
 
+    // context: file, update
     public override string BuildAbsolutePath(string from, params string[] files)
     {
         string relativePathFromFiles = string.Join("/", files);
@@ -60,6 +61,7 @@ public sealed class ExportWebPaths : ExportPaths
     }
 }
 
+// context: settings, model
 public abstract class ExportPaths
 {
     public string OutputDirectory { get; set; }
@@ -75,8 +77,10 @@ public abstract class ExportPaths
         RelativePaths = paths;
     }
 
+    // context: settings, file, update
     public abstract string BuildAbsolutePath(string from, params string[] files);
 
+    // context: settings, file, update
     public string BuildAbsolutePath(ExportPathType pathType, params string[] files)
     {
         var p = GetRelativePath(pathType);
@@ -84,22 +88,27 @@ public abstract class ExportPaths
         return result;
     }
 
+    // context: settings, file, update
     public string GetRelativePath(ExportPathType type)
     {
-        if (RelativePaths.TryGetValue(type, out var path)) return path;
+        if (RelativePaths.TryGetValue(type, out var path))
+            return path;
         throw new InvalidOperationException($"Export path not found for {type}");
     }
 
+    // context: settings, file, update
     public ExportPathType[] GetPathTypes()
     {
         return RelativePaths.Keys.ToArray();
     }
 
+    // context: settings, file, update
     public string[] GetPaths()
     {
         return RelativePaths.Values.ToArray();
     }
 
+    // context: settings, file, update
     internal static Dictionary<ExportPathType, string> ConvertToDictionary(ExportPathItem[] paths)
     {
         var d = new Dictionary<ExportPathType, string>();
@@ -112,6 +121,7 @@ public abstract class ExportPaths
     }
 }
 
+// context: roslyncache, model
 public class CacheJsonModel
 {
     public string Output { get; set; }
@@ -128,6 +138,7 @@ public class CacheJsonModel
     }
 }
 
+// context: settings, model
 public class ExportPathItem
 {
     public ExportPathType Type { get; }

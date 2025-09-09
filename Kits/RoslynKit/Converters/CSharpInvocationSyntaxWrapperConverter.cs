@@ -51,12 +51,10 @@ public static class CSharpInvocationSyntaxWrapperConverter
             ClassName: signature.ClassName,
             MethodName: signature.MethodName,
             Arguments: signature.Arguments,
-            Raw: signature.Raw
-        );
+            Raw: signature.Raw);
 
         return wrapper;
     }
-
 
     public static ISyntaxWrapper? FromExpression(
         ExpressionSyntax byInvocation,

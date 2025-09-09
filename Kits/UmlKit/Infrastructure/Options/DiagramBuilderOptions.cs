@@ -1,5 +1,6 @@
 ﻿using UmlKit.Infrastructure.Options.Activation;
 using UmlKit.Infrastructure.Options.Indication;
+using UmlKit.Model;
 
 namespace UmlKit.Infrastructure.Options;
 

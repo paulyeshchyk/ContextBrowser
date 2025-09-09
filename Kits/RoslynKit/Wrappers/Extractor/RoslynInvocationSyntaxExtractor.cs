@@ -55,13 +55,11 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
             return CSharpInvocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
         }
 
-
         var symbol = RoslynMethodSymbolExtractor.GetMethodSymbol(invocationWrapper, invocationSemanticModel, _logger.WriteLog, cancellationToken);
         return (symbol != null)
             ? CSharpInvocationSyntaxWrapperConverter.FromSymbols(symbol, byInvocation)
             : CSharpInvocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
     }
-
 
     // context: roslyn, read
     private ISemanticModelWrapper? FindSemanticModel(IInvocationNodeWrapper wrapper)

@@ -57,6 +57,7 @@ public class HtmlTabbedPageBuilder<DTO>
                 HtmlBuilderFactory.Meta.Cell(writer, attributes: attributes);
                 HtmlBuilderFactory.Title.Cell(writer, innerHtml: title);
                 HtmlBuilderFactory.Script.Cell(writer, innerHtml: HtmlBuilderFactory.JsScripts.JsShowTabsheetTabScript, isEncodable: false);
+                HtmlBuilderFactory.Script.Cell(writer, innerHtml: Resources.JsOpenRequestedTab, isEncodable: false);
                 HtmlBuilderFactory.Style.Cell(writer, innerHtml: HtmlBuilderFactory.CssStyles.CssBase, isEncodable: false);
                 HtmlBuilderFactory.Style.Cell(writer, innerHtml: HtmlBuilderFactory.CssStyles.CssTabsheet, isEncodable: false);
             });

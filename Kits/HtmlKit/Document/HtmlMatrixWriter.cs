@@ -71,7 +71,6 @@ internal class HtmlMatrixWriter
     {
         if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
         {
-
             HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefColHeaderSummary(_options) }, { "style", "some_special_cell_class" } };
@@ -158,11 +157,11 @@ internal class HtmlMatrixWriter
         HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(textWriter, () =>
         {
             HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.With(textWriter, () =>
-                {
-                    var href = _hRefManager.GetHRefRowHeader(row, _options);
-                    var attrs = new HtmlTagAttributes() { { "href", href } };
-                    HtmlBuilderFactory.A.Cell(textWriter, attrs, row, isEncodable: false);
-                });
+            {
+                var href = _hRefManager.GetHRefRowHeader(row, _options);
+                var attrs = new HtmlTagAttributes() { { "href", href } };
+                HtmlBuilderFactory.A.Cell(textWriter, attrs, row, isEncodable: false);
+            });
 
             if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
                 WriteRowSummaryCell(textWriter, row);

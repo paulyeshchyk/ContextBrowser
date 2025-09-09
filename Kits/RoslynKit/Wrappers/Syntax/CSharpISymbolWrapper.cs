@@ -38,6 +38,7 @@ public class CSharpISymbolWrapper : ISymbolInfo
     {
         _namespace = nameSpace;
     }
+
     public void SetName(string name)
     {
         _name = name;
@@ -67,7 +68,5 @@ public class CSharpISymbolWrapper : ISymbolInfo
         return coSyntax;
     }
 
-
     public CSharpISymbolWrapper() { }
-
 }

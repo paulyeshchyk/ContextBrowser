@@ -39,11 +39,9 @@ public class SemanticReferenceBuilderValidator<TContext, TInvocationExpressionSy
             return new SemanticReferenceBuilderValidationResult<TContext, TInvocationExpressionSyntax>(callerContextInfo, Enumerable.Empty<TInvocationExpressionSyntax>());
         }
 
-        var canRaiseNoInvocationError = !(
-            callerContext.ClassOwner?.ElementType == ContextInfoElementType.@class
+        var canRaiseNoInvocationError = !(callerContext.ClassOwner?.ElementType == ContextInfoElementType.@class
             || callerContext.ClassOwner?.ElementType == ContextInfoElementType.@interface
-            || callerContext.ClassOwner?.ElementType == ContextInfoElementType.@record
-        );
+            || callerContext.ClassOwner?.ElementType == ContextInfoElementType.@record);
         var invocationList = callerSyntaxNode.DescendantSyntaxNodes<TInvocationExpressionSyntax>();
         if (!invocationList.Any())
         {

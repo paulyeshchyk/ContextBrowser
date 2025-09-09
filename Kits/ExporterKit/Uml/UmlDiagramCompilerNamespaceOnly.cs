@@ -8,6 +8,7 @@ using ContextKit.Model;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml.Model;
 using LoggerKit;
+using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
@@ -44,7 +45,6 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
     //context: uml, build
     internal void Build(string nameSpace, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, Func<string, IEnumerable<IContextInfo>> classes, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties)
     {
-
         var classesList = classes(nameSpace);
         var maxLength = Math.Max(nameSpace.Length, classesList.Any() ? classesList.Max(ns => ns.Name.Length) : 0);
 
@@ -56,7 +56,8 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
 
-        var package = new UmlPackage(nameSpace.PadRight(maxLength), alias: nameSpace.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(nameSpace));
+        var packageUrl = UmlUrlBuilder.BuildNamespaceUrl(nameSpace);
+        var package = new UmlPackage(nameSpace.PadRight(maxLength), alias: nameSpace.AlphanumericOnly(), url: packageUrl);
         diagram.Add(package);
 
         foreach (var contextInfo in classesList)
@@ -67,12 +68,14 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
             package.Add(umlClass);
         }
 
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
         var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"namespace_only_{nameSpace.AlphanumericOnly()}.puml");
-        diagram.WriteToFile(fileName, -1);
+        diagram.WriteToFile(fileName, writeOptons);
     }
+
     private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset contextInfoDataSet)
     {
-        return (nameSpace) => contextInfoDataSet.GetAll()
+        return(nameSpace) => contextInfoDataSet.GetAll()
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
             .Where(c => c.Namespace == nameSpace);
     }
@@ -84,11 +87,11 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
+        return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
+        return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 }

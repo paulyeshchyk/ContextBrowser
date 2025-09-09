@@ -20,7 +20,6 @@ public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCo
     public override ContextInfoElementType ElementType => ContextInfoElementType.@enum;
 }
 
-
 public class CSharpEnumSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<EnumDeclarationSyntax>
 {
     private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<EnumDeclarationSyntax>();

@@ -3,7 +3,6 @@ using ContextKit.Model;
 
 namespace HtmlKit.Model;
 
-
 public class ContextKeyContainer : BaseKeyAndDataContainer<IContextKey>
 {
     public ContextKeyContainer(IContextKey contextKey, IEnumerable<IContextInfo> contextInfoList) : base(contextKey, contextInfoList)
@@ -21,6 +20,13 @@ public class NamespacenameContainer : BaseKeyAndDataContainer<string>
 public class EntitynameContainer : BaseKeyAndDataContainer<string>
 {
     public EntitynameContainer(string contextKey, IEnumerable<IContextInfo> contextInfoList) : base(contextKey, contextInfoList)
+    {
+    }
+}
+
+public class MindmapContainer : BaseKeyAndDataContainer<string>
+{
+    public MindmapContainer(string contextKey, IEnumerable<IContextInfo> contextInfoList) : base(contextKey, contextInfoList)
     {
     }
 }

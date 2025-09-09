@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
@@ -122,7 +122,8 @@ public class MacOsServer : CustomServer
         var pgrep = MacOsProcessInfoFactory.JvmIsRunningProcessInfo(jarFilename);
         using (var process = System.Diagnostics.Process.Start(pgrep))
         {
-            if (process == null) return false;
+            if (process == null)
+                return false;
 
             string output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();

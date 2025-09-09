@@ -94,7 +94,6 @@ public static class XMLTagBuilder
         return text;
     }
 
-
     public static string BuildStart(string Tag, IHtmlTagAttributes? attributes)
     {
         var attributesStr = attributes?.ToString();

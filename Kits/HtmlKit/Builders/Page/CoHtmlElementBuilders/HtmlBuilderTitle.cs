@@ -19,6 +19,5 @@ public static partial class HtmlBuilderFactory
         public HtmlBuilderTitle(string tag, string className) : base(tag, className)
         {
         }
-
     }
 }

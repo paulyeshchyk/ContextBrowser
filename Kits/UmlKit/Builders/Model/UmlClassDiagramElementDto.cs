@@ -1,10 +1,7 @@
 using ContextKit.Model;
-using ExporterKit;
-using ExporterKit.Uml;
-using ExporterKit.Uml.Model;
 using UmlKit;
 
-namespace ExporterKit.Uml.Model;
+namespace UmlKit.Builders.Model;
 
 public record UmlClassDiagramElementDto
 {

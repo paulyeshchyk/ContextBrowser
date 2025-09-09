@@ -26,7 +26,6 @@ public class CSharpTypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TCon
     public override ContextInfoElementType ElementType => ContextInfoElementType.@class;
 }
 
-
 public class CSharpTypeSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<MemberDeclarationSyntax>, ISymbolInfo
 {
     private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<MemberDeclarationSyntax>();

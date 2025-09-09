@@ -16,7 +16,7 @@ public class UmlArrow : IUmlElement
         ArrowPosition = arrowPosition;
     }
 
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         var flowTypeStr = FlowType.Data();
         var flowDirection = ArrowDirection.Data();

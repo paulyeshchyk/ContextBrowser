@@ -4,8 +4,10 @@ using System.Text.RegularExpressions;
 
 namespace ContextBrowserKit.Extensions;
 
+// context: file, read
 public static class PathFilter
 {
+    // context: file, read
     public static T[] FilteroutPaths<T>(T[] items, string filter, Func<T, string> pathSelector)
     {
         if (string.IsNullOrWhiteSpace(filter))
@@ -18,7 +20,7 @@ public static class PathFilter
         return items.Where(item => !patterns.Any(pattern => IsMatch(pathSelector(item), pattern))).ToArray();
     }
 
-    // Аналогичный метод для включения путей
+    // context: file, read
     public static T[] FilterPaths<T>(T[] items, string filter, Func<T, string> pathSelector)
     {
         if (string.IsNullOrWhiteSpace(filter))

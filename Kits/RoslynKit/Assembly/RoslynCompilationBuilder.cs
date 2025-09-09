@@ -73,8 +73,7 @@ public class RoslynCompilationBuilder : ICompilationBuilder
         (
             OutputKind.DynamicallyLinkedLibrary,
             nullableContextOptions: NullableContextOptions.Enable,
-            usings: usings
-        );
+            usings: usings);
 
         _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Compilation loading", LogLevelNode.Start);
         var compilation = CSharpCompilation.Create(name, options: compilationOptions)
@@ -115,7 +114,6 @@ public class RoslynCompilationBuilder : ICompilationBuilder
             ? SDefaultUsing
             : result;
     }
-
 
     private string PsoudoCodeInject(SemanticOptions _options, string filePath)
     {

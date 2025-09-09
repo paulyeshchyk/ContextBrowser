@@ -53,7 +53,6 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
 #warning tobe checked
     public void RenewContextInfoList(IEnumerable<TContext> contextInfoList)
     {
-
     }
 
     private void ParseDeclarations(SemanticOptions options, CompilationMap mapItem, CancellationToken cancellationToken)

@@ -16,7 +16,6 @@ public abstract class CSharpSyntaxNodeWrapper<S> : ISyntaxNodeWrapper
 
     public int SpanEnd => GetCoSyntax<S>().Span.End;
 
-
     public IOrderedEnumerable<T> DescendantSyntaxNodes<T>()
         where T : class
     {

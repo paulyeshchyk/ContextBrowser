@@ -77,8 +77,9 @@ public class UmlDiagramCompilerSequence
 
         if (result)
         {
+            var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
             var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, outputFileName);
-            diagram.WriteToFile(path, -1);
+            diagram.WriteToFile(path, writeOptons);
         }
 
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);

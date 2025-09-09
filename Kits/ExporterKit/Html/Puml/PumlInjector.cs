@@ -57,6 +57,4 @@ public static class PumlInjector
         };
         return string.Format(SPlantUmlScript, src, "http://localhost:8080", data);
     }
-
-
 }

@@ -7,9 +7,10 @@ using HtmlKit.Model.Tabsheet;
 
 namespace HtmlKit.Page.Compiler;
 
-internal abstract class PumlEmbeddedContentDatamodel
+public abstract class PumlEmbeddedContentDatamodel
 {
     protected abstract string GetPumlFileName(IContextKey contextKey);
+
     protected abstract string GetPumlFileName(string contextKey);
 
     public HtmlBuilder GetEmbeddedPumlInjection(IContextKey contextKey, ExportOptions exportOptions)
@@ -28,12 +29,10 @@ internal abstract class PumlEmbeddedContentDatamodel
     {
         var pumlFilePath = exportOptions.FilePaths.BuildAbsolutePath(
             ExportPathType.puml,
-            fileName
-        );
+            fileName);
 
         string pumlFileContent = PumlInjector.GetPumlData(exportOptions, pumlFilePath);
 
         return HtmlBuilderFactory.Puml(pumlFileContent, server: "http://localhost:8080");
     }
-
 }

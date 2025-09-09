@@ -18,6 +18,7 @@ public class UmlEntity : IUmlElement, IUmlDeclarable, IUmlElementCollection
     public string Name { get; }
 
     public string Alias { get; }
+
     public SortedList<int, IUmlElement> Elements { get; } = new();
 
     public UmlEntityType EntityType { get; }
@@ -37,13 +38,13 @@ public class UmlEntity : IUmlElement, IUmlDeclarable, IUmlElementCollection
     public void Add(IUmlElement e) => Elements.Add(Elements.Count, e);
 
     // context: uml, share
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine();
         writer.WriteLine($"{Declaration} {ClassAttributesBuilder.BuildUrl(Url)}");
         writer.WriteLine("{");
         foreach (var element in Elements.OrderBy(e => e.Key).Select(e => e.Value))
-            element.WriteTo(writer, alignNameMaxWidth);
+            element.WriteTo(writer, writeOptions);
         writer.WriteLine("}");
     }
 }

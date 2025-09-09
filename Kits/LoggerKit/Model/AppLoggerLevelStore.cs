@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-
 using ContextBrowserKit.Log.Options;
 
 namespace LoggerKit.Model;

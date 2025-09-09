@@ -47,6 +47,7 @@ public static partial class HtmlBuilderFactory
 public class BreadcrumbNavigationItem
 {
     public string Url { get; set; }
+
     public string Name { get; set; }
 
     public BreadcrumbNavigationItem(string url, string name)

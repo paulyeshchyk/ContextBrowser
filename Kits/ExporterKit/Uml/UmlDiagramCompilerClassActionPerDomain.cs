@@ -8,6 +8,7 @@ using ContextKit.Model;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
 using LoggerKit;
+using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
@@ -60,7 +61,8 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
 
         foreach (var nsGroup in namespaces)
         {
-            var package = new UmlPackage(nsGroup.Key.PadRight(maxLength), alias: nsGroup.Key.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key));
+            var namespaceUrl = UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key);
+            var package = new UmlPackage(nsGroup.Key.PadRight(maxLength), alias: nsGroup.Key.AlphanumericOnly(), url: namespaceUrl);
             diagram.Add(package);
 
             var classes = nsGroup.GroupBy(e => e.ClassName);
@@ -69,7 +71,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
             {
                 foreach (var cls in classGroup)
                 {
-                    string? htmlUrl = UmlUrlBuilder.BuildClassUrl(cls);
+                    var htmlUrl = UmlUrlBuilder.BuildClassUrl(cls);
                     var umlClass = new UmlEntity(UmlEntityType.@class, classGroup.Key.PadRight(maxLength), classGroup.Key.AlphanumericOnly(), url: htmlUrl);
                     package.Add(umlClass);
 
@@ -85,7 +87,9 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         }
         diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(g => g.Key.AlphanumericOnly())));
 
-        diagram.WriteToFile(fileName, maxLength);
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: maxLength) { };
+
+        diagram.WriteToFile(fileName, writeOptons);
     }
 }
 

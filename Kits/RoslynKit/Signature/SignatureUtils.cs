@@ -20,12 +20,13 @@ internal static class SignatureUtils
                 ClassName: "FakeClass",
                 MethodName: input,
                 Arguments: string.Empty,
-                Raw: input
-                );
+                Raw: input);
+
             //throw new ArgumentException("Не удалось разобрать часть с Namespace", nameof(input));
         }
 
         var index = nsMatch.Index;
+
         // всё до namespace = ResultType
         string resultType = input[..index].Trim();
 
@@ -78,10 +79,8 @@ internal static class SignatureUtils
                         ClassName: "FakeClass",
                         MethodName: (m2.Success) ? m2.Groups[2].Value : "FakeMeth",
                         Arguments: string.Empty,
-                        Raw: input
-            );
+                        Raw: input);
         }
-
 
         return new CSharpMethodSignature(
             ResultType: resultType,
@@ -89,17 +88,13 @@ internal static class SignatureUtils
             ClassName: match.Groups["ClassName"].Value,
             MethodName: match.Groups["MethodName"].Value,
             Arguments: match.Groups["Arguments"].Value.Trim(),
-            Raw: input
-        );
+            Raw: input);
     }
-
 }
-
 
 public static class CSharpMethodSignatureExtensions
 {
     public static CSharpMethodSignature FakeCSharpMethodSignature() => new(ResultType: "void", Namespace: "FakeNamespace", ClassName: "FakeClass", MethodName: "FakeMethod", Arguments: string.Empty, Raw: $"void FakeNamespace.FakeClass.FakeMethod()");
-
 
     public static string GetFullName(this ICustomMethodSignature signature)
     {

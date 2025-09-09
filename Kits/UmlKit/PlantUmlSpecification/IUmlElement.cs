@@ -3,11 +3,30 @@ using System.IO;
 
 namespace UmlKit.Model;
 
+public struct UmlWriteOptions
+{
+    public int AlignMaxWidth { get; set; }
+
+    public int DepthIndex { get; set; }
+
+    public UmlWriteOptions(int alignMaxWidth, int depthIndex = 0)
+    {
+        AlignMaxWidth = alignMaxWidth;
+        DepthIndex = depthIndex;
+    }
+}
+
 // context: model, uml
 // pattern: Composite
-public interface IUmlElement
+public interface IUmlWritable
 {
-    void WriteTo(TextWriter writer, int alignNameMaxWidth);
+    void WriteTo(TextWriter writer, UmlWriteOptions writeOptions);
+}
+
+// context: model, uml
+// pattern: Composite
+public interface IUmlElement : IUmlWritable
+{
 }
 
 public interface IUmlElementCollection

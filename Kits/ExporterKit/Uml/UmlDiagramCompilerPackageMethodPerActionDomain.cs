@@ -9,6 +9,7 @@ using ContextKit.Model;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
+using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
@@ -20,6 +21,8 @@ namespace UmlKit.Exporter;
 // pattern: Builder
 public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompiler
 {
+    private const string SParentheses = "()";
+
     //context: build, uml
     public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
@@ -72,8 +75,13 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         {
             var domain = group.Key; // The unique domain string
             var contexts = group.ToList(); // The list of all ContextInfo for that domain
-
-            BuildPackageDomain(contexts, exportOptions, diagramBuilderOptions, domain, "?");
+            if (!string.IsNullOrWhiteSpace(domain))
+            {
+                BuildPackageDomain(contexts, exportOptions, diagramBuilderOptions, domain, "?");
+            }
+            else
+            {
+            }
         }
     }
 
@@ -132,7 +140,8 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
         foreach (var ns in namespaces)
         {
-            var umlPackage = new UmlPackage(ns, alias: ns.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(ns));
+            var namespaceUrl = UmlUrlBuilder.BuildNamespaceUrl(ns);
+            var umlPackage = new UmlPackage(ns, alias: ns.AlphanumericOnly(), url: namespaceUrl);
 
             var classesInNamespace = classes.Where(c => c.Namespace == ns).Distinct().ToList();
 
@@ -153,7 +162,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
                 foreach (var element in methodList)
                 {
                     string? url = null;//UmlUrlBuilder.BuildUrl(element);
-                    umlClass.Add(new UmlMethod(element.ShortName + "()".PadRight(maxLength), Visibility: UmlMemberVisibility.@public, url: url));
+                    umlClass.Add(new UmlMethod(element.ShortName + SParentheses.PadRight(maxLength), Visibility: UmlMemberVisibility.@public, url: url));
                 }
 
                 umlPackage.Add(umlClass);
@@ -165,6 +174,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
         diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(ns => ns.AlphanumericOnly())));
 
-        diagram.WriteToFile(outputPath, -1);
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+        diagram.WriteToFile(outputPath, writeOptons);
     }
 }

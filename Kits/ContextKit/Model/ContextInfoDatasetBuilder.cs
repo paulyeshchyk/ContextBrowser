@@ -42,8 +42,8 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
         return map;
     }
 
-
-    private static void PopulateMatrixWithElements(IContextInfoDataset contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IContextClassifier contextClassifier)
+    // context: ContextInfo, ContextInfoMatrix, build
+    internal static void PopulateMatrixWithElements(IContextInfoDataset contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IContextClassifier contextClassifier)
     {
         bool includeUnclassified = _matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
 

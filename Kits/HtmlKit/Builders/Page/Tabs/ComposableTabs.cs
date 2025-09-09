@@ -1,5 +1,3 @@
-namespace HtmlKit.Page;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +5,8 @@ using System.Linq;
 using HtmlKit.Builders.Core;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
+
+namespace HtmlKit.Page;
 
 /// <summary>
 /// Регистрация одной вкладки: связывает контракт модели (DataModelType),
@@ -43,9 +43,12 @@ public static class TabRegistration
         Action<TextWriter, TContract, DTO> build)
         where TContract : IHtmlTabsheetDataModel
     {
-        if (string.IsNullOrWhiteSpace(tabId)) throw new ArgumentException("tabId required", nameof(tabId));
-        if (model == null) throw new ArgumentNullException(nameof(model));
-        if (build == null) throw new ArgumentNullException(nameof(build));
+        if (string.IsNullOrWhiteSpace(tabId))
+            throw new ArgumentException("tabId required", nameof(tabId));
+        if (model == null)
+            throw new ArgumentNullException(nameof(model));
+        if (build == null)
+            throw new ArgumentNullException(nameof(build));
 
         var tabsheetTabInfo = new TabsheetTabInfo(tabId: tabId, caption: caption);
 
@@ -57,20 +60,20 @@ public static class TabRegistration
                 var resolved = tabsheetProvider.GetTabsheetDataModel<TContract>();
                 build(writer, (TContract)resolved, dto);
             },
-            isActive: isActive
-        );
+            isActive: isActive);
 
         return new HtmlTabRegistrationImpl<DTO>(
             dataModelType: typeof(TContract),
             model: model,
-            tab: new HtmlTabsheetTabInfoWithDataModelType<DTO>(htmlTab, typeof(TContract))
-        );
+            tab: new HtmlTabsheetTabInfoWithDataModelType<DTO>(htmlTab, typeof(TContract)));
     }
 
     private sealed class HtmlTabRegistrationImpl<DTO> : IHtmlTabRegistration<DTO>
     {
         public Type DataModelType { get; }
+
         public IHtmlTabsheetDataModel Model { get; }
+
         public HtmlTabsheetTabInfoWithDataModelType<DTO> Tab { get; }
 
         public HtmlTabRegistrationImpl(Type dataModelType, IHtmlTabsheetDataModel model, HtmlTabsheetTabInfoWithDataModelType<DTO> tab)
@@ -90,8 +93,7 @@ public sealed class ComposableTabsheetDataProvider<DTO> : BaseHtmlTabsheetDataPr
     public ComposableTabsheetDataProvider(IEnumerable<IHtmlTabRegistration<DTO>> registrations)
         : base(
             dataModels: (registrations ?? throw new ArgumentNullException(nameof(registrations))).ToDictionary(r => r.DataModelType, r => r.Model),
-            tabs: registrations.Select(r => r.Tab)
-          )
+            tabs: registrations.Select(r => r.Tab))
     {
     }
 }

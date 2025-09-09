@@ -22,11 +22,11 @@ public class UmlRelation : IUmlElement
     }
 
     // context: uml, share
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine();
         writer.Write($"{From}");
-        Arrow.WriteTo(writer,alignNameMaxWidth);
+        Arrow.WriteTo(writer, writeOptions);
         writer.Write($"{To}");
     }
 }

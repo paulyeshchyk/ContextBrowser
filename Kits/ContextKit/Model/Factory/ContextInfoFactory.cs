@@ -21,7 +21,8 @@ public class ContextInfoFactory<T> : IContextFactory<T>
              syntaxNode: dto.SyntaxWrapper,
              classOwner: dto.ClassOwner,
             methodOwner: dto.MethodOwner)
-        { };
+        {
+        };
 
         return (T)result;
     }

@@ -91,8 +91,9 @@ public abstract class UmlDiagramCompilerState
         if (rendered)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
+            var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
             var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, diagramFileName);
-            diagram.WriteToFile(path, -1);
+            diagram.WriteToFile(path, writeOptons);
         }
 
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);

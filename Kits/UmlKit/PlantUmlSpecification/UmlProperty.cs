@@ -18,7 +18,7 @@ public class UmlProperty : IUmlElement
         Url = url;
     }
 
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         List<string?> properties = new();
         properties.Add(Visibility.ToUmlString());

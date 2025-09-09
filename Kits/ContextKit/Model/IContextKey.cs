@@ -5,6 +5,7 @@ namespace ContextKit.Model;
 public interface IContextKey
 {
     string Action { get; set; }
+
     string Domain { get; set; }
 }
 

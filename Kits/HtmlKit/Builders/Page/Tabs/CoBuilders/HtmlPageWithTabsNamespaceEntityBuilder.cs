@@ -39,8 +39,7 @@ where DTO : NamespacenameContainer
             var title = $" Namespace {ns}";
             var cellData = new NamespacenameContainer(
                 contextInfoList: filtered,
-                contextKey: ns
-            );
+                contextKey: ns);
 
             _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
         }

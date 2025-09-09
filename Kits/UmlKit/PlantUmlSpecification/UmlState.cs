@@ -15,12 +15,15 @@ public class UmlState : IUmlParticipant
 
     public string Declaration => $"state {this.FullName}";
 
-    public UmlState(string? raw, string? alias)
+    public string? Url { get; }
+
+    public UmlState(string? raw, string? alias, string? url = null)
     {
         _raw = string.IsNullOrWhiteSpace(raw) ? SUnknownState : raw;
+        Url = url;
     }
 
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine();
         writer.WriteLine(Declaration);

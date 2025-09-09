@@ -45,8 +45,7 @@ public record SemanticOptions
         bool createFailedCallees,
         bool includePseudoCode,
         string globalUsings,
-        AssemblyPathFilterPatterns semanticFilters
-    )
+        AssemblyPathFilterPatterns semanticFilters)
     {
         ExternalNamespaceName = externalNamespaceName;
         FakeOwnerName = fakeOwnerName;

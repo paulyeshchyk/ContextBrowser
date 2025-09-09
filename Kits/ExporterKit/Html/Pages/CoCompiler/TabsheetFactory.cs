@@ -3,23 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using ContextBrowser.Samples.HtmlPages;
 using ContextBrowserKit.Extensions;
-using ContextBrowserKit.Log;
-using ContextBrowserKit.Log.Options;
-using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using ExporterKit.Html;
 using HtmlKit.Builders.Core;
 using HtmlKit.Model;
 using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
-using LoggerKit;
-using UmlKit.Infrastructure.Options;
 
 namespace ExporterKit.Html.Pages.CoCompiler;
 
 public static class TabsheetFactory
 {
+    public static IHtmlTabRegistration<EntitynameContainer> MindmapTabRegistration(ExportOptions exportOptions)
+    {
+        // Вкладка: Mindmap (PUML)
+        return TabRegistration.For<MindmapDatamodel, EntitynameContainer>(
+            tabId: "MindmapTab",
+            caption: "Mindmap",
+            isActive: false,
+            model: new MindmapDatamodel(),
+            build: (writer, model, dto) =>
+            {
+                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                pumlBuilder.Start(writer);
+                pumlBuilder.Cell(writer);
+                pumlBuilder.End(writer);
+            });
+    }
+
     public static IHtmlTabRegistration<EntitynameContainer> ClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
@@ -168,6 +179,23 @@ public static class TabsheetFactory
             });
     }
 
+    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyMindmap(ExportOptions exportOptions)
+    {
+        // Вкладка: Состояния (PUML)
+        return TabRegistration.For<DomainOnlyMindmapDatamodel, ContextKeyContainer>(
+            tabId: "MindmapTab",
+            caption: "Mindmap",
+            isActive: false,
+            model: new DomainOnlyMindmapDatamodel(),
+            build: (writer, model, dto) =>
+            {
+                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                pumlBuilder.Start(writer);
+                pumlBuilder.Cell(writer);
+                pumlBuilder.End(writer);
+            });
+    }
+
     public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyStates(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
@@ -306,59 +334,84 @@ internal class ActionOnlyMethodListDataModel : IMethodListDatamodel
 internal class NamespaceOnlyDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => throw new NotImplementedException();
+
     protected override string GetPumlFileName(string contextKey) => $"namespace_only_{contextKey.AlphanumericOnly()}.puml";
 }
 
 internal class DomainSummaryComponentsDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => $"class_{contextKey.Action}_{contextKey.Domain}.puml";
+
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
 internal class DomainOnlyStatesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => $"state_domain_{contextKey.Domain}.puml";
+
+    protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
+}
+
+internal class DomainOnlyMindmapDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+{
+    protected override string GetPumlFileName(IContextKey contextKey) => $"mindmap_domain_{contextKey.Domain}.puml";
+
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
 internal class DomainOnlySequenceDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => $"sequence_domain_{contextKey.Domain}.puml";
+
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
 internal class DomainOnlyClassesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => $"class_domain_{contextKey.Domain}.puml";
+
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
 internal class ActionOnlyStatesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => $"state_action_{contextKey.Action}.puml";
+
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
 internal class ActionOnlySequenceDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => $"sequence_action_{contextKey.Action}.puml";
+
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
 internal class ActionOnlyClassesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => $"class_action_{contextKey.Action}.puml";
+
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
 internal class ActionSummaryDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => $"class_{contextKey.Action}_{contextKey.Domain}.puml";
+
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
 internal class ClassOnlyDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
 {
     protected override string GetPumlFileName(IContextKey contextKey) => throw new NotImplementedException();
+
     protected override string GetPumlFileName(string contextKey) => $"class_only_{contextKey.AlphanumericOnly()}.puml";
 }
+
+internal class MindmapDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+{
+    protected override string GetPumlFileName(IContextKey contextKey) => throw new NotImplementedException();
+
+    protected override string GetPumlFileName(string contextKey) => $"mindmap.puml";
+}
+

@@ -51,5 +51,4 @@ public class RoslynInvocationReferenceBuilder<TContext>
         }
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
-
 }

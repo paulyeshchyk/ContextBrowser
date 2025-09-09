@@ -11,7 +11,7 @@ public class UmlLine : IUmlElement
         Text = text;
     }
 
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine(Text);
     }

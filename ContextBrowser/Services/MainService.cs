@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommandlineKit;
 using CommandlineKit.Model;
-using ContextBrowser.ContextCommentsParser;
 using ContextBrowser.FileManager;
 using ContextBrowser.Infrastructure;
 using ContextBrowser.Model;

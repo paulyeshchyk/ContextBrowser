@@ -14,5 +14,4 @@ public interface IHtmlTabsheetDataProvider<DTO> : IHtmlDataProvider
 
 public interface IHtmlTabsheetDataModel
 {
-
 }

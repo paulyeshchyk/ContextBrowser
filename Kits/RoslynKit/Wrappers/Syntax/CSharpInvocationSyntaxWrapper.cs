@@ -11,7 +11,6 @@ public record CSharpInvocationSyntaxWrapper : ISyntaxWrapper
 {
     public bool IsPartial { get; set; } = false;
 
-
     public int SpanEnd { get; set; } = 0;
 
     public int SpanStart { get; set; } = 0;
@@ -32,6 +31,5 @@ public record CSharpInvocationSyntaxWrapper : ISyntaxWrapper
 
     public CSharpInvocationSyntaxWrapper()
     {
-
     }
 }

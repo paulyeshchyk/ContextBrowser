@@ -5,6 +5,7 @@ using ExporterKit;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
 using UmlKit;
+using UmlKit.Builders.Model;
 
 namespace ExporterKit.Uml.Model;
 

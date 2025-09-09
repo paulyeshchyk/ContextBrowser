@@ -16,7 +16,7 @@ public class UmlNote : IUmlElement
         _caller = caller;
     }
 
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine();
         writer.WriteLine($"note {_position.ToUmlString()} {_caller}");

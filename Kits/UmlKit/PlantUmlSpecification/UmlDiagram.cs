@@ -8,10 +8,10 @@ namespace UmlKit.PlantUmlSpecification;
 // context: model, uml
 // pattern: Template method
 // parsing: error
-public abstract class UmlDiagram<P> : IUmlElementCollection
+public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
     where P : IUmlParticipant
 {
-    protected readonly HashSet<IUmlElement> Meta = new();
+    protected readonly HashSet<IUmlWritable> Meta = new();
 
     protected virtual string SUmlStartTag { get => "@startuml"; }
 
@@ -26,7 +26,10 @@ public abstract class UmlDiagram<P> : IUmlElementCollection
     protected string? _title;
     protected readonly DiagramBuilderOptions _options;
 
+    protected readonly UmlStyleDiagramMindmap Styles = new UmlStyleDiagramMindmap();
+
     public string DiagramId { get; private set; }
+
     public SortedList<int, IUmlElement> Elements { get; } = new();
 
     public UmlDiagram(DiagramBuilderOptions options, string diagramId)
@@ -34,12 +37,13 @@ public abstract class UmlDiagram<P> : IUmlElementCollection
         _options = options;
         DiagramId = diagramId;
     }
+
     // context: model, uml
     public bool IsUmlTagEnabled { get; set; } = true;
 
     // context: create, uml
 
-    public abstract P AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
+    public abstract P AddParticipant(string name, string? alias = null, string? url = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
 
     // context: create, uml
     public abstract UmlDiagram<P> AddParticipant(P participant, string alias);
@@ -59,9 +63,13 @@ public abstract class UmlDiagram<P> : IUmlElementCollection
     // context: create, uml
     public abstract IUmlElement AddTransition(P from, P to, bool isAsync = false, string? label = null);
 
+    public void AddStyle(UmlStyle style)
+    {
+        Styles.Elements.Add(Styles.Elements.Count, style);
+    }
+
     // context: create, uml
     //public abstract IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null);
-
     public virtual IUmlElement AddComment(string line)
     {
         var result = new UmlComment(line);
@@ -136,14 +144,16 @@ public abstract class UmlDiagram<P> : IUmlElementCollection
     }
 
     // context: uml, share
-    public virtual void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public virtual void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         WriteStart(writer);
         WriteAllowMixing(writer);
         WriteSkinElements(writer);
         WriteSeparator(writer);
+        WriteStyles(writer, writeOptions);
         WriteTitle(writer);
-        WriteBody(writer, alignNameMaxWidth);
+        WriteMeta(writer, writeOptions);
+        WriteBody(writer, writeOptions);
         WriteEnd(writer);
     }
 
@@ -183,6 +193,19 @@ public abstract class UmlDiagram<P> : IUmlElementCollection
         }
     }
 
+    protected virtual void WriteMeta(TextWriter writer, UmlWriteOptions writeOptions)
+    {
+        foreach (var meta in Meta)
+        {
+            meta.WriteTo(writer, writeOptions);
+        }
+    }
+
+    protected virtual void WriteStyles(TextWriter writer, UmlWriteOptions writeOptions)
+    {
+        Styles.WriteTo(writer, writeOptions);
+    }
+
     // context: uml, update
     protected virtual void WriteSkinElements(TextWriter writer)
     {
@@ -198,19 +221,19 @@ public abstract class UmlDiagram<P> : IUmlElementCollection
     }
 
     // context: uml, update
-    public abstract void WriteBody(TextWriter writer, int alignNameMaxWidth);
+    public abstract void WriteBody(TextWriter writer, UmlWriteOptions writeOptions);
 
     // context: uml, read
-    public string ToUmlString(int alignNameMaxWidth)
+    public string ToUmlString(UmlWriteOptions writeOptions)
     {
         using var sw = new StringWriter();
-        WriteTo(sw, alignNameMaxWidth);
+        WriteTo(sw, writeOptions);
         return sw.ToString();
     }
 
     // context: uml, share
-    public void WriteToFile(string path, int alignNameMaxWidth)
+    public void WriteToFile(string path, UmlWriteOptions writeOptions)
     {
-        File.WriteAllText(path, ToUmlString(alignNameMaxWidth));
+        File.WriteAllText(path, ToUmlString(writeOptions));
     }
 }

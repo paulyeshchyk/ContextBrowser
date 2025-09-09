@@ -9,6 +9,7 @@ using ContextKit.Model;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml.Model;
 using LoggerKit;
+using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
@@ -35,7 +36,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         {
             Build(contextInfo: context,
                 exportOptions: exportOptions,
-        diagramBuilderOptions: diagramBuilderOptions,
+                      options: diagramBuilderOptions,
                       methods: GetMethods(contextInfoDataset),
                    properties: GetProperties(contextInfoDataset));
         }
@@ -44,30 +45,31 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll()
+        return(contextInfo) => contextInfoDataSet.GetAll()
             .Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll()
+        return(contextInfo) => contextInfoDataSet.GetAll()
             .Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
     //context: uml, build, heatmap, directory
-    internal void Build(IContextInfo contextInfo, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties)
+    internal void Build(IContextInfo contextInfo, ExportOptions exportOptions, DiagramBuilderOptions options, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties)
     {
         var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"class_only_{contextInfo.FullName.AlphanumericOnly()}.puml");
 
         var diagramId = $"class_only_{contextInfo.FullName.AlphanumericOnly()}";
         var diagramTitle = $"Class diagram -> {contextInfo.Name}";
 
-        var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(options, diagramId: diagramId);
         diagram.SetTitle(diagramTitle);
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
 
-        var package = new UmlPackage(contextInfo.Namespace, alias: contextInfo.Namespace.AlphanumericOnly(), url: UmlUrlBuilder.BuildNamespaceUrl(contextInfo.Namespace));
+        var packageUrl = UmlUrlBuilder.BuildNamespaceUrl(contextInfo.Namespace);
+        var package = new UmlPackage(contextInfo.Namespace, alias: contextInfo.Namespace.AlphanumericOnly(), url: packageUrl);
         diagram.Add(package);
 
         var entityType = ContextInfoExt.ConvertToUmlEntityType(contextInfo.ElementType);
@@ -88,6 +90,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
             umlClass.Add(umlMethod);
         }
 
-        diagram.WriteToFile(fileName, -1);
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+        diagram.WriteToFile(fileName, writeOptons);
     }
 }

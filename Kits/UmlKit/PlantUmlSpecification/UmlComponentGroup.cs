@@ -25,12 +25,12 @@ public class UmlComponentGroup : IUmlElement
     public void Add(IUmlElement e) => Members.Add(e);
 
     // context: uml, share
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine();
         writer.WriteLine($"  component \"{Name}\" <<{Stereotype}>> {{");
         foreach (var member in Members)
-            member.WriteTo(writer, alignNameMaxWidth);
+            member.WriteTo(writer, writeOptions);
         writer.WriteLine("  }");
     }
 }

@@ -31,8 +31,7 @@ where DTO : ContextKeyContainer
             var cellData = new ContextKeyContainer
             (
                 contextInfoList: contextInfoItem.Value.Distinct(),
-                contextKey: contextInfoItem.Key
-            );
+                contextKey: contextInfoItem.Key);
 
             var filename = _onGetFileName((DTO)cellData);
             var title = $" {cellData.ContextKey.Action}  ->  {cellData.ContextKey.Domain} ";

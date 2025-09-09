@@ -18,6 +18,7 @@ public interface IContextInfoCacheService
 {
     // context: relations, build
     Task<IEnumerable<ContextInfo>> ReadContextsFromCache(CacheJsonModel cacheModel, Func<CancellationToken, Task<IEnumerable<ContextInfo>>> fallback, CancellationToken cancellationToken);
+
     // context: relations, update
     Task SaveContextsToCacheAsync(CacheJsonModel cacheModel, IEnumerable<ContextInfo> contextsList, CancellationToken cancellationToken);
 }
@@ -107,7 +108,6 @@ public class ContextInfoCacheService : IContextInfoCacheService
             }
 
             return await DeserializeOrRenew(fallback, fileContent, cancellationToken).ConfigureAwait(false);
-
         }
         catch (Exception ex)
         {

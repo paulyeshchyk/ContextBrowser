@@ -30,7 +30,6 @@ public record CSharpTypeSyntaxWrapper : ISyntaxWrapper
 
     public ICustomMethodSignature? Signature { get; set; }
 
-
     public CSharpTypeSyntaxWrapper(ISymbol symbol, TypeDeclarationSyntax syntax)
     {
         Identifier = symbol.GetFullMemberName(includeParams: true);
@@ -62,9 +61,9 @@ public record CSharpTypeSyntaxWrapper : ISyntaxWrapper
                 ClassName: syntaxWrapper.Signature.ClassName,
                 MethodName: syntaxWrapper.Signature.MethodName,
                 Arguments: syntaxWrapper.Signature.Arguments,
-                Raw: syntaxWrapper.Signature.Raw
-            )
-            { };
+                Raw: syntaxWrapper.Signature.Raw)
+            {
+            };
         }
         else
         {

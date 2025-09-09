@@ -33,5 +33,4 @@ public class CSharpDelegateSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<DelegateD
     public override string GetName() => _syntaxNode?.GetIdentifier() ?? throw new ArgumentException(nameof(_syntaxNode));
 
     public override string GetShortName() => GetName();
-
 }

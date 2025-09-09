@@ -29,9 +29,9 @@ public class UmlDiagramState : UmlDiagram<UmlState>
 #warning not working
     }
 
-    public override UmlState AddParticipant(string name, string? alias = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
+    public override UmlState AddParticipant(string name, string? alias = null, string? url = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant)
     {
-        var result = new UmlState(name, alias);
+        var result = new UmlState(name, alias, url);
         _states.Add(result);
         return result;
     }
@@ -92,7 +92,7 @@ public class UmlDiagramState : UmlDiagram<UmlState>
         return new UmlDeactivate(from.Alias);
     }
 
-    public override void WriteBody(TextWriter writer, int alignNameMaxWidth)
+    public override void WriteBody(TextWriter writer, UmlWriteOptions writeOptions)
     {
         if (!_states.Any() || !_transitions.Any() || !Meta.Any())
         {
@@ -102,7 +102,7 @@ public class UmlDiagramState : UmlDiagram<UmlState>
 
         // 0. Meta
         foreach (var meta in Meta.Distinct())
-            meta.WriteTo(writer, alignNameMaxWidth);
+            meta.WriteTo(writer, writeOptions);
 
         writer.WriteLine();
 
@@ -135,20 +135,20 @@ public class UmlDiagramState : UmlDiagram<UmlState>
         foreach (var start in possibleStarts)
         {
             var startTransition = new UmlTransitionStateStart(new UmlArrow(), new UmlState(start, null));
-            startTransition.WriteTo(writer, alignNameMaxWidth);
+            startTransition.WriteTo(writer, writeOptions);
         }
 
         // 4. Основные переходы
         foreach (var transition in _transitions)
         {
-            transition.WriteTo(writer, alignNameMaxWidth);
+            transition.WriteTo(writer, writeOptions);
         }
 
         // 5. Финиш: от конечных к [*]
         foreach (var end in possibleEnds)
         {
             var startTransition = new UmlTransitionStateEnd(new UmlState(end, null), new UmlArrow());
-            startTransition.WriteTo(writer, alignNameMaxWidth);
+            startTransition.WriteTo(writer, writeOptions);
         }
     }
 

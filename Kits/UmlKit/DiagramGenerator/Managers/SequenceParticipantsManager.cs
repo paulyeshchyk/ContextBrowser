@@ -2,6 +2,7 @@
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using UmlKit.Builders;
 using UmlKit.Builders.Model;
 using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
@@ -18,29 +19,33 @@ public static partial class SequenceParticipantsManager
         var callerName = ctx.Transition.CallerClassName.AlphanumericOnly();
         var calleeName = ctx.Transition.CalleeClassName.AlphanumericOnly();
 
+        var callerUrl = UmlUrlBuilder.BuildClassUrl(ctx.Transition.CallerId);
+        var calleeUrl = UmlUrlBuilder.BuildClassUrl(ctx.Transition.CalleeId);
+        var runContextUrl = UmlUrlBuilder.BuildClassUrl(ctx.RunContext);
+
         var runContextName = ctx.RunContext?.AlphanumericOnly();
 
         // Стратегия по умолчанию: если RunContext пуст, используем уникальный, несовпадающий ID.
         var tempRunContextName = string.IsNullOrEmpty(runContextName) ? Guid.NewGuid().ToString() : runContextName;
 
-        AddParticipantIfApplicable(callerName, tempRunContextName, ctx, defaultKeywords);
+        AddParticipantIfApplicable(callerName, url: callerUrl, tempRunContextName, ctx, defaultKeywords);
 
         // Добавляем Callee, только если он отличается от Caller, чтобы избежать дублирования
         if (!callerName.Equals(calleeName))
         {
-            AddParticipantIfApplicable(calleeName, tempRunContextName, ctx, defaultKeywords);
+            AddParticipantIfApplicable(calleeName, url: calleeUrl, tempRunContextName, ctx, defaultKeywords);
         }
 
         // Если RunContext был задан, добавляем его с ключевым словом "Control".
         if (!string.IsNullOrEmpty(runContextName))
         {
-            AddParticipant(ctx, defaultKeywords.Control, runContextName);
+            AddParticipant(ctx, defaultKeywords.Control, runContextName, url: runContextUrl);
         }
 
         ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
-    private static void AddParticipantIfApplicable<T>(string className, string runContextName, RenderContext<T> ctx, UmlParticipantKeywordsSet defaultKeywords)
+    private static void AddParticipantIfApplicable<T>(string className, string? url, string runContextName, RenderContext<T> ctx, UmlParticipantKeywordsSet defaultKeywords)
         where T : IUmlParticipant
     {
         var classAlpha = className.AlphanumericOnly();
@@ -49,14 +54,14 @@ public static partial class SequenceParticipantsManager
 
         if (!classAlpha.Equals(runContextName))
         {
-            AddParticipant<T>(ctx, keyword, classAlpha);
+            AddParticipant<T>(ctx, keyword, classAlpha, url: url);
         }
     }
 
-    private static void AddParticipant<T>(RenderContext<T> ctx, UmlParticipantKeyword keyword, string p)
+    private static void AddParticipant<T>(RenderContext<T> ctx, UmlParticipantKeyword keyword, string p, string? url = null)
         where T : IUmlParticipant
     {
         ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"Adding participant [{p}][{ctx.Transition.CallerClassName}.{ctx.Transition.CallerMethod} -> {ctx.Transition.CalleeClassName}.{ctx.Transition.CalleeMethod}]");
-        ctx.Diagram.AddParticipant(p, keyword: keyword);
+        ctx.Diagram.AddParticipant(p, keyword: keyword, url: url);
     }
 }

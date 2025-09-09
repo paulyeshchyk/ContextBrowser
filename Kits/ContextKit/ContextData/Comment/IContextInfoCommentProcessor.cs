@@ -10,7 +10,6 @@ public interface IContextInfoCommentProcessor<T>
     void Process(T? target, string comment);
 }
 
-
 public interface ICommentParsingStrategyFactory<TContext>
 {
     IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies(IContextClassifier classifier);

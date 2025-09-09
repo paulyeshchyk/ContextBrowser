@@ -28,6 +28,7 @@ public static class ContextInfoAdapter
                  action: model.Action,
                 domains: model.Domains,
              dimensions: model.Dimensions)
-        { };
+        {
+        };
     }
 }

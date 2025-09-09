@@ -9,6 +9,7 @@ namespace HtmlKit.Model.Tabsheet;
 public class BaseHtmlTabsheetDataProvider<DTO> : IHtmlTabsheetDataProvider<DTO>
 {
     private readonly Dictionary<Type, IHtmlTabsheetDataModel> _dataModels;
+
     public IEnumerable<IHtmlTabsheetTabInfoWithDataModelType<DTO>> Tabsheets { get; }
 
     public BaseHtmlTabsheetDataProvider(Dictionary<Type, IHtmlTabsheetDataModel> dataModels, IEnumerable<HtmlTabsheetTabInfoWithDataModelType<DTO>> tabs)
@@ -16,7 +17,6 @@ public class BaseHtmlTabsheetDataProvider<DTO> : IHtmlTabsheetDataProvider<DTO>
         _dataModels = dataModels ?? throw new ArgumentNullException(nameof(dataModels));
         Tabsheets = tabs;
     }
-
 
     public T GetTabsheetDataModel<T>()
         where T : IHtmlTabsheetDataModel

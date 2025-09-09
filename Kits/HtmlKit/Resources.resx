@@ -1,113 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- Microsoft ResX Schema
-
+  <!-- 
+    Microsoft ResX Schema 
+    
     Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
     associated with the data types.
-
+    
     Example:
-
+    
     ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader><resheader name="version">2.0</resheader><resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader><resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader><data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data><data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data><data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64"><value>[base64 mime encoded serialized .NET Framework object]</value></data><data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64"><value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value><comment>This is a comment</comment></data>
-
-    There are any number of "resheader" rows that contain simple
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
     name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
     mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
-
+    
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-
+    
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
+    value   : The object must be serialized into a byte array 
             : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding. -->
-	<xsd:schema id="root" 
-		xmlns="" 
-		xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-		xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0"/>
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string"/>
-							<xsd:attribute name="type" type="xsd:string"/>
-							<xsd:attribute name="mimetype" type="xsd:string"/>
-							<xsd:attribute ref="xml:space"/>
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string"/>
-							<xsd:attribute name="name" type="xsd:string"/>
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
-							<xsd:attribute ref="xml:space"/>
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required"/>
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="HtmlProducerContentStyle" xml:space="preserve">
-		<value>
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="HtmlProducerContentStyle" xml:space="preserve">
+    <value>
 :root {
   --link-color: #0077cc;
   --cell-border-color: #cccccc;
@@ -115,8 +126,8 @@
   --border-summary: #f3f3f3;
   --border-metadata: #f3f3f3;
 
-  --hover-background-light: #f0f0f0;
-  --hover-background-dark: #e0e0e0;
+  --cell-background-light: #f0f0f0;
+  --cell-background-dark: #e0e0e0;
 
   --cell-padding: 6px 10px;
   --alt-cell-padding: 1px 1px;
@@ -229,7 +240,7 @@ th {
 }
 
 th.hover-col {
-  background-color: var(--hover-background-light);
+  background-color: var(--cell-background-light);
 }
 
 td {
@@ -255,24 +266,24 @@ td a {
 
 th:hover,
 td:hover {
-  background-color: var(--hover-background-light);
+  background-color: var(--cell-background-light);
   cursor: pointer;
 }
 
 tr:hover td {
-  background-color: var(--hover-background-light);
+  background-color: var(--cell-background-light);
 }
 
 tr:hover th {
-  background-color: var(--hover-background-light);
+  background-color: var(--cell-background-light);
 }
 
 td.hover-col {
-  background-color: var(--hover-background-light);
+  background-color: var(--cell-background-light);
 }
 
 td.hover-col.hover-cell {
-  background-color: var(--hover-background-dark);
+  background-color: var(--cell-background-dark);
 }
 
 .row_meta {
@@ -385,6 +396,7 @@ td.hover-col.hover-cell {
 
 .nav-link,
 .nav-link-current {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     display: inline-block; /* Чтобы элемент мог принимать отступы и размеры */
     padding: 5px 10px; /* Отступ внутри прямоугольника */
     margin: 5px 0px; /* Отступ между элементами */
@@ -396,25 +408,25 @@ td.hover-col.hover-cell {
 .nav-link:hover,
 .nav-link:active,
 .nav-link:visited {
-    background-color: #f0f0f0; /* Возвращаем светло-серый фон */
-    color: #0077cc;
+    background-color: var(--cell-background-light);
+    color: var(--link-color);
     text-decoration: none;
 }
 .nav-link:hover {
-    background-color: #e0e0e0; /* Делаем темнее */
+    background-color: var(--cell-background-dark);
 }
 
 /* Стили для текущего, некликабельного элемента */
 .nav-link-current {
-    background-color: #e0e0e0; /* Более тёмный фон для текущего элемента */
-    cursor: default; /* Возвращаем стандартный курсор */
+    background-color: var(--cell-background-dark);
+    cursor: default;
     pointer-events: none; /* Полностью отключаем события мыши, чтобы нельзя было нажать */
 }
 
     </value>
-	</data>
-	<data name="HtmlProducerContentStyleScript" xml:space="preserve">
-		<value>
+  </data>
+  <data name="HtmlProducerContentStyleScript" xml:space="preserve">
+    <value>
 document.addEventListener('DOMContentLoaded', () =&gt; {
 	const table = document.querySelector('table');
 	const rows = Array.from(table.rows);
@@ -461,9 +473,9 @@ document.addEventListener('DOMContentLoaded', () =&gt; {
 	});
 });
     </value>
-	</data>
-	<data name="ScriptAutoFontShrink" xml:space="preserve">
-		<value>
+  </data>
+  <data name="ScriptAutoFontShrink" xml:space="preserve">
+    <value>
 (function shrinkEmbeddedFonts() {
     const tables = document.querySelectorAll(".embedded-table");
     tables.forEach(table =&gt; {
@@ -494,35 +506,35 @@ document.addEventListener('DOMContentLoaded', () =&gt; {
     });
 })();
     </value>
-	</data>
-	<data name="JsBreadcrumbScript" xml:space="preserve">
-		<value>
+  </data>
+  <data name="JsBreadcrumbScript" xml:space="preserve">
+    <value>
 // This script will be included on every page
-document.addEventListener(&apos;DOMContentLoaded&apos;, (event) =&gt; {
-    const pageDataElement = document.getElementById(&apos;page-data&apos;);
+document.addEventListener('DOMContentLoaded', (event) =&gt; {
+    const pageDataElement = document.getElementById('page-data');
     if (!pageDataElement) return;
 
     const currentPageInfo = JSON.parse(pageDataElement.innerText);
     const currentPageUrl = currentPageInfo.Url;
     const currentPageName = currentPageInfo.Name;
 
-    let navStack = JSON.parse(sessionStorage.getItem(&apos;navStack&apos;)) || [];
+    let navStack = JSON.parse(sessionStorage.getItem('navStack')) || [];
 
     // Find if the current page already exists in the stack
     const existingIndex = navStack.findIndex(item =&gt; item.Url === currentPageUrl);
 
-    if (currentPageUrl === &apos;index.html&apos; || currentPageUrl === &apos;/&apos;) {
-        // Case 1: User is on the home page. Reset the stack to just &apos;Home&apos;.
+    if (currentPageUrl === 'index.html' || currentPageUrl === '/') {
+        // Case 1: User is on the home page. Reset the stack to just 'Home'.
         navStack = [{ Url: currentPageUrl, Name: currentPageName }];
     } else if (existingIndex !== -1) {
         // Case 2: The page exists in the stack. This happens when the user uses the back button or clicks a breadcrumb.
         // We trim the stack to that point. This is the fix you need.
         navStack = navStack.slice(0, existingIndex + 1);
 
-        // This is a subtle but important detail: the logic for a &quot;new&quot; page
+        // This is a subtle but important detail: the logic for a "new" page
         // has to be handled differently. If the user clicks a breadcrumb,
-        // we&apos;ve already done our job. If they navigate to a new page,
-        // the stack should grow. Let&apos;s make that explicit below.
+        // we've already done our job. If they navigate to a new page,
+        // the stack should grow. Let's make that explicit below.
     } else {
         // Case 3: The page is a new, unvisited one in this session.
         // We add it to the end of the stack.
@@ -530,14 +542,14 @@ document.addEventListener(&apos;DOMContentLoaded&apos;, (event) =&gt; {
     }
 
     // Save the updated stack to session storage
-    sessionStorage.setItem(&apos;navStack&apos;, JSON.stringify(navStack));
+    sessionStorage.setItem('navStack', JSON.stringify(navStack));
 
     // --- Rendering Logic (Re-render the panel dynamically) ---
     // (This part remains the same)
-    const navPanel = document.getElementById(&apos;nav-panel&apos;);
+    const navPanel = document.getElementById('nav-panel');
     if (!navPanel) return;
 
-    navPanel.innerHTML = &apos;&apos;; // Clear content
+    navPanel.innerHTML = ''; // Clear content
 
     // вставка элемента, позволяющего сократить отображаемый список навигационных элементов
     const maxItemsToShow = 4; // Максимальное количество элементов для показа
@@ -555,7 +567,7 @@ document.addEventListener(&apos;DOMContentLoaded&apos;, (event) =&gt; {
         // Вставляем многоточие
         const ellipsis = {
             Url: navStack[stackLength - maxItemsToShow].Url, // Ссылка на последний скрытый элемент
-            Name: &quot;...&quot;
+            Name: "..."
         };
 
         itemsToRender = [homePage, ellipsis, ...lastTwo];
@@ -567,31 +579,31 @@ document.addEventListener(&apos;DOMContentLoaded&apos;, (event) =&gt; {
         // Проверяем, является ли это последним элементом
         if (index === itemsToRender.length - 1) {
             // Если это текущая страница, создаём &lt;span&gt; вместо &lt;a&gt;
-            const span = document.createElement(&apos;span&apos;);
+            const span = document.createElement('span');
             span.textContent = name;
-            span.classList.add(&apos;nav-link-current&apos;);
+            span.classList.add('nav-link-current');
             navPanel.appendChild(span);
         } else {
             // Если это не текущая страница, создаём кликабельную &lt;a&gt;
-            const link = document.createElement(&apos;a&apos;);
+            const link = document.createElement('a');
             link.href = item.Url;
             link.textContent = name;
-            link.classList.add(&apos;nav-link&apos;);
+            link.classList.add('nav-link');
             navPanel.appendChild(link);
         }
 
         if (index &lt; itemsToRender.length - 1) {
-            const separator = document.createElement(&apos;span&apos;);
-            separator.classList.add(&apos;nav-link-span&apos;);
-            separator.textContent = &apos; &gt; &apos;;
+            const separator = document.createElement('span');
+            separator.classList.add('nav-link-span');
+            separator.textContent = ' &gt; ';
             navPanel.appendChild(separator);
         }
     });
 });
 		</value>
-	</data>
-	<data name="ScriptAutoShrinkEmbeddedTable" xml:space="preserve">
-		<value>
+  </data>
+  <data name="ScriptAutoShrinkEmbeddedTable" xml:space="preserve">
+    <value>
 function autoResizeEmbeddedTables() {
     const tables = document.querySelectorAll(".embedded-table");
     tables.forEach(table =&gt; {
@@ -610,9 +622,9 @@ function autoResizeEmbeddedTables() {
 }
 document.addEventListener("DOMContentLoaded", autoResizeEmbeddedTables);
     </value>
-	</data>
-	<data name="JsShowTabseetTabScript" xml:space="preserve">
-		<value>
+  </data>
+  <data name="JsShowTabseetTabScript" xml:space="preserve">
+    <value>
 function showTab(tabId, clickedButton) {
     document.querySelectorAll(".tab-content").forEach(content =&gt; {
         content.classList.remove("active");
@@ -626,39 +638,74 @@ function showTab(tabId, clickedButton) {
     clickedButton.classList.add("active");
 }
     </value>
-	</data>
-	<data name="CssTabsheetTabs" xml:space="preserve">
-		<value>
+  </data>
+  <data name="CssTabsheetTabs" xml:space="preserve">
+    <value>
+/* Общие стили для контейнеров */
+.tabs-container {
+    position: relative;
+}
+
 .tabs {
-  display: flex;
-  flex-wrap: wrap;
-  border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #ccc; /* Возвращаем нижнюю границу контейнера */
 }
+
+/* Стили для кнопок */
 .tab-button {
-  padding: 10px 20px;
-  cursor: pointer;
-  background-color: #f1f1f1;
-  border: 1px solid #ccc;
-  border-bottom: none;
-  border-radius: 5px 5px 0 0;
-  margin-right: 5px;
+    position: relative; /* Необходимо для z-index */
+    z-index: 1;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    border-bottom: none; /* Убираем собственную нижнюю границу кнопки */
+    border-radius: 5px 5px 0 0;
+    margin-right: 5px;
 }
+
 .tab-button.active {
-  background-color: #fff;
-  border-color: #ccc;
-  border-bottom: 1px solid #fff;
+    background-color: #fff; /* Цвет фона страницы */
+    border-color: #ccc;
+    z-index: 2; /* Активная кнопка "поверх" других элементов */
+    margin-bottom: -1px; /* Подтягиваем кнопку, чтобы она перекрыла границу контейнера */
 }
+
+/* Стили для контента */
 .tab-content {
-  display: none;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-top: none;
-  overflow-x: auto;
-  overflow-y: auto;
+    position: relative; /* Необходимо для z-index */
+    z-index: 1;
+    display: none;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-top: none; /* Убираем верхнюю границу, чтобы контент сливался с границей контейнера табов */
+    overflow-x: auto;
+    overflow-y: auto;
 }
+
 .tab-content.active {
-  display: block;
+    display: block;
 }
     </value>
-	</data>
+  </data>
+  <data name="JsOpenRequestedTab" xml:space="preserve">
+    <value>
+document.addEventListener(&apos;DOMContentLoaded&apos;, () =&gt; {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabIdFromUrl = urlParams.get(&apos;t&apos;);
+
+        if (tabIdFromUrl) {
+            // Найдите кнопку, которая соответствует ID из URL (например, &apos;MethodsTab&apos;).
+            const targetButton = document.querySelector(`[onclick*=&quot;${tabIdFromUrl}&quot;]`);
+
+            if (targetButton) {
+                // Если кнопка найдена, напрямую вызываем вашу функцию showTab()
+                // с нужным ID и элементом кнопки.
+                showTab(tabIdFromUrl, targetButton);
+            }
+        }
+    });
+</value>
+  </data>
 </root>

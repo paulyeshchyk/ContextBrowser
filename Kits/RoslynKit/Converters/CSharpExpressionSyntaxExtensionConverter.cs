@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -58,10 +57,11 @@ internal static class CSharpExpressionSyntaxExtensionConverter
 
         string manualFullName = string.Join(".", nameParts);
         if (nameParts.Count == 1)
-        { 
+        {
             // предположим, что это функция(напр, nameof)
-            return($"{manualFullName}()",isPartial); 
-        } else
+            return ($"{manualFullName}()", isPartial);
+        }
+        else
         {
             // В этом случае namespace и ownerName не могут быть надежно определены.
             string namespaceName = options.ExternalNamespaceName;

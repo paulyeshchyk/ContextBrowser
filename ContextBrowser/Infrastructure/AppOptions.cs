@@ -101,22 +101,17 @@ public class AppOptions
                                      orientation: MatrixOrientationType.DomainRows)),
         filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
-                 cacheModel: new CacheJsonModel(
-                    renewCache: false,
-                         input: ".//cache//roslyn.json", output: ".//cache//roslyn.json"),
-                     paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } }
-        ),
+                      paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
+                 cacheModel: new CacheJsonModel(renewCache: false,
+                                                     input: ".//cache//roslyn.json",
+                                                    output: ".//cache//roslyn.json")),
         webPaths: new ExportWebPaths(
             outputDirectory: "http://localhost:5500",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
-                 cacheModel: new CacheJsonModel(
-                    renewCache: false,
-                         input: ".//cache//roslyn.json", output: ".//cache//roslyn.json"
-                 )
-        ),
-        pumlOptions: new ExportPumlOptions(
-            injectionType: PumlInjectionType.inject
-        ));
+                 cacheModel: new CacheJsonModel(renewCache: false,
+                                                     input: ".//cache//roslyn.json",
+                                                    output: ".//cache//roslyn.json")),
+        pumlOptions: new ExportPumlOptions(injectionType: PumlInjectionType.inject));
 
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(

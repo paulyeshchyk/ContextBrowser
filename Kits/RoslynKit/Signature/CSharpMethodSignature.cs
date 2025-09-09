@@ -3,7 +3,6 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Signature;
 
-
 public record struct CSharpMethodSignature(string ResultType,
                                            string Namespace,
                                            string ClassName,

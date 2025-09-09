@@ -30,15 +30,13 @@ where DTO : EntitynameContainer
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
             .Cast<IContextInfo>();
 
-
         foreach (var contextInfoItem in entitiesList)
         {
             var filename = _onGetFileName(contextInfoItem.FullName);
             var title = $" Class {contextInfoItem.FullName}";
             var cellData = new EntitynameContainer(
                 contextInfoList: new List<IContextInfo>() { contextInfoItem },
-                contextKey: contextInfoItem.FullName
-            );
+                contextKey: contextInfoItem.FullName);
 
             _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
         }

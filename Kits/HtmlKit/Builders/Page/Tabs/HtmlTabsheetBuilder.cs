@@ -13,6 +13,7 @@ public static class HtmlTabsheetBuilder
     public static void Build<DTO>(StreamWriter writer, IHtmlTabsheetDataProvider<DTO> tabsDataProvider, DTO cellData)
     {
         var tabAttributes = new HtmlTagAttributes() { { "class", "tabs" } };
+
         // Build the tab buttons first
         HtmlBuilderFactory.Div.With(writer, tabAttributes, () =>
         {
@@ -34,10 +35,10 @@ public static class HtmlTabsheetBuilder
                 };
 
             HtmlBuilderFactory.Div.With(writer, sheetAttributes, () =>
-                {
-                    // The ContentGenerator now receives all the data it needs via the DTO.
-                    sheet.TabInfo.BuildHtmlTab(writer, tabsDataProvider, cellData);
-                });
+            {
+                // The ContentGenerator now receives all the data it needs via the DTO.
+                sheet.TabInfo.BuildHtmlTab(writer, tabsDataProvider, cellData);
+            });
         }
     }
 }

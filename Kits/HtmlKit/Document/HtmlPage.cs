@@ -22,15 +22,15 @@ public abstract class HtmlPage
             {
                 var attrs = new HtmlTagAttributes() { { "charset", "UTF-8" } };
                 HtmlBuilderFactory.Meta.Cell(writer, attributes: attrs, isEncodable: false);
-                HtmlBuilderFactory.Title.Cell(writer, innerHtml:Title);
-                HtmlBuilderFactory.Style.Cell(writer, innerHtml:Resources.HtmlProducerContentStyle, isEncodable: false);
+                HtmlBuilderFactory.Title.Cell(writer, innerHtml: Title);
+                HtmlBuilderFactory.Style.Cell(writer, innerHtml: Resources.HtmlProducerContentStyle, isEncodable: false);
 
                 foreach (var script in GetScripts())
-                    HtmlBuilderFactory.Script.Cell(writer,innerHtml:script, isEncodable: false);
+                    HtmlBuilderFactory.Script.Cell(writer, innerHtml: script, isEncodable: false);
 
                 HtmlBuilderFactory.Body.With(writer, () =>
                 {
-                    HtmlBuilderFactory.H1.Cell(writer, innerHtml:Title);
+                    HtmlBuilderFactory.H1.Cell(writer, innerHtml: Title);
                     WriteContent(writer);
                 });
             });

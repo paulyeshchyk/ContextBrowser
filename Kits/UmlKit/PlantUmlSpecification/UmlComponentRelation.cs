@@ -17,11 +17,11 @@ public class UmlComponentRelation : IUmlElement
         _join = new UmlJoin(relationDirection, relationVisibility);
     }
 
-    public void WriteTo(TextWriter writer, int alignNameMaxWidth)
+    public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine();
         writer.Write($"\"{_leftObject}\"");
-        _join.WriteTo(writer, alignNameMaxWidth);
+        _join.WriteTo(writer, writeOptions);
         writer.Write($"\"{_rightObject}\"");
     }
 }

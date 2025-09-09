@@ -38,6 +38,7 @@ public class HtmlPageCompilerDomainOnly : IHtmlPageCompiler
             TabsheetFactory.DomainOnlyMethodsTabsheetRegistration(),
             TabsheetFactory.DomainOnlySequence(exportOptions),
             TabsheetFactory.DomainOnlyStates(exportOptions),
+            TabsheetFactory.DomainOnlyMindmap(exportOptions),
         };
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextKeyContainer>(registrations);

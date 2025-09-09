@@ -30,7 +30,6 @@ public record CSharpMethodSyntaxWrapper : ISyntaxWrapper
 
     public ICustomMethodSignature? Signature { get; set; }
 
-
     public CSharpMethodSyntaxWrapper(object symbol, MethodDeclarationSyntax syntax)
     {
         if (symbol is ISymbol isymbol)
@@ -69,10 +68,9 @@ public record CSharpMethodSyntaxWrapper : ISyntaxWrapper
                 ClassName: wrapper.Signature.ClassName,
                 MethodName: wrapper.Signature.MethodName,
                 Arguments: wrapper.Signature.Arguments,
-                Raw: wrapper.Signature.Raw
-            )
-            { };
-
+                Raw: wrapper.Signature.Raw)
+            {
+            };
         }
     }
 

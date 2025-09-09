@@ -29,7 +29,7 @@ using UmlKit.Compiler.Orchestrant;
 using UmlKit.Exporter;
 using UmlKit.Infrastructure.Options;
 
-namespace ContextBrowser.ContextCommentsParser;
+namespace ContextBrowser;
 
 // context: app, model
 public static class Program
@@ -79,6 +79,7 @@ public static class Program
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerSequenceDomain>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerStateAction>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerStateDomain>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmap>();
 
         hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
 
