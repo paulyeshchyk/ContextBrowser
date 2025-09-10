@@ -27,7 +27,7 @@ where DTO : EntitynameContainer
     public override void Build()
     {
         var entitiesList = _contextInfoDataset.GetAll()
-            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
+            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.@record) || (c.ElementType == ContextInfoElementType.@interface))
             .Cast<IContextInfo>();
 
         foreach (var contextInfoItem in entitiesList)

@@ -30,7 +30,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var classesOnly = contextInfoDataset.GetAll()
-            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record));
+            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record) || (c.ElementType == ContextInfoElementType.@interface));
 
         foreach (var context in classesOnly)
         {

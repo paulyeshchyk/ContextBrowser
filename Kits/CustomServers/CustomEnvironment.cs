@@ -12,7 +12,7 @@ public static class CustomEnvironment
     private const string SFaviconFilename = "favicon.ico";
     private const string SRenderPlantumlJsFilename = "render-plantuml.js";
     private const int SLocalHttpServerPort = 5500;
-    private const string SPicowebJvmArgument = "-picoweb";
+    private const string SPicowebJvmArgument = "-Dplantuml.server.cors.allow-origin=* -picoweb";
 
     private static CustomServer NewServer()
     {
