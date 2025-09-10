@@ -1,13 +1,16 @@
 using System.Text.Json;
+using ContextBrowser;
+using ContextBrowser.FileManager;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Factory;
 using ContextKit.Model.Service;
 using LoggerKit;
 
-namespace ContextBrowser.FileManager;
+namespace ContextKit.Model.Factory;
 
 // context: relations, build
 public static class ContextInfoAdapter

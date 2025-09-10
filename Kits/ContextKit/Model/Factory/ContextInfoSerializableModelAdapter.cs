@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using ContextBrowser;
+using ContextBrowser.FileManager;
 using ContextKit.Model;
+using ContextKit.Model.Factory;
 
-namespace ContextBrowser.FileManager;
+namespace ContextKit.Model.Factory;
 
 public static class ContextInfoSerializableModelAdapter
 {

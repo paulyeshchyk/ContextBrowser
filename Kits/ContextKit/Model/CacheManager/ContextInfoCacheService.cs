@@ -9,6 +9,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Factory;
 using LoggerKit;
 
 namespace ContextBrowser.FileManager;
