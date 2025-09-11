@@ -38,8 +38,8 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
             var node = new UmlNode(domain, alias: null, url: UmlUrlBuilder.BuildDomainUrl(domain));
             node.Stylename = "selected";
 
-            //IEnumerable<UmlNode> parentsForDomain = GetParentsForDomain(domain, contextInfoDataset);
-            //node.Parents.AddRange(parentsForDomain);
+            IEnumerable<UmlNode> parentsForDomain = GetParentsForDomain(domain, contextInfoDataset);
+            node.Parents.AddRange(parentsForDomain);
 
             IEnumerable<UmlNode> childrenDomain = GetChildrenForDomain(domain, contextInfoDataset);
             node.Children.AddRange(childrenDomain);
@@ -65,7 +65,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
 
         return DfsWalker_Traversal.Run(
               startItems: startNodes,
-            nextSelector: x => x.References,
+            nextSelector: x => new HashSet<ContextInfo>(x.References.Union(x.Owns)),
               createNode: UmlNodeTraverseBuilder.BuildMindNode,
                linkNodes: (parent, child) => parent.Children.Add(child));
     }

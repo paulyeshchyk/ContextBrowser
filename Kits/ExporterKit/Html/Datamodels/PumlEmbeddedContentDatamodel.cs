@@ -1,4 +1,5 @@
 using System.IO;
+using System.Net;
 using System.Reflection.Metadata;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
@@ -16,9 +17,9 @@ public abstract class PumlEmbeddedContentDatamodel
 
     protected bool UseLocalFile { get; set; } = true;
 
-    protected bool IsEmbedded { get; set; } = true;
+    protected bool IsEmbedded { get; set; } = false;
 
-    protected bool IsRelative { get; set; } = false;
+    protected bool IsRelative { get; set; } = true;
 
     protected string ContentLocationFileSystemPath { get; set; } = "./../";
 
@@ -35,7 +36,8 @@ public abstract class PumlEmbeddedContentDatamodel
             string fileName = GetPumlFileName(contextKey);
             var path = GetPath(IsRelative, fileName, exportOptions);
             string pumlFileContent = PumlInjector.GetPumlData(exportOptions, path);
-            return HtmlBuilderFactory.Puml(content: pumlFileContent, server: SLocalJavaServerHost);
+            string encoded = WebUtility.HtmlEncode(pumlFileContent);
+            return HtmlBuilderFactory.Puml(content: encoded, server: SLocalJavaServerHost);
         }
         else
         {
@@ -52,7 +54,8 @@ public abstract class PumlEmbeddedContentDatamodel
             var fileName = GetPumlFileName(contextKey);
             var path = GetPath(IsRelative, fileName, exportOptions);
             string pumlFileContent = PumlInjector.GetPumlData(exportOptions, path);
-            return HtmlBuilderFactory.Puml(content: pumlFileContent, server: SLocalJavaServerHost);
+            string encoded = WebUtility.HtmlEncode(pumlFileContent);
+            return HtmlBuilderFactory.Puml(content: encoded, server: SLocalJavaServerHost);
         }
         else
         {

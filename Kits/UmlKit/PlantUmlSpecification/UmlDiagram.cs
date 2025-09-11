@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 

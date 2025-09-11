@@ -21,7 +21,7 @@ using UmlKit.Model;
 
 namespace ExporterKit.Uml;
 
-// context: uml, state, build, domain
+// context: uml, state, build
 public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
 {
     protected readonly IAppLogger<AppLevel> _logger;

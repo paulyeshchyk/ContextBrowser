@@ -36,6 +36,7 @@ public static class ContextInfoSerializableModelAdapter
                      dimensions: contextInfo.Dimensions,
                       spanStart: contextInfo.SpanStart,
                         spanEnd: contextInfo.SpanEnd,
-                     identifier: contextInfo.Identifier);
+                     identifier: contextInfo.Identifier,
+                  ownsFullNames: contextInfo.Owns.Select(o => o.FullName).ToHashSet());
     }
 }

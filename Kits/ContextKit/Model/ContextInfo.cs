@@ -37,6 +37,9 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
     public HashSet<ContextInfo> InvokedBy { get; set; } = new();
 
     [JsonIgnore]
+    public HashSet<ContextInfo> Owns { get; set; } = new();
+
+    [JsonIgnore]
     public HashSet<ContextInfo> Properties { get; set; } = new();
 
     public Dictionary<string, string> Dimensions { get; set; } = new();

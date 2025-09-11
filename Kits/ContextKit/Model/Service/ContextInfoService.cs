@@ -37,6 +37,13 @@ public static class ContextInfoService
         return true;
     }
 
+    public static bool AddToOwns<T>(T source, T property)
+        where T : IContextWithReferences<T>
+    {
+        _ = source.Owns.Add(property);
+        return true;
+    }
+
     public static IEnumerable<ContextInfo> GetReferencesSortedByInvocation<T>(T source)
         where T : IContextInfo, IContextWithReferences<T>
     {
