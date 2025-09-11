@@ -27,17 +27,3 @@ public static class ContextInfoFullNameIndexBuilder
         return resultDictionary;
     }
 }
-
-public static class ContextInfoElementTypeAndNameIndexBuilder
-{
-    public static Dictionary<string, TContext> Build<TContext>(IEnumerable<TContext> items)
-        where TContext : IContextWithReferences<TContext>
-    {
-        return items
-            .Where(c => !string.IsNullOrWhiteSpace(c.Name))
-            .GroupBy(c => c.NameWithClassOwnerName)
-            .ToDictionary(
-                g => g.Key,
-                g => g.First());
-    }
-}

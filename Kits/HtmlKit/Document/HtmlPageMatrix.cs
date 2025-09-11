@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Collector;
 using HtmlKit.Builders.Core;
 using HtmlKit.Document.Coverage;
+using HtmlKit.Extensions;
 using HtmlKit.Helpers;
 using HtmlKit.Options;
 using HtmlKit.Page;
@@ -15,24 +18,33 @@ namespace HtmlKit.Document;
 //context: htmlmatrix, model
 public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
 {
-    public Dictionary<string, ContextInfo> IndexMap { get; }
+    public IHtmlMatrixIndexer<ContextInfo> Indexer { get; }
 
     private HtmlTableOptions _options { get; }
 
-    public HtmlMatrix UiMatrix { get; }
+    public IHtmlMatrixGenerator HtmlMatrixGenerator { get; }
 
-    public IContextInfoDataset ContextsMatrix { get; }
+    public IContextInfoDataset<ContextInfo> Dataset { get; }
+
+    public readonly IUiMatrixSummaryBuilder UiMatrixSummaryBuilder;
 
     private readonly CoverManager _coverManager = new CoverManager();
 
     public ICoverageManager CoverageManager => _coverManager;
 
-    public HtmlPageMatrix(HtmlMatrix uiMatrix, IContextInfoDataset matrix, HtmlTableOptions options, Dictionary<string, ContextInfo> indexMap) : base()
+    private readonly Lazy<IHtmlMatrix> _lazyHtmlMatrix;
+
+    public IHtmlMatrix HtmlMatrix => _lazyHtmlMatrix.Value;
+
+    public HtmlPageMatrix(IHtmlMatrixGenerator htmlMatrixGenerator, IContextInfoDataset<ContextInfo> dataset, IHtmlMatrixIndexer<ContextInfo> indexer, IUiMatrixSummaryBuilder uiMatrixSummaryBuilder, HtmlTableOptions options) : base()
     {
-        UiMatrix = uiMatrix;
-        ContextsMatrix = matrix;
+        HtmlMatrixGenerator = htmlMatrixGenerator;
+        Dataset = dataset;
+        Indexer = indexer;
+        UiMatrixSummaryBuilder = uiMatrixSummaryBuilder;
         _options = options;
-        IndexMap = indexMap;
+
+        _lazyHtmlMatrix = new Lazy<IHtmlMatrix>(() => htmlMatrixGenerator.Generate());
     }
 
     protected override IEnumerable<string> GetScripts()
@@ -54,7 +66,7 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
 
         HtmlBuilderFactory.Table.With(writer, () =>
         {
-            new HtmlMatrixWriter(htmlPageMatrix: this, hrefManager: hrefManager, fixedHtmlContentManager: fixedHtmlManager, options: _options)
+            new HtmlMatrixWriter(htmlPageMatrix: this, hrefManager: hrefManager, fixedHtmlContentManager: fixedHtmlManager, uiMatrixSummaryBuilder: UiMatrixSummaryBuilder, options: _options)
                 .WriteHeaderRow(writer)
                 .WriteSummaryRowIf(writer, SummaryPlacementType.AfterFirst)
                 .WriteAllDataRows(writer)
@@ -65,7 +77,7 @@ public class HtmlPageMatrix : HtmlPage, IHtmlPageMatrix
     //context: ContextInfoMatrix, build
     public string ProduceData(IContextKey container)
     {
-        ContextsMatrix.TryGetValue(container, out var methods);
+        Dataset.TryGetValue(container, out var methods);
         var cnt = methods?.Count ?? 0;
         var builderResult = CellWithCoverageBuilder.Build(container, cnt);
         return builderResult;

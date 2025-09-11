@@ -27,7 +27,7 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
     }
 
     //context: uml, build
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var namespaces = GetNamespaces(contextInfoDataset).ToList();
         foreach (var nameSpace in namespaces)
@@ -73,24 +73,24 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
         diagram.WriteToFile(fileName, writeOptons);
     }
 
-    private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset contextInfoDataSet)
+    private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo> contextInfoDataSet)
     {
         return(nameSpace) => contextInfoDataSet.GetAll()
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
             .Where(c => c.Namespace == nameSpace);
     }
 
-    private IEnumerable<string> GetNamespaces(IContextInfoDataset contextInfoDataSet)
+    private IEnumerable<string> GetNamespaces(IContextInfoDataset<ContextInfo> contextInfoDataSet)
     {
         return contextInfoDataSet.GetAll().Select(c => c.Namespace).Distinct();
     }
 
-    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset contextInfoDataSet)
+    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo> contextInfoDataSet)
     {
         return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
-    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset contextInfoDataSet)
+    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo> contextInfoDataSet)
     {
         return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ContextKit.Model;
+using ContextKit.Model.Collector;
 using HtmlKit.Helpers;
 
 namespace HtmlKit.Document.Coverage;
@@ -9,7 +10,7 @@ public class CoverManager : ICoverageManager
     private const string SCssStyleTemplate = "style=\"background-color:{0}; color:black\"";
     private const string SCoverageAttributeName = "coverage";
 
-    public string? BuildCellStyle(IContextKey cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo> contextLookup)
+    public string? BuildCellStyle(IContextKey cell, List<ContextInfo>? methods, IHtmlMatrixIndexer<ContextInfo> contextLookup)
     {
         var bgColor = CoverageExts.GetCoverageColorForCell(cell, methods, contextLookup, GetCoverageValue);
         var style = bgColor is null ? null : string.Format(SCssStyleTemplate, bgColor);

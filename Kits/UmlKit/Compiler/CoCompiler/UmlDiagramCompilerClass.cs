@@ -29,7 +29,7 @@ public class UmlDiagramCompilerClass
         _linkGenerator = linkGenerator;
     }
 
-    public void Build(IContextInfoDataset matrix)
+    public void Build(IContextInfoDataset<ContextInfo> matrix)
     {
         var diagramId = $"actionPerDomain_{_outputPath}".AlphanumericOnly();
 

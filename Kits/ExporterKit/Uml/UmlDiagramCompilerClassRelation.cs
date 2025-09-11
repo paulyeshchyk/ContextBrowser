@@ -17,7 +17,7 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
 {
     //context: build, uml, links
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options)
+    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options)
     {
         var contextInfoList = contextInfoDataset.GetAll().ToList();
         var linkGenerator = new ContextInfoDataLinkGenerator(contextClassifier, contextInfoList);

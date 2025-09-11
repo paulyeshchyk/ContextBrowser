@@ -31,7 +31,7 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
     }
 
     // context: uml, build
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var elements = contextInfoDataset.GetAll().ToList();
         var actions = contextInfoDataset.GetActions().Distinct();

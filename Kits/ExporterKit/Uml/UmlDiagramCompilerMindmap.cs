@@ -18,7 +18,7 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
 {
     // context: build, uml
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options)
+    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options)
     {
         var elements = contextInfoDataset.GetAll();
         var distinctDomains = elements.SelectMany(e => e.Domains).Distinct();
@@ -59,7 +59,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
     /// <param name="domain">Домен, для которого ищутся дети.</param>
     /// <param name="dataset">Набор данных о контексте.</param>
     /// <returns>Коллекция узлов UmlNode, представляющих дочерние домены.</returns>
-    private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset dataset)
+    private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo> dataset)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain));
 
@@ -76,7 +76,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
     /// <param name="domain">Домен, для которого ищутся родители.</param>
     /// <param name="dataset">Набор данных о контексте.</param>
     /// <returns>Коллекция узлов UmlNode, представляющих родительские домены.</returns>
-    private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset dataset)
+    private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo> dataset)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain));
 

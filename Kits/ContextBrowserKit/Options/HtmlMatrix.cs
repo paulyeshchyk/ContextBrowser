@@ -2,13 +2,23 @@
 
 namespace ContextBrowserKit.Matrix;
 
+public interface IHtmlMatrix
+{
+    public List<string> rows { get; }
+
+    public List<string> cols { get; }
+
+    public IHtmlMatrix Transpose();
+}
+
 // context: model, htmlmatrix
 // pattern: DTO
 // parsing: error
-public record HtmlMatrix
+public record HtmlMatrix : IHtmlMatrix
 {
-    public readonly List<string> rows;
-    public readonly List<string> cols;
+    public List<string> rows { get; }
+
+    public List<string> cols { get; }
 
     public HtmlMatrix(List<string> rows, List<string> cols)
     {
@@ -17,7 +27,7 @@ public record HtmlMatrix
     }
 
     // context: build, htmlmatrix
-    public HtmlMatrix Transpose()
+    public IHtmlMatrix Transpose()
     {
         return new HtmlMatrix(cols, rows);
     }

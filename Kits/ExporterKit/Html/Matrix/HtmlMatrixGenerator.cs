@@ -4,21 +4,35 @@ using System.Linq;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using HtmlKit.Document;
 
 namespace ExporterKit.Html.Matrix;
 
 // context: htmlmatrix, build
-public static class HtmlMatrixGenerator
+public class HtmlMatrixGenerator : IHtmlMatrixGenerator
 {
-    // context: build, htmlmatrix
-    public static HtmlMatrix Generate(IContextClassifier contextClassifier, IContextKeyMap contextKeyMap, MatrixOrientationType matrixOrientation, UnclassifiedPriorityType priority)
+    private readonly IContextClassifier _contextClassifier;
+    private readonly IContextKeyMap<ContextInfo> _contextKeyMap;
+    private readonly MatrixOrientationType _matrixOrientation;
+    private readonly UnclassifiedPriorityType _priority;
+
+    public HtmlMatrixGenerator(IContextClassifier contextClassifier, IContextKeyMap<ContextInfo> contextKeyMap, MatrixOrientationType matrixOrientation, UnclassifiedPriorityType priority)
     {
-        var rows = SortList(contextKeyMap.GetActions().Distinct().ToList(), contextClassifier.EmptyAction, priority);
-        var cols = SortList(contextKeyMap.GetDomains().Distinct().ToList(), contextClassifier.EmptyDomain, priority);
+        _contextClassifier = contextClassifier;
+        _contextKeyMap = contextKeyMap;
+        _matrixOrientation = matrixOrientation;
+        _priority = priority;
+    }
+
+    // context: build, htmlmatrix
+    public IHtmlMatrix Generate()
+    {
+        var rows = SortList(_contextKeyMap.GetActions().Distinct().ToList(), _contextClassifier.EmptyAction, _priority);
+        var cols = SortList(_contextKeyMap.GetDomains().Distinct().ToList(), _contextClassifier.EmptyDomain, _priority);
 
         var resultMatrix = new HtmlMatrix(rows, cols);
 
-        return matrixOrientation switch
+        return _matrixOrientation switch
         {
             MatrixOrientationType.ActionRows => resultMatrix,
             MatrixOrientationType.DomainRows => resultMatrix.Transpose(),
@@ -27,7 +41,7 @@ public static class HtmlMatrixGenerator
     }
 
     // context: ContextInfoMatrix, htmlmatrix, read
-    internal static List<string> SortList(List<string> list, string emptyValue, UnclassifiedPriorityType priority)
+    internal List<string> SortList(List<string> list, string emptyValue, UnclassifiedPriorityType priority)
     {
         return priority switch
         {

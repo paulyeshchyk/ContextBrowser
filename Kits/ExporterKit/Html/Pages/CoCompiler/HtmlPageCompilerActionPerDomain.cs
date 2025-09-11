@@ -26,7 +26,7 @@ public class HtmlPageCompilerActionPerDomain : IHtmlPageCompiler
     }
 
     // context: html, build
-    public void Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
+    public void Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
     {
         _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "--- ActionPerDomainPage.Build ---", LogLevelNode.None);
 

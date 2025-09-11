@@ -3,14 +3,15 @@
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public interface IContextInfoDataset : IEnumerable<KeyValuePair<IContextKey, List<ContextInfo>>>, IContextKeyMap
+public interface IContextInfoDataset<TContext> : IEnumerable<KeyValuePair<IContextKey, List<TContext>>>, IContextKeyMap<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     // context: ContextInfoMatrix, create
-    IEnumerable<ContextInfo> GetAll();
+    IEnumerable<TContext> GetAll();
 
     // context: ContextInfoMatrix, create
-    void Add(ContextInfo? item, IContextKey toCell);
+    void Add(TContext? item, IContextKey toCell);
 
     // context: ContextInfoMatrix, read
-    bool TryGetValue(IContextKey key, out List<ContextInfo> value);
+    bool TryGetValue(IContextKey key, out List<TContext> value);
 }

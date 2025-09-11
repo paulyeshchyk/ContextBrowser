@@ -27,7 +27,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         _logger = logger;
     }
 
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         foreach (var element in contextInfoDataset)
         {

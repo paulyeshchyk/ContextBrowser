@@ -14,7 +14,7 @@ namespace ExporterKit.Uml;
 public interface IContextInfoDatasetBuilder
 {
     // context: ContextInfo, ContextInfoMatrix, build
-    IContextInfoDataset Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier);
+    IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier);
 }
 
 // context: ContextInfo, ContextInfoMatrix, build
@@ -28,12 +28,12 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public IContextInfoDataset Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier)
+    public IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
 
         var elements = contextsList.ToList();
-        var map = new ContextInfoDataset();
+        var map = new ContextInfoDataset<ContextInfo>();
 
         PopulateMatrixWithElements(map, elements, matrixOptions, contextClassifier);
 
@@ -43,7 +43,7 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    internal static void PopulateMatrixWithElements(IContextInfoDataset contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IContextClassifier contextClassifier)
+    internal static void PopulateMatrixWithElements(IContextInfoDataset<ContextInfo> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IContextClassifier contextClassifier)
     {
         bool includeUnclassified = _matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
 
@@ -75,7 +75,7 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
         }
     }
 
-    private static void AddEmptyCells(IContextInfoDataset contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IContextClassifier contextClassifier)
+    private static void AddEmptyCells(IContextInfoDataset<ContextInfo> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IContextClassifier contextClassifier)
     {
         if (!_matrixOptions.IncludeAllStandardActions)
             return;

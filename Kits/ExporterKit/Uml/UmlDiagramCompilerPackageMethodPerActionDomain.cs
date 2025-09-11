@@ -24,7 +24,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
     private const string SParentheses = "()";
 
     //context: build, uml
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         CompileDomainGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
         CompileNoDomainGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
@@ -35,7 +35,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         return new Dictionary<string, bool>();
     }
 
-    private static void CompileActionGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileActionGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var actionContexts = contextInfoDataset
             .SelectMany(cell => cell.Value.Select(context => (action: cell.Key.Action, context: context)))
@@ -54,7 +54,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         }
     }
 
-    private static void CompileNoActionGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileNoActionGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var actionContexts = contextInfoDataset
                 .SelectMany(cell => cell.Value)
@@ -64,7 +64,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         BuildPackageAction(actionContexts, exportOptions, diagramBuilderOptions, "NoAction", "?");
     }
 
-    private static void CompileDomainGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileDomainGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)
@@ -85,7 +85,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         }
     }
 
-    private static void CompileNoDomainGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileNoDomainGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)

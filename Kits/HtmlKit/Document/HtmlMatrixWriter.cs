@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
@@ -18,13 +19,19 @@ internal class HtmlMatrixWriter
     private readonly IHrefManager _hRefManager;
     private readonly IFixedHtmlContentManager _fixedHtmlContentManager;
     private readonly HtmlTableOptions _options;
+    private readonly IUiMatrixSummaryBuilder _uiMatrixSummaryBuilder;
 
-    public HtmlMatrixWriter(IHrefManager hrefManager, IFixedHtmlContentManager fixedHtmlContentManager, IHtmlPageMatrix htmlPageMatrix, HtmlTableOptions options)
+    private readonly IHtmlMatrix _matrix;
+
+    public HtmlMatrixWriter(IHrefManager hrefManager, IFixedHtmlContentManager fixedHtmlContentManager, IUiMatrixSummaryBuilder uiMatrixSummaryBuilder, IHtmlPageMatrix htmlPageMatrix, HtmlTableOptions options)
     {
         _hRefManager = hrefManager;
         _htmlPageMatrix = htmlPageMatrix;
         _fixedHtmlContentManager = fixedHtmlContentManager;
         _options = options;
+        _uiMatrixSummaryBuilder = uiMatrixSummaryBuilder;
+
+        _matrix = _htmlPageMatrix.HtmlMatrix;
     }
 
     //context: htmlmatrix, build
@@ -51,7 +58,7 @@ internal class HtmlMatrixWriter
     //context: htmlmatrix, build
     public HtmlMatrixWriter WriteAllDataRows(TextWriter textWriter)
     {
-        foreach (var row in _htmlPageMatrix.UiMatrix.rows)
+        foreach (var row in _matrix.rows)
             WriteDataRow(textWriter, row);
         return this;
     }
@@ -82,7 +89,7 @@ internal class HtmlMatrixWriter
     //context: htmlmatrix, build
     internal void WriteHeaderCols(TextWriter textWriter)
     {
-        foreach (var col in _htmlPageMatrix.UiMatrix.cols)
+        foreach (var col in _matrix.cols)
         {
             var href = _hRefManager.GetHRefRowMeta(col, _options);
             HtmlBuilderFactory.HtmlBuilderTableCell.ColMeta.With(textWriter, () =>
@@ -109,7 +116,7 @@ internal class HtmlMatrixWriter
     //context: htmlmatrix, build
     internal void WriteSummaryRow(TextWriter textWriter)
     {
-        var colSums = _htmlPageMatrix.UiMatrix.ColsSummary(_htmlPageMatrix.ContextsMatrix, _options.Orientation);
+        var colSums = _uiMatrixSummaryBuilder.ColsSummary(_matrix, _htmlPageMatrix.Dataset, _options.Orientation);
         var total = colSums?.Values.Sum() ?? 0;
 
         HtmlBuilderFactory.HtmlBuilderTableRow.Summary.With(textWriter, () =>
@@ -129,7 +136,7 @@ internal class HtmlMatrixWriter
                 });
             }
 
-            foreach (var col in _htmlPageMatrix.UiMatrix.cols)
+            foreach (var col in _matrix.cols)
             {
                 HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.With(textWriter, () =>
                 {
@@ -166,16 +173,16 @@ internal class HtmlMatrixWriter
             if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
                 WriteRowSummaryCell(textWriter, row);
 
-            var indexMap = _htmlPageMatrix.IndexMap;
+            var indexMap = _htmlPageMatrix.Indexer;
 
-            foreach (var col in _htmlPageMatrix.UiMatrix.cols)
+            foreach (var col in _matrix.cols)
             {
                 var cell = _options.Orientation == MatrixOrientationType.ActionRows
                     ? new ContextKey(row, col)
                     : new ContextKey(col, row);
 
                 var data = _htmlPageMatrix.ProduceData(cell);
-                _htmlPageMatrix.ContextsMatrix.TryGetValue(cell, out var methods);
+                _htmlPageMatrix.Dataset.TryGetValue(cell, out var methods);
 
                 HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, () =>
                 {
@@ -197,7 +204,7 @@ internal class HtmlMatrixWriter
     {
         HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.With(_tw, () =>
         {
-            var rowSum = _htmlPageMatrix.UiMatrix.RowsSummary(_htmlPageMatrix.ContextsMatrix, _options.Orientation)?.GetValueOrDefault(row).ToString() ?? string.Empty;
+            var rowSum = _uiMatrixSummaryBuilder.RowsSummary(_matrix, _htmlPageMatrix.Dataset, _options.Orientation)?.GetValueOrDefault(row).ToString() ?? string.Empty;
             var attributes = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, _options) } };
             HtmlBuilderFactory.A.Cell(_tw, attributes, rowSum, isEncodable: false);
         });

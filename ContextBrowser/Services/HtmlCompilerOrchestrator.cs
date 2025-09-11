@@ -8,7 +8,7 @@ namespace ContextBrowser.Services;
 
 public interface IHtmlCompilerOrchestrator
 {
-    void CompileAll(IContextInfoDataset dataset, IContextClassifier contextClassifier, ExportOptions exportOptions);
+    void CompileAll(IContextInfoDataset<ContextInfo> dataset, IContextClassifier contextClassifier, ExportOptions exportOptions);
 }
 
 public class HtmlCompilerOrchestrator : IHtmlCompilerOrchestrator
@@ -20,7 +20,7 @@ public class HtmlCompilerOrchestrator : IHtmlCompilerOrchestrator
         _compilers = compilers;
     }
 
-    public void CompileAll(IContextInfoDataset dataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
+    public void CompileAll(IContextInfoDataset<ContextInfo> dataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
     {
         foreach (var compiler in _compilers)
         {

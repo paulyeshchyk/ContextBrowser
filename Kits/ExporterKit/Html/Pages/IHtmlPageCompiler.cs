@@ -5,5 +5,5 @@ namespace HtmlKit.Page.Compiler;
 
 public interface IHtmlPageCompiler
 {
-    void Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions);
+    void Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions);
 }

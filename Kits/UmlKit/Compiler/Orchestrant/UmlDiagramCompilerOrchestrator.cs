@@ -24,7 +24,7 @@ public class UmlDiagramCompilerOrchestrator : IUmlDiagramCompilerOrchestrator
         _appLogger = appLogger;
     }
 
-    public void CompileAll(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions builderOptions)
+    public void CompileAll(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions builderOptions)
     {
         foreach (var compiler in _compilers)
         {

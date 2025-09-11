@@ -19,10 +19,10 @@ namespace ExporterKit.Html;
 //context: build, html
 public abstract class HtmlPageWithTabsBuilder<DTO>
 {
-    protected readonly IContextInfoDataset _contextInfoDataset;
+    protected readonly IContextInfoDataset<ContextInfo> _contextInfoDataset;
     protected readonly HtmlTabbedPageBuilder<DTO> _tabbedPageBuilder;
 
-    protected HtmlPageWithTabsBuilder(IContextInfoDataset contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder)
+    protected HtmlPageWithTabsBuilder(IContextInfoDataset<ContextInfo> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder)
     {
         _contextInfoDataset = contextInfoDataset;
         _tabbedPageBuilder = tabbedPageBuilder;

@@ -27,7 +27,8 @@ public abstract class BaseKeyAndDataContainer<Key> : IContextInfoKeyContainer<Ke
     }
 }
 
-public interface IContextKeyMap
+public interface IContextKeyMap<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     // context: ContextInfoMatrix, read
     IEnumerable<string> GetActions();
@@ -36,8 +37,8 @@ public interface IContextKeyMap
     IEnumerable<string> GetDomains();
 
     // context: ContextInfoMatrix, read
-    List<ContextInfo> GetMethodsByAction(string action);
+    List<TContext> GetMethodsByAction(string action);
 
     // context: ContextInfoMatrix, read
-    List<ContextInfo> GetMethodsByDomain(string domain);
+    List<TContext> GetMethodsByDomain(string domain);
 }

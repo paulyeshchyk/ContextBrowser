@@ -7,5 +7,5 @@ namespace UmlKit.Compiler;
 
 public interface IUmlDiagramCompiler
 {
-    Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataSet, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions);
+    Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataSet, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions);
 }

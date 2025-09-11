@@ -19,7 +19,7 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
 {
     // context: build, uml
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options)
+    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options)
     {
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.pumlExtra, "uml.packages.domains.puml");
         var diagramId = $"packages_{outputPath}".AlphanumericOnly();
