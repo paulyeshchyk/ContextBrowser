@@ -19,11 +19,10 @@ internal class HtmlMatrixWriter
     private readonly IHrefManager _hRefManager;
     private readonly IFixedHtmlContentManager _fixedHtmlContentManager;
     private readonly HtmlTableOptions _options;
-    private readonly IUiMatrixSummaryBuilder _uiMatrixSummaryBuilder;
-
+    private readonly IHtmlMatrixSummaryBuilder _uiMatrixSummaryBuilder;
     private readonly IHtmlMatrix _matrix;
 
-    public HtmlMatrixWriter(IHrefManager hrefManager, IFixedHtmlContentManager fixedHtmlContentManager, IUiMatrixSummaryBuilder uiMatrixSummaryBuilder, IHtmlPageMatrix htmlPageMatrix, HtmlTableOptions options)
+    public HtmlMatrixWriter(IHrefManager hrefManager, IFixedHtmlContentManager fixedHtmlContentManager, IHtmlMatrixSummaryBuilder uiMatrixSummaryBuilder, IHtmlPageMatrix htmlPageMatrix, HtmlTableOptions options)
     {
         _hRefManager = hrefManager;
         _htmlPageMatrix = htmlPageMatrix;

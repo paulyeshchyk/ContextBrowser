@@ -21,17 +21,19 @@ namespace ExporterKit.Uml;
 public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
 {
     protected readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextKeyMap<ContextInfo> _mapper;
 
-    public UmlDiagramCompilerSequenceDomain(IAppLogger<AppLevel> logger)
+    public UmlDiagramCompilerSequenceDomain(IAppLogger<AppLevel> logger, IContextKeyMap<ContextInfo> mapper)
     {
         _logger = logger;
+        _mapper = mapper;
     }
 
     // context: uml, build
     public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var elements = contextInfoDataset.GetAll().ToList();
-        var domains = contextInfoDataset.GetDomains().Distinct();
+        var domains = _mapper.GetDomains().Distinct();
 
         var renderedCache = new Dictionary<string, bool>();
         foreach (var domain in domains)

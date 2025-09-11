@@ -12,6 +12,7 @@ using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
 using ContextKit.Stategies;
+using ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 using ExporterKit.Html.Pages.MatrixCellSummary;
 using ExporterKit.Uml;
 using HtmlKit.Page.Compiler;
@@ -55,6 +56,10 @@ public static class Program
         hab.Services.AddTransient<IContextInfoRelationManager, ContextInfoRelationManager>();
         hab.Services.AddTransient<IContextInfoDatasetBuilder, ContextInfoDatasetBuilder>();
 
+        hab.Services.AddScoped<IContextInfoFiller, ContextInfoFillerMatrixData>();
+        hab.Services.AddScoped<IContextInfoFiller, ContextInfoFillerEmptydata>();
+        hab.Services.AddScoped<IContextKeyMap<ContextInfo>, ContextInfoMapperDomainPerAction>();
+
         hab.Services.AddSingleton<ICompilationBuilder, RoslynCompilationBuilder>();
         hab.Services.AddTransient<ICodeParseService, CodeParseService>();
         hab.Services.AddSingleton<ISemanticInvocationResolver, RoslynInvocationSemanticResolver>();
@@ -83,7 +88,7 @@ public static class Program
 
         hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
 
-        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerIndex>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerDomainPerAction>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerNamespaceOnly>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerClassOnly>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerActionPerDomain>();

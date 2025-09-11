@@ -1,0 +1,53 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using ContextBrowserKit.Log.Options;
+using ContextBrowserKit.Matrix;
+using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Export;
+using ContextKit.Model;
+using ContextKit.Model.Collector;
+using ExporterKit;
+using ExporterKit.Html;
+using HtmlKit;
+using HtmlKit.Document;
+using HtmlKit.Extensions;
+using HtmlKit.Page;
+using HtmlKit.Page.Compiler;
+using LoggerKit;
+
+namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
+
+// context: html, build
+public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
+{
+    private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextKeyMap<ContextInfo> _contextInfoMapper;
+
+    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextKeyMap<ContextInfo> contextInfoMapper)
+    {
+        _logger = logger;
+        _contextInfoMapper = contextInfoMapper;
+    }
+
+    // context: html, build
+
+    public void Compile(IContextInfoDataset<ContextInfo> dataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
+    {
+        _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
+
+        var uiMatrixSummaryBuilder = new HtmlMatrixSummaryBuilderDomainPerAction();
+
+        var indexer = new HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>(dataset);
+
+        var matrixGenerator = new HtmlMatrixGeneratorDomainPerAction(contextClassifier, _contextInfoMapper, exportOptions.ExportMatrix.HtmlTable.Orientation, exportOptions.ExportMatrix.UnclassifiedPriority);
+
+        var producer = new HtmlPageProducerMatrix(matrixGenerator, dataset: dataset, indexer: indexer, uiMatrixSummaryBuilder, exportOptions.ExportMatrix.HtmlTable);
+
+        // producer.Title = "Контекстная матрица";
+        var result = producer.ToHtmlString();
+        var outputFile = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.index, "index.html");
+
+        File.WriteAllText(outputFile, result);
+    }
+}

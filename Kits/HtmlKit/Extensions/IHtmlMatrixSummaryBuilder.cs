@@ -6,7 +6,7 @@ using ContextKit.Model;
 
 namespace HtmlKit.Extensions;
 
-public interface IUiMatrixSummaryBuilder
+public interface IHtmlMatrixSummaryBuilder
 {
     Dictionary<string, int>? ColsSummary(IHtmlMatrix uiMatrix, IContextInfoDataset<ContextInfo> matrix, MatrixOrientationType orientation);
 

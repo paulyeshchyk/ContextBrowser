@@ -4,19 +4,21 @@ using System.Linq;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ExporterKit;
+using ExporterKit.Html;
 using HtmlKit.Document;
 
-namespace ExporterKit.Html.Matrix;
+namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // context: htmlmatrix, build
-public class HtmlMatrixGenerator : IHtmlMatrixGenerator
+public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
 {
     private readonly IContextClassifier _contextClassifier;
     private readonly IContextKeyMap<ContextInfo> _contextKeyMap;
     private readonly MatrixOrientationType _matrixOrientation;
     private readonly UnclassifiedPriorityType _priority;
 
-    public HtmlMatrixGenerator(IContextClassifier contextClassifier, IContextKeyMap<ContextInfo> contextKeyMap, MatrixOrientationType matrixOrientation, UnclassifiedPriorityType priority)
+    public HtmlMatrixGeneratorDomainPerAction(IContextClassifier contextClassifier, IContextKeyMap<ContextInfo> contextKeyMap, MatrixOrientationType matrixOrientation, UnclassifiedPriorityType priority)
     {
         _contextClassifier = contextClassifier;
         _contextKeyMap = contextKeyMap;

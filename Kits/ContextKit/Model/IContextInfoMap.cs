@@ -3,9 +3,11 @@
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public interface IContextInfoDataset<TContext> : IEnumerable<KeyValuePair<IContextKey, List<TContext>>>, IContextKeyMap<TContext>
+public interface IContextInfoDataset<TContext> : IEnumerable<KeyValuePair<IContextKey, List<TContext>>>
     where TContext : IContextWithReferences<TContext>
 {
+    Dictionary<IContextKey, List<TContext>> Data { get; }
+
     // context: ContextInfoMatrix, create
     IEnumerable<TContext> GetAll();
 

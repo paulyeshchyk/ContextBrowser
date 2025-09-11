@@ -6,11 +6,11 @@ using HtmlKit.Page;
 namespace HtmlKit.Document;
 
 // context: html, model
-public abstract class HtmlPage
+public abstract class HtmlPageProducer
 {
     public string Title { get; set; } = string.Empty;
 
-    public HtmlPage()
+    public HtmlPageProducer()
     {
     }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ContextBrowserKit.Options.Export;
 
 namespace ContextKit.Model;
 
@@ -27,9 +28,13 @@ public abstract class BaseKeyAndDataContainer<Key> : IContextInfoKeyContainer<Ke
     }
 }
 
+// context: ContextInfoMatrix, model
 public interface IContextKeyMap<TContext>
     where TContext : IContextWithReferences<TContext>
 {
+    // context: ContextInfoMatrix, build
+    void Build(IEnumerable<TContext> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier);
+
     // context: ContextInfoMatrix, read
     IEnumerable<string> GetActions();
 

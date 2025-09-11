@@ -49,12 +49,14 @@ public class MainService : IMainService
     private readonly IUmlDiagramCompilerOrchestrator _diagramCompilerOrchestrator;
     private readonly IHtmlCompilerOrchestrator _htmlCompilerOrchestrator;
     private readonly IServerStartSignal _serverStartSignal;
+    private readonly IContextKeyMap<ContextInfo> _contextInfoMapper;
 
     public MainService(
         IAppLogger<AppLevel> appLogger,
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
         IContextInfoDatasetBuilder contextInfoDatasetBuilder,
+        IContextKeyMap<ContextInfo> contextInfoMapper,
         IUmlDiagramCompilerOrchestrator diagramCompilerOrchestrator,
         IHtmlCompilerOrchestrator htmlCompilerOrchestrator,
         IServerStartSignal serverStartSignal)
@@ -63,6 +65,7 @@ public class MainService : IMainService
         _optionsStore = optionsStore;
         _parsingOrchestrant = parsingOrchestrant;
         _contextInfoDatasetBuilder = contextInfoDatasetBuilder;
+        _contextInfoMapper = contextInfoMapper;
         _diagramCompilerOrchestrator = diagramCompilerOrchestrator;
         _htmlCompilerOrchestrator = htmlCompilerOrchestrator;
         _serverStartSignal = serverStartSignal;
@@ -79,6 +82,9 @@ public class MainService : IMainService
 
         //сборка контекстной матрицы
         var contextInfoDataset = _contextInfoDatasetBuilder.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
+
+        //mapper
+        _contextInfoMapper.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
 
         //компиляция диаграмм
         _diagramCompilerOrchestrator.CompileAll(contextInfoDataset, appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder);
