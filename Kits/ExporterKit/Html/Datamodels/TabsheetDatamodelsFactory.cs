@@ -11,9 +11,9 @@ namespace ContextBrowser.Samples.HtmlPages;
 
 public interface IPumlEnbeddedInjectionDatamodel : IHtmlTabsheetDataModel
 {
-    HtmlBuilder GetEmbeddedPumlInjection(IContextKey contextKey, ExportOptions exportOptions);
+    HtmlBuilder GetPumlBuilder(IContextKey contextKey, ExportOptions exportOptions);
 
-    HtmlBuilder GetEmbeddedPumlInjection(string contextKey, ExportOptions exportOptions);
+    HtmlBuilder GetPumlBuilder(string contextKey, ExportOptions exportOptions);
 }
 
 public interface IMethodListDatamodel : IHtmlTabsheetDataModel
