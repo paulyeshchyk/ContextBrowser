@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ContextKit.Model;
 
@@ -17,3 +19,11 @@ public interface IContextInfoDataset<TContext> : IEnumerable<KeyValuePair<IConte
     // context: ContextInfoMatrix, read
     bool TryGetValue(IContextKey key, out List<TContext> value);
 }
+
+public interface IContextInfoDatasetProvider
+{
+    Task<IContextInfoDataset<ContextInfo>> GetDatasetAsync(CancellationToken cancellationToken);
+
+    Task<IContextKeyMap<ContextInfo>> GetMapperAsync(CancellationToken cancellationToken);
+}
+

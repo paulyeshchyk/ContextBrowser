@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
@@ -15,14 +17,16 @@ namespace HtmlKit.Page.Compiler;
 public class HtmlPageCompilerNamespaceOnly : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
 
-    public HtmlPageCompilerNamespaceOnly(IAppLogger<AppLevel> logger)
+    public HtmlPageCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
     {
         _logger = logger;
+        _datasetProvider = datasetProvider;
     }
 
     // context: contextInfo, build, html
-    public void Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
+    public Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- NamespaceOnly.Build ---", LogLevelNode.None));
 
@@ -33,8 +37,11 @@ public class HtmlPageCompilerNamespaceOnly : IHtmlPageCompiler
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<NamespacenameContainer>(registrations);
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<NamespacenameContainer>(exportOptions, tabsheetDataProvider);
+        var dataset = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
 
-        var builder = new HtmlPageWithTabsNamespaceEntityBuilder<NamespacenameContainer>(contextInfoDataset, tabbedPageBuilder, (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html");
+        var builder = new HtmlPageWithTabsNamespaceEntityBuilder<NamespacenameContainer>(dataset, tabbedPageBuilder, (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html");
         builder.Build();
+
+        return Task.CompletedTask;
     }
 }

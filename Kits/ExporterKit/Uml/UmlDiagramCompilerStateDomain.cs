@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
@@ -25,19 +27,23 @@ namespace ExporterKit.Uml;
 // context: uml, state, build
 public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
 {
-    protected readonly IAppLogger<AppLevel> _logger;
+    private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
     private readonly IContextInfoMapperFactory _contextInfoMapperFactory;
 
-    public UmlDiagramCompilerStateDomain(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperFactory)
+    public UmlDiagramCompilerStateDomain(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperFactory, IContextInfoDatasetProvider datasetProvider)
     {
         _logger = logger;
         _contextInfoMapperFactory = contextInfoMapperFactory;
+        _datasetProvider = datasetProvider;
     }
 
     // context: uml, build
-    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
-        var elements = contextInfoDataset.GetAll().ToList();
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+
+        var elements = dataset.GetAll().ToList();
         var mapper = _contextInfoMapperFactory.CreateMapper(MapperType.DomainPerAction);
         var domains = mapper.GetDomains().Distinct();
 

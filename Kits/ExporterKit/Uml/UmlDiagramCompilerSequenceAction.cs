@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
@@ -23,17 +25,21 @@ public class UmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
 {
     protected readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoMapperFactory _contextInfoMapperFactory;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
 
-    public UmlDiagramCompilerSequenceAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperFactory)
+    public UmlDiagramCompilerSequenceAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperFactory, IContextInfoDatasetProvider datasetProvider)
     {
         _logger = logger;
         _contextInfoMapperFactory = contextInfoMapperFactory;
+        _datasetProvider = datasetProvider;
     }
 
     // context: uml, build
-    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
-        var elements = contextInfoDataset.GetAll().ToList();
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+
+        var elements = dataset.GetAll().ToList();
         var mapper = _contextInfoMapperFactory.CreateMapper(MapperType.DomainPerAction);
         var actions = mapper.GetActions().Distinct();
 

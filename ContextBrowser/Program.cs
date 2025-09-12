@@ -77,6 +77,8 @@ public static class Program
         hab.Services.AddTransient<IDeclarationParserFactory, DeclarationParserFactory>();
         hab.Services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
 
+        hab.Services.AddSingleton<IContextInfoDatasetProvider, ContextInfoDatasetProvider>();
+
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassActionPerDomain>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerNamespaceOnly>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassMethodsList>();

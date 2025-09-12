@@ -46,6 +46,7 @@ public class MainService : IMainService
     private readonly IAppLogger<AppLevel> _appLogger;
     private readonly IAppOptionsStore _optionsStore;
     private readonly IParsingOrchestrator _parsingOrchestrant;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
     private readonly IContextInfoDatasetBuilder _contextInfoDatasetBuilder;
     private readonly IUmlDiagramCompilerOrchestrator _diagramCompilerOrchestrator;
     private readonly IHtmlCompilerOrchestrator _htmlCompilerOrchestrator;
@@ -56,6 +57,7 @@ public class MainService : IMainService
         IAppLogger<AppLevel> appLogger,
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
+        IContextInfoDatasetProvider datasetProvider,
         IContextInfoDatasetBuilder contextInfoDatasetBuilder,
         IContextInfoMapperFactory contextInfoMapperFactory,
         IUmlDiagramCompilerOrchestrator diagramCompilerOrchestrator,
@@ -64,6 +66,7 @@ public class MainService : IMainService
     {
         _appLogger = appLogger;
         _optionsStore = optionsStore;
+        _datasetProvider = datasetProvider;
         _parsingOrchestrant = parsingOrchestrant;
         _contextInfoDatasetBuilder = contextInfoDatasetBuilder;
         _contextInfoMapperFactory = contextInfoMapperFactory;
@@ -78,21 +81,14 @@ public class MainService : IMainService
         var appOptions = _optionsStore.Options();
         ExportPathDirectoryPreparer.Prepare(appOptions.Export.FilePaths);
 
-        // парсинг кода
-        var contextsList = await _parsingOrchestrant.GetParsedContextsAsync(appOptions, cancellationToken);
-
-        //сборка контекстной матрицы
-        var contextInfoDataset = _contextInfoDatasetBuilder.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
-
-        //mapper
-        var mapper = _contextInfoMapperFactory.CreateMapper(MapperType.DomainPerAction);
-        mapper.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
+        //TODO: маппер должен создаваться по требованию
+        await _datasetProvider.GetMapperAsync(cancellationToken);
 
         //компиляция диаграмм
-        _diagramCompilerOrchestrator.CompileAll(contextInfoDataset, appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder);
+        await _diagramCompilerOrchestrator.CompileAllAsync(appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder, cancellationToken);
 
         // компиляция html
-        _htmlCompilerOrchestrator.CompileAll(contextInfoDataset, appOptions.Classifier, appOptions.Export);
+        await _htmlCompilerOrchestrator.CompileAllAsync(appOptions.Classifier, appOptions.Export, cancellationToken);
 
         // запуск кастомных html & puml серверов
         _serverStartSignal.Signal();

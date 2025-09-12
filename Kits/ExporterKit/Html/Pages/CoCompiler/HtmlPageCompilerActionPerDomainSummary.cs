@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowser.Samples.HtmlPages;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
@@ -21,15 +23,17 @@ namespace ExporterKit.Html.Pages.MatrixCellSummary;
 public class HtmlPageCompilerActionPerDomainSummary : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
 
-    public HtmlPageCompilerActionPerDomainSummary(IAppLogger<AppLevel> logger)
+    public HtmlPageCompilerActionPerDomainSummary(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
     {
         _logger = logger;
+        _datasetProvider = datasetProvider;
     }
 
     // context: html, build
 
-    public void Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
+    public Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "--- ActionPerDomainPage.Build ---", LogLevelNode.None);
 
@@ -41,8 +45,11 @@ public class HtmlPageCompilerActionPerDomainSummary : IHtmlPageCompiler
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextKeyContainer>(registrations);
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextKeyContainer>(exportOptions, tabsheetDataProvider);
+        var dataset = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
 
-        var builder = new HtmlPageWithTabsEntityListBuilder<ContextKeyContainer>(contextInfoDataset, tabbedPageBuilder, (_) => $"summary.html");
+        var builder = new HtmlPageWithTabsEntityListBuilder<ContextKeyContainer>(dataset, tabbedPageBuilder, (_) => $"summary.html");
         builder.Build();
+
+        return Task.CompletedTask;
     }
 }

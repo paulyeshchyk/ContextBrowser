@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
@@ -23,19 +25,23 @@ namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
     private readonly IContextInfoMapperFactory _contextInfoMapperContainer;
 
-    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer)
+    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IContextInfoDatasetProvider datasetProvider)
     {
         _logger = logger;
         _contextInfoMapperContainer = contextInfoMapperContainer;
+        _datasetProvider = datasetProvider;
     }
 
     // context: html, build
 
-    public void Compile(IContextInfoDataset<ContextInfo> dataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
+    public Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
+
+        var dataset = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
 
         var uiMatrixSummaryBuilder = new HtmlMatrixSummaryBuilderDomainPerAction();
 
@@ -50,5 +56,6 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
         var outputFile = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.index, "index.html");
 
         File.WriteAllText(outputFile, result);
+        return Task.CompletedTask;
     }
 }

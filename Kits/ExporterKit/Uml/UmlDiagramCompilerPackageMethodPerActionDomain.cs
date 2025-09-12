@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
@@ -22,15 +26,24 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompiler
 {
     private const string SParentheses = "()";
+    private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
+
+    public UmlDiagramCompilerPackageMethodPerActionDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
+    {
+        _logger = logger;
+        _datasetProvider = datasetProvider;
+    }
 
     //context: build, uml
-    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
-        CompileDomainGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
-        CompileNoDomainGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        CompileDomainGroup(dataset, exportOptions, diagramBuilderOptions);
+        CompileNoDomainGroup(dataset, exportOptions, diagramBuilderOptions);
 
-        CompileActionGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
-        CompileNoActionGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
+        CompileActionGroup(dataset, exportOptions, diagramBuilderOptions);
+        CompileNoActionGroup(dataset, exportOptions, diagramBuilderOptions);
 
         return new Dictionary<string, bool>();
     }

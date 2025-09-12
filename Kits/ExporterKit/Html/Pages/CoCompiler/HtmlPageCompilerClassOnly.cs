@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowser.Samples.HtmlPages;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log;
@@ -19,14 +21,16 @@ namespace HtmlKit.Page.Compiler;
 public class HtmlPageCompilerClassOnly : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
 
-    public HtmlPageCompilerClassOnly(IAppLogger<AppLevel> logger)
+    public HtmlPageCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
     {
         _logger = logger;
+        _datasetProvider = datasetProvider;
     }
 
     // context: contextInfo, build, html
-    public void Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
+    public Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- DomainOnly.Build ---", LogLevelNode.None));
 
@@ -38,8 +42,11 @@ public class HtmlPageCompilerClassOnly : IHtmlPageCompiler
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<EntitynameContainer>(registrations);
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<EntitynameContainer>(exportOptions, tabsheetDataProvider);
+        var dataset = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
 
-        var builder = new HtmlPageWithTabsEntityBuilder<EntitynameContainer>(contextInfoDataset, tabbedPageBuilder, (contextInfo) => $"class_only_{contextInfo.AlphanumericOnly()}.html");
+        var builder = new HtmlPageWithTabsEntityBuilder<EntitynameContainer>(dataset, tabbedPageBuilder, (contextInfo) => $"class_only_{contextInfo.AlphanumericOnly()}.html");
         builder.Build();
+
+        return Task.CompletedTask;
     }
 }

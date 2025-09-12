@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -21,14 +23,18 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
 
-    public UmlDiagramCompilerClassOnly(IAppLogger<AppLevel> logger)
+    public UmlDiagramCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
     {
         _logger = logger;
+        _datasetProvider = datasetProvider;
     }
 
-    public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
+        var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+
         var classesOnly = contextInfoDataset.GetAll()
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record) || (c.ElementType == ContextInfoElementType.@interface));
 
