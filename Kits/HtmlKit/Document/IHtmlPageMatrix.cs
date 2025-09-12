@@ -12,7 +12,7 @@ public interface IHtmlPageMatrix
 
     IHtmlMatrix HtmlMatrix { get; }
 
-    IHtmlMatrixIndexer<ContextInfo> Indexer { get; }
+    IContextInfoIndexerProvider FlatMapperProvider { get; }
 
     ICoverageManager CoverageManager { get; }
 

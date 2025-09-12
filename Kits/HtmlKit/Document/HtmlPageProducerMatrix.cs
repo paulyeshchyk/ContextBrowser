@@ -26,9 +26,9 @@ public class HtmlPageProducerMatrix : HtmlPageProducer, IHtmlPageMatrix
 
     private readonly IHtmlMatrixSummaryBuilder _matrixSummaryBuilder;
 
-    private readonly CoverManager _coverManager = new CoverManager();
+    public IContextInfoIndexerProvider FlatMapperProvider { get; }
 
-    public IHtmlMatrixIndexer<ContextInfo> Indexer { get; }
+    private readonly CoverManager _coverManager = new CoverManager();
 
     public IContextInfoDataset<ContextInfo> Dataset { get; }
 
@@ -36,11 +36,11 @@ public class HtmlPageProducerMatrix : HtmlPageProducer, IHtmlPageMatrix
 
     public IHtmlMatrix HtmlMatrix => _lazyHtmlMatrix.Value;
 
-    public HtmlPageProducerMatrix(IHtmlMatrixGenerator htmlMatrixGenerator, IContextInfoDataset<ContextInfo> dataset, IHtmlMatrixIndexer<ContextInfo> indexer, IHtmlMatrixSummaryBuilder matrixSummaryBuilder, HtmlTableOptions options) : base()
+    public HtmlPageProducerMatrix(IHtmlMatrixGenerator htmlMatrixGenerator, IContextInfoDataset<ContextInfo> dataset, IContextInfoIndexerProvider flatMapperProvider, IHtmlMatrixSummaryBuilder matrixSummaryBuilder, HtmlTableOptions options) : base()
     {
         _htmlMatrixGenerator = htmlMatrixGenerator;
+        FlatMapperProvider = flatMapperProvider;
         Dataset = dataset;
-        Indexer = indexer;
         _matrixSummaryBuilder = matrixSummaryBuilder;
         _options = options;
         _lazyHtmlMatrix = new Lazy<IHtmlMatrix>(() => htmlMatrixGenerator.Generate());

@@ -62,19 +62,31 @@ public static class Program
         hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerMatrixData>();
         hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerEmptydata>();
 
-        hab.Services.AddSingleton<IContextKeyMap<ContextInfo>, ContextInfoMapperDomainPerAction>();
+        hab.Services.AddSingleton<IContextKeyIndex<ContextInfo>, HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>>();
+        hab.Services.AddSingleton<IContextInfoFlatMapperFactory, ContextInfoFlatMapperFactory>();
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>>>(provider =>
+        {
+            return new Dictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>>
+            {
+                { GlobalMapperKeys.NameClassName, provider.GetRequiredService<IContextKeyIndex<ContextInfo>>() }
+            };
+        });
+
+        hab.Services.AddSingleton<IContextKeyMap<ContextInfo, IContextKey>, ContextInfoMapperDomainPerAction>();
         hab.Services.AddTransient<IContextInfoMapperFactory, ContextInfoMapperFactory>();
 
-        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo>>>(provider =>
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>>>(provider =>
         {
-            return new Dictionary<MapperKeyBase, IContextKeyMap<ContextInfo>>
+            return new Dictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>>
             {
-                { GlobalMapperKeys.DomainPerAction, provider.GetRequiredService<IContextKeyMap<ContextInfo>>() }
+                { GlobalMapperKeys.DomainPerAction, provider.GetRequiredService<IContextKeyMap<ContextInfo, IContextKey>>() }
             };
         });
 
         hab.Services.AddTransient<IContextInfoDatasetBuilder, ContextInfoDatasetBuilder>();
+
         hab.Services.AddSingleton<IContextInfoMapperProvider, ContextInfoMappingProvider>();
+        hab.Services.AddSingleton<IContextInfoIndexerProvider, ContextInfoIndexerProvider>();
 
         hab.Services.AddSingleton<ICompilationBuilder, RoslynCompilationBuilder>();
         hab.Services.AddTransient<ICodeParseService, CodeParseService>();
@@ -178,14 +190,34 @@ public static class Program
 
 public class ContextInfoMapperFactory : IContextInfoMapperFactory
 {
-    private readonly IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo>> _mappers;
+    private readonly IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>> _mappers;
 
-    public ContextInfoMapperFactory(IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo>> mappers)
+    public ContextInfoMapperFactory(IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>> mappers)
     {
         _mappers = mappers;
     }
 
-    public IContextKeyMap<ContextInfo> GetMapper(MapperKeyBase type)
+    public IContextKeyMap<ContextInfo, IContextKey> GetMapper(MapperKeyBase type)
+    {
+        if (_mappers.TryGetValue(type, out var mapper))
+        {
+            return mapper;
+        }
+
+        throw new NotImplementedException($"Mapper for type {type} is not registered.");
+    }
+}
+
+public class ContextInfoFlatMapperFactory : IContextInfoFlatMapperFactory
+{
+    private readonly IDictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>> _mappers;
+
+    public ContextInfoFlatMapperFactory(IDictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>> mappers)
+    {
+        _mappers = mappers;
+    }
+
+    public IContextKeyIndex<ContextInfo> GetMapper(MapperKeyBase type)
     {
         if (_mappers.TryGetValue(type, out var mapper))
         {

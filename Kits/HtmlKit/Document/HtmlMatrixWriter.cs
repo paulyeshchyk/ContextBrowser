@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ExporterKit.Html;
 using HtmlKit.Builders.Core;
 using HtmlKit.Extensions;
 using HtmlKit.Helpers;
@@ -172,7 +174,8 @@ internal class HtmlMatrixWriter
             if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
                 WriteRowSummaryCell(textWriter, row);
 
-            var indexMap = _htmlPageMatrix.Indexer;
+            var indexer = _htmlPageMatrix.FlatMapperProvider.GetIndexerAsync(GlobalMapperKeys.NameClassName, CancellationToken.None).GetAwaiter().GetResult();
+            var indexData = indexer.GetIndexData();
 
             foreach (var col in _matrix.cols)
             {
@@ -185,7 +188,7 @@ internal class HtmlMatrixWriter
 
                 HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, () =>
                 {
-                    var style = _htmlPageMatrix.CoverageManager.BuildCellStyle(cell, methods, indexMap);
+                    var style = _htmlPageMatrix.CoverageManager.BuildCellStyle(cell, methods, indexData);
                     var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, _options) } };
                     if (!string.IsNullOrWhiteSpace(style))
                         attrs["style"] = style;

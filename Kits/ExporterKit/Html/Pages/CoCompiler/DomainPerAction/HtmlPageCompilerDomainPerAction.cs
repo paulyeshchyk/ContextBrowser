@@ -27,12 +27,14 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider _datasetProvider;
     private readonly IContextInfoMapperFactory _contextInfoMapperContainer;
+    private readonly IContextInfoIndexerProvider _flatMapperProvider;
 
-    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IContextInfoDatasetProvider datasetProvider)
+    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IContextInfoDatasetProvider datasetProvider, IContextInfoIndexerProvider flatMapperProvider)
     {
         _logger = logger;
         _contextInfoMapperContainer = contextInfoMapperContainer;
         _datasetProvider = datasetProvider;
+        _flatMapperProvider = flatMapperProvider;
     }
 
     // context: html, build
@@ -45,11 +47,9 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 
         var uiMatrixSummaryBuilder = new HtmlMatrixSummaryBuilderDomainPerAction();
 
-        var indexer = new HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>(dataset);
-
         var matrixGenerator = new HtmlMatrixGeneratorDomainPerAction(contextClassifier, _contextInfoMapperContainer, exportOptions.ExportMatrix.HtmlTable.Orientation, exportOptions.ExportMatrix.UnclassifiedPriority);
 
-        var producer = new HtmlPageProducerMatrix(matrixGenerator, dataset: dataset, indexer: indexer, uiMatrixSummaryBuilder, exportOptions.ExportMatrix.HtmlTable);
+        var producer = new HtmlPageProducerMatrix(matrixGenerator, dataset: dataset, flatMapperProvider: _flatMapperProvider, uiMatrixSummaryBuilder, exportOptions.ExportMatrix.HtmlTable);
 
         // producer.Title = "Контекстная матрица";
         var result = producer.ToHtmlString();

@@ -8,5 +8,5 @@ public interface ICoverageManager
 {
     int GetCoverageValue(ContextInfo? ctx);
 
-    string? BuildCellStyle(IContextKey cell, List<ContextInfo>? methods, IHtmlMatrixIndexer<ContextInfo> contextLookup);
+    string? BuildCellStyle(IContextKey cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo>? index);
 }

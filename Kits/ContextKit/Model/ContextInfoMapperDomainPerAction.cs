@@ -5,9 +5,14 @@ using ContextBrowserKit.Options.Export;
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public class ContextInfoMapperDomainPerAction : IContextKeyMap<ContextInfo>
+public class ContextInfoMapperDomainPerAction : IContextKeyMap<ContextInfo, IContextKey>
 {
     private Dictionary<IContextKey, List<ContextInfo>>? _data;
+
+    public Dictionary<IContextKey, List<ContextInfo>>? GetMapData()
+    {
+        return _data;
+    }
 
     // context: ContextInfoMatrix, build
     public void Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier)

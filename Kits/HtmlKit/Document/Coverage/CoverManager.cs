@@ -10,9 +10,9 @@ public class CoverManager : ICoverageManager
     private const string SCssStyleTemplate = "style=\"background-color:{0}; color:black\"";
     private const string SCoverageAttributeName = "coverage";
 
-    public string? BuildCellStyle(IContextKey cell, List<ContextInfo>? methods, IHtmlMatrixIndexer<ContextInfo> contextLookup)
+    public string? BuildCellStyle(IContextKey cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo>? index)
     {
-        var bgColor = CoverageExts.GetCoverageColorForCell(cell, methods, contextLookup, GetCoverageValue);
+        var bgColor = CoverageExts.GetCoverageColorForCell(cell, methods, index, GetCoverageValue);
         var style = bgColor is null ? null : string.Format(SCssStyleTemplate, bgColor);
         return style;
     }

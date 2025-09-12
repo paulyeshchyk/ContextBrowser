@@ -2,29 +2,28 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ContextKit.Model;
-using ContextKit.Model.Collector;
 using ExporterKit.Infrastucture;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
-public class ContextInfoMappingProvider : BaseContextInfoProvider, IContextInfoMapperProvider
+public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoIndexerProvider
 {
-    private readonly IContextInfoMapperFactory _mapperFactory;
+    private readonly IContextInfoFlatMapperFactory _mapperFactory;
 
-    private readonly Dictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>> _mappers = new();
+    private readonly Dictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>> _mappers = new();
 
     private readonly object _lock = new();
 
-    public ContextInfoMappingProvider(
+    public ContextInfoIndexerProvider(
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
-        IContextInfoMapperFactory mapperFactory)
+        IContextInfoFlatMapperFactory mapperFactory)
         : base(optionsStore, parsingOrchestrant)
     {
         _mapperFactory = mapperFactory;
     }
 
-    public async Task<IContextKeyMap<ContextInfo, IContextKey>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
+    public async Task<IContextKeyIndex<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)
         {
