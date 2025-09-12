@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandlineKit;
@@ -14,6 +15,7 @@ using ContextKit.Model.Factory;
 using ContextKit.Stategies;
 using ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 using ExporterKit.Html.Pages.MatrixCellSummary;
+using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using HtmlKit.Page.Compiler;
 using LoggerKit;
@@ -58,7 +60,9 @@ public static class Program
 
         hab.Services.AddScoped<IContextInfoFiller, ContextInfoFillerMatrixData>();
         hab.Services.AddScoped<IContextInfoFiller, ContextInfoFillerEmptydata>();
+
         hab.Services.AddScoped<IContextKeyMap<ContextInfo>, ContextInfoMapperDomainPerAction>();
+        hab.Services.AddTransient<IContextInfoMapperFactory, ContextInfoMapperFactory>();
 
         hab.Services.AddSingleton<ICompilationBuilder, RoslynCompilationBuilder>();
         hab.Services.AddTransient<ICodeParseService, CodeParseService>();
@@ -155,5 +159,24 @@ public static class Program
             lifetime.StopApplication();
             await host.WaitForShutdownAsync();
         }
+    }
+}
+
+internal class ContextInfoMapperFactory : IContextInfoMapperFactory
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public ContextInfoMapperFactory(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    public IContextKeyMap<ContextInfo> CreateMapper(MapperType type)
+    {
+        return type switch
+        {
+            MapperType.DomainPerAction => (IContextKeyMap<ContextInfo>)_serviceProvider.GetServices(typeof(IContextKeyMap<ContextInfo>)).OfType<ContextInfoMapperDomainPerAction>().First(),
+            _ => throw new NotImplementedException()
+        };
     }
 }

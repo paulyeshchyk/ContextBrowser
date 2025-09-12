@@ -9,10 +9,6 @@ public class ContextInfoMapperDomainPerAction : IContextKeyMap<ContextInfo>
 {
     private Dictionary<IContextKey, List<ContextInfo>>? _data;
 
-    public ContextInfoMapperDomainPerAction()
-    {
-    }
-
     // context: ContextInfoMatrix, build
     public void Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier)
     {

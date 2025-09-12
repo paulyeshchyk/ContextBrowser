@@ -9,6 +9,7 @@ using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ExporterKit;
 using ExporterKit.Html;
+using ExporterKit.Infrastucture;
 using HtmlKit;
 using HtmlKit.Document;
 using HtmlKit.Extensions;
@@ -22,12 +23,12 @@ namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextKeyMap<ContextInfo> _contextInfoMapper;
+    private readonly IContextInfoMapperFactory _contextInfoMapperContainer;
 
-    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextKeyMap<ContextInfo> contextInfoMapper)
+    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer)
     {
         _logger = logger;
-        _contextInfoMapper = contextInfoMapper;
+        _contextInfoMapperContainer = contextInfoMapperContainer;
     }
 
     // context: html, build
@@ -40,7 +41,7 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 
         var indexer = new HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>(dataset);
 
-        var matrixGenerator = new HtmlMatrixGeneratorDomainPerAction(contextClassifier, _contextInfoMapper, exportOptions.ExportMatrix.HtmlTable.Orientation, exportOptions.ExportMatrix.UnclassifiedPriority);
+        var matrixGenerator = new HtmlMatrixGeneratorDomainPerAction(contextClassifier, _contextInfoMapperContainer, exportOptions.ExportMatrix.HtmlTable.Orientation, exportOptions.ExportMatrix.UnclassifiedPriority);
 
         var producer = new HtmlPageProducerMatrix(matrixGenerator, dataset: dataset, indexer: indexer, uiMatrixSummaryBuilder, exportOptions.ExportMatrix.HtmlTable);
 

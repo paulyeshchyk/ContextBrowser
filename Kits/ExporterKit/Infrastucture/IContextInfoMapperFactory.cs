@@ -1,0 +1,14 @@
+﻿using System;
+using ContextKit.Model;
+
+namespace ExporterKit.Infrastucture;
+
+public interface IContextInfoMapperFactory
+{
+    IContextKeyMap<ContextInfo> CreateMapper(MapperType type);
+}
+
+public enum MapperType
+{
+    DomainPerAction
+}

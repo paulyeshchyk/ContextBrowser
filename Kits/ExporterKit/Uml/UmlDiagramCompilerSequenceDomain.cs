@@ -7,6 +7,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit;
+using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using ExporterKit.Uml.DiagramCompileOptions;
 using LoggerKit;
@@ -21,19 +22,20 @@ namespace ExporterKit.Uml;
 public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
 {
     protected readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextKeyMap<ContextInfo> _mapper;
+    private readonly IContextInfoMapperFactory _contextInfoMapperFactory;
 
-    public UmlDiagramCompilerSequenceDomain(IAppLogger<AppLevel> logger, IContextKeyMap<ContextInfo> mapper)
+    public UmlDiagramCompilerSequenceDomain(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperFactory)
     {
         _logger = logger;
-        _mapper = mapper;
+        _contextInfoMapperFactory = contextInfoMapperFactory;
     }
 
     // context: uml, build
     public Dictionary<string, bool> Compile(IContextInfoDataset<ContextInfo> contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var elements = contextInfoDataset.GetAll().ToList();
-        var domains = _mapper.GetDomains().Distinct();
+        var mapper = _contextInfoMapperFactory.CreateMapper(MapperType.DomainPerAction);
+        var domains = mapper.GetDomains().Distinct();
 
         var renderedCache = new Dictionary<string, bool>();
         foreach (var domain in domains)

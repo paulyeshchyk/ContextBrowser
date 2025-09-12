@@ -15,6 +15,7 @@ using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
 using ContextKit.Stategies;
+using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using HtmlKit.Model;
 using HtmlKit.Page.Compiler;
@@ -49,14 +50,14 @@ public class MainService : IMainService
     private readonly IUmlDiagramCompilerOrchestrator _diagramCompilerOrchestrator;
     private readonly IHtmlCompilerOrchestrator _htmlCompilerOrchestrator;
     private readonly IServerStartSignal _serverStartSignal;
-    private readonly IContextKeyMap<ContextInfo> _contextInfoMapper;
+    private readonly IContextInfoMapperFactory _contextInfoMapperFactory;
 
     public MainService(
         IAppLogger<AppLevel> appLogger,
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
         IContextInfoDatasetBuilder contextInfoDatasetBuilder,
-        IContextKeyMap<ContextInfo> contextInfoMapper,
+        IContextInfoMapperFactory contextInfoMapperFactory,
         IUmlDiagramCompilerOrchestrator diagramCompilerOrchestrator,
         IHtmlCompilerOrchestrator htmlCompilerOrchestrator,
         IServerStartSignal serverStartSignal)
@@ -65,7 +66,7 @@ public class MainService : IMainService
         _optionsStore = optionsStore;
         _parsingOrchestrant = parsingOrchestrant;
         _contextInfoDatasetBuilder = contextInfoDatasetBuilder;
-        _contextInfoMapper = contextInfoMapper;
+        _contextInfoMapperFactory = contextInfoMapperFactory;
         _diagramCompilerOrchestrator = diagramCompilerOrchestrator;
         _htmlCompilerOrchestrator = htmlCompilerOrchestrator;
         _serverStartSignal = serverStartSignal;
@@ -84,7 +85,8 @@ public class MainService : IMainService
         var contextInfoDataset = _contextInfoDatasetBuilder.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
 
         //mapper
-        _contextInfoMapper.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
+        var mapper = _contextInfoMapperFactory.CreateMapper(MapperType.DomainPerAction);
+        mapper.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
 
         //компиляция диаграмм
         _diagramCompilerOrchestrator.CompileAll(contextInfoDataset, appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder);
