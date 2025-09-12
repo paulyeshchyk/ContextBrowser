@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,12 +17,18 @@ public class RoslynSemanticModelWrapper : ISemanticModelWrapper
 
     public object? GetSymbolInfo(object node, CancellationToken cancellationToken)
     {
-        if (node is SyntaxNode syntaxNode)
+        if (node is not SyntaxNode syntaxNode)
         {
-            var symbolInfo = _semanticModel.GetSymbolInfo(syntaxNode, cancellationToken);
-            return symbolInfo;
+            return null;
         }
-        return null;
+        try
+        {
+            return _semanticModel.GetSymbolInfo(syntaxNode, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 
     public object? GetDeclaredSymbol(object syntax, CancellationToken cancellationToken)

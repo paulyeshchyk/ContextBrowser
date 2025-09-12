@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace HtmlKit.Page;
 public static partial class HtmlBuilderFactory
 {
     // context: html, build
-    public readonly struct HtmlCellBaseBuilder : IHtmlCellBuilder
+    public record HtmlCellBaseBuilder : IHtmlCellBuilder
     {
         // context: html, build
         public void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
