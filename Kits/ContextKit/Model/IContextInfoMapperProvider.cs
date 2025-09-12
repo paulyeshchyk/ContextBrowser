@@ -20,19 +20,23 @@ public abstract class MapperKeyBase : IEquatable<MapperKeyBase>
         _value = value;
     }
 
-    public static readonly MapperKeyBase CommonValue = new CommonValueType("CommonValue");
+    // Класс для общих значений.
+    protected sealed class InnerKey : MapperKeyBase
+    {
+        public InnerKey(string value) : base(value) { }
+    }
+
+    // Статический метод для создания новых ключей
+    public static MapperKeyBase Create(string value)
+    {
+        return new InnerKey(value);
+    }
 
     public override string ToString() => _value;
 
     public override int GetHashCode() => _value.GetHashCode();
 
-    public override bool Equals(object obj) => Equals(obj as MapperKeyBase);
+    public override bool Equals(object? obj) => Equals(obj as MapperKeyBase);
 
-    public bool Equals(MapperKeyBase other) => !(other is null) && _value == other._value;
-
-    // Класс для общих значений
-    private sealed class CommonValueType : MapperKeyBase
-    {
-        public CommonValueType(string value) : base(value) { }
-    }
+    public bool Equals(MapperKeyBase? other) => !(other is null) && _value == other._value;
 }

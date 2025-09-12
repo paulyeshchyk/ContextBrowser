@@ -36,7 +36,7 @@ public class ContextInfoMappingProvider : BaseContextInfoProvider, IContextInfoM
         // Маппер не найден, нужно его собрать.
         var contextsList = await GetParsedContextsAsync(cancellationToken);
         var appOptions = _optionsStore.Options();
-        var newMapper = _mapperFactory.CreateMapper(mapperType);
+        var newMapper = _mapperFactory.GetMapper(mapperType);
         newMapper.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
 
         lock (_lock)

@@ -30,7 +30,7 @@ public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
     // context: build, htmlmatrix
     public IHtmlMatrix Generate()
     {
-        var mapper = _contextInfoMapperContainer.CreateMapper(ExportKitMapperKeys.DomainPerAction);
+        var mapper = _contextInfoMapperContainer.GetMapper(GlobalMapperKeys.DomainPerAction);
 
         var rows = SortList(mapper.GetActions().Distinct().ToList(), _contextClassifier.EmptyAction, _priority);
         var cols = SortList(mapper.GetDomains().Distinct().ToList(), _contextClassifier.EmptyDomain, _priority);

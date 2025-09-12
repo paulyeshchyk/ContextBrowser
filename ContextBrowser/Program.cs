@@ -58,13 +58,23 @@ public static class Program
         hab.Services.AddTransient<IContextInfoCacheService, ContextInfoCacheService>();
         hab.Services.AddTransient<IContextClassifierBuilder, ContextClassifierBuilder>();
         hab.Services.AddTransient<IContextInfoRelationManager, ContextInfoRelationManager>();
-        hab.Services.AddTransient<IContextInfoDatasetBuilder, ContextInfoDatasetBuilder>();
 
-        hab.Services.AddScoped<IContextInfoFiller, ContextInfoFillerMatrixData>();
-        hab.Services.AddScoped<IContextInfoFiller, ContextInfoFillerEmptydata>();
+        hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerMatrixData>();
+        hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerEmptydata>();
 
-        hab.Services.AddScoped<IContextKeyMap<ContextInfo>, ContextInfoMapperDomainPerAction>();
+        hab.Services.AddSingleton<IContextKeyMap<ContextInfo>, ContextInfoMapperDomainPerAction>();
         hab.Services.AddTransient<IContextInfoMapperFactory, ContextInfoMapperFactory>();
+
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo>>>(provider =>
+        {
+            return new Dictionary<MapperKeyBase, IContextKeyMap<ContextInfo>>
+            {
+                { GlobalMapperKeys.DomainPerAction, provider.GetRequiredService<IContextKeyMap<ContextInfo>>() }
+            };
+        });
+
+        hab.Services.AddTransient<IContextInfoDatasetBuilder, ContextInfoDatasetBuilder>();
+        hab.Services.AddSingleton<IContextInfoMapperProvider, ContextInfoMappingProvider>();
 
         hab.Services.AddSingleton<ICompilationBuilder, RoslynCompilationBuilder>();
         hab.Services.AddTransient<ICodeParseService, CodeParseService>();
@@ -80,7 +90,6 @@ public static class Program
         hab.Services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
 
         hab.Services.AddSingleton<IContextInfoDatasetProvider, ContextInfoDatasetProvider>();
-        hab.Services.AddSingleton<IContextInfoMapperProvider, ContextInfoMappingProvider>();
 
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassActionPerDomain>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerNamespaceOnly>();
@@ -109,7 +118,7 @@ public static class Program
 
         hab.Services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(provider =>
         {
-            var settingsStore = provider.GetRequiredService<IAppOptionsStore>();
+            //var settingsStore = provider.GetRequiredService<IAppOptionsStore>();
 
             var defaultLogLevels = new AppLoggerLevelStore<AppLevel>();
             var defaultCW = new ConsoleLogWriter();
@@ -167,21 +176,22 @@ public static class Program
     }
 }
 
-internal class ContextInfoMapperFactory : IContextInfoMapperFactory
+public class ContextInfoMapperFactory : IContextInfoMapperFactory
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo>> _mappers;
 
-    public ContextInfoMapperFactory(IServiceProvider serviceProvider)
+    public ContextInfoMapperFactory(IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo>> mappers)
     {
-        _serviceProvider = serviceProvider;
+        _mappers = mappers;
     }
 
-    public IContextKeyMap<ContextInfo> CreateMapper(MapperKeyBase type)
+    public IContextKeyMap<ContextInfo> GetMapper(MapperKeyBase type)
     {
-        return type switch
+        if (_mappers.TryGetValue(type, out var mapper))
         {
-            ExportKitMapperKeys => (IContextKeyMap<ContextInfo>)_serviceProvider.GetServices(typeof(IContextKeyMap<ContextInfo>)).OfType<ContextInfoMapperDomainPerAction>().First(),
-            _ => throw new NotImplementedException($"Mapper for type {type.ToString()} is not implemented.")
-        };
+            return mapper;
+        }
+
+        throw new NotImplementedException($"Mapper for type {type} is not registered.");
     }
 }

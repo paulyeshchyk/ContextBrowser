@@ -7,9 +7,9 @@ using ContextKit.Model;
 
 namespace ExporterKit.Html;
 
-public class ExportKitMapperKeys : MapperKeyBase
+public static class GlobalMapperKeys
 {
-    protected ExportKitMapperKeys(string value) : base(value) { }
+    public static readonly MapperKeyBase DomainPerAction = MapperKeyBase.Create("DomainPerAction");
 
-    public static readonly ExportKitMapperKeys DomainPerAction = new ExportKitMapperKeys("DomainPerAction");
+    // public static readonly MapperKeyBase AnotherMapper = MapperKeyBase.Create("AnotherMapper");
 }
