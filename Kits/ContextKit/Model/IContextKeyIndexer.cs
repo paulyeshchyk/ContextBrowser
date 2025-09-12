@@ -8,7 +8,7 @@ using ContextKit.Model.Collector;
 
 namespace ContextKit.Model;
 
-public interface IContextKeyIndex<TContext> : IContextKeyIndexBuilder<TContext>
+public interface IContextKeyIndexer<TContext> : IContextKeyIndexBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
 }

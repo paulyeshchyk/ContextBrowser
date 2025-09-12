@@ -62,13 +62,13 @@ public static class Program
         hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerMatrixData>();
         hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerEmptydata>();
 
-        hab.Services.AddSingleton<IContextKeyIndex<ContextInfo>, HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>>();
-        hab.Services.AddSingleton<IContextInfoFlatMapperFactory, ContextInfoFlatMapperFactory>();
-        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>>>(provider =>
+        hab.Services.AddSingleton<IContextKeyIndexer<ContextInfo>, HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>>();
+        hab.Services.AddSingleton<IContextInfoIndexerFactory, ContextInfoFlatMapperFactory>();
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>>>(provider =>
         {
-            return new Dictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>>
+            return new Dictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>>
             {
-                { GlobalMapperKeys.NameClassName, provider.GetRequiredService<IContextKeyIndex<ContextInfo>>() }
+                { GlobalMapperKeys.NameClassName, provider.GetRequiredService<IContextKeyIndexer<ContextInfo>>() }
             };
         });
 
@@ -208,16 +208,16 @@ public class ContextInfoMapperFactory : IContextInfoMapperFactory
     }
 }
 
-public class ContextInfoFlatMapperFactory : IContextInfoFlatMapperFactory
+public class ContextInfoFlatMapperFactory : IContextInfoIndexerFactory
 {
-    private readonly IDictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>> _mappers;
+    private readonly IDictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>> _mappers;
 
-    public ContextInfoFlatMapperFactory(IDictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>> mappers)
+    public ContextInfoFlatMapperFactory(IDictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>> mappers)
     {
         _mappers = mappers;
     }
 
-    public IContextKeyIndex<ContextInfo> GetMapper(MapperKeyBase type)
+    public IContextKeyIndexer<ContextInfo> GetMapper(MapperKeyBase type)
     {
         if (_mappers.TryGetValue(type, out var mapper))
         {

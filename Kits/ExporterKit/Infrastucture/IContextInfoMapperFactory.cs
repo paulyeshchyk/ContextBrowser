@@ -9,7 +9,7 @@ public interface IContextInfoMapperFactory
     IContextKeyMap<ContextInfo, IContextKey> GetMapper(MapperKeyBase type);
 }
 
-public interface IContextInfoFlatMapperFactory
+public interface IContextInfoIndexerFactory
 {
-    IContextKeyIndex<ContextInfo> GetMapper(MapperKeyBase type);
+    IContextKeyIndexer<ContextInfo> GetMapper(MapperKeyBase type);
 }

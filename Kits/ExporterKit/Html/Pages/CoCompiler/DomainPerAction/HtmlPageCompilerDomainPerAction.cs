@@ -28,6 +28,7 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
     private readonly IContextInfoDatasetProvider _datasetProvider;
     private readonly IContextInfoMapperFactory _contextInfoMapperContainer;
     private readonly IContextInfoIndexerProvider _flatMapperProvider;
+    private readonly IContextKeyMap<ContextInfo, IContextKey> _mapper;
 
     public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IContextInfoDatasetProvider datasetProvider, IContextInfoIndexerProvider flatMapperProvider)
     {
@@ -35,6 +36,7 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
         _contextInfoMapperContainer = contextInfoMapperContainer;
         _datasetProvider = datasetProvider;
         _flatMapperProvider = flatMapperProvider;
+        _mapper = _contextInfoMapperContainer.GetMapper(GlobalMapperKeys.DomainPerAction);
     }
 
     // context: html, build
@@ -47,7 +49,7 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 
         var uiMatrixSummaryBuilder = new HtmlMatrixSummaryBuilderDomainPerAction();
 
-        var matrixGenerator = new HtmlMatrixGeneratorDomainPerAction(contextClassifier, _contextInfoMapperContainer, exportOptions.ExportMatrix.HtmlTable.Orientation, exportOptions.ExportMatrix.UnclassifiedPriority);
+        var matrixGenerator = new HtmlMatrixGeneratorDomainPerAction(contextClassifier, _mapper, exportOptions.ExportMatrix.HtmlTable.Orientation, exportOptions.ExportMatrix.UnclassifiedPriority);
 
         var producer = new HtmlPageProducerMatrix(matrixGenerator, dataset: dataset, flatMapperProvider: _flatMapperProvider, uiMatrixSummaryBuilder, exportOptions.ExportMatrix.HtmlTable);
 

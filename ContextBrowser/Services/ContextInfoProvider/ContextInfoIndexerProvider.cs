@@ -8,22 +8,22 @@ namespace ContextBrowser.Services.ContextInfoProvider;
 
 public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoIndexerProvider
 {
-    private readonly IContextInfoFlatMapperFactory _mapperFactory;
+    private readonly IContextInfoIndexerFactory _mapperFactory;
 
-    private readonly Dictionary<MapperKeyBase, IContextKeyIndex<ContextInfo>> _mappers = new();
+    private readonly Dictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>> _mappers = new();
 
     private readonly object _lock = new();
 
     public ContextInfoIndexerProvider(
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
-        IContextInfoFlatMapperFactory mapperFactory)
+        IContextInfoIndexerFactory mapperFactory)
         : base(optionsStore, parsingOrchestrant)
     {
         _mapperFactory = mapperFactory;
     }
 
-    public async Task<IContextKeyIndex<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
+    public async Task<IContextKeyIndexer<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)
         {

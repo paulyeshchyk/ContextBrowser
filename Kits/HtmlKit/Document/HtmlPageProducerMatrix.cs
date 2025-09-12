@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
+using ExporterKit.Html;
 using HtmlKit.Builders.Core;
 using HtmlKit.Document.Coverage;
 using HtmlKit.Extensions;
@@ -26,7 +28,7 @@ public class HtmlPageProducerMatrix : HtmlPageProducer, IHtmlPageMatrix
 
     private readonly IHtmlMatrixSummaryBuilder _matrixSummaryBuilder;
 
-    public IContextInfoIndexerProvider FlatMapperProvider { get; }
+    public IContextInfoIndexerProvider IndexerProvider { get; }
 
     private readonly CoverManager _coverManager = new CoverManager();
 
@@ -39,7 +41,7 @@ public class HtmlPageProducerMatrix : HtmlPageProducer, IHtmlPageMatrix
     public HtmlPageProducerMatrix(IHtmlMatrixGenerator htmlMatrixGenerator, IContextInfoDataset<ContextInfo> dataset, IContextInfoIndexerProvider flatMapperProvider, IHtmlMatrixSummaryBuilder matrixSummaryBuilder, HtmlTableOptions options) : base()
     {
         _htmlMatrixGenerator = htmlMatrixGenerator;
-        FlatMapperProvider = flatMapperProvider;
+        IndexerProvider = flatMapperProvider;
         Dataset = dataset;
         _matrixSummaryBuilder = matrixSummaryBuilder;
         _options = options;
@@ -58,14 +60,14 @@ public class HtmlPageProducerMatrix : HtmlPageProducer, IHtmlPageMatrix
     {
         var hrefManager = new HrefManager();
         var fixedHtmlManager = new FixedHtmlContentManager();
-
+        var indexer = IndexerProvider.GetIndexerAsync(GlobalMapperKeys.NameClassName, CancellationToken.None).GetAwaiter().GetResult();
         HtmlBuilderFactory.Breadcrumb(new BreadcrumbNavigationItem("..\\index.html", "Контекстная матрица")).Cell(writer);
 
         HtmlBuilderFactory.P.Cell(writer);
 
         HtmlBuilderFactory.Table.With(writer, () =>
         {
-            new HtmlMatrixWriter(htmlPageMatrix: this, hrefManager: hrefManager, fixedHtmlContentManager: fixedHtmlManager, uiMatrixSummaryBuilder: _matrixSummaryBuilder, options: _options)
+            new HtmlMatrixWriter(coverageManager: CoverageManager, dataProducer: this, dataset: Dataset, matrix: HtmlMatrix, indexer: indexer, hrefManager: hrefManager, fixedHtmlContentManager: fixedHtmlManager, summaryBuilder: _matrixSummaryBuilder, options: _options)
                 .WriteHeaderRow(writer)
                 .WriteSummaryRowIf(writer, SummaryPlacementType.AfterFirst)
                 .WriteAllDataRows(writer)

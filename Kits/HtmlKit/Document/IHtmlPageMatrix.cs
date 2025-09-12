@@ -6,15 +6,18 @@ using HtmlKit.Document.Coverage;
 
 namespace HtmlKit.Document;
 
-public interface IHtmlPageMatrix
+public interface IHtmlPageDataProducer
+{
+    string ProduceData(IContextKey container);
+}
+
+public interface IHtmlPageMatrix : IHtmlPageDataProducer
 {
     IContextInfoDataset<ContextInfo> Dataset { get; }
 
     IHtmlMatrix HtmlMatrix { get; }
 
-    IContextInfoIndexerProvider FlatMapperProvider { get; }
+    IContextInfoIndexerProvider IndexerProvider { get; }
 
     ICoverageManager CoverageManager { get; }
-
-    string ProduceData(IContextKey container);
 }

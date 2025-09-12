@@ -11,7 +11,7 @@ using HtmlKit.Page.Compiler;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
-public class HtmlMatrixIndexerByNameWithClassOwnerName<TContext> : IContextKeyIndex<TContext>
+public class HtmlMatrixIndexerByNameWithClassOwnerName<TContext> : IContextKeyIndexer<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private Dictionary<string, TContext>? _index;

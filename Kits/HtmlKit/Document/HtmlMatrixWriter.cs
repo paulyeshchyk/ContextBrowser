@@ -7,6 +7,7 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ExporterKit.Html;
 using HtmlKit.Builders.Core;
+using HtmlKit.Document.Coverage;
 using HtmlKit.Extensions;
 using HtmlKit.Helpers;
 using HtmlKit.Options;
@@ -17,22 +18,30 @@ namespace HtmlKit.Document;
 //context: htmlmatrix, build
 internal class HtmlMatrixWriter
 {
-    private readonly IHtmlPageMatrix _htmlPageMatrix;
     private readonly IHrefManager _hRefManager;
     private readonly IFixedHtmlContentManager _fixedHtmlContentManager;
     private readonly HtmlTableOptions _options;
-    private readonly IHtmlMatrixSummaryBuilder _uiMatrixSummaryBuilder;
     private readonly IHtmlMatrix _matrix;
+    private readonly Dictionary<string, int>? _rowsSummary;
+    private readonly Dictionary<string, int>? _colsSummary;
+    private readonly IContextInfoDataset<ContextInfo> _dataset;
+    private readonly IContextKeyIndexer<ContextInfo> _indexer;
+    private readonly ICoverageManager _coverageManager;
+    private readonly IHtmlPageDataProducer _dataProducer;
 
-    public HtmlMatrixWriter(IHrefManager hrefManager, IFixedHtmlContentManager fixedHtmlContentManager, IHtmlMatrixSummaryBuilder uiMatrixSummaryBuilder, IHtmlPageMatrix htmlPageMatrix, HtmlTableOptions options)
+    public HtmlMatrixWriter(ICoverageManager coverageManager, IHrefManager hrefManager, IContextInfoDataset<ContextInfo> dataset, IHtmlPageDataProducer dataProducer, IHtmlMatrix matrix, IContextKeyIndexer<ContextInfo> indexer, IFixedHtmlContentManager fixedHtmlContentManager, IHtmlMatrixSummaryBuilder summaryBuilder, HtmlTableOptions options)
     {
         _hRefManager = hrefManager;
-        _htmlPageMatrix = htmlPageMatrix;
         _fixedHtmlContentManager = fixedHtmlContentManager;
         _options = options;
-        _uiMatrixSummaryBuilder = uiMatrixSummaryBuilder;
+        _dataset = dataset;
+        _indexer = indexer;
+        _coverageManager = coverageManager;
+        _dataProducer = dataProducer;
 
-        _matrix = _htmlPageMatrix.HtmlMatrix;
+        _matrix = matrix;
+        _rowsSummary = summaryBuilder.RowsSummary(_matrix, dataset, _options.Orientation);
+        _colsSummary = summaryBuilder.ColsSummary(_matrix, dataset, _options.Orientation);
     }
 
     //context: htmlmatrix, build
@@ -117,8 +126,7 @@ internal class HtmlMatrixWriter
     //context: htmlmatrix, build
     internal void WriteSummaryRow(TextWriter textWriter)
     {
-        var colSums = _uiMatrixSummaryBuilder.ColsSummary(_matrix, _htmlPageMatrix.Dataset, _options.Orientation);
-        var total = colSums?.Values.Sum() ?? 0;
+        var total = _colsSummary?.Values.Sum() ?? 0;
 
         HtmlBuilderFactory.HtmlBuilderTableRow.Summary.With(textWriter, () =>
         {
@@ -141,7 +149,7 @@ internal class HtmlMatrixWriter
             {
                 HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.With(textWriter, () =>
                 {
-                    var sum = colSums?.GetValueOrDefault(col).ToString() ?? string.Empty;
+                    var sum = _colsSummary?.GetValueOrDefault(col).ToString() ?? string.Empty;
                     var href = _hRefManager.GetHrefColSummary(col, _options);
                     var colCellAttrs = new HtmlTagAttributes() { { "href", href } };
                     HtmlBuilderFactory.A.Cell(textWriter, colCellAttrs, sum, isEncodable: false);
@@ -174,8 +182,7 @@ internal class HtmlMatrixWriter
             if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
                 WriteRowSummaryCell(textWriter, row);
 
-            var indexer = _htmlPageMatrix.FlatMapperProvider.GetIndexerAsync(GlobalMapperKeys.NameClassName, CancellationToken.None).GetAwaiter().GetResult();
-            var indexData = indexer.GetIndexData();
+            var indexData = _indexer.GetIndexData();
 
             foreach (var col in _matrix.cols)
             {
@@ -183,12 +190,12 @@ internal class HtmlMatrixWriter
                     ? new ContextKey(row, col)
                     : new ContextKey(col, row);
 
-                var data = _htmlPageMatrix.ProduceData(cell);
-                _htmlPageMatrix.Dataset.TryGetValue(cell, out var methods);
+                var data = _dataProducer.ProduceData(cell);
+                _dataset.TryGetValue(cell, out var methods);
 
                 HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, () =>
                 {
-                    var style = _htmlPageMatrix.CoverageManager.BuildCellStyle(cell, methods, indexData);
+                    var style = _coverageManager.BuildCellStyle(cell, methods, indexData);
                     var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, _options) } };
                     if (!string.IsNullOrWhiteSpace(style))
                         attrs["style"] = style;
@@ -206,7 +213,7 @@ internal class HtmlMatrixWriter
     {
         HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.With(_tw, () =>
         {
-            var rowSum = _uiMatrixSummaryBuilder.RowsSummary(_matrix, _htmlPageMatrix.Dataset, _options.Orientation)?.GetValueOrDefault(row).ToString() ?? string.Empty;
+            var rowSum = _rowsSummary?.GetValueOrDefault(row).ToString() ?? string.Empty;
             var attributes = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, _options) } };
             HtmlBuilderFactory.A.Cell(_tw, attributes, rowSum, isEncodable: false);
         });

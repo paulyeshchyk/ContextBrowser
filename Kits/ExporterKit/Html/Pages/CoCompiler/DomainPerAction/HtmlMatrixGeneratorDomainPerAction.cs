@@ -15,14 +15,14 @@ namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
 {
     private readonly IContextClassifier _contextClassifier;
-    private readonly IContextInfoMapperFactory _contextInfoMapperContainer;
+    private readonly IContextKeyMap<ContextInfo, IContextKey> _mapper;
     private readonly MatrixOrientationType _matrixOrientation;
     private readonly UnclassifiedPriorityType _priority;
 
-    public HtmlMatrixGeneratorDomainPerAction(IContextClassifier contextClassifier, IContextInfoMapperFactory contextInfoMapperContainer, MatrixOrientationType matrixOrientation, UnclassifiedPriorityType priority)
+    public HtmlMatrixGeneratorDomainPerAction(IContextClassifier contextClassifier, IContextKeyMap<ContextInfo, IContextKey> mapper, MatrixOrientationType matrixOrientation, UnclassifiedPriorityType priority)
     {
         _contextClassifier = contextClassifier;
-        _contextInfoMapperContainer = contextInfoMapperContainer;
+        _mapper = mapper;
         _matrixOrientation = matrixOrientation;
         _priority = priority;
     }
@@ -30,10 +30,8 @@ public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
     // context: build, htmlmatrix
     public IHtmlMatrix Generate()
     {
-        var mapper = _contextInfoMapperContainer.GetMapper(GlobalMapperKeys.DomainPerAction);
-
-        var rows = SortList(mapper.GetActions().Distinct().ToList(), _contextClassifier.EmptyAction, _priority);
-        var cols = SortList(mapper.GetDomains().Distinct().ToList(), _contextClassifier.EmptyDomain, _priority);
+        var rows = SortList(_mapper.GetActions().Distinct().ToList(), _contextClassifier.EmptyAction, _priority);
+        var cols = SortList(_mapper.GetDomains().Distinct().ToList(), _contextClassifier.EmptyDomain, _priority);
 
         var resultMatrix = new HtmlMatrix(rows, cols);
 
