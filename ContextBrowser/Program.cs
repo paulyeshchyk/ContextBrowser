@@ -14,6 +14,7 @@ using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
 using ContextKit.Stategies;
+using ExporterKit.Html;
 using ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 using ExporterKit.Html.Pages.MatrixCellSummary;
 using ExporterKit.Infrastucture;
@@ -175,12 +176,12 @@ internal class ContextInfoMapperFactory : IContextInfoMapperFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IContextKeyMap<ContextInfo> CreateMapper(MapperType type)
+    public IContextKeyMap<ContextInfo> CreateMapper(MapperKeyBase type)
     {
         return type switch
         {
-            MapperType.DomainPerAction => (IContextKeyMap<ContextInfo>)_serviceProvider.GetServices(typeof(IContextKeyMap<ContextInfo>)).OfType<ContextInfoMapperDomainPerAction>().First(),
-            _ => throw new NotImplementedException()
+            ExportKitMapperKeys => (IContextKeyMap<ContextInfo>)_serviceProvider.GetServices(typeof(IContextKeyMap<ContextInfo>)).OfType<ContextInfoMapperDomainPerAction>().First(),
+            _ => throw new NotImplementedException($"Mapper for type {type.ToString()} is not implemented.")
         };
     }
 }

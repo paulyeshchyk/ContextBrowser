@@ -10,10 +10,8 @@ public class ContextInfoMappingProvider : BaseContextInfoProvider, IContextInfoM
 {
     private readonly IContextInfoMapperFactory _mapperFactory;
 
-    // Словарь для кэширования мапперов по типу.
-    private readonly Dictionary<MapperType, IContextKeyMap<ContextInfo>> _mappers = new();
+    private readonly Dictionary<MapperKeyBase, IContextKeyMap<ContextInfo>> _mappers = new();
 
-    // Объект для синхронизации доступа.
     private readonly object _lock = new();
 
     public ContextInfoMappingProvider(
@@ -25,8 +23,7 @@ public class ContextInfoMappingProvider : BaseContextInfoProvider, IContextInfoM
         _mapperFactory = mapperFactory;
     }
 
-    // Метод для асинхронного получения уже сформированного маппера.
-    public async Task<IContextKeyMap<ContextInfo>> GetMapperAsync(MapperType mapperType, CancellationToken cancellationToken)
+    public async Task<IContextKeyMap<ContextInfo>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)
         {
@@ -44,7 +41,6 @@ public class ContextInfoMappingProvider : BaseContextInfoProvider, IContextInfoM
 
         lock (_lock)
         {
-            // Убеждаемся, что другой поток не добавил маппер, пока мы его собирали.
             if (!_mappers.ContainsKey(mapperType))
             {
                 _mappers[mapperType] = newMapper;

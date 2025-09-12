@@ -9,6 +9,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit;
+using ExporterKit.Html;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using ExporterKit.Uml.DiagramCompileOptions;
@@ -40,7 +41,7 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         var elements = dataset.GetAll().ToList();
-        var mapper = await _mapperProvider.GetMapperAsync(MapperType.DomainPerAction, cancellationToken);
+        var mapper = await _mapperProvider.GetMapperAsync(ExportKitMapperKeys.DomainPerAction, cancellationToken);
         var domains = mapper.GetDomains().Distinct();
 
         var renderedCache = new Dictionary<string, bool>();

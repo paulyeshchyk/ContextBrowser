@@ -5,5 +5,5 @@ namespace ExporterKit.Infrastucture;
 
 public interface IContextInfoMapperFactory
 {
-    IContextKeyMap<ContextInfo> CreateMapper(MapperType type);
+    IContextKeyMap<ContextInfo> CreateMapper(MapperKeyBase type);
 }
