@@ -45,21 +45,15 @@ public class MainService : IMainService
 {
     private readonly IAppLogger<AppLevel> _appLogger;
     private readonly IAppOptionsStore _optionsStore;
-    private readonly IParsingOrchestrator _parsingOrchestrant;
     private readonly IContextInfoDatasetProvider _datasetProvider;
-    private readonly IContextInfoDatasetBuilder _contextInfoDatasetBuilder;
     private readonly IUmlDiagramCompilerOrchestrator _diagramCompilerOrchestrator;
     private readonly IHtmlCompilerOrchestrator _htmlCompilerOrchestrator;
     private readonly IServerStartSignal _serverStartSignal;
-    private readonly IContextInfoMapperFactory _contextInfoMapperFactory;
 
     public MainService(
         IAppLogger<AppLevel> appLogger,
         IAppOptionsStore optionsStore,
-        IParsingOrchestrator parsingOrchestrant,
         IContextInfoDatasetProvider datasetProvider,
-        IContextInfoDatasetBuilder contextInfoDatasetBuilder,
-        IContextInfoMapperFactory contextInfoMapperFactory,
         IUmlDiagramCompilerOrchestrator diagramCompilerOrchestrator,
         IHtmlCompilerOrchestrator htmlCompilerOrchestrator,
         IServerStartSignal serverStartSignal)
@@ -67,9 +61,6 @@ public class MainService : IMainService
         _appLogger = appLogger;
         _optionsStore = optionsStore;
         _datasetProvider = datasetProvider;
-        _parsingOrchestrant = parsingOrchestrant;
-        _contextInfoDatasetBuilder = contextInfoDatasetBuilder;
-        _contextInfoMapperFactory = contextInfoMapperFactory;
         _diagramCompilerOrchestrator = diagramCompilerOrchestrator;
         _htmlCompilerOrchestrator = htmlCompilerOrchestrator;
         _serverStartSignal = serverStartSignal;
@@ -80,9 +71,6 @@ public class MainService : IMainService
     {
         var appOptions = _optionsStore.Options();
         ExportPathDirectoryPreparer.Prepare(appOptions.Export.FilePaths);
-
-        //TODO: маппер должен создаваться по требованию
-        await _datasetProvider.GetMapperAsync(cancellationToken);
 
         //компиляция диаграмм
         await _diagramCompilerOrchestrator.CompileAllAsync(appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder, cancellationToken);

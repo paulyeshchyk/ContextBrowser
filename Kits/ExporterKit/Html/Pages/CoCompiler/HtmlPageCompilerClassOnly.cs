@@ -30,7 +30,7 @@ public class HtmlPageCompilerClassOnly : IHtmlPageCompiler
     }
 
     // context: contextInfo, build, html
-    public Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
+    public async Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- DomainOnly.Build ---", LogLevelNode.None));
 
@@ -42,11 +42,9 @@ public class HtmlPageCompilerClassOnly : IHtmlPageCompiler
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<EntitynameContainer>(registrations);
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<EntitynameContainer>(exportOptions, tabsheetDataProvider);
-        var dataset = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         var builder = new HtmlPageWithTabsEntityBuilder<EntitynameContainer>(dataset, tabbedPageBuilder, (contextInfo) => $"class_only_{contextInfo.AlphanumericOnly()}.html");
         builder.Build();
-
-        return Task.CompletedTask;
     }
 }

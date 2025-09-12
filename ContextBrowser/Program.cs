@@ -8,6 +8,7 @@ using ContextBrowser.FileManager;
 using ContextBrowser.Infrastructure;
 using ContextBrowser.Samples.HtmlPages;
 using ContextBrowser.Services;
+using ContextBrowser.Services.ContextInfoProvider;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
@@ -78,6 +79,7 @@ public static class Program
         hab.Services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
 
         hab.Services.AddSingleton<IContextInfoDatasetProvider, ContextInfoDatasetProvider>();
+        hab.Services.AddSingleton<IContextInfoMapperProvider, ContextInfoMappingProvider>();
 
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassActionPerDomain>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerNamespaceOnly>();

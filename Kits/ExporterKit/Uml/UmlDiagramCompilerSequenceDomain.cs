@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,14 +24,14 @@ namespace ExporterKit.Uml;
 public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
 {
     protected readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoMapperFactory _contextInfoMapperFactory;
     private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoMapperProvider _mapperProvider;
 
-    public UmlDiagramCompilerSequenceDomain(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperFactory, IContextInfoDatasetProvider datasetProvider)
+    public UmlDiagramCompilerSequenceDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IContextInfoMapperProvider mapperProvider)
     {
         _logger = logger;
-        _contextInfoMapperFactory = contextInfoMapperFactory;
         _datasetProvider = datasetProvider;
+        _mapperProvider = mapperProvider;
     }
 
     // context: uml, build
@@ -40,7 +40,7 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         var elements = dataset.GetAll().ToList();
-        var mapper = _contextInfoMapperFactory.CreateMapper(MapperType.DomainPerAction);
+        var mapper = await _mapperProvider.GetMapperAsync(MapperType.DomainPerAction, cancellationToken);
         var domains = mapper.GetDomains().Distinct();
 
         var renderedCache = new Dictionary<string, bool>();
@@ -60,8 +60,8 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling Sequence {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
         var bf = ContextDiagramBuildersFactory.TransitionBuilder(diagramBuilderOptions, _logger.WriteLog);
 
-        var diagramCompilerSequence = new UmlDiagramCompilerSequence(contextClassifier, exportOptions, _logger, diagramBuilderOptions, bf);
-        var rendered = diagramCompilerSequence.Compile(options.MetaItem, options.FetchType, options.DiagramId, options.DiagramTitle, options.OutputFileName, allContexts);
+        var diagramCompilerSequence = new UmlDiagramCompilerSequence(logger: _logger, classifier: contextClassifier, exportOptions, diagramBuilderOptions, bf);
+        var rendered = diagramCompilerSequence.Compile(options.MetaItem, options.FetchType, options.DiagramId, options.DiagramTitle, options.OutputFileName, allContexts, CancellationToken.None);
 
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
         return rendered;

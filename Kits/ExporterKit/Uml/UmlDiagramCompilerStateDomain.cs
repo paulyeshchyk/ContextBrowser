@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,13 +29,13 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider _datasetProvider;
-    private readonly IContextInfoMapperFactory _contextInfoMapperFactory;
+    private readonly IContextInfoMapperProvider _mapperProvider;
 
-    public UmlDiagramCompilerStateDomain(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperFactory, IContextInfoDatasetProvider datasetProvider)
+    public UmlDiagramCompilerStateDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IContextInfoMapperProvider mapperProvider)
     {
         _logger = logger;
-        _contextInfoMapperFactory = contextInfoMapperFactory;
         _datasetProvider = datasetProvider;
+        _mapperProvider = mapperProvider;
     }
 
     // context: uml, build
@@ -44,14 +44,14 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         var elements = dataset.GetAll().ToList();
-        var mapper = _contextInfoMapperFactory.CreateMapper(MapperType.DomainPerAction);
+        var mapper = await _mapperProvider.GetMapperAsync(MapperType.DomainPerAction, cancellationToken);
         var domains = mapper.GetDomains().Distinct();
 
         var renderedCache = new Dictionary<string, bool>();
         foreach (var domain in domains)
         {
             var compileOptions = DiagramCompileOptionsFactory.DomainStateCompileOptions(domain);
-            renderedCache[domain] = GenerateSingle(compileOptions, elements, contextClassifier, exportOptions, diagramBuilderOptions);
+            renderedCache[domain] = GenerateSingle(compileOptions, elements, contextClassifier, exportOptions, diagramBuilderOptions, cancellationToken);
         }
         return renderedCache;
     }
@@ -59,7 +59,7 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
     /// <summary>
     /// Компилирует диаграмму состояний.
     /// </summary>
-    protected bool GenerateSingle(IDiagramCompileOptions options, List<ContextInfo> allContexts, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    protected bool GenerateSingle(IDiagramCompileOptions options, List<ContextInfo> allContexts, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling State {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
         var _factory = new UmlTransitionStateFactory();
@@ -68,7 +68,7 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
         var bf2 = ContextDiagramBuildersFactory.BuilderForType(diagramBuilderOptions.DiagramType, diagramBuilderOptions, _logger.WriteLog);
 
         var diagramCompilerState = new UmlStateDiagramCompilerDomain(contextClassifier, diagramBuilderOptions, bf2, exportOptions, _generator, _logger.WriteLog);
-        var rendered = diagramCompilerState.Compile(options.MetaItem, options.DiagramId, options.OutputFileName, allContexts);
+        var rendered = diagramCompilerState.CompileAsync(options.MetaItem, options.DiagramId, options.OutputFileName, allContexts, cancellationToken);
 
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
         return rendered;

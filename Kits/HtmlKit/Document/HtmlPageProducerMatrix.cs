@@ -36,12 +36,12 @@ public class HtmlPageProducerMatrix : HtmlPageProducer, IHtmlPageMatrix
 
     public IHtmlMatrix HtmlMatrix => _lazyHtmlMatrix.Value;
 
-    public HtmlPageProducerMatrix(IHtmlMatrixGenerator htmlMatrixGenerator, IContextInfoDataset<ContextInfo> dataset, IHtmlMatrixIndexer<ContextInfo> indexer, IHtmlMatrixSummaryBuilder uiMatrixSummaryBuilder, HtmlTableOptions options) : base()
+    public HtmlPageProducerMatrix(IHtmlMatrixGenerator htmlMatrixGenerator, IContextInfoDataset<ContextInfo> dataset, IHtmlMatrixIndexer<ContextInfo> indexer, IHtmlMatrixSummaryBuilder matrixSummaryBuilder, HtmlTableOptions options) : base()
     {
         _htmlMatrixGenerator = htmlMatrixGenerator;
         Dataset = dataset;
         Indexer = indexer;
-        _matrixSummaryBuilder = uiMatrixSummaryBuilder;
+        _matrixSummaryBuilder = matrixSummaryBuilder;
         _options = options;
         _lazyHtmlMatrix = new Lazy<IHtmlMatrix>(() => htmlMatrixGenerator.Generate());
     }

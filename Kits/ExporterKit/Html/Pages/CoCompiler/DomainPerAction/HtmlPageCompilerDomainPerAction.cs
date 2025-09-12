@@ -37,11 +37,11 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 
     // context: html, build
 
-    public Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
+    public async Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
 
-        var dataset = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         var uiMatrixSummaryBuilder = new HtmlMatrixSummaryBuilderDomainPerAction();
 
@@ -56,6 +56,5 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
         var outputFile = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.index, "index.html");
 
         File.WriteAllText(outputFile, result);
-        return Task.CompletedTask;
     }
 }
