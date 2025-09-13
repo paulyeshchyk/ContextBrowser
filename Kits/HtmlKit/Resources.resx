@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -177,7 +177,7 @@
     color: inherit;
 }
 .some_special_cell_class a {
-  padding: var(--alt-cell-padding); /* Используем новую переменную */
+  padding: var(--alt-cell-padding);
 }
 
 .cell_data a:hover {

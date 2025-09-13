@@ -18,7 +18,7 @@ where DTO : ContextKeyContainer
 {
     private readonly Func<DTO, string> _onGetFileName;
 
-    public HtmlPageWithTabsEntityListBuilder(IContextInfoDataset contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<DTO, string> onGetFileName)
+    public HtmlPageWithTabsEntityListBuilder(IContextInfoDataset<ContextInfo> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<DTO, string> onGetFileName)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;

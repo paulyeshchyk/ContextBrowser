@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -28,18 +29,21 @@ public class ParsingOrchestrator : IParsingOrchestrator
     private readonly IDeclarationParserFactory _declarationParserFactory;
     private readonly IReferenceParserFactory _referenceParserFactory;
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoRelationManager _relationManager;
 
     public ParsingOrchestrator(
         IContextInfoCacheService contextInfoCacheService,
         ICodeParseService codeParseService,
         IDeclarationParserFactory declarationParserFactory,
         IReferenceParserFactory referenceParserFactory,
+        IContextInfoRelationManager relationManager,
         IAppLogger<AppLevel> logger)
     {
         _contextInfoCacheService = contextInfoCacheService;
         _codeParseService = codeParseService;
         _declarationParserFactory = declarationParserFactory;
         _referenceParserFactory = referenceParserFactory;
+        _relationManager = relationManager;
         _logger = logger;
     }
 
@@ -48,37 +52,11 @@ public class ParsingOrchestrator : IParsingOrchestrator
     {
         var cacheModel = options.Export.FilePaths.CacheModel;
 
-        // Try to read from cache first
-        var contextsFromCache = await _contextInfoCacheService.ReadContextsFromCache(
+        var result = await _contextInfoCacheService.GetOrParseAndCacheAsync(
             cacheModel,
-            (token) => Task.FromResult<IEnumerable<ContextInfo>>(Enumerable.Empty<ContextInfo>()), // Placeholder to satisfy signature
+            (token) => ParsingJobAsync(options, token),
+            _relationManager.ConvertToContextInfoAsync,
             cancellationToken);
-
-        if (contextsFromCache.Any())
-        {
-            return contextsFromCache;
-        }
-
-        var declarationParser = _declarationParserFactory.Create(options.ParsingOptions.SemanticOptions);
-        var referenceParser = _referenceParserFactory.Create();
-
-        var declarationFileParser = new SemanticDeclarationFileParser(declarationParser);
-        var referenceFileParser = new ReferenceFileParser(referenceParser);
-
-        var fileParsers = new SortedList<int, IFileParser> {
-            { 0, declarationFileParser },
-            { 1, referenceFileParser }
-        };
-
-        var parserChain = new ParserChain(fileParsers);
-
-        var result = contextsFromCache = await _codeParseService.Parse(parserChain, cancellationToken);
-
-        // Save to cache in a fire-and-forget task
-        _ = Task.Run(async () =>
-        {
-            await _contextInfoCacheService.SaveContextsToCacheAsync(cacheModel, result, cancellationToken).ConfigureAwait(false);
-        }, cancellationToken);
 
         if (!result.Any())
         {
@@ -86,5 +64,22 @@ public class ParsingOrchestrator : IParsingOrchestrator
             return Enumerable.Empty<ContextInfo>();
         }
         return result;
+    }
+
+    private async Task<IEnumerable<ContextInfo>> ParsingJobAsync(AppOptions options, CancellationToken token)
+    {
+        var declarationParser = _declarationParserFactory.Create(options.ParsingOptions.SemanticOptions);
+        var referenceParser = _referenceParserFactory.Create();
+
+        var declarationFileParser = new SemanticDeclarationFileParser(declarationParser);
+        var referenceFileParser = new ReferenceFileParser(referenceParser);
+
+        var fileParsers = new SortedList<int, IFileParser> {
+                { 0, declarationFileParser },
+                { 1, referenceFileParser }
+            };
+
+        var parserChain = new ParserChain(fileParsers);
+        return await _codeParseService.Parse(parserChain, token);
     }
 }

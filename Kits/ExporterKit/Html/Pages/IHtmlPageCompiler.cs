@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 
@@ -5,5 +7,5 @@ namespace HtmlKit.Page.Compiler;
 
 public interface IHtmlPageCompiler
 {
-    void Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions);
+    Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken);
 }

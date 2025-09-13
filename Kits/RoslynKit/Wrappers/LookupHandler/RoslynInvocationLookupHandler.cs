@@ -65,6 +65,8 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
         }
 
         _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"[DONE] Fallback fake callee created for: {symbolDto.FullName}");
+
+        typeContext.Owns.Add(methodContext);
         _collector.Append(methodContext);
 
         return methodContext;

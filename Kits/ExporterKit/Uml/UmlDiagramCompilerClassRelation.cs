@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowser.DiagramFactory.Exporters;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Uml;
+using LoggerKit;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
@@ -16,22 +20,33 @@ namespace UmlKit.Exporter;
 // pattern: Builder
 public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
 {
-    //context: build, uml, links
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options)
+    private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
+
+    public UmlDiagramCompilerClassRelation(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
     {
-        var contextInfoList = contextInfoDataset.GetAll().ToList();
+        _logger = logger;
+        _datasetProvider = datasetProvider;
+    }
+
+    //context: build, uml, links
+    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    {
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+
+        var contextInfoList = dataset.GetAll().ToList();
         var linkGenerator = new ContextInfoDataLinkGenerator(contextClassifier, contextInfoList);
         var links = linkGenerator.Generate();
 
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.pumlExtra, "uml.4.links.puml");
         var diagramId = $"relation_{outputPath}".AlphanumericOnly();
-        var diagram = new UmlDiagramClass(options, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
         foreach (var (from, to) in links)
         {
-            AddRelation(options, diagram, from, to);
+            AddRelation(diagramBuilderOptions, diagram, from, to);
         }
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };

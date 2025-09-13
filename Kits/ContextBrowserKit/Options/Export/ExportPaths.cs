@@ -26,6 +26,15 @@ public sealed class ExportFilePaths : ExportPaths
 
         return Path.GetFullPath(combinedPath);
     }
+
+    public override string BuildRelativePath(string from, params string[] files)
+    {
+        string filesPath = Path.Combine(files);
+
+        string combinedPath = Path.Combine(from, filesPath);
+
+        return combinedPath;
+    }
 }
 
 // context: file, update
@@ -59,6 +68,19 @@ public sealed class ExportWebPaths : ExportPaths
 
         return $"{baseUrl}/{cleanedRelativePath}";
     }
+
+    // context: file, update
+    public override string BuildRelativePath(string from, params string[] files)
+    {
+        string relativePathFromFiles = string.Join("/", files);
+
+        string cleanedFrom = from.Replace("\\", "/").Replace("//", "/").TrimStart('.', '/');
+        string baseUrl = $"./{cleanedFrom}";
+
+        string cleanedRelativePath = relativePathFromFiles.Replace("\\", "/").Replace("//", "/").TrimStart('.', '/');
+
+        return $"{baseUrl}/{cleanedRelativePath}";
+    }
 }
 
 // context: settings, model
@@ -79,6 +101,17 @@ public abstract class ExportPaths
 
     // context: settings, file, update
     public abstract string BuildAbsolutePath(string from, params string[] files);
+
+    // context: settings, file, update
+    public abstract string BuildRelativePath(string from, params string[] files);
+
+    // context: settings, file, update
+    public string BuildRelativePath(ExportPathType pathType, params string[] files)
+    {
+        var p = GetRelativePath(pathType);
+        var result = BuildRelativePath(p, files);
+        return result;
+    }
 
     // context: settings, file, update
     public string BuildAbsolutePath(ExportPathType pathType, params string[] files)

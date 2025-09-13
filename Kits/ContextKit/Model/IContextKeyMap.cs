@@ -1,0 +1,33 @@
+﻿using System.Collections.Generic;
+using ContextBrowserKit.Options.Export;
+
+namespace ContextKit.Model;
+
+// context: ContextInfoMatrix, model
+public interface IContextKeyMap<TContext, TKey> : IContextKeyMapBuilder<TContext, TKey>
+    where TContext : IContextWithReferences<TContext>
+    where TKey : notnull
+{
+    // context: ContextInfoMatrix, read
+    IEnumerable<string> GetActions();
+
+    // context: ContextInfoMatrix, read
+    IEnumerable<string> GetDomains();
+
+    // context: ContextInfoMatrix, read
+    List<TContext> GetMethodsByAction(string action);
+
+    // context: ContextInfoMatrix, read
+    List<TContext> GetMethodsByDomain(string domain);
+}
+
+// context: ContextInfoMatrix, build
+public interface IContextKeyMapBuilder<TContext, TKey>
+    where TContext : IContextWithReferences<TContext>
+    where TKey : notnull
+{
+    // context: ContextInfoMatrix, build
+    void Build(IEnumerable<TContext> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier);
+
+    Dictionary<TKey, List<TContext>>? GetMapData();
+}

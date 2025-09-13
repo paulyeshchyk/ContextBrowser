@@ -9,132 +9,76 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Factory;
 using LoggerKit;
 
 namespace ContextBrowser.FileManager;
 
-// context: relations, build
-public interface IContextInfoCacheService
-{
-    // context: relations, build
-    Task<IEnumerable<ContextInfo>> ReadContextsFromCache(CacheJsonModel cacheModel, Func<CancellationToken, Task<IEnumerable<ContextInfo>>> fallback, CancellationToken cancellationToken);
-
-    // context: relations, update
-    Task SaveContextsToCacheAsync(CacheJsonModel cacheModel, IEnumerable<ContextInfo> contextsList, CancellationToken cancellationToken);
-}
-
 /// <summary>
-/// Управляет сохранением и чтением списка объектов ContextInfo,
-/// используя промежуточную модель для обхода проблем сериализации.
+/// Управляет сохранением и чтением списка объектов ContextInfo
 /// </summary>
 // context: relations, build
 public class ContextInfoCacheService : IContextInfoCacheService
 {
-    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
     private readonly IAppLogger<AppLevel> _appLogger;
-    private readonly IContextInfoRelationManager _relationManager;
+    private readonly IFileCacheStrategy _cacheStrategy;
 
-    public ContextInfoCacheService(IContextInfoRelationManager relationManager, IAppLogger<AppLevel> appLogger)
+    private Task<IEnumerable<ContextInfo>>? _inMemoryCacheTask;
+    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+    public ContextInfoCacheService(IFileCacheStrategy fileCacheStrategy, IAppLogger<AppLevel> appLogger)
     {
         _appLogger = appLogger;
-        _relationManager = relationManager;
+        _cacheStrategy = fileCacheStrategy;
     }
 
-    /// <summary>
-    /// Асинхронно сохраняет список контекстов в файл.
-    /// </summary>
-    // context: relations, update
-    public async Task SaveContextsToCacheAsync(CacheJsonModel cacheModel, IEnumerable<ContextInfo> contextsList, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ContextInfo>> GetOrParseAndCacheAsync(
+        CacheJsonModel cacheModel,
+        Func<CancellationToken, Task<IEnumerable<ContextInfo>>> parseJob,
+        Func<List<ContextInfoSerializableModel>, CancellationToken, Task<IEnumerable<ContextInfo>>> onRelationCallback,
+        CancellationToken cancellationToken)
     {
-        if (File.Exists(cacheModel.Output))
+        if (_inMemoryCacheTask?.Status == TaskStatus.RanToCompletion)
         {
-            try
-            {
-                File.Delete(cacheModel.Output);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Cache can't be erased\n{ex}");
-            }
+            _appLogger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, "Returning data from in-memory cache.");
+            return _inMemoryCacheTask.Result;
         }
 
+        await _semaphore.WaitAsync(cancellationToken);
         try
         {
-            var serializableList = ContextInfoSerializableModelAdapter.Adapt(contextsList.ToList());
-
-            var json = JsonSerializer.Serialize(serializableList, _jsonOptions);
-            if (string.IsNullOrEmpty(json))
+            if (_inMemoryCacheTask?.Status == TaskStatus.RanToCompletion)
             {
-                throw new Exception("Contexts list has no items");
+                return _inMemoryCacheTask.Result;
             }
 
-            var directoryPath = Path.GetDirectoryName(cacheModel.Output);
-            if (string.IsNullOrEmpty(directoryPath))
+            var contextsFromFile = await _cacheStrategy.ReadAsync(cacheModel, onRelationCallback, cancellationToken);
+            if (contextsFromFile.Any())
             {
-                throw new Exception($"directoryPath is empty for cache output file ({cacheModel.Output})");
+                _inMemoryCacheTask = Task.FromResult(contextsFromFile);
+                return contextsFromFile;
             }
 
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
+            _appLogger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "Cache not found. Starting parsing job.");
 
-            await File.WriteAllTextAsync(cacheModel.Output, json, System.Text.Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+            _inMemoryCacheTask = parseJob(cancellationToken);
+            var parsingResult = await _inMemoryCacheTask;
+
+            SaveOnBackground(parsingResult, cacheModel, cancellationToken);
+
+            return parsingResult;
         }
-        catch (Exception ex)
+        finally
         {
-            throw new Exception($"Cache can't be saved\n{ex}");
+            _semaphore.Release();
         }
     }
 
-    /// <summary>
-    /// Читает список контекстов из файла и восстанавливает связи.
-    /// </summary>
-    // context: relations, build
-    public async Task<IEnumerable<ContextInfo>> ReadContextsFromCache(CacheJsonModel cacheModel, Func<CancellationToken, Task<IEnumerable<ContextInfo>>> fallback, CancellationToken cancellationToken)
+    private void SaveOnBackground(IEnumerable<ContextInfo> parsingResult, CacheJsonModel cacheModel, CancellationToken cancellationToken)
     {
-        if (!File.Exists(cacheModel.Input) || cacheModel.RenewCache)
+        _ = Task.Run(async () =>
         {
-            _appLogger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "Renewing cache");
-            return await fallback(cancellationToken).ConfigureAwait(false);
-        }
-
-        try
-        {
-            var fileContent = File.ReadAllText(cacheModel.Input);
-            if (string.IsNullOrEmpty(fileContent))
-            {
-                return await fallback(cancellationToken).ConfigureAwait(false);
-            }
-
-            return await DeserializeOrRenew(fallback, fileContent, cancellationToken).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            _appLogger.WriteLog(AppLevel.R_Cntx, LogLevel.Exception, ex.Message);
-            return await fallback(cancellationToken).ConfigureAwait(false);
-        }
-    }
-
-    // context: relations, build
-    internal async Task<IEnumerable<ContextInfo>> DeserializeOrRenew(Func<CancellationToken, Task<IEnumerable<ContextInfo>>> fallback, string fileContent, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var serializableList = JsonSerializer.Deserialize<List<ContextInfoSerializableModel>>(fileContent, _jsonOptions);
-            if (serializableList == null)
-            {
-                return await fallback(cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                return _relationManager.ConvertToContextInfo(serializableList);
-            }
-        }
-        catch (Exception e)
-        {
-            _appLogger.WriteLog(AppLevel.R_Cntx, LogLevel.Exception, e.Message);
-            return await fallback(cancellationToken).ConfigureAwait(false);
-        }
+            await _cacheStrategy.SaveAsync(parsingResult, cacheModel, cancellationToken).ConfigureAwait(false);
+        }, cancellationToken);
     }
 }

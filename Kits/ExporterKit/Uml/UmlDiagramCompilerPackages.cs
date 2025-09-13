@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
@@ -18,13 +22,24 @@ namespace UmlKit.Exporter;
 // pattern: Builder
 public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
 {
-    // context: build, uml
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options)
+    private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
+
+    public UmlDiagramCompilerPackages(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
     {
+        _logger = logger;
+        _datasetProvider = datasetProvider;
+    }
+
+    // context: build, uml
+    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    {
+        var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.pumlExtra, "uml.packages.domains.puml");
         var diagramId = $"packages_{outputPath}".AlphanumericOnly();
 
-        var diagram = new UmlDiagramClass(options, diagramId: diagramId);
+        var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
         diagram.SetSeparator("none");
 

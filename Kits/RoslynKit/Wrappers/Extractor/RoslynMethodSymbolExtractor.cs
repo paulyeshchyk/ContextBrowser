@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using ContextBrowserKit.Log;
@@ -21,7 +21,8 @@ internal static class RoslynMethodSymbolExtractor
         var si = semanticModel.GetSymbolInfo(invocation.Expression, cancellationToken);
         if (si is not SymbolInfo symbolInfo)
         {
-            throw new Exception("si is not SymbolInfo");
+            _onWriteLog?.Invoke(AppLevel.R_Invocation, LogLevel.Exception, $"SymbolInfo not found for {invocation.Expression}");
+            return null;
         }
 
         if (symbolInfo.Symbol is IMethodSymbol method)

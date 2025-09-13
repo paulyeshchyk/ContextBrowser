@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
@@ -22,20 +26,29 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompiler
 {
     private const string SParentheses = "()";
+    private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
+
+    public UmlDiagramCompilerPackageMethodPerActionDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
+    {
+        _logger = logger;
+        _datasetProvider = datasetProvider;
+    }
 
     //context: build, uml
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
-        CompileDomainGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
-        CompileNoDomainGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        CompileDomainGroup(dataset, exportOptions, diagramBuilderOptions);
+        CompileNoDomainGroup(dataset, exportOptions, diagramBuilderOptions);
 
-        CompileActionGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
-        CompileNoActionGroup(contextInfoDataset, exportOptions, diagramBuilderOptions);
+        CompileActionGroup(dataset, exportOptions, diagramBuilderOptions);
+        CompileNoActionGroup(dataset, exportOptions, diagramBuilderOptions);
 
         return new Dictionary<string, bool>();
     }
 
-    private static void CompileActionGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileActionGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var actionContexts = contextInfoDataset
             .SelectMany(cell => cell.Value.Select(context => (action: cell.Key.Action, context: context)))
@@ -54,7 +67,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         }
     }
 
-    private static void CompileNoActionGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileNoActionGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var actionContexts = contextInfoDataset
                 .SelectMany(cell => cell.Value)
@@ -64,7 +77,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         BuildPackageAction(actionContexts, exportOptions, diagramBuilderOptions, "NoAction", "?");
     }
 
-    private static void CompileDomainGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileDomainGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)
@@ -85,7 +98,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         }
     }
 
-    private static void CompileNoDomainGroup(IContextInfoDataset contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileNoDomainGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)

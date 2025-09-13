@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextKit.Model;
 using UmlKit;
+using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Compiler.CoCompiler;
 using UmlKit.Infrastructure.Options;
@@ -28,7 +29,7 @@ public class UmlDiagramCompilerClass
         _linkGenerator = linkGenerator;
     }
 
-    public void Build(IContextInfoDataset matrix)
+    public void Build(IContextInfoDataset<ContextInfo> matrix)
     {
         var diagramId = $"actionPerDomain_{_outputPath}".AlphanumericOnly();
 
@@ -56,7 +57,6 @@ public class UmlDiagramCompilerClass
         var label = $"{packageId}\\nMethods: {count}";
         var url = linkGenerator(cell.Action, cell.Domain);
 
-#warning no url defined
         var package = new UmlPackage(packageId, alias: packageId.AlphanumericOnly(), url: null);
         package.Add(new UmlComponent(label, url));
         diagram.Add(package);

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using ContextKit.Model;
 
 namespace ContextBrowser.Services;
 

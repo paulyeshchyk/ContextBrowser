@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using ContextBrowser;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
@@ -37,9 +38,9 @@ public class UmlDiagramCompilerSequence
     /// <param name="options">Опции для построителя диаграммы переходов.</param>
     /// <param name="diagramBuilder">Построителя диаграмм.</param>
     public UmlDiagramCompilerSequence(
+        IAppLogger<AppLevel> logger,
         IContextClassifier classifier,
         ExportOptions exportOptions,
-        IAppLogger<AppLevel> logger,
         DiagramBuilderOptions options,
         IContextDiagramBuilder diagramBuilder)
     {
@@ -60,7 +61,7 @@ public class UmlDiagramCompilerSequence
     /// <param name="outputFileName">Имя выходного файла.</param>
     /// <param name="contextItems">Список контекстных элементов.</param>
     /// <returns>Возвращает true, если рендеринг был успешным, иначе false.</returns>
-    public bool Compile(string metaItem, FetchType fetchType, string diagramId, string title, string outputFileName, List<ContextInfo> contextItems)
+    public bool Compile(string metaItem, FetchType fetchType, string diagramId, string title, string outputFileName, List<ContextInfo> contextItems, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile sequence for [{metaItem}]", LogLevelNode.Start);
 

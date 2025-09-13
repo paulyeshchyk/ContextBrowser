@@ -9,26 +9,21 @@ public static class ContextInfoFullNameIndexBuilder
     public static Dictionary<string, TContext> Build<TContext>(IEnumerable<TContext> items)
         where TContext : IContextWithReferences<TContext>
     {
-        return items
-            .Where(x => !string.IsNullOrWhiteSpace(x.FullName))
-            .GroupBy(x => x.FullName)
-            .ToDictionary(
-                g => g.Key,
-                g => g.First(),
-                StringComparer.OrdinalIgnoreCase);
-    }
-}
+        var resultDictionary = new Dictionary<string, TContext>(StringComparer.OrdinalIgnoreCase);
 
-public static class ContextInfoElementTypeAndNameIndexBuilder
-{
-    public static Dictionary<string, TContext> Build<TContext>(IEnumerable<TContext> items)
-        where TContext : IContextWithReferences<TContext>
-    {
-        return items
-            .Where(c => !string.IsNullOrWhiteSpace(c.Name))
-            .GroupBy(c => c.NameWithClassOwnerName)
-            .ToDictionary(
-                g => g.Key,
-                g => g.First());
+        foreach (var item in items)
+        {
+            // Проверяем, что FullName не пустой, как и в вашем коде
+            if (string.IsNullOrWhiteSpace(item.FullName))
+            {
+                continue;
+            }
+
+            // Здесь мы пытаемся добавить элемент. 
+            // Метод TryAdd безопасен и не выбросит исключение, если ключ уже есть.
+            resultDictionary.TryAdd(item.FullName, item);
+        }
+
+        return resultDictionary;
     }
 }

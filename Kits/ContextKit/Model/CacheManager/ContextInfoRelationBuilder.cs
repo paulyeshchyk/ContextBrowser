@@ -26,6 +26,7 @@ public static class ContextInfoRelationBuilder
         ContextInfoRelationReferenceInjector.Inject(context: context, lookupDictionary: lookupDictionary, referencesFullNames: contextInfoSerializableModel.ReferencesFullNames, _logger: _logger);
         ContextInfoRelationInvokedByInjector.Inject(context: context, lookupDictionary: lookupDictionary, invokedByFullNames: contextInfoSerializableModel.InvokedByFullNames, _logger: _logger);
         ContextInfoRelationPropertyInjector.Inject(context: context, lookupDictionary: lookupDictionary, propertiesFullNames: contextInfoSerializableModel.PropertiesFullNames, _logger: _logger);
+        ContextInfoRelationOwnsInjector.Inject(context: context, lookupDictionary: lookupDictionary, ownsFullNames: contextInfoSerializableModel.OwnsFullNames, _logger: _logger);
     }
 }
 
@@ -146,6 +147,37 @@ public static class ContextInfoRelationPropertyInjector
             ? $"[DONE] Adding property for [{context.FullName}] with [{property.FullName}]"
             : $"[SKIP] Adding property for [{context.FullName}] with [{property.FullName}]";
         var level = addedToProperties
+            ? LogLevel.Trace
+            : LogLevel.Err;
+        _logger.WriteLog(AppLevel.R_Cntx, level, message);
+    }
+}
+
+public static class ContextInfoRelationOwnsInjector
+{
+    // context: relations, build
+    public static void Inject(IAppLogger<AppLevel> _logger, Dictionary<string, ContextInfo> lookupDictionary, ContextInfo context, HashSet<string> ownsFullNames)
+    {
+        foreach (var fullName in ownsFullNames)
+        {
+            if (lookupDictionary.TryGetValue(fullName, out var property))
+            {
+                InjectOwns(context, property, _logger);
+            }
+            else
+            {
+                _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"Property not found {fullName}");
+            }
+        }
+    }
+
+    private static void InjectOwns(ContextInfo context, ContextInfo owns, IAppLogger<AppLevel> _logger)
+    {
+        var addedToOwns = ContextInfoService.AddToOwns(context, owns);
+        var message = addedToOwns
+            ? $"[DONE] Adding property for [{context.FullName}] with [{owns.FullName}]"
+            : $"[SKIP] Adding property for [{context.FullName}] with [{owns.FullName}]";
+        var level = addedToOwns
             ? LogLevel.Trace
             : LogLevel.Err;
         _logger.WriteLog(AppLevel.R_Cntx, level, message);

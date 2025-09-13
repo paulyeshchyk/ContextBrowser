@@ -3,24 +3,38 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using GraphKit.Walkers;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
-using GraphKit.Walkers;
 
 namespace UmlKit.Exporter;
 
 public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
 {
-    // context: build, uml
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions options)
+    private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
+
+    public UmlDiagramCompilerMindmap(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
     {
-        var elements = contextInfoDataset.GetAll();
+        _logger = logger;
+        _datasetProvider = datasetProvider;
+    }
+
+    // context: build, uml
+    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    {
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+
+        var elements = dataset.GetAll();
         var distinctDomains = elements.SelectMany(e => e.Domains).Distinct();
 
         foreach (var domain in distinctDomains)
@@ -28,7 +42,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
             var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"mindmap_domain_{domain}.puml");
             var diagramId = $"mindmap_{outputPath}".AlphanumericOnly();
 
-            var diagram = new UmlDiagramMindmap(options, diagramId: diagramId);
+            var diagram = new UmlDiagramMindmap(diagramBuilderOptions, diagramId: diagramId);
             diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
             diagram.SetSeparator("none");
             diagram.AddStyle(UmlStyle.Builder("grey").BackgroundColor("#f0f0f0").LineColor("#e0e0e0").HyperlinkColor("#101010").HyperlinkUnderlineThickness(0).Build());
@@ -38,10 +52,10 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
             var node = new UmlNode(domain, alias: null, url: UmlUrlBuilder.BuildDomainUrl(domain));
             node.Stylename = "selected";
 
-            //IEnumerable<UmlNode> parentsForDomain = GetParentsForDomain(domain, contextInfoDataset);
-            //node.Parents.AddRange(parentsForDomain);
+            IEnumerable<UmlNode> parentsForDomain = GetParentsForDomain(domain, dataset);
+            node.Parents.AddRange(parentsForDomain);
 
-            IEnumerable<UmlNode> childrenDomain = GetChildrenForDomain(domain, contextInfoDataset);
+            IEnumerable<UmlNode> childrenDomain = GetChildrenForDomain(domain, dataset);
             node.Children.AddRange(childrenDomain);
 
             diagram.Add(node);
@@ -59,13 +73,13 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
     /// <param name="domain">Домен, для которого ищутся дети.</param>
     /// <param name="dataset">Набор данных о контексте.</param>
     /// <returns>Коллекция узлов UmlNode, представляющих дочерние домены.</returns>
-    private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset dataset)
+    private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo> dataset)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain));
 
         return DfsWalker_Traversal.Run(
               startItems: startNodes,
-            nextSelector: x => x.References,
+            nextSelector: x => new HashSet<ContextInfo>(x.References.Union(x.Owns)),
               createNode: UmlNodeTraverseBuilder.BuildMindNode,
                linkNodes: (parent, child) => parent.Children.Add(child));
     }
@@ -76,7 +90,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
     /// <param name="domain">Домен, для которого ищутся родители.</param>
     /// <param name="dataset">Набор данных о контексте.</param>
     /// <returns>Коллекция узлов UmlNode, представляющих родительские домены.</returns>
-    private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset dataset)
+    private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo> dataset)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain));
 

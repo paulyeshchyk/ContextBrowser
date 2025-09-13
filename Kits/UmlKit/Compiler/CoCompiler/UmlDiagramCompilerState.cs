@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using ContextBrowser;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
@@ -74,7 +75,7 @@ public abstract class UmlDiagramCompilerState
     /// </summary>
     /// <param name="metaItem">Имя домена.</param>
     /// <param name="allContexts">Список всех контекстных элементов.</param>
-    public bool Compile(string metaItem, string diagramId, string diagramFileName, List<ContextInfo> allContexts)
+    public bool CompileAsync(string metaItem, string diagramId, string diagramFileName, List<ContextInfo> allContexts, CancellationToken cancellationToken)
     {
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile state for [{metaItem}]", LogLevelNode.Start);
 
@@ -98,6 +99,6 @@ public abstract class UmlDiagramCompilerState
 
         _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
-        return true;
+        return rendered;
     }
 }

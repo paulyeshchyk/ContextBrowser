@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowser;
 using ContextBrowser.Services;
 using ContextBrowserKit.Options;
@@ -15,20 +17,23 @@ public class UmlDiagramCompilerOrchestrator : IUmlDiagramCompilerOrchestrator
 {
     private readonly IEnumerable<IUmlDiagramCompiler> _compilers;
     private readonly IAppLogger<AppLevel> _appLogger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
 
     public UmlDiagramCompilerOrchestrator(
         IEnumerable<IUmlDiagramCompiler> compilers,
+        IContextInfoDatasetProvider datasetProvider,
         IAppLogger<AppLevel> appLogger)
     {
         _compilers = compilers;
+        _datasetProvider = datasetProvider;
         _appLogger = appLogger;
     }
 
-    public void CompileAll(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions builderOptions)
+    public async Task CompileAllAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions builderOptions, CancellationToken cancellationToken)
     {
         foreach (var compiler in _compilers)
         {
-            compiler.Compile(contextInfoDataset, contextClassifier, exportOptions, builderOptions);
+            await compiler.CompileAsync(contextClassifier, exportOptions, builderOptions, cancellationToken);
         }
     }
 }

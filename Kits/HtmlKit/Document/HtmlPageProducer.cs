@@ -1,0 +1,49 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using ContextBrowserKit.Matrix;
+using HtmlKit.Builders.Core;
+using HtmlKit.Extensions;
+using HtmlKit.Options;
+using HtmlKit.Page;
+
+namespace HtmlKit.Document;
+
+// context: html, model
+public abstract class HtmlPageProducer
+{
+    public string Title { get; set; } = string.Empty;
+
+    public HtmlPageProducer()
+    {
+    }
+
+    protected void Produce(TextWriter writer, IHtmlMatrix matrix, HtmlTableOptions options)
+    {
+        HtmlBuilderFactory.Html.With(writer, () =>
+        {
+            HtmlBuilderFactory.Head.With(writer, () =>
+            {
+                var attrs = new HtmlTagAttributes() { { "charset", "UTF-8" } };
+                HtmlBuilderFactory.Meta.Cell(writer, attributes: attrs, isEncodable: false);
+                HtmlBuilderFactory.Title.Cell(writer, innerHtml: Title);
+                HtmlBuilderFactory.Style.Cell(writer, innerHtml: Resources.HtmlProducerContentStyle, isEncodable: false);
+
+                foreach (var script in GetScripts())
+                    HtmlBuilderFactory.Script.Cell(writer, innerHtml: script, isEncodable: false);
+
+                HtmlBuilderFactory.Body.With(writer, () =>
+                {
+                    HtmlBuilderFactory.H1.Cell(writer, innerHtml: Title);
+                    WriteContent(writer, matrix, options);
+                });
+            });
+        });
+    }
+
+    protected virtual IEnumerable<string> GetScripts()
+    {
+        yield return Resources.HtmlProducerContentStyleScript;
+    }
+
+    protected abstract void WriteContent(TextWriter sb, IHtmlMatrix matrix, HtmlTableOptions options);
+}

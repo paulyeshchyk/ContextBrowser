@@ -1,3 +1,6 @@
+using System.IO;
+using System.Net;
+using System.Reflection.Metadata;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Html.Puml;
@@ -9,30 +12,74 @@ namespace HtmlKit.Page.Compiler;
 
 public abstract class PumlEmbeddedContentDatamodel
 {
+    static readonly string SLocalHttpServerHost = "http://localhost:5500";
+    static readonly string SLocalJavaServerHost = "http://localhost:8080";
+
+    protected bool UseLocalFile { get; set; } = true;
+
+    protected bool IsEmbedded { get; set; } = false;
+
+    protected bool IsRelative { get; set; } = true;
+
+    protected string ContentLocationFileSystemPath { get; set; } = "./../";
+
+    protected string ContentLocationRemotePath { get; set; } = SLocalHttpServerHost;
+
     protected abstract string GetPumlFileName(IContextKey contextKey);
 
     protected abstract string GetPumlFileName(string contextKey);
 
-    public HtmlBuilder GetEmbeddedPumlInjection(IContextKey contextKey, ExportOptions exportOptions)
+    public HtmlBuilder GetPumlBuilder(IContextKey contextKey, ExportOptions exportOptions)
     {
-        string fileName = GetPumlFileName(contextKey);
-        return GetInjection(fileName, exportOptions);
+        if (IsEmbedded)
+        {
+            string fileName = GetPumlFileName(contextKey);
+            var path = GetPath(IsRelative, fileName, exportOptions);
+            string pumlFileContent = PumlInjector.GetPumlData(exportOptions, path);
+            string encoded = WebUtility.HtmlEncode(pumlFileContent);
+            return HtmlBuilderFactory.Puml(content: encoded, server: SLocalJavaServerHost);
+        }
+        else
+        {
+            var fileName = GetPumlFileName(contextKey);
+            var path = GetPath(IsRelative, fileName, exportOptions);
+            return HtmlBuilderFactory.PumlReference(src: path, server: SLocalJavaServerHost);
+        }
     }
 
-    public HtmlBuilder GetEmbeddedPumlInjection(string contextKey, ExportOptions exportOptions)
+    public HtmlBuilder GetPumlBuilder(string contextKey, ExportOptions exportOptions)
     {
-        string fileName = GetPumlFileName(contextKey);
-        return GetInjection(fileName, exportOptions);
+        if (IsEmbedded)
+        {
+            var fileName = GetPumlFileName(contextKey);
+            var path = GetPath(IsRelative, fileName, exportOptions);
+            string pumlFileContent = PumlInjector.GetPumlData(exportOptions, path);
+            string encoded = WebUtility.HtmlEncode(pumlFileContent);
+            return HtmlBuilderFactory.Puml(content: encoded, server: SLocalJavaServerHost);
+        }
+        else
+        {
+            var fileName = GetPumlFileName(contextKey);
+            var path = GetPath(IsRelative, fileName, exportOptions);
+            return HtmlBuilderFactory.PumlReference(src: path, server: SLocalJavaServerHost);
+        }
     }
 
-    private static HtmlBuilder GetInjection(string fileName, ExportOptions exportOptions)
+    private string GetPath(bool isRelative, string fileName, ExportOptions exportOptions)
     {
-        var pumlFilePath = exportOptions.FilePaths.BuildAbsolutePath(
-            ExportPathType.puml,
-            fileName);
+        if (isRelative)
+        {
+            var pumlFilePath = exportOptions.FilePaths.BuildRelativePath(ExportPathType.puml, fileName);
+            var host = UseLocalFile
+                ? ContentLocationFileSystemPath
+                : ContentLocationRemotePath;
 
-        string pumlFileContent = PumlInjector.GetPumlData(exportOptions, pumlFilePath);
-
-        return HtmlBuilderFactory.Puml(pumlFileContent, server: "http://localhost:8080");
+            return Path.Combine(host, pumlFilePath);
+        }
+        else
+        {
+            var pumlFilePath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, fileName);
+            return pumlFilePath;
+        }
     }
 }

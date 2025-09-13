@@ -52,7 +52,9 @@ public static partial class HtmlBuilderFactory
 
     public static HtmlBuilder Breadcrumb(BreadcrumbNavigationItem navitem) => new HtmlBuilderBreadcrumb(navitem);
 
-    public static HtmlBuilder Puml(string content, string server, string? rendererMode = null) => new HtmlBuilderPuml(content, server, rendererMode);
+    public static HtmlBuilder Puml(string content, string server, string? rendererMode = null) => new HtmlBuilderPumlContent(content, server, rendererMode);
+
+    public static HtmlBuilder PumlReference(string src, string server, string? rendererMode = null) => new HtmlBuilderPumlReference(src, server, rendererMode);
 
     // pattern: Abstract Factory
     // pattern note: weak

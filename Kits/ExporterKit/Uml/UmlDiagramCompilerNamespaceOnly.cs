@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -20,24 +22,27 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
 
-    public UmlDiagramCompilerNamespaceOnly(IAppLogger<AppLevel> logger)
+    public UmlDiagramCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
     {
         _logger = logger;
+        _datasetProvider = datasetProvider;
     }
 
     //context: uml, build
-    public Dictionary<string, bool> Compile(IContextInfoDataset contextInfoDataset, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
-        var namespaces = GetNamespaces(contextInfoDataset).ToList();
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        var namespaces = GetNamespaces(dataset).ToList();
         foreach (var nameSpace in namespaces)
         {
             Build(diagramBuilderOptions: diagramBuilderOptions,
                           exportOptions: exportOptions,
                               nameSpace: nameSpace,
-                                classes: GetClassesForNamespace(contextInfoDataset),
-                                methods: GetMethods(contextInfoDataset),
-                             properties: GetProperties(contextInfoDataset));
+                                classes: GetClassesForNamespace(dataset),
+                                methods: GetMethods(dataset),
+                             properties: GetProperties(dataset));
         }
         return new Dictionary<string, bool> { };
     }
@@ -73,24 +78,24 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
         diagram.WriteToFile(fileName, writeOptons);
     }
 
-    private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset contextInfoDataSet)
+    private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo> contextInfoDataSet)
     {
         return(nameSpace) => contextInfoDataSet.GetAll()
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
             .Where(c => c.Namespace == nameSpace);
     }
 
-    private IEnumerable<string> GetNamespaces(IContextInfoDataset contextInfoDataSet)
+    private IEnumerable<string> GetNamespaces(IContextInfoDataset<ContextInfo> contextInfoDataSet)
     {
         return contextInfoDataSet.GetAll().Select(c => c.Namespace).Distinct();
     }
 
-    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset contextInfoDataSet)
+    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo> contextInfoDataSet)
     {
         return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
-    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset contextInfoDataSet)
+    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo> contextInfoDataSet)
     {
         return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }

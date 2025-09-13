@@ -18,7 +18,7 @@ where DTO : EntitynameContainer
 {
     private readonly Func<string, string> _onGetFileName;
 
-    public HtmlPageWithTabsEntityBuilder(IContextInfoDataset contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName)
+    public HtmlPageWithTabsEntityBuilder(IContextInfoDataset<ContextInfo> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;
@@ -27,7 +27,7 @@ where DTO : EntitynameContainer
     public override void Build()
     {
         var entitiesList = _contextInfoDataset.GetAll()
-            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
+            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.@record) || (c.ElementType == ContextInfoElementType.@interface))
             .Cast<IContextInfo>();
 
         foreach (var contextInfoItem in entitiesList)

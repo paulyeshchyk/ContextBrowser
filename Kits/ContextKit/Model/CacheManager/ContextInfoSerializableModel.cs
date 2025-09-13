@@ -50,6 +50,8 @@ public record ContextInfoSerializableModel
 
     public Dictionary<string, string> Dimensions { get; set; }
 
+    public HashSet<string> OwnsFullNames { get; set; }
+
     public ContextInfoSerializableModel(ContextInfoElementType elementType,
         string name,
         string fullName,
@@ -66,7 +68,8 @@ public record ContextInfoSerializableModel
         HashSet<string>? referencesFullNames,
         HashSet<string>? invokedByFullNames,
         HashSet<string>? propertiesFullNames,
-        Dictionary<string, string> dimensions)
+        Dictionary<string, string> dimensions,
+        HashSet<string>? ownsFullNames)
     {
         ElementType = elementType;
         Name = name;
@@ -85,5 +88,6 @@ public record ContextInfoSerializableModel
         InvokedByFullNames = invokedByFullNames ?? new();
         PropertiesFullNames = propertiesFullNames ?? new();
         Dimensions = dimensions;
+        OwnsFullNames = ownsFullNames ?? new();
     }
 }

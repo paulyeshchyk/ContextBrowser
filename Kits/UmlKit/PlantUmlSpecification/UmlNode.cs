@@ -89,7 +89,7 @@ public class UmlNode : IUmlParticipant
         }
 
         // style: <<brown>>
-        list.Add(WebUtility.HtmlEncode($"<< {this.Stylename} >>"));
+        list.Add($"<< {this.Stylename} >>");
 
         var result = string.Join(" ", list.Cast<string>().Where(s => !string.IsNullOrWhiteSpace(s)));
 

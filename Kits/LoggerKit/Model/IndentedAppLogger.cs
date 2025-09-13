@@ -152,7 +152,7 @@ public class IndentedAppLogger<T> : AppLogger<T>
         var lines = theMessage.Split(separators, StringSplitOptions.None);
 
         // 3. Добавляем отступ к каждой строке.
-        var indentedLines = lines.Select(line => indentation + line).ToArray();
+        var indentedLines = lines.Select(line => $"{indentation}{line}").ToArray();
 
         return indentedLines;
     }

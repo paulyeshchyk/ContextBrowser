@@ -23,4 +23,7 @@ public interface IContextWithReferences<T> : IContextInfo, IContextDataContainer
 
     // context: IContextWithReferences, read
     HashSet<T> Properties { get; }
+
+    // context: IContextWithReferences, read
+    HashSet<T> Owns { get; }
 }

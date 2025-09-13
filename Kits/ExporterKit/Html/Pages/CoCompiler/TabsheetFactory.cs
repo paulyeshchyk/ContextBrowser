@@ -24,7 +24,7 @@ public static class TabsheetFactory
             model: new MindmapDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -41,7 +41,7 @@ public static class TabsheetFactory
             model: new ClassOnlyDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -58,7 +58,7 @@ public static class TabsheetFactory
             model: new NamespaceOnlyDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -75,7 +75,7 @@ public static class TabsheetFactory
             model: new ActionOnlyClassesDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -115,7 +115,7 @@ public static class TabsheetFactory
             model: new ActionOnlyStatesDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -132,7 +132,7 @@ public static class TabsheetFactory
             model: new ActionOnlySequenceDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -172,7 +172,7 @@ public static class TabsheetFactory
             model: new DomainSummaryComponentsDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -189,7 +189,7 @@ public static class TabsheetFactory
             model: new DomainOnlyMindmapDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -206,7 +206,7 @@ public static class TabsheetFactory
             model: new DomainOnlyStatesDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -223,7 +223,7 @@ public static class TabsheetFactory
             model: new DomainOnlySequenceDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -263,7 +263,7 @@ public static class TabsheetFactory
             model: new DomainOnlyClassesDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlBuilder = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlBuilder.Start(writer);
                 pumlBuilder.Cell(writer);
                 pumlBuilder.End(writer);
@@ -303,7 +303,7 @@ public static class TabsheetFactory
             model: new ActionSummaryDatamodel(),
             build: (writer, model, dto) =>
             {
-                var pumlInjection = model.GetEmbeddedPumlInjection(dto.ContextKey, exportOptions);
+                var pumlInjection = model.GetPumlBuilder(dto.ContextKey, exportOptions);
                 pumlInjection.Start(writer);
                 pumlInjection.Cell(writer);
                 pumlInjection.End(writer);

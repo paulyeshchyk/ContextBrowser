@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowser.Infrastructure;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
@@ -8,7 +10,7 @@ namespace ContextBrowser.Services;
 
 public interface IHtmlCompilerOrchestrator
 {
-    void CompileAll(IContextInfoDataset dataset, IContextClassifier contextClassifier, ExportOptions exportOptions);
+    Task CompileAllAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken);
 }
 
 public class HtmlCompilerOrchestrator : IHtmlCompilerOrchestrator
@@ -20,11 +22,11 @@ public class HtmlCompilerOrchestrator : IHtmlCompilerOrchestrator
         _compilers = compilers;
     }
 
-    public void CompileAll(IContextInfoDataset dataset, IContextClassifier contextClassifier, ExportOptions exportOptions)
+    public async Task CompileAllAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         foreach (var compiler in _compilers)
         {
-            compiler.Compile(dataset, contextClassifier, exportOptions);
+            await compiler.CompileAsync(contextClassifier, exportOptions, cancellationToken);
         }
     }
 }

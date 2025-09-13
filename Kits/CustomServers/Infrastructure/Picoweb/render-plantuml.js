@@ -10,40 +10,6 @@ class RenderPlantUMLElement extends HTMLElement {
       this.getAttribute("server") || publicDemoServerAddress;
     const renderMode = (this.getAttribute("renderMode") || "svg").toLowerCase();
 
-    let diagramDescription = "";
-    if (externalDiagramSource) {
-      // Force the `externalDiagramSource` to an absolute URI using the
-      // location of the page rendering the diagram as the base for relative
-      // URIs. This makes using external files relative to a main document less
-      // cumbersome
-      const absoluteUri = new URL(externalDiagramSource, document.location);
-      diagramDescription = `!include ${absoluteUri}`;
-    } else {
-      // Looping over all child nodes allows contents of the tag to be wrapped
-      // in comments. This allow the use of unescaped characters that have
-      // semantic meaning in HTML (e.g. '<'). These, if left unescaped, would
-      // otherwise cause browsers to try and render the UML definition
-      diagramDescription =
-        Array.from(this.childNodes)
-          .map((node) => node.textContent)
-          .join("")
-          .trim() || "license";
-    }
-
-    // Convert the diagram description into a hex-encoded string for easier
-    // inclusion in URIs. Other encodings are possible (deflate, base64), but
-    // those either require additional dependencies or have caused issues with
-    // certain diagram definitions (e.g. with multiple includes)
-    const payload = diagramDescription
-      .split("")
-      .map(
-        // Make sure the stringified hex representation is always at least 2
-        // digits long, otherwise the encoding will not be interpreted correctly
-        // by the server
-        (char) => `0${char.codePointAt(0).toString(16)}`.slice(-2),
-      )
-      .join("");
-
     this.renderedContainer = this.attachShadow({ mode: "open" });
 
     const styleSheet = document.createElement("style");
@@ -56,24 +22,70 @@ class RenderPlantUMLElement extends HTMLElement {
       errorMessage.innerText =
         `Invalid render mode '${renderMode}'. ` +
         `Must be one of '${validRenderModes.join("', '")}'.`;
-
       this.renderedContainer.appendChild(errorMessage);
-    } else {
-      fetch(`${plantUmlServerAddress}/${renderMode}/~h${payload}`).then(
-        (response) => {
-          switch (renderMode) {
-            case "svg":
-              this.renderAsSvg(response);
-              break;
-            case "txt":
-              this.renderAsTxt(response);
-              break;
-            default:
-              this.renderAsPng(response);
-          }
-        },
-      );
+      return;
     }
+
+    let diagramPromise;
+    if (externalDiagramSource) {
+      // Загрузка контента из внешнего источника
+      const absoluteUri = new URL(externalDiagramSource, document.location);
+      diagramPromise = fetch(absoluteUri)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Failed to fetch diagram from ${absoluteUri}: ${response.statusText}`);
+          }
+          return response.text();
+        });
+    } else {
+      // Получение контента из тела тега
+      const content = Array.from(this.childNodes)
+        .map((node) => node.textContent)
+        .join("")
+        .trim() || "license";
+      diagramPromise = Promise.resolve(content);
+    }
+
+    diagramPromise
+      .then(diagramDescription => {
+        // Кодирование содержимого диаграммы в hex
+        const payload = diagramDescription
+          .split("")
+          .map(
+            (char) => `0${char.codePointAt(0).toString(16)}`.slice(-2),
+          )
+          .join("");
+
+        // Отправка запроса на PlantUML-сервер с закодированным контентом
+        return fetch(`${plantUmlServerAddress}/${renderMode}/~h${payload}`);
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`PlantUML server responded with an error: ${response.statusText}`);
+        }
+        return response;
+      })
+      .then(response => {
+        // Рендеринг результата в зависимости от режима
+        switch (renderMode) {
+          case "svg":
+            this.renderAsSvg(response);
+            break;
+          case "txt":
+            this.renderAsTxt(response);
+            break;
+          default:
+            this.renderAsPng(response);
+            break;
+        }
+      })
+      .catch(error => {
+        console.error("Error rendering PlantUML diagram:", error);
+        const errorMessage = document.createElement("div");
+        errorMessage.classList.add("error");
+        errorMessage.innerText = `Error: ${error.message}`;
+        this.renderedContainer.appendChild(errorMessage);
+      });
   }
 
   renderAsPng(response) {

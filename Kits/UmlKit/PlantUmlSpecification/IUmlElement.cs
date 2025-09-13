@@ -3,7 +3,7 @@ using System.IO;
 
 namespace UmlKit.Model;
 
-public struct UmlWriteOptions
+public record UmlWriteOptions
 {
     public int AlignMaxWidth { get; set; }
 

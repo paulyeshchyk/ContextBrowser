@@ -1,8 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Factory;
 using LoggerKit;
 
 namespace ContextBrowser.FileManager;
@@ -11,7 +14,7 @@ namespace ContextBrowser.FileManager;
 public interface IContextInfoRelationManager
 {
     //relations, build
-    List<ContextInfo> ConvertToContextInfo(List<ContextInfoSerializableModel> serializableList);
+    Task<IEnumerable<ContextInfo>> ConvertToContextInfoAsync(List<ContextInfoSerializableModel> serializableModelList, CancellationToken cancellationToken);
 }
 
 // context: relations, build
@@ -25,7 +28,7 @@ public class ContextInfoRelationManager : IContextInfoRelationManager
     }
 
     // context: relations, build
-    public List<ContextInfo> ConvertToContextInfo(List<ContextInfoSerializableModel> serializableModelList)
+    public Task<IEnumerable<ContextInfo>> ConvertToContextInfoAsync(List<ContextInfoSerializableModel> serializableModelList, CancellationToken cancellationToken)
     {
         var contexts = serializableModelList.Select(model => ContextInfoAdapter.Adapt(model)).ToList();
 
@@ -43,6 +46,7 @@ public class ContextInfoRelationManager : IContextInfoRelationManager
                 lookupDictionary);
         }
 
-        return contexts;
+        IEnumerable<ContextInfo> result = contexts;
+        return Task.FromResult(result);
     }
 }

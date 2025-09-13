@@ -17,16 +17,16 @@ public class UmlStyleDiagramMindmap : IUmlElement, IUmlElementCollection
             return;
         }
 
-        writer.WriteLine(WebUtility.HtmlEncode($"<style>"));
+        writer.WriteLine($"<style>");
 
-        writer.WriteLine(WebUtility.HtmlEncode($"mindmapDiagram {{"));
+        writer.WriteLine($"mindmapDiagram {{");
 
         foreach (var element in Elements.OrderBy(e => e.Key).Select(e => e.Value))
         {
             element.WriteTo(writer, writeOptions);
         }
-        writer.WriteLine(WebUtility.HtmlEncode($"}}"));
+        writer.WriteLine($"}}");
 
-        writer.WriteLine(WebUtility.HtmlEncode($"</style>"));
+        writer.WriteLine($"</style>");
     }
 }

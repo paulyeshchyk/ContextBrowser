@@ -60,6 +60,8 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
             return default;
         }
 
+        ownerContext?.Owns.Add(result);
+
         _collector.Add(result);
 
         return result;
