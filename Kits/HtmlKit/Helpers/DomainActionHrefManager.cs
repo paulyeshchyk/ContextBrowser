@@ -5,7 +5,7 @@ using HtmlKit.Options;
 
 namespace HtmlKit.Helpers;
 
-internal class HrefManager : IHrefManager
+public class DomainActionHrefManager : IHrefManager
 {
     private static readonly long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 

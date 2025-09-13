@@ -16,32 +16,81 @@ using HtmlKit.Page;
 
 namespace HtmlKit.Document;
 
+// Уровень изоляции - IHtmlMatrixWriter
+// Определяет контракт для класса, который записывает HTML-матрицу.
+// Это позволяет заменить реализацию без изменения клиентского кода.
+public interface IHtmlMatrixWriter
+{
+    IHtmlMatrixWriter PrepareSummary();
+
+    /// <summary>
+    /// Записывает строку заголовка матрицы в TextWriter.
+    /// </summary>
+    /// <param name="textWriter">Объект для записи текста.</param>
+    /// <returns>Текущий экземпляр HtmlMatrixWriter для цепочки вызовов.</returns>
+    IHtmlMatrixWriter WriteHeaderRow(TextWriter textWriter);
+
+    /// <summary>
+    /// Записывает строку с итоговыми данными, если это необходимо.
+    /// </summary>
+    /// <param name="textWriter">Объект для записи текста.</param>
+    /// <param name="placement">Тип размещения итоговой строки.</param>
+    /// <returns>Текущий экземпляр HtmlMatrixWriter для цепочки вызовов.</returns>
+    IHtmlMatrixWriter WriteSummaryRowIf(TextWriter textWriter, SummaryPlacementType placement);
+
+    /// <summary>
+    /// Записывает все строки данных матрицы.
+    /// </summary>
+    /// <param name="textWriter">Объект для записи текста.</param>
+    /// <returns>Текущий экземпляр HtmlMatrixWriter для цепочки вызовов.</returns>
+    IHtmlMatrixWriter WriteAllDataRows(TextWriter textWriter);
+}
+
 //context: htmlmatrix, build
-internal class HtmlMatrixWriter
+internal class HtmlMatrixWriter : IHtmlMatrixWriter
 {
     private readonly IHrefManager _hRefManager;
     private readonly IFixedHtmlContentManager _fixedHtmlContentManager;
     private readonly HtmlTableOptions _options;
     private readonly IHtmlMatrix _matrix;
-    private readonly Dictionary<string, int>? _rowsSummary;
-    private readonly Dictionary<string, int>? _colsSummary;
     private readonly IHtmlDataCellBuilder<ContextKey> _dataCellBuilder;
+    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IHtmlMatrixSummaryBuilder _summaryBuilder;
 
-    public HtmlMatrixWriter(IHtmlDataCellBuilder<ContextKey> dataCellBuilder, IHrefManager hrefManager, IContextInfoDataset<ContextInfo> dataset, IHtmlMatrix matrix, IFixedHtmlContentManager fixedHtmlContentManager, IHtmlMatrixSummaryBuilder summaryBuilder, HtmlTableOptions options)
+    private Dictionary<string, int>? _rowsSummary;
+    private Dictionary<string, int>? _colsSummary;
+
+    // Все зависимости, включая IHtmlMatrix, передаются через конструктор.
+    public HtmlMatrixWriter(
+        IHtmlDataCellBuilder<ContextKey> dataCellBuilder,
+        IHrefManager hrefManager,
+        IHtmlMatrix matrix,
+        IFixedHtmlContentManager fixedHtmlContentManager,
+        IHtmlMatrixSummaryBuilder summaryBuilder,
+        IContextInfoDatasetProvider datasetProvider,
+        HtmlTableOptions options)
     {
+        _datasetProvider = datasetProvider;
         _hRefManager = hrefManager;
         _fixedHtmlContentManager = fixedHtmlContentManager;
-        _options = options;
-
         _matrix = matrix;
-        _rowsSummary = summaryBuilder.RowsSummary(_matrix, dataset, _options.Orientation);
-        _colsSummary = summaryBuilder.ColsSummary(_matrix, dataset, _options.Orientation);
-
         _dataCellBuilder = dataCellBuilder;
+        _summaryBuilder = summaryBuilder;
+        _options = options;
     }
 
-    //context: htmlmatrix, build
-    public HtmlMatrixWriter WriteHeaderRow(TextWriter textWriter)
+    public IHtmlMatrixWriter PrepareSummary()
+    {
+        var dataset = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
+
+        // Расчет итоговых данных, который также зависит от переданных сервисов.
+        _rowsSummary = _summaryBuilder.RowsSummary(_matrix, dataset, _options.Orientation);
+        _colsSummary = _summaryBuilder.ColsSummary(_matrix, dataset, _options.Orientation);
+
+        return this;
+    }
+
+    public IHtmlMatrixWriter WriteHeaderRow(TextWriter textWriter)
     {
         HtmlBuilderFactory.HtmlBuilderTableRow.Meta.With(textWriter, () =>
         {
@@ -53,23 +102,22 @@ internal class HtmlMatrixWriter
         return this;
     }
 
-    //context: htmlmatrix, build
-    public HtmlMatrixWriter WriteSummaryRowIf(TextWriter textWriter, SummaryPlacementType placement)
+    public IHtmlMatrixWriter WriteSummaryRowIf(TextWriter textWriter, SummaryPlacementType placement)
     {
         if (_options.SummaryPlacement == placement)
             WriteSummaryRow(textWriter);
         return this;
     }
 
-    //context: htmlmatrix, build
-    public HtmlMatrixWriter WriteAllDataRows(TextWriter textWriter)
+    public IHtmlMatrixWriter WriteAllDataRows(TextWriter textWriter)
     {
         foreach (var row in _matrix.rows)
             WriteDataRow(textWriter, row);
         return this;
     }
 
-    //context: htmlmatrix, build
+    // Внутренние методы, которые не меняют бизнес-логику, но теперь используют
+    // зависимости, переданные в конструкторе.
     internal void WriteHeaderLeftCorner(TextWriter textWriter)
     {
         HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.With(textWriter, () =>
@@ -79,7 +127,6 @@ internal class HtmlMatrixWriter
         });
     }
 
-    //context: htmlmatrix, build
     internal void WriteHeaderSummaryStart(TextWriter textWriter)
     {
         if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
@@ -92,7 +139,6 @@ internal class HtmlMatrixWriter
         }
     }
 
-    //context: htmlmatrix, build
     internal void WriteHeaderCols(TextWriter textWriter)
     {
         foreach (var col in _matrix.cols)
@@ -106,7 +152,6 @@ internal class HtmlMatrixWriter
         }
     }
 
-    //context: htmlmatrix, build
     internal void WriteHeaderSummaryEnd(TextWriter textWriter)
     {
         if (_options.SummaryPlacement == SummaryPlacementType.AfterLast)
@@ -119,7 +164,6 @@ internal class HtmlMatrixWriter
         }
     }
 
-    //context: htmlmatrix, build
     internal void WriteSummaryRow(TextWriter textWriter)
     {
         var total = _colsSummary?.Values.Sum() ?? 0;
@@ -163,7 +207,6 @@ internal class HtmlMatrixWriter
         });
     }
 
-    //context: htmlmatrix, build
     internal void WriteDataRow(TextWriter textWriter, string row)
     {
         HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(textWriter, () =>
@@ -184,7 +227,7 @@ internal class HtmlMatrixWriter
                     ? new ContextKey(row, col)
                     : new ContextKey(col, row);
 
-                _dataCellBuilder.BuildDataCell(textWriter, cell);
+                _dataCellBuilder.BuildDataCell(textWriter, cell, _options);
             }
 
             if (_options.SummaryPlacement == SummaryPlacementType.AfterLast)
@@ -192,7 +235,6 @@ internal class HtmlMatrixWriter
         });
     }
 
-    //context: htmlmatrix, build
     internal void WriteRowSummaryCell(TextWriter _tw, string row)
     {
         HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.With(_tw, () =>
@@ -200,43 +242,6 @@ internal class HtmlMatrixWriter
             var rowSum = _rowsSummary?.GetValueOrDefault(row).ToString() ?? string.Empty;
             var attributes = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, _options) } };
             HtmlBuilderFactory.A.Cell(_tw, attributes, rowSum, isEncodable: false);
-        });
-    }
-}
-
-public class HtmlDataCellBuilder<TKey> : IHtmlDataCellBuilder<TKey>
-    where TKey : ContextKey
-{
-    private readonly IHtmlPageDataProducer _dataProducer;
-    private readonly IHrefManager _hRefManager;
-    private readonly IHtmlCellStyleBuilder _cellStyleBuilder;
-    private readonly IContextInfoDataset<ContextInfo> _dataset;
-    private readonly HtmlTableOptions _options;
-    private readonly IContextKeyIndexer<ContextInfo> _coverageIndexer;
-
-    public HtmlDataCellBuilder(IHtmlPageDataProducer dataProducer, IHrefManager hRefManager, IHtmlCellStyleBuilder cellStyleBuilder, IContextInfoDataset<ContextInfo> dataset, HtmlTableOptions options, IContextKeyIndexer<ContextInfo> coverageIndexer)
-    {
-        _dataProducer = dataProducer;
-        _hRefManager = hRefManager;
-        _cellStyleBuilder = cellStyleBuilder;
-        _dataset = dataset;
-        _options = options;
-        _coverageIndexer = coverageIndexer;
-    }
-
-    public void BuildDataCell(TextWriter textWriter, TKey cell)
-    {
-        var indexData = _coverageIndexer.GetIndexData();
-
-        var data = _dataProducer.ProduceData(cell);
-
-        HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, () =>
-        {
-            var style = _cellStyleBuilder.BuildCellStyle(cell, _dataset, indexData);
-            var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, _options) } };
-            if (!string.IsNullOrWhiteSpace(style))
-                attrs["style"] = style;
-            HtmlBuilderFactory.A.Cell(textWriter, attrs, data, isEncodable: false);
         });
     }
 }

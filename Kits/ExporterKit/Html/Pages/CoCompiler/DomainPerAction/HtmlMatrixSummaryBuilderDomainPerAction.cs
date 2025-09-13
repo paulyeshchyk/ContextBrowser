@@ -12,7 +12,7 @@ using HtmlKit.Page.Compiler;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
-internal class HtmlMatrixSummaryBuilderDomainPerAction : IHtmlMatrixSummaryBuilder
+public class HtmlMatrixSummaryBuilderDomainPerAction : IHtmlMatrixSummaryBuilder
 {
     public Dictionary<string, int>? ColsSummary(IHtmlMatrix uiMatrix, IContextInfoDataset<ContextInfo> matrix, MatrixOrientationType orientation)
     {

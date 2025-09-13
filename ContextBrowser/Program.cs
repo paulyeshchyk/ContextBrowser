@@ -19,6 +19,10 @@ using ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 using ExporterKit.Html.Pages.MatrixCellSummary;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
+using HtmlKit.Document;
+using HtmlKit.Document.Coverage;
+using HtmlKit.Extensions;
+using HtmlKit.Helpers;
 using HtmlKit.Page.Compiler;
 using LoggerKit;
 using LoggerKit.Model;
@@ -120,6 +124,22 @@ public static class Program
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmap>();
 
         hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
+
+        hab.Services.AddTransient<IFixedHtmlContentManager, FixedHtmlContentManager>();
+        hab.Services.AddTransient<IHrefManager, DomainActionHrefManager>();
+        hab.Services.AddTransient<IHtmlPageDataProducer, HtmlPageDataProducerDomainAction>();
+        hab.Services.AddTransient<IHtmlDataCellBuilder<ContextKey>, HtmlDataCellBuilder<ContextKey>>();
+
+        hab.Services.AddSingleton<IHtmlMatrixWriterFactory, HtmlMatrixWriterFactory>();
+        hab.Services.AddTransient<IHtmlMatrixSummaryBuilder, HtmlMatrixSummaryBuilderDomainPerAction>();
+        hab.Services.AddScoped<IHtmlCellStyleBuilder, CoverManager>();
+
+        // HtmlMatrixWriter является транзитным сервисом, так как он
+        // зависит от IHtmlMatrix, который специфичен для каждого экземпляра.
+        // Его будет создавать фабрика, поэтому здесь его регистрировать не нужно.
+
+        // Регистрация IHtmlPageMatrix (HtmlPageProducerMatrix) как транзитного сервиса.
+        hab.Services.AddTransient<IHtmlPageMatrix, HtmlPageProducerMatrix>();
 
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerDomainPerAction>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerNamespaceOnly>();

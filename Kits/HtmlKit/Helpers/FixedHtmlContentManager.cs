@@ -3,7 +3,7 @@ using HtmlKit.Options;
 
 namespace HtmlKit.Helpers;
 
-internal class FixedHtmlContentManager : IFixedHtmlContentManager
+public class FixedHtmlContentManager : IFixedHtmlContentManager
 {
     public string TopLeftCell(HtmlTableOptions _options) =>
         _options.Orientation == MatrixOrientationType.ActionRows
