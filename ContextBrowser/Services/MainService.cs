@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using CommandlineKit;
 using CommandlineKit.Model;
@@ -71,6 +71,8 @@ public class MainService : IMainService
     {
         var appOptions = _optionsStore.Options();
         ExportPathDirectoryPreparer.Prepare(appOptions.Export.FilePaths);
+
+        await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         //компиляция диаграмм
         await _diagramCompilerOrchestrator.CompileAllAsync(appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder, cancellationToken);

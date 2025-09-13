@@ -55,7 +55,9 @@ public static class Program
         hab.Services.AddTransient<ISemanticTreeModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper>, SemanticTreeModelBuilder>();
         hab.Services.AddSingleton<IContextFactory<ContextInfo>, ContextInfoFactory<ContextInfo>>();
         hab.Services.AddTransient<ISyntaxTreeWrapperBuilder, RoslynSyntaxTreeWrapperBuilder>();
-        hab.Services.AddTransient<IContextInfoCacheService, ContextInfoCacheService>();
+
+        hab.Services.AddSingleton<IContextInfoCacheService, ContextInfoCacheService>();
+
         hab.Services.AddTransient<IContextClassifierBuilder, ContextClassifierBuilder>();
         hab.Services.AddTransient<IContextInfoRelationManager, ContextInfoRelationManager>();
 
