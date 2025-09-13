@@ -50,8 +50,9 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
         var uiMatrixSummaryBuilder = new HtmlMatrixSummaryBuilderDomainPerAction();
 
         var matrixGenerator = new HtmlMatrixGeneratorDomainPerAction(contextClassifier, _mapper, exportOptions.ExportMatrix.HtmlTable.Orientation, exportOptions.ExportMatrix.UnclassifiedPriority);
+        var indexer = await _flatMapperProvider.GetIndexerAsync(GlobalMapperKeys.NameClassName, CancellationToken.None).ConfigureAwait(false);
 
-        var producer = new HtmlPageProducerMatrix(matrixGenerator, dataset: dataset, flatMapperProvider: _flatMapperProvider, uiMatrixSummaryBuilder, exportOptions.ExportMatrix.HtmlTable);
+        var producer = new HtmlPageProducerMatrix(matrixGenerator, dataset: dataset, indexer: indexer, uiMatrixSummaryBuilder, exportOptions.ExportMatrix.HtmlTable);
 
         // producer.Title = "Контекстная матрица";
         var result = producer.ToHtmlString();

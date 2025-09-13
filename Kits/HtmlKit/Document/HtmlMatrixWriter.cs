@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -24,24 +25,19 @@ internal class HtmlMatrixWriter
     private readonly IHtmlMatrix _matrix;
     private readonly Dictionary<string, int>? _rowsSummary;
     private readonly Dictionary<string, int>? _colsSummary;
-    private readonly IContextInfoDataset<ContextInfo> _dataset;
-    private readonly IContextKeyIndexer<ContextInfo> _indexer;
-    private readonly ICoverageManager _coverageManager;
-    private readonly IHtmlPageDataProducer _dataProducer;
+    private readonly IHtmlDataCellBuilder<ContextKey> _dataCellBuilder;
 
-    public HtmlMatrixWriter(ICoverageManager coverageManager, IHrefManager hrefManager, IContextInfoDataset<ContextInfo> dataset, IHtmlPageDataProducer dataProducer, IHtmlMatrix matrix, IContextKeyIndexer<ContextInfo> indexer, IFixedHtmlContentManager fixedHtmlContentManager, IHtmlMatrixSummaryBuilder summaryBuilder, HtmlTableOptions options)
+    public HtmlMatrixWriter(IHtmlDataCellBuilder<ContextKey> dataCellBuilder, IHrefManager hrefManager, IContextInfoDataset<ContextInfo> dataset, IHtmlMatrix matrix, IFixedHtmlContentManager fixedHtmlContentManager, IHtmlMatrixSummaryBuilder summaryBuilder, HtmlTableOptions options)
     {
         _hRefManager = hrefManager;
         _fixedHtmlContentManager = fixedHtmlContentManager;
         _options = options;
-        _dataset = dataset;
-        _indexer = indexer;
-        _coverageManager = coverageManager;
-        _dataProducer = dataProducer;
 
         _matrix = matrix;
         _rowsSummary = summaryBuilder.RowsSummary(_matrix, dataset, _options.Orientation);
         _colsSummary = summaryBuilder.ColsSummary(_matrix, dataset, _options.Orientation);
+
+        _dataCellBuilder = dataCellBuilder;
     }
 
     //context: htmlmatrix, build
@@ -182,25 +178,13 @@ internal class HtmlMatrixWriter
             if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
                 WriteRowSummaryCell(textWriter, row);
 
-            var indexData = _indexer.GetIndexData();
-
             foreach (var col in _matrix.cols)
             {
                 var cell = _options.Orientation == MatrixOrientationType.ActionRows
                     ? new ContextKey(row, col)
                     : new ContextKey(col, row);
 
-                var data = _dataProducer.ProduceData(cell);
-                _dataset.TryGetValue(cell, out var methods);
-
-                HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, () =>
-                {
-                    var style = _coverageManager.BuildCellStyle(cell, methods, indexData);
-                    var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, _options) } };
-                    if (!string.IsNullOrWhiteSpace(style))
-                        attrs["style"] = style;
-                    HtmlBuilderFactory.A.Cell(textWriter, attrs, data, isEncodable: false);
-                });
+                _dataCellBuilder.BuildDataCell(textWriter, cell);
             }
 
             if (_options.SummaryPlacement == SummaryPlacementType.AfterLast)
@@ -216,6 +200,43 @@ internal class HtmlMatrixWriter
             var rowSum = _rowsSummary?.GetValueOrDefault(row).ToString() ?? string.Empty;
             var attributes = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, _options) } };
             HtmlBuilderFactory.A.Cell(_tw, attributes, rowSum, isEncodable: false);
+        });
+    }
+}
+
+public class HtmlDataCellBuilder<TKey> : IHtmlDataCellBuilder<TKey>
+    where TKey : ContextKey
+{
+    private readonly IHtmlPageDataProducer _dataProducer;
+    private readonly IHrefManager _hRefManager;
+    private readonly IHtmlCellStyleBuilder _cellStyleBuilder;
+    private readonly IContextInfoDataset<ContextInfo> _dataset;
+    private readonly HtmlTableOptions _options;
+    private readonly IContextKeyIndexer<ContextInfo> _coverageIndexer;
+
+    public HtmlDataCellBuilder(IHtmlPageDataProducer dataProducer, IHrefManager hRefManager, IHtmlCellStyleBuilder cellStyleBuilder, IContextInfoDataset<ContextInfo> dataset, HtmlTableOptions options, IContextKeyIndexer<ContextInfo> coverageIndexer)
+    {
+        _dataProducer = dataProducer;
+        _hRefManager = hRefManager;
+        _cellStyleBuilder = cellStyleBuilder;
+        _dataset = dataset;
+        _options = options;
+        _coverageIndexer = coverageIndexer;
+    }
+
+    public void BuildDataCell(TextWriter textWriter, TKey cell)
+    {
+        var indexData = _coverageIndexer.GetIndexData();
+
+        var data = _dataProducer.ProduceData(cell);
+
+        HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, () =>
+        {
+            var style = _cellStyleBuilder.BuildCellStyle(cell, _dataset, indexData);
+            var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, _options) } };
+            if (!string.IsNullOrWhiteSpace(style))
+                attrs["style"] = style;
+            HtmlBuilderFactory.A.Cell(textWriter, attrs, data, isEncodable: false);
         });
     }
 }

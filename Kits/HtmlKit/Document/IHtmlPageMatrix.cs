@@ -13,11 +13,5 @@ public interface IHtmlPageDataProducer
 
 public interface IHtmlPageMatrix : IHtmlPageDataProducer
 {
-    IContextInfoDataset<ContextInfo> Dataset { get; }
-
     IHtmlMatrix HtmlMatrix { get; }
-
-    IContextInfoIndexerProvider IndexerProvider { get; }
-
-    ICoverageManager CoverageManager { get; }
 }

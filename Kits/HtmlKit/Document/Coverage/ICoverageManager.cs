@@ -4,9 +4,7 @@ using ContextKit.Model.Collector;
 
 namespace HtmlKit.Document.Coverage;
 
-public interface ICoverageManager
+public interface IHtmlCellStyleBuilder
 {
-    int GetCoverageValue(ContextInfo? ctx);
-
-    string? BuildCellStyle(IContextKey cell, List<ContextInfo>? methods, Dictionary<string, ContextInfo>? index);
+    string? BuildCellStyle(IContextKey cell, IContextInfoDataset<ContextInfo> dataset, Dictionary<string, ContextInfo>? index);
 }
