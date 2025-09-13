@@ -19,6 +19,7 @@ using HtmlKit.Extensions;
 using HtmlKit.Helpers;
 using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
+using HtmlKit.Writer;
 using LoggerKit;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
@@ -33,10 +34,13 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
     private readonly IContextKeyMap<ContextInfo, IContextKey> _mapper;
     private readonly IFixedHtmlContentManager _fixedHtmlManager;
     private readonly IHrefManager _hrefManager;
-    private readonly IHtmlPageDataProducer _htmlPageDataProducer;
-    private readonly IHtmlMatrixWriterFactory _htmlMatrixWriterFactory;
+    private readonly IHtmlCellDataProducer _htmlPageDataProducer;
+    private readonly IHtmlMatrixWriter _htmlMatrixWriter;
+    private readonly IHtmlMatrixSummaryBuilder _htmlMatrixSummaryBuilder;
+    private readonly IHtmlContentInjector _cellWithCoverageBuilder;
+    private readonly IHtmlPageIndex _indexPageProducer;
 
-    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IContextInfoDatasetProvider datasetProvider, IContextInfoIndexerProvider flatMapperProvider, IFixedHtmlContentManager fixedHtmlManager, IHrefManager hrefManager, IHtmlPageDataProducer htmlPageDataProducer, IHtmlMatrixWriterFactory htmlMatrixWriterFactory)
+    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IContextInfoDatasetProvider datasetProvider, IContextInfoIndexerProvider flatMapperProvider, IFixedHtmlContentManager fixedHtmlManager, IHrefManager hrefManager, IHtmlCellDataProducer htmlPageDataProducer, IHtmlMatrixWriter htmlMatrixWriter, IHtmlContentInjector cellWithCoverageBuilder, IHtmlPageIndex indexPageProducer)
     {
         _logger = logger;
         _contextInfoMapperContainer = contextInfoMapperContainer;
@@ -46,42 +50,31 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
         _fixedHtmlManager = fixedHtmlManager;
         _hrefManager = hrefManager;
         _htmlPageDataProducer = htmlPageDataProducer;
-        _htmlMatrixWriterFactory = htmlMatrixWriterFactory;
+        _htmlMatrixWriter = htmlMatrixWriter;
+        _htmlMatrixSummaryBuilder = new HtmlMatrixSummaryBuilderDomainPerAction(_datasetProvider);
+        _cellWithCoverageBuilder = cellWithCoverageBuilder;
+        _indexPageProducer = indexPageProducer;
     }
 
     // context: html, build
 
-    public async Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
+    public Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
 
-        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
-
-        var uiMatrixSummaryBuilder = new HtmlMatrixSummaryBuilderDomainPerAction();
-
         var matrixGenerator = new HtmlMatrixGeneratorDomainPerAction(contextClassifier, _mapper, exportOptions.ExportMatrix.HtmlTable.Orientation, exportOptions.ExportMatrix.UnclassifiedPriority);
-        var indexer = await _flatMapperProvider.GetIndexerAsync(GlobalMapperKeys.NameClassName, CancellationToken.None).ConfigureAwait(false);
-        var producerh = new HtmlPageDataProducerDomainAction(_datasetProvider);
+        var matrix = matrixGenerator.Generate();
+
         var _cellStyleBuilder = new CoverManager();
 
-        var dcBuilder = new HtmlDataCellBuilder<ContextKey>(_htmlPageDataProducer, _hrefManager, _cellStyleBuilder, indexer, _datasetProvider);
+        var summary = _htmlMatrixSummaryBuilder.Build(matrix, exportOptions.ExportMatrix.HtmlTable.Orientation);
 
-        var producer = new HtmlPageProducerMatrix(
-            htmlMatrixGenerator: matrixGenerator, 
-            dataset: dataset, 
-            indexer: indexer,
-            matrixSummaryBuilder: uiMatrixSummaryBuilder, 
-            options: exportOptions.ExportMatrix.HtmlTable,
-            fixedHtmlManager: _fixedHtmlManager,
-            hrefManager: _hrefManager,
-            htmlPageDataProducer: producerh,
-            datacellBuilder: dcBuilder,
-            htmlMatrixWriterFactory: _htmlMatrixWriterFactory);
+        var result = _indexPageProducer.Produce(matrix, summary, exportOptions.ExportMatrix.HtmlTable);
 
-        // producer.Title = "Контекстная матрица";
-        var result = producer.ToHtmlString();
         var outputFile = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.index, "index.html");
 
         File.WriteAllText(outputFile, result);
+
+        return Task.CompletedTask;
     }
 }

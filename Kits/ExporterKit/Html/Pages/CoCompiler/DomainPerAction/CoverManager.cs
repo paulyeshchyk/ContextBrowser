@@ -5,6 +5,7 @@ using System.Linq;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using HtmlKit.Helpers;
+using HtmlKit.Model;
 
 namespace HtmlKit.Document.Coverage;
 

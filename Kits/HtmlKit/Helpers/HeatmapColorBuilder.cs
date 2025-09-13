@@ -3,7 +3,7 @@
 namespace HtmlKit.Helpers;
 
 // context: color, build
-internal static class HeatmapColorBuilder
+public static class HeatmapColorBuilder
 {
     // context: build, color
     public static string? ToHeatmapColor(double avgCoverage)

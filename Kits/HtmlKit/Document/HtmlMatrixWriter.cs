@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -6,9 +7,7 @@ using System.Threading;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using ExporterKit.Html;
 using HtmlKit.Builders.Core;
-using HtmlKit.Document.Coverage;
 using HtmlKit.Extensions;
 using HtmlKit.Helpers;
 using HtmlKit.Options;
@@ -16,134 +15,85 @@ using HtmlKit.Page;
 
 namespace HtmlKit.Document;
 
-// Уровень изоляции - IHtmlMatrixWriter
-// Определяет контракт для класса, который записывает HTML-матрицу.
-// Это позволяет заменить реализацию без изменения клиентского кода.
-public interface IHtmlMatrixWriter
-{
-    IHtmlMatrixWriter PrepareSummary();
-
-    /// <summary>
-    /// Записывает строку заголовка матрицы в TextWriter.
-    /// </summary>
-    /// <param name="textWriter">Объект для записи текста.</param>
-    /// <returns>Текущий экземпляр HtmlMatrixWriter для цепочки вызовов.</returns>
-    IHtmlMatrixWriter WriteHeaderRow(TextWriter textWriter);
-
-    /// <summary>
-    /// Записывает строку с итоговыми данными, если это необходимо.
-    /// </summary>
-    /// <param name="textWriter">Объект для записи текста.</param>
-    /// <param name="placement">Тип размещения итоговой строки.</param>
-    /// <returns>Текущий экземпляр HtmlMatrixWriter для цепочки вызовов.</returns>
-    IHtmlMatrixWriter WriteSummaryRowIf(TextWriter textWriter, SummaryPlacementType placement);
-
-    /// <summary>
-    /// Записывает все строки данных матрицы.
-    /// </summary>
-    /// <param name="textWriter">Объект для записи текста.</param>
-    /// <returns>Текущий экземпляр HtmlMatrixWriter для цепочки вызовов.</returns>
-    IHtmlMatrixWriter WriteAllDataRows(TextWriter textWriter);
-}
-
 //context: htmlmatrix, build
-internal class HtmlMatrixWriter : IHtmlMatrixWriter
+public class HtmlMatrixWriter : IHtmlMatrixWriter
 {
     private readonly IHrefManager _hRefManager;
     private readonly IFixedHtmlContentManager _fixedHtmlContentManager;
-    private readonly HtmlTableOptions _options;
-    private readonly IHtmlMatrix _matrix;
     private readonly IHtmlDataCellBuilder<ContextKey> _dataCellBuilder;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
-    private readonly IHtmlMatrixSummaryBuilder _summaryBuilder;
 
-    private Dictionary<string, int>? _rowsSummary;
-    private Dictionary<string, int>? _colsSummary;
-
-    // Все зависимости, включая IHtmlMatrix, передаются через конструктор.
     public HtmlMatrixWriter(
         IHtmlDataCellBuilder<ContextKey> dataCellBuilder,
         IHrefManager hrefManager,
-        IHtmlMatrix matrix,
-        IFixedHtmlContentManager fixedHtmlContentManager,
-        IHtmlMatrixSummaryBuilder summaryBuilder,
-        IContextInfoDatasetProvider datasetProvider,
-        HtmlTableOptions options)
+        IFixedHtmlContentManager fixedHtmlContentManager)
     {
-        _datasetProvider = datasetProvider;
         _hRefManager = hrefManager;
         _fixedHtmlContentManager = fixedHtmlContentManager;
-        _matrix = matrix;
         _dataCellBuilder = dataCellBuilder;
-        _summaryBuilder = summaryBuilder;
-        _options = options;
     }
 
-    public IHtmlMatrixWriter PrepareSummary()
+    public void Write(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary summary, HtmlTableOptions options)
     {
-        var dataset = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
-
-        // Расчет итоговых данных, который также зависит от переданных сервисов.
-        _rowsSummary = _summaryBuilder.RowsSummary(_matrix, dataset, _options.Orientation);
-        _colsSummary = _summaryBuilder.ColsSummary(_matrix, dataset, _options.Orientation);
-
-        return this;
+        HtmlBuilderFactory.Table.With(writer, () =>
+        {
+            WriteHeaderRow(writer, matrix, options);
+            WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterFirst);
+            WriteAllDataRows(writer, matrix, summary, options);
+            WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterLast);
+        });
     }
 
-    public IHtmlMatrixWriter WriteHeaderRow(TextWriter textWriter)
+    protected void WriteHeaderRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options)
     {
         HtmlBuilderFactory.HtmlBuilderTableRow.Meta.With(textWriter, () =>
         {
-            WriteHeaderLeftCorner(textWriter);
-            WriteHeaderSummaryStart(textWriter);
-            WriteHeaderCols(textWriter);
-            WriteHeaderSummaryEnd(textWriter);
+            WriteHeaderLeftCorner(textWriter, options);
+            WriteHeaderSummaryStart(textWriter, options);
+            WriteHeaderCols(textWriter, matrix, options);
+            WriteHeaderSummaryEnd(textWriter, options);
         });
-        return this;
     }
 
-    public IHtmlMatrixWriter WriteSummaryRowIf(TextWriter textWriter, SummaryPlacementType placement)
+    protected void WriteSummaryRowIf(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary summary, HtmlTableOptions options, SummaryPlacementType placement)
     {
-        if (_options.SummaryPlacement == placement)
-            WriteSummaryRow(textWriter);
-        return this;
+        if (options.SummaryPlacement == placement)
+            WriteSummaryRow(textWriter, matrix, options, summary);
     }
 
-    public IHtmlMatrixWriter WriteAllDataRows(TextWriter textWriter)
+    protected void WriteAllDataRows(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary summary, HtmlTableOptions options)
     {
-        foreach (var row in _matrix.rows)
-            WriteDataRow(textWriter, row);
-        return this;
+        foreach (var row in matrix.rows)
+            WriteDataRow(textWriter, matrix, options, row, summary);
     }
 
     // Внутренние методы, которые не меняют бизнес-логику, но теперь используют
     // зависимости, переданные в конструкторе.
-    internal void WriteHeaderLeftCorner(TextWriter textWriter)
+    internal void WriteHeaderLeftCorner(TextWriter textWriter, HtmlTableOptions options)
     {
         HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.With(textWriter, () =>
         {
-            var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(_options) }, { "style", "some_special_cell_class" } };
-            HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.TopLeftCell(_options), isEncodable: false);
+            var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) }, { "style", "some_special_cell_class" } };
+            HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.TopLeftCell(options), isEncodable: false);
         });
     }
 
-    internal void WriteHeaderSummaryStart(TextWriter textWriter)
+    internal void WriteHeaderSummaryStart(TextWriter textWriter, HtmlTableOptions options)
     {
-        if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
+        if (options.SummaryPlacement == SummaryPlacementType.AfterFirst)
         {
             HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
             {
-                var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefColHeaderSummary(_options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.FirstSummaryRow(_options), isEncodable: false);
+                var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefColHeaderSummary(options) }, { "style", "some_special_cell_class" } };
+                HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.FirstSummaryRow(options), isEncodable: false);
             });
         }
     }
 
-    internal void WriteHeaderCols(TextWriter textWriter)
+    internal void WriteHeaderCols(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options)
     {
-        foreach (var col in _matrix.cols)
+        foreach (var col in matrix.cols)
         {
-            var href = _hRefManager.GetHRefRowMeta(col, _options);
+            var href = _hRefManager.GetHRefRowMeta(col, options);
             HtmlBuilderFactory.HtmlBuilderTableCell.ColMeta.With(textWriter, () =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", href }, { "style", "some_special_cell_class" } };
@@ -152,96 +102,96 @@ internal class HtmlMatrixWriter : IHtmlMatrixWriter
         }
     }
 
-    internal void WriteHeaderSummaryEnd(TextWriter textWriter)
+    internal void WriteHeaderSummaryEnd(TextWriter textWriter, HtmlTableOptions options)
     {
-        if (_options.SummaryPlacement == SummaryPlacementType.AfterLast)
+        if (options.SummaryPlacement == SummaryPlacementType.AfterLast)
         {
             HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
             {
-                var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummary(_options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.LastSummaryRow(_options), isEncodable: false);
+                var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummary(options) }, { "style", "some_special_cell_class" } };
+                HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.LastSummaryRow(options), isEncodable: false);
             });
         }
     }
 
-    internal void WriteSummaryRow(TextWriter textWriter)
+    internal void WriteSummaryRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, HtmlMatrixSummary summary)
     {
-        var total = _colsSummary?.Values.Sum() ?? 0;
+        var total = summary.ColsSummary?.Values.Sum() ?? 0;
 
         HtmlBuilderFactory.HtmlBuilderTableRow.Summary.With(textWriter, () =>
         {
             HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
             {
-                var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummaryAfterFirst(_options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.SummaryRow(_options), isEncodable: false);
+                var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummaryAfterFirst(options) }, { "style", "some_special_cell_class" } };
+                HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.SummaryRow(options), isEncodable: false);
             });
 
-            if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
+            if (options.SummaryPlacement == SummaryPlacementType.AfterFirst)
             {
                 HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.With(textWriter, () =>
                 {
-                    var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(_options) } };
+                    var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) } };
                     HtmlBuilderFactory.A.Cell(textWriter, attrs, total.ToString(), isEncodable: false);
                 });
             }
 
-            foreach (var col in _matrix.cols)
+            foreach (var col in matrix.cols)
             {
                 HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.With(textWriter, () =>
                 {
-                    var sum = _colsSummary?.GetValueOrDefault(col).ToString() ?? string.Empty;
-                    var href = _hRefManager.GetHrefColSummary(col, _options);
+                    var sum = summary.ColsSummary?.GetValueOrDefault(col).ToString() ?? string.Empty;
+                    var href = _hRefManager.GetHrefColSummary(col, options);
                     var colCellAttrs = new HtmlTagAttributes() { { "href", href } };
                     HtmlBuilderFactory.A.Cell(textWriter, colCellAttrs, sum, isEncodable: false);
                 });
             }
 
-            if (_options.SummaryPlacement == SummaryPlacementType.AfterLast)
+            if (options.SummaryPlacement == SummaryPlacementType.AfterLast)
             {
                 HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.With(textWriter, () =>
                 {
-                    var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(_options) } };
+                    var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) } };
                     HtmlBuilderFactory.A.Cell(textWriter, attrs, total.ToString(), isEncodable: false);
                 });
             }
         });
     }
 
-    internal void WriteDataRow(TextWriter textWriter, string row)
+    internal void WriteDataRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, string row, HtmlMatrixSummary summary)
     {
         HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(textWriter, () =>
         {
             HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.With(textWriter, () =>
             {
-                var href = _hRefManager.GetHRefRowHeader(row, _options);
+                var href = _hRefManager.GetHRefRowHeader(row, options);
                 var attrs = new HtmlTagAttributes() { { "href", href } };
                 HtmlBuilderFactory.A.Cell(textWriter, attrs, row, isEncodable: false);
             });
 
-            if (_options.SummaryPlacement == SummaryPlacementType.AfterFirst)
-                WriteRowSummaryCell(textWriter, row);
+            if (options.SummaryPlacement == SummaryPlacementType.AfterFirst)
+                WriteRowSummaryCell(textWriter, options, row, summary);
 
-            foreach (var col in _matrix.cols)
+            foreach (var col in matrix.cols)
             {
-                var cell = _options.Orientation == MatrixOrientationType.ActionRows
+                var cell = options.Orientation == MatrixOrientationType.ActionRows
                     ? new ContextKey(row, col)
                     : new ContextKey(col, row);
 
-                _dataCellBuilder.BuildDataCell(textWriter, cell, _options);
+                _dataCellBuilder.BuildDataCell(textWriter, cell, options);
             }
 
-            if (_options.SummaryPlacement == SummaryPlacementType.AfterLast)
-                WriteRowSummaryCell(textWriter, row);
+            if (options.SummaryPlacement == SummaryPlacementType.AfterLast)
+                WriteRowSummaryCell(textWriter, options, row, summary);
         });
     }
 
-    internal void WriteRowSummaryCell(TextWriter _tw, string row)
+    internal void WriteRowSummaryCell(TextWriter textWriter, HtmlTableOptions options, string row, HtmlMatrixSummary summary)
     {
-        HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.With(_tw, () =>
+        HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.With(textWriter, () =>
         {
-            var rowSum = _rowsSummary?.GetValueOrDefault(row).ToString() ?? string.Empty;
-            var attributes = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, _options) } };
-            HtmlBuilderFactory.A.Cell(_tw, attributes, rowSum, isEncodable: false);
+            var rowSum = summary.RowsSummary.GetValueOrDefault(row).ToString() ?? string.Empty;
+            var attributes = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, options) } };
+            HtmlBuilderFactory.A.Cell(textWriter, attributes, rowSum, isEncodable: false);
         });
     }
 }

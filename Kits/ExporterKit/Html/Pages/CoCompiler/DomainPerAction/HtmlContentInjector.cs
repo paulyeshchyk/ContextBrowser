@@ -7,9 +7,9 @@ using HtmlKit.Page;
 namespace HtmlKit.Writer;
 
 // pattern: Builder
-internal class CellWithCoverageBuilder
+public class HtmlContentInjector : IHtmlContentInjector
 {
-    public static string Build(IContextKey container, int cnt)
+    public string Inject(IContextKey container, int cnt)
     {
         if (cnt == 0)
         {
@@ -19,7 +19,7 @@ internal class CellWithCoverageBuilder
         using var sw = new StringWriter();
 
         var attributes = new HtmlTagAttributes() { { "class", "embedded-table" } };
-        Page.HtmlBuilderFactory.Table.With(sw, attributes, () =>
+        HtmlBuilderFactory.Table.With(sw, attributes, () =>
         {
             WriteRow(sw, cnt.ToString());
         });

@@ -23,7 +23,9 @@ using HtmlKit.Document;
 using HtmlKit.Document.Coverage;
 using HtmlKit.Extensions;
 using HtmlKit.Helpers;
+using HtmlKit.Model;
 using HtmlKit.Page.Compiler;
+using HtmlKit.Writer;
 using LoggerKit;
 using LoggerKit.Model;
 using Microsoft.Extensions.DependencyInjection;
@@ -125,12 +127,12 @@ public static class Program
 
         hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
 
-        hab.Services.AddTransient<IFixedHtmlContentManager, FixedHtmlContentManager>();
-        hab.Services.AddTransient<IHrefManager, DomainActionHrefManager>();
-        hab.Services.AddTransient<IHtmlPageDataProducer, HtmlPageDataProducerDomainAction>();
+        hab.Services.AddTransient<IFixedHtmlContentManager, FixedHtmlContentManagerDomainPerAction>();
+        hab.Services.AddTransient<IHtmlContentInjector, HtmlContentInjector>();
+        hab.Services.AddTransient<IHrefManager, HrefManagerDomainPerAction>();
+        hab.Services.AddTransient<IHtmlCellDataProducer, HtmlCellDataProducerDomainPerAction>();
         hab.Services.AddTransient<IHtmlDataCellBuilder<ContextKey>, HtmlDataCellBuilder<ContextKey>>();
 
-        hab.Services.AddSingleton<IHtmlMatrixWriterFactory, HtmlMatrixWriterFactory>();
         hab.Services.AddTransient<IHtmlMatrixSummaryBuilder, HtmlMatrixSummaryBuilderDomainPerAction>();
         hab.Services.AddScoped<IHtmlCellStyleBuilder, CoverManager>();
 
@@ -139,7 +141,7 @@ public static class Program
         // Его будет создавать фабрика, поэтому здесь его регистрировать не нужно.
 
         // Регистрация IHtmlPageMatrix (HtmlPageProducerMatrix) как транзитного сервиса.
-        hab.Services.AddTransient<IHtmlPageMatrix, HtmlPageProducerMatrix>();
+        hab.Services.AddTransient<IHtmlPageIndex, HtmlPageProducerIndex>();
 
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerDomainPerAction>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerNamespaceOnly>();
@@ -148,6 +150,7 @@ public static class Program
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerActionOnly>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerDomainOnly>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerActionPerDomainSummary>();
+        hab.Services.AddTransient<IHtmlMatrixWriter, HtmlMatrixWriter>();
 
         hab.Services.AddTransient<IHtmlCompilerOrchestrator, HtmlCompilerOrchestrator>();
 

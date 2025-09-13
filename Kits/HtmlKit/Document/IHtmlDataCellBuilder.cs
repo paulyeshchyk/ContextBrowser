@@ -1,11 +1,11 @@
-﻿
+﻿using System;
 using System.Data;
 using System.IO;
 using System.Threading;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
-using HtmlKit.Document.Coverage;
 using HtmlKit.Helpers;
+using HtmlKit.Model;
 using HtmlKit.Options;
 using HtmlKit.Page;
 
@@ -20,14 +20,14 @@ public interface IHtmlDataCellBuilder<TKey>
 public class HtmlDataCellBuilder<TKey> : IHtmlDataCellBuilder<TKey>
     where TKey : ContextKey
 {
-    private readonly IHtmlPageDataProducer _dataProducer;
+    private readonly IHtmlCellDataProducer _dataProducer;
     private readonly IHrefManager _hRefManager;
     private readonly IHtmlCellStyleBuilder _cellStyleBuilder;
     private readonly IContextInfoDatasetProvider _datasetProvider;
     private readonly IContextInfoDataset<ContextInfo> _dataset;
     private readonly IContextKeyIndexer<ContextInfo> _coverageIndexer;
 
-    public HtmlDataCellBuilder(IHtmlPageDataProducer dataProducer, IHrefManager hRefManager, IHtmlCellStyleBuilder cellStyleBuilder, IContextKeyIndexer<ContextInfo> coverageIndexer, IContextInfoDatasetProvider datasetProvider)
+    public HtmlDataCellBuilder(IHtmlCellDataProducer dataProducer, IHrefManager hRefManager, IHtmlCellStyleBuilder cellStyleBuilder, IContextKeyIndexer<ContextInfo> coverageIndexer, IContextInfoDatasetProvider datasetProvider)
     {
         _dataProducer = dataProducer;
         _hRefManager = hRefManager;

@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using ContextBrowserKit.Matrix;
 using HtmlKit.Builders.Core;
+using HtmlKit.Extensions;
+using HtmlKit.Options;
 using HtmlKit.Page;
 
 namespace HtmlKit.Document;
@@ -14,7 +17,7 @@ public abstract class HtmlPageProducer
     {
     }
 
-    protected void Produce(TextWriter writer)
+    protected void Produce(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary summary, HtmlTableOptions options)
     {
         HtmlBuilderFactory.Html.With(writer, () =>
         {
@@ -31,7 +34,7 @@ public abstract class HtmlPageProducer
                 HtmlBuilderFactory.Body.With(writer, () =>
                 {
                     HtmlBuilderFactory.H1.Cell(writer, innerHtml: Title);
-                    WriteContent(writer);
+                    WriteContent(writer, matrix, summary, options);
                 });
             });
         });
@@ -44,12 +47,5 @@ public abstract class HtmlPageProducer
         };
     }
 
-    protected abstract void WriteContent(TextWriter sb);
-
-    public string ToHtmlString()
-    {
-        using var sw = new StringWriter();
-        Produce(sw);
-        return sw.ToString();
-    }
+    protected abstract void WriteContent(TextWriter sb, IHtmlMatrix matrix, HtmlMatrixSummary summary, HtmlTableOptions options);
 }

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using ContextKit.Model;
-using ContextKit.Model.Collector;
 
-namespace HtmlKit.Document.Coverage;
+namespace HtmlKit.Model;
 
 public interface IHtmlCellStyleBuilder
 {
