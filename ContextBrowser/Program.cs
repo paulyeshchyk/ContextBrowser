@@ -56,6 +56,7 @@ public static class Program
         hab.Services.AddSingleton<IContextFactory<ContextInfo>, ContextInfoFactory<ContextInfo>>();
         hab.Services.AddTransient<ISyntaxTreeWrapperBuilder, RoslynSyntaxTreeWrapperBuilder>();
 
+        hab.Services.AddTransient<IFileCacheStrategy, ContextFileCacheStrategy>();
         hab.Services.AddSingleton<IContextInfoCacheService, ContextInfoCacheService>();
 
         hab.Services.AddTransient<IContextClassifierBuilder, ContextClassifierBuilder>();

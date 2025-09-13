@@ -14,7 +14,7 @@ namespace ContextBrowser.FileManager;
 public interface IContextInfoRelationManager
 {
     //relations, build
-    Task<List<ContextInfo>> ConvertToContextInfoAsync(List<ContextInfoSerializableModel> serializableModelList, CancellationToken cancellationToken);
+    Task<IEnumerable<ContextInfo>> ConvertToContextInfoAsync(List<ContextInfoSerializableModel> serializableModelList, CancellationToken cancellationToken);
 }
 
 // context: relations, build
@@ -28,7 +28,7 @@ public class ContextInfoRelationManager : IContextInfoRelationManager
     }
 
     // context: relations, build
-    public Task<List<ContextInfo>> ConvertToContextInfoAsync(List<ContextInfoSerializableModel> serializableModelList, CancellationToken cancellationToken)
+    public Task<IEnumerable<ContextInfo>> ConvertToContextInfoAsync(List<ContextInfoSerializableModel> serializableModelList, CancellationToken cancellationToken)
     {
         var contexts = serializableModelList.Select(model => ContextInfoAdapter.Adapt(model)).ToList();
 
@@ -46,6 +46,7 @@ public class ContextInfoRelationManager : IContextInfoRelationManager
                 lookupDictionary);
         }
 
-        return Task.FromResult(contexts);
+        IEnumerable<ContextInfo> result = contexts;
+        return Task.FromResult(result);
     }
 }
