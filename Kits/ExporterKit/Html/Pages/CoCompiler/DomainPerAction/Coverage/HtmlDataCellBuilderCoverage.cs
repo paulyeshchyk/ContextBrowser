@@ -20,7 +20,7 @@ public class HtmlDataCellBuilderCoverage : IHtmlDataCellBuilder<DomainPerActionT
 
     private readonly Dictionary<string, ContextInfo>? _indexData;
 
-    public HtmlDataCellBuilderCoverage(IHtmlCellDataProducer<string> coverageDataProducer, IHtmlCellDataProducer<List<ContextInfo>> contextInfoListDataProducer, IHrefManager hRefManager, IHtmlCellStyleBuilder cellStyleBuilder, DomainPerActionKeyIndexer<ContextInfo> coverageIndexer, IContextInfoDatasetProvider datasetProvider)
+    public HtmlDataCellBuilderCoverage(IHtmlCellDataProducer<string> coverageDataProducer, IHtmlCellDataProducer<List<ContextInfo>> contextInfoListDataProducer, IHrefManager hRefManager, IHtmlCellStyleBuilder cellStyleBuilder, IKeyIndexBuilder<ContextInfo> coverageIndexer, IContextInfoDatasetProvider datasetProvider)
     {
         _coverageDataProducer = coverageDataProducer;
         _contextInfoListDataProducer = contextInfoListDataProducer;

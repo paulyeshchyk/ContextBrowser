@@ -46,7 +46,7 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
 
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken);
-        var domains = mapper.GetDomains().Distinct();
+        var domains = mapper.GetCols().Distinct();
 
         var renderedCache = new Dictionary<string, bool>();
         foreach (var domain in domains)

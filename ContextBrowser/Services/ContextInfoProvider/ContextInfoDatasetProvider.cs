@@ -1,5 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using ContextBrowser.Infrastructure;
+using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Uml;
 
@@ -8,6 +11,8 @@ namespace ContextBrowser.Services.ContextInfoProvider;
 public class ContextInfoDatasetProvider : BaseContextInfoProvider, IContextInfoDatasetProvider
 {
     private readonly IContextInfoDatasetBuilder _datasetBuilder;
+
+    private IAppOptionsStore _optionsStore;
 
     // Приватное поле для кэширования результата.
     private IContextInfoDataset<ContextInfo>? _dataset;
@@ -19,8 +24,9 @@ public class ContextInfoDatasetProvider : BaseContextInfoProvider, IContextInfoD
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
         IContextInfoDatasetBuilder datasetBuilder)
-        : base(optionsStore, parsingOrchestrant)
+        : base(parsingOrchestrant)
     {
+        _optionsStore = optionsStore;
         _datasetBuilder = datasetBuilder;
     }
 
@@ -46,8 +52,9 @@ public class ContextInfoDatasetProvider : BaseContextInfoProvider, IContextInfoD
         }
 
         var contextsList = await GetParsedContextsAsync(cancellationToken);
-        var appOptions = _optionsStore.Options();
-        var newDataset = _datasetBuilder.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
+        var exportOptions = _optionsStore.GetOptions<ExportOptions>();
+        var classifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var newDataset = _datasetBuilder.Build(contextsList, exportOptions.ExportMatrix, classifier);
 
         lock (_lock)
         {

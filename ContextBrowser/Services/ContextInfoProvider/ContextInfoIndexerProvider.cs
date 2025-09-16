@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
 
@@ -9,8 +11,9 @@ namespace ContextBrowser.Services.ContextInfoProvider;
 public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoIndexerProvider
 {
     private readonly IContextInfoIndexerFactory _mapperFactory;
+    private readonly IAppOptionsStore _optionsStore;
 
-    private readonly Dictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>> _mappers = new();
+    private readonly Dictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>> _mappers = new();
 
     private readonly object _lock = new();
 
@@ -18,12 +21,13 @@ public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoI
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
         IContextInfoIndexerFactory mapperFactory)
-        : base(optionsStore, parsingOrchestrant)
+        : base(parsingOrchestrant)
     {
         _mapperFactory = mapperFactory;
+        _optionsStore = optionsStore;
     }
 
-    public async Task<DomainPerActionKeyIndexer<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
+    public async Task<IKeyIndexBuilder<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)
         {
@@ -35,10 +39,9 @@ public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoI
 
         // Маппер не найден, нужно его собрать.
         var contextsList = await GetParsedContextsAsync(cancellationToken);
-        var appOptions = _optionsStore.Options();
 
         var result = _mapperFactory.GetMapper(mapperType);
-        result.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
+        result.Build(contextsList);
 
         lock (_lock)
         {

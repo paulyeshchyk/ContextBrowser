@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ContextBrowser;
 using ContextBrowser.Services;
 using ContextBrowser.Services.ContextInfoProvider;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
@@ -14,7 +15,6 @@ namespace ContextBrowser.Services.ContextInfoProvider;
 // Абстрактный базовый класс для провайдеров, которым нужен список контекстов.
 public abstract class BaseContextInfoProvider
 {
-    protected readonly IAppOptionsStore _optionsStore;
     protected readonly IParsingOrchestrator _parsingOrchestrant;
 
     // Поле для кэширования результата.
@@ -23,9 +23,8 @@ public abstract class BaseContextInfoProvider
     // Объект для синхронизации доступа к полю.
     private readonly object _lock = new object();
 
-    protected BaseContextInfoProvider(IAppOptionsStore optionsStore, IParsingOrchestrator parsingOrchestrant)
+    protected BaseContextInfoProvider(IParsingOrchestrator parsingOrchestrant)
     {
-        _optionsStore = optionsStore;
         _parsingOrchestrant = parsingOrchestrant;
     }
 
@@ -40,8 +39,7 @@ public abstract class BaseContextInfoProvider
             }
         }
 
-        var appOptions = _optionsStore.Options();
-        var contextsList = await _parsingOrchestrant.GetParsedContextsAsync(appOptions, cancellationToken);
+        var contextsList = await _parsingOrchestrant.GetParsedContextsAsync(cancellationToken);
 
         lock (_lock)
         {

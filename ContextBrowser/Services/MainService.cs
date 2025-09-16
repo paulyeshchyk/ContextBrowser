@@ -30,6 +30,7 @@ using RoslynKit.Phases.Syntax.Parsers;
 using RoslynKit.Tree;
 using RoslynKit.Wrappers.Extractor;
 using SemanticKit.Model;
+using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser.Services;
 
@@ -69,16 +70,19 @@ public class MainService : IMainService
     // context: app, execute
     public async Task RunAsync(CancellationToken cancellationToken)
     {
-        var appOptions = _optionsStore.Options();
-        ExportPathDirectoryPreparer.Prepare(appOptions.Export.FilePaths);
+        var exportOptions = _optionsStore.GetOptions<ExportOptions>();
+        var classifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
+
+        ExportPathDirectoryPreparer.Prepare(exportOptions.FilePaths);
 
         await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         //компиляция диаграмм
-        await _diagramCompilerOrchestrator.CompileAllAsync(appOptions.Classifier, appOptions.Export, appOptions.DiagramBuilder, cancellationToken);
+        await _diagramCompilerOrchestrator.CompileAllAsync(classifier, exportOptions, diagramBuilderOptions, cancellationToken);
 
         // компиляция html
-        await _htmlCompilerOrchestrator.CompileAllAsync(appOptions.Classifier, appOptions.Export, cancellationToken);
+        await _htmlCompilerOrchestrator.CompileAllAsync(classifier, exportOptions, cancellationToken);
 
         // запуск кастомных html & puml серверов
         _serverStartSignal.Signal();

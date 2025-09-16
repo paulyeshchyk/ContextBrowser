@@ -45,7 +45,7 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
 
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken);
-        var actions = mapper.GetActions().Distinct();
+        var actions = mapper.GetRows().Distinct();
 
         var renderedCache = new Dictionary<string, bool>();
         foreach (var action in actions)

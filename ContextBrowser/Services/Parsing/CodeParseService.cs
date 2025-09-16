@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,8 +8,10 @@ using ContextBrowser.Model;
 using ContextBrowser.Roslyn;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Import;
 using ContextKit.Model;
 using LoggerKit;
+using SemanticKit.Model.Options;
 
 namespace ContextBrowser.Services;
 
@@ -35,8 +37,8 @@ public class CodeParseService : ICodeParseService
     // context: parsing, build
     public Task<IEnumerable<ContextInfo>> Parse(IContextParser<ContextInfo> contextParser, CancellationToken cancellationToken)
     {
-        var importOptions = _optionsStore.Options().Import;
-        var parsingOptions = _optionsStore.Options().ParsingOptions;
+        var importOptions = _optionsStore.GetOptions<ImportOptions>();
+        var parsingOptions = _optionsStore.GetOptions<CodeParsingOptions>();
 
         var filePaths = PathAnalyzer.GetFilePaths(importOptions.SearchPaths, importOptions.FileExtensions, _logger.WriteLog);
         var filtered = PathFilter.FilteroutPaths(filePaths, importOptions.Exclude, (thePath) => thePath);

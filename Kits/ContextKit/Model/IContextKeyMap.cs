@@ -9,16 +9,16 @@ public interface DomainPerActionKeyMap<TContext, TKey> : DomainPerActionKeyMapBu
     where TKey : notnull
 {
     // context: ContextInfoMatrix, read
-    IEnumerable<string> GetActions();
+    IEnumerable<string> GetRows();
 
     // context: ContextInfoMatrix, read
-    IEnumerable<string> GetDomains();
+    IEnumerable<string> GetCols();
 
     // context: ContextInfoMatrix, read
-    List<TContext> GetMethodsByAction(string action);
+    List<TContext> GetDataByRow(string action);
 
     // context: ContextInfoMatrix, read
-    List<TContext> GetMethodsByDomain(string domain);
+    List<TContext> GetDataByCol(string domain);
 }
 
 // context: ContextInfoMatrix, build

@@ -97,16 +97,15 @@ public static class Program
         hab.Services.AddTransient<IFileCacheStrategy, ContextFileCacheStrategy>();
         hab.Services.AddSingleton<IContextInfoCacheService, ContextInfoCacheService>();
 
-        hab.Services.AddTransient<IDomainPerActionContextClassifierBuilder, DomainPerActionContextClassifierBuilder>();
         hab.Services.AddTransient<IContextInfoRelationManager, ContextInfoRelationManager>();
 
-        hab.Services.AddSingleton<DomainPerActionKeyIndexer<ContextInfo>, HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>>();
+        hab.Services.AddSingleton<IKeyIndexBuilder<ContextInfo>, HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>>();
         hab.Services.AddSingleton<IContextInfoIndexerFactory, ContextInfoFlatMapperFactory>();
-        hab.Services.AddSingleton<IDictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>>>(provider =>
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>>>(provider =>
         {
-            return new Dictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>>
+            return new Dictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>>
             {
-                { GlobalMapperKeys.NameClassName, provider.GetRequiredService<DomainPerActionKeyIndexer<ContextInfo>>() }
+                { GlobalMapperKeys.NameClassName, provider.GetRequiredService<IKeyIndexBuilder<ContextInfo>>() }
             };
         });
 
@@ -263,14 +262,14 @@ public class ContextInfoMapperFactory : IContextInfoMapperFactory
 
 public class ContextInfoFlatMapperFactory : IContextInfoIndexerFactory
 {
-    private readonly IDictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>> _mappers;
+    private readonly IDictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>> _mappers;
 
-    public ContextInfoFlatMapperFactory(IDictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>> mappers)
+    public ContextInfoFlatMapperFactory(IDictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>> mappers)
     {
         _mappers = mappers;
     }
 
-    public DomainPerActionKeyIndexer<ContextInfo> GetMapper(MapperKeyBase type)
+    public IKeyIndexBuilder<ContextInfo> GetMapper(MapperKeyBase type)
     {
         if (_mappers.TryGetValue(type, out var mapper))
         {

@@ -6,16 +6,17 @@ namespace TensorKit.Model;
 /// Представляет тензор-ключ для многомерных данных.
 /// Этот класс принимает массив строковых измерений и
 /// сохраняет их в упорядоченном виде.
+/// Свойства, представляющие измерения тензора, должены соответствовать порядку в массиве dimensions.
 /// </summary>
 /// 
 public record DomainPerActionTensor : ITensor<string>
 {
     public int Rank => 2;
 
-    // Свойства, представляющие измерения тензора.
-    // Их порядок должен соответствовать порядку в массиве dimensions.
+    //rank 2: row
     public string Action { get; init; }
 
+    //rank 2: col
     public string Domain { get; init; }
 
     public string this[int index] => GetDimensions()[index];

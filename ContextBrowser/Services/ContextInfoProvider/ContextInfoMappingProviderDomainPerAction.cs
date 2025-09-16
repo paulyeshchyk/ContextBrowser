@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ExporterKit.Infrastucture;
@@ -11,6 +13,7 @@ namespace ContextBrowser.Services.ContextInfoProvider;
 public class ContextInfoMappingProviderDomainPerAction : BaseContextInfoProvider, IContextInfoMapperProvider
 {
     private readonly IContextInfoMapperFactory _mapperFactory;
+    private readonly IAppOptionsStore _optionsStore;
 
     private readonly Dictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> _mappers = new();
 
@@ -20,9 +23,10 @@ public class ContextInfoMappingProviderDomainPerAction : BaseContextInfoProvider
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
         IContextInfoMapperFactory mapperFactory)
-        : base(optionsStore, parsingOrchestrant)
+        : base(parsingOrchestrant)
     {
         _mapperFactory = mapperFactory;
+        _optionsStore = optionsStore;
     }
 
     public async Task<DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
@@ -37,10 +41,11 @@ public class ContextInfoMappingProviderDomainPerAction : BaseContextInfoProvider
 
         // Маппер не найден, нужно его собрать.
         var contextsList = await GetParsedContextsAsync(cancellationToken);
-        var appOptions = _optionsStore.Options();
+        var exportOptions = _optionsStore.GetOptions<ExportOptions>();
+        var classifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
 
         var result = _mapperFactory.GetMapper(mapperType);
-        result.Build(contextsList, appOptions.Export.ExportMatrix, appOptions.Classifier);
+        result.Build(contextsList, exportOptions.ExportMatrix, classifier);
 
         lock (_lock)
         {

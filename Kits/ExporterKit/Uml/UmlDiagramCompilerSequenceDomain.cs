@@ -42,13 +42,13 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
 
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken);
-        var domains = mapper.GetDomains().Distinct();
+        var distinctCols = mapper.GetCols().Distinct();
 
         var renderedCache = new Dictionary<string, bool>();
-        foreach (var domain in domains)
+        foreach (var col in distinctCols)
         {
-            var compileOptions = DiagramCompileOptionsFactory.DomainSequenceCompileOptions(domain);
-            renderedCache[domain] = GenerateSingle(contextClassifier, exportOptions, compileOptions, diagramBuilderOptions, elements);
+            var compileOptions = DiagramCompileOptionsFactory.DomainSequenceCompileOptions(col);
+            renderedCache[col] = GenerateSingle(contextClassifier, exportOptions, compileOptions, diagramBuilderOptions, elements);
         }
         return renderedCache;
     }

@@ -31,8 +31,8 @@ public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var rows = SortList(_mapper.GetActions().Distinct().ToList(), contextClassifier.EmptyAction, priority);
-            var cols = SortList(_mapper.GetDomains().Distinct().ToList(), contextClassifier.EmptyDomain, priority);
+            var rows = SortList(_mapper.GetRows().Distinct().ToList(), contextClassifier.EmptyAction, priority);
+            var cols = SortList(_mapper.GetCols().Distinct().ToList(), contextClassifier.EmptyDomain, priority);
 
             var resultMatrix = new HtmlMatrix(rows, cols);
 

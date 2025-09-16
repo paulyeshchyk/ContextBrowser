@@ -5,9 +5,9 @@ public record ExportOptions
 {
     public ExportMatrixOptions ExportMatrix { get; set; }
 
-    public ExportPaths FilePaths { get; set; }
+    public ExportFilePaths FilePaths { get; set; }
 
-    public ExportPaths WebPaths { get; set; }
+    public ExportWebPaths WebPaths { get; set; }
 
     public ExportPumlOptions PumlOptions { get; }
 

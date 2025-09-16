@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
 
 namespace ContextKit.Stategies;
@@ -7,12 +9,18 @@ namespace ContextKit.Stategies;
 public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
     where T : ContextInfo
 {
-    private readonly List<ICommentParsingStrategy<T>> _strategies = new();
+    private readonly IAppOptionsStore _optionsStore;
+    private readonly ICommentParsingStrategyFactory<T> _factory;
 
-    public ContextInfoCommentProcessor(ICommentParsingStrategyFactory<T> factory, IDomainPerActionContextClassifierBuilder contextClassifierBuilder)
+    private readonly List<ICommentParsingStrategy<T>> _strategies;
+
+    public ContextInfoCommentProcessor(ICommentParsingStrategyFactory<T> factory, IAppOptionsStore optionsStore)
     {
-        var contextClassifier = contextClassifierBuilder.Build();
-        _strategies.AddRange(factory.CreateStrategies(contextClassifier));
+        _factory = factory;
+        _optionsStore = optionsStore;
+
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        _strategies = _factory.CreateStrategies(contextClassifier).ToList();
     }
 
     // context: contextInfo, comment, build

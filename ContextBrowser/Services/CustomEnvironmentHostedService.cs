@@ -1,5 +1,7 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Export;
 using Microsoft.Extensions.Hosting;
 
 namespace ContextBrowser.Services;
@@ -19,15 +21,14 @@ public class CustomEnvironmentHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-
         _ = Task.Run(async () =>
         {
             // Ожидаем сигнала от MainService, не блокируя основной поток
             await _startSignal.WaitForSignalAsync();
 
-            var appOptions = _optionsStore.Options();
-            CustomEnvironment.CopyResources(appOptions.Export.FilePaths.OutputDirectory);
-            CustomEnvironment.RunServers(appOptions.Export.FilePaths.OutputDirectory);
+            var filePaths = _optionsStore.GetOptions<ExportFilePaths>();
+            CustomEnvironment.CopyResources(filePaths.OutputDirectory);
+            CustomEnvironment.RunServers(filePaths.OutputDirectory);
         }, cancellationToken);
 
         return Task.CompletedTask;

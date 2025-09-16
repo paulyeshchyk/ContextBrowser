@@ -43,14 +43,14 @@ public class ContextInfoMapperDomainPerAction : DomainPerActionKeyMap<ContextInf
     }
 
     // context: ContextInfoMatrix, read
-    public IEnumerable<string> GetDomains() => _data!.Select(k => k.Key.Domain);
+    public IEnumerable<string> GetCols() => _data!.Select(k => k.Key.Domain);
 
     // context: ContextInfoMatrix, read
-    public IEnumerable<string> GetActions() => _data!.Select(k => k.Key.Action);
+    public IEnumerable<string> GetRows() => _data!.Select(k => k.Key.Action);
 
     // context: ContextInfoMatrix, read
-    public List<ContextInfo> GetMethodsByAction(string action) => _data!.Where(kvp => kvp.Key.Action == action).SelectMany(kvp => kvp.Value).Distinct().ToList();
+    public List<ContextInfo> GetDataByRow(string action) => _data!.Where(kvp => kvp.Key.Action == action).SelectMany(kvp => kvp.Value).Distinct().ToList();
 
     // context: ContextInfoMatrix, read
-    public List<ContextInfo> GetMethodsByDomain(string domain) => _data!.Where(kvp => kvp.Key.Domain == domain).SelectMany(kvp => kvp.Value).Distinct().ToList();
+    public List<ContextInfo> GetDataByCol(string domain) => _data!.Where(kvp => kvp.Key.Domain == domain).SelectMany(kvp => kvp.Value).Distinct().ToList();
 }

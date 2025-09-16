@@ -8,10 +8,6 @@ public interface IDomainPerActionContextClassifier
 
     string EmptyDomain { get; }
 
-    string FakeAction { get; }
-
-    string FakeDomain { get; }
-
     IEnumerable<string> MetaItems { get; }
 
     /// <summary>
@@ -49,18 +45,13 @@ public interface IDomainPerActionContextClassifier
     /// <returns></returns>
     bool HasActionAndDomain(ContextInfo info);
 
-    bool IsEmptyAction(string actionName);
+    //bool IsEmptyAction(string actionName);
 
-    bool IsEmptyDomain(string domainName);
+    //bool IsEmptyDomain(string domainName);
 
     bool IsActionApplicable(ContextInfo ctx, string? actionName);
 
     bool IsDomainApplicable(ContextInfo ctx, string? domainName);
 
     IEnumerable<string> GetCombinedVerbs(IEnumerable<string> verbs);
-}
-
-public interface IDomainPerActionContextClassifierBuilder
-{
-    IDomainPerActionContextClassifier Build();
 }

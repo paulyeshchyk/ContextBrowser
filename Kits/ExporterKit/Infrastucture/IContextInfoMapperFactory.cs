@@ -12,5 +12,5 @@ public interface IContextInfoMapperFactory
 
 public interface IContextInfoIndexerFactory
 {
-    DomainPerActionKeyIndexer<ContextInfo> GetMapper(MapperKeyBase type);
+    IKeyIndexBuilder<ContextInfo> GetMapper(MapperKeyBase type);
 }
