@@ -10,12 +10,12 @@ using ContextBrowser.Infrastructure;
 using ContextBrowser.Samples.HtmlPages;
 using ContextBrowser.Services;
 using ContextBrowser.Services.ContextInfoProvider;
-using ContextBrowserKit.Factories;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
 using ContextKit.Stategies;
+using ExporterKit.Csv;
 using ExporterKit.Html;
 using ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 using ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
@@ -38,6 +38,8 @@ using RoslynKit.Phases.Invocations;
 using RoslynKit.Tree;
 using RoslynKit.Wrappers.Extractor;
 using SemanticKit.Model;
+using TensorKit.Factories;
+using TensorKit.Model;
 using UmlKit.Compiler;
 using UmlKit.Compiler.Orchestrant;
 using UmlKit.Exporter;
@@ -65,40 +67,61 @@ public static class Program
         hab.Services.AddSingleton<IContextFactory<ContextInfo>, ContextInfoFactory<ContextInfo>>();
         hab.Services.AddTransient<ISyntaxTreeWrapperBuilder, RoslynSyntaxTreeWrapperBuilder>();
 
+        hab.Services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(provider =>
+        {
+            //var settingsStore = provider.GetRequiredService<IAppOptionsStore>();
+
+            var defaultLogLevels = new AppLoggerLevelStore<AppLevel>();
+            var defaultCW = new ConsoleLogWriter();
+            var defaultDependencies = new Dictionary<AppLevel, AppLevel>();
+
+            return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultCW, dependencies: defaultDependencies);
+        });
+
+        // # Tensor
+        //
+        hab.Services.AddTransient<ITensorBuilder, TensorBuilder>();
+
+        // ## Tensor DomainPerAction
+        hab.Services.AddTransient<ITensorFactory<DomainPerActionTensor>>(provider => new TensorFactory<DomainPerActionTensor>(dimensions => new DomainPerActionTensor(dimensions)));
+
+        hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerDomainPerAction>();
+        hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerDomainPerActionEmptyData>();
+
+        //
+        hab.Services.AddSingleton<IContextInfoMapperProvider, ContextInfoMappingProviderDomainPerAction>();
+        hab.Services.AddSingleton<IContextInfoIndexerProvider, ContextInfoIndexerProvider>();
+
+        hab.Services.AddTransient<ICsvGenerator, CsvGenerator>();
+
         hab.Services.AddTransient<IFileCacheStrategy, ContextFileCacheStrategy>();
         hab.Services.AddSingleton<IContextInfoCacheService, ContextInfoCacheService>();
 
-        hab.Services.AddTransient<IContextClassifierBuilder, ContextClassifierBuilder>();
+        hab.Services.AddTransient<IDomainPerActionContextClassifierBuilder, DomainPerActionContextClassifierBuilder>();
         hab.Services.AddTransient<IContextInfoRelationManager, ContextInfoRelationManager>();
 
-        hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerMatrixData>();
-        hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerEmptydata>();
-
-        hab.Services.AddSingleton<IContextKeyIndexer<ContextInfo>, HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>>();
+        hab.Services.AddSingleton<DomainPerActionKeyIndexer<ContextInfo>, HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo>>();
         hab.Services.AddSingleton<IContextInfoIndexerFactory, ContextInfoFlatMapperFactory>();
-        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>>>(provider =>
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>>>(provider =>
         {
-            return new Dictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>>
+            return new Dictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>>
             {
-                { GlobalMapperKeys.NameClassName, provider.GetRequiredService<IContextKeyIndexer<ContextInfo>>() }
+                { GlobalMapperKeys.NameClassName, provider.GetRequiredService<DomainPerActionKeyIndexer<ContextInfo>>() }
             };
         });
 
-        hab.Services.AddSingleton<IContextKeyMap<ContextInfo, IContextKey>, ContextInfoMapperDomainPerAction>();
+        hab.Services.AddSingleton<DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>, ContextInfoMapperDomainPerAction>();
         hab.Services.AddTransient<IContextInfoMapperFactory, ContextInfoMapperFactory>();
 
-        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>>>(provider =>
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>>>(provider =>
         {
-            return new Dictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>>
+            return new Dictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>>
             {
-                { GlobalMapperKeys.DomainPerAction, provider.GetRequiredService<IContextKeyMap<ContextInfo, IContextKey>>() }
+                { GlobalMapperKeys.DomainPerAction, provider.GetRequiredService<DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>>() }
             };
         });
 
         hab.Services.AddTransient<IContextInfoDatasetBuilder, ContextInfoDatasetBuilder>();
-
-        hab.Services.AddSingleton<IContextInfoMapperProvider, ContextInfoMappingProvider>();
-        hab.Services.AddSingleton<IContextInfoIndexerProvider, ContextInfoIndexerProvider>();
 
         hab.Services.AddSingleton<ICompilationBuilder, RoslynCompilationBuilder>();
         hab.Services.AddTransient<ICodeParseService, CodeParseService>();
@@ -115,6 +138,7 @@ public static class Program
 
         hab.Services.AddSingleton<IContextInfoDatasetProvider, ContextInfoDatasetProvider>();
 
+        // uml compilers
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassActionPerDomain>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerNamespaceOnly>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassMethodsList>();
@@ -130,7 +154,7 @@ public static class Program
 
         hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
 
-        hab.Services.AddTransient<IFixedHtmlContentManager, FixedHtmlContentManagerDomainPerAction>();
+        hab.Services.AddTransient<IHtmlFixedContentManager, FixedHtmlContentManagerDomainPerAction>();
         hab.Services.AddTransient<IHtmlContentInjector, HtmlContentInjector>();
         hab.Services.AddTransient<IHrefManager, HrefManagerDomainPerAction>();
 
@@ -141,14 +165,12 @@ public static class Program
         // Построитель таблицы(HtmlMatrixWriter) для отображения к-ва методов в пересечении домена-действия с выводом coverage
         // и сопутствующие этому модули
         //
-        hab.Services.AddTransient<IContextKeyFactory<ContextKey>>(provider => new ContextKeyFactory<ContextKey>((r, c) => new ContextKey(r, c)));
-        hab.Services.AddTransient<IContextKeyBuilder, ContextKeyBuilder>();
-        hab.Services.AddTransient<IHtmlDataCellBuilder<ContextKey>, HtmlDataCellBuilderCoverage>();
-        hab.Services.AddTransient<IHtmlMatrixWriter, HtmlMatrixWriter<ContextKey>>();
-
-        //
 
         hab.Services.AddTransient<IHtmlMatrixSummaryBuilder, HtmlMatrixSummaryBuilderDomainPerAction>();
+        hab.Services.AddTransient<IHtmlDataCellBuilder<DomainPerActionTensor>, HtmlDataCellBuilderCoverage>();
+        hab.Services.AddTransient<IHtmlMatrixWriter, HtmlMatrixWriter<DomainPerActionTensor>>();
+
+        //
 
         hab.Services.AddScoped<ICoverageValueExtractor, CoverageValueExtractor>();
         hab.Services.AddScoped<IHtmlCellColorCalculator, HtmlCellColorCalculatorCoverage>();
@@ -157,6 +179,7 @@ public static class Program
         // Регистрация IHtmlPageMatrix (HtmlPageProducerMatrix) как транзитного сервиса.
         hab.Services.AddTransient<IHtmlPageIndex, HtmlPageProducerIndex>();
 
+        // PageCompilers
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerDomainPerAction>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerNamespaceOnly>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerClassOnly>();
@@ -167,16 +190,7 @@ public static class Program
 
         hab.Services.AddTransient<IHtmlCompilerOrchestrator, HtmlCompilerOrchestrator>();
 
-        hab.Services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(provider =>
-        {
-            //var settingsStore = provider.GetRequiredService<IAppOptionsStore>();
-
-            var defaultLogLevels = new AppLoggerLevelStore<AppLevel>();
-            var defaultCW = new ConsoleLogWriter();
-            var defaultDependencies = new Dictionary<AppLevel, AppLevel>();
-
-            return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultCW, dependencies: defaultDependencies);
-        });
+        //
 
         using var tokenSource = new CancellationTokenSource();
 
@@ -229,14 +243,14 @@ public static class Program
 
 public class ContextInfoMapperFactory : IContextInfoMapperFactory
 {
-    private readonly IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>> _mappers;
+    private readonly IDictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> _mappers;
 
-    public ContextInfoMapperFactory(IDictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>> mappers)
+    public ContextInfoMapperFactory(IDictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> mappers)
     {
         _mappers = mappers;
     }
 
-    public IContextKeyMap<ContextInfo, IContextKey> GetMapper(MapperKeyBase type)
+    public DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> GetMapper(MapperKeyBase type)
     {
         if (_mappers.TryGetValue(type, out var mapper))
         {
@@ -249,14 +263,14 @@ public class ContextInfoMapperFactory : IContextInfoMapperFactory
 
 public class ContextInfoFlatMapperFactory : IContextInfoIndexerFactory
 {
-    private readonly IDictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>> _mappers;
+    private readonly IDictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>> _mappers;
 
-    public ContextInfoFlatMapperFactory(IDictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>> mappers)
+    public ContextInfoFlatMapperFactory(IDictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>> mappers)
     {
         _mappers = mappers;
     }
 
-    public IContextKeyIndexer<ContextInfo> GetMapper(MapperKeyBase type)
+    public DomainPerActionKeyIndexer<ContextInfo> GetMapper(MapperKeyBase type)
     {
         if (_mappers.TryGetValue(type, out var mapper))
         {

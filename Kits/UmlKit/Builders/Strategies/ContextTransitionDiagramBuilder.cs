@@ -28,7 +28,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     }
 
     // context: builder, transition
-    public GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts, IContextClassifier classifier)
+    public GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts, IDomainPerActionContextClassifier classifier)
     {
         if (!allContexts.Any())
         {
@@ -57,7 +57,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     /// Унифицированный метод для выборки и построения переходов.
     /// </summary>
     // context: builder, transition
-    internal GrouppedSortedTransitionList? FetchAndBuildTransitions(string name, FetchType fetchType, List<ContextInfo> allContexts, IContextClassifier classifier)
+    internal GrouppedSortedTransitionList? FetchAndBuildTransitions(string name, FetchType fetchType, List<ContextInfo> allContexts, IDomainPerActionContextClassifier classifier)
     {
         var methods = FetchAllMethods(name, fetchType, allContexts, classifier);
         if (!methods.Any())
@@ -69,7 +69,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     }
 
     // context: builder, transition
-    internal static List<ContextInfo> FetchAllMethods(string name, FetchType fetchType, List<ContextInfo> allContexts, IContextClassifier classifier)
+    internal static List<ContextInfo> FetchAllMethods(string name, FetchType fetchType, List<ContextInfo> allContexts, IDomainPerActionContextClassifier classifier)
     {
         Func<ContextInfo, string, bool> filterFunc = fetchType switch
         {

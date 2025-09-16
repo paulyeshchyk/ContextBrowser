@@ -40,7 +40,7 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
     }
 
     // context: uml, build
-    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, bool>> CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
@@ -60,7 +60,7 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
     /// <summary>
     /// Компилирует диаграмму состояний.
     /// </summary>
-    protected bool GenerateSingle(IDiagramCompileOptions options, List<ContextInfo> allContexts, IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    protected bool GenerateSingle(IDiagramCompileOptions options, List<ContextInfo> allContexts, IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling State {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
         var _factory = new UmlTransitionStateFactory();

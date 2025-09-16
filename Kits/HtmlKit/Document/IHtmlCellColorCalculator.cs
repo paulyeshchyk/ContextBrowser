@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ContextKit.Model;
+using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
@@ -12,5 +13,5 @@ public interface IHtmlCellColorCalculator
     /// <param name="contextInfoList">Список связанной контекстной информации.</param>
     /// <param name="index">Индекс для быстрого поиска.</param>
     /// <returns>Строка с HEX-цветом или null.</returns>
-    string? CalculateBgColor(IContextKey cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<string, ContextInfo>? index);
+    string? CalculateBgColor(DomainPerActionTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<string, ContextInfo>? index);
 }

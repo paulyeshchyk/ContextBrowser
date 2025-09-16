@@ -2,12 +2,13 @@
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Options;
+using TensorKit.Model;
 
 namespace HtmlKit.Helpers;
 
 public interface IHrefManager
 {
-    string GetHrefCell(IContextKey cell, HtmlTableOptions _options);
+    string GetHrefCell(DomainPerActionTensor cell, HtmlTableOptions _options);
 
     string GetHrefColSummary(string key, HtmlTableOptions _options);
 

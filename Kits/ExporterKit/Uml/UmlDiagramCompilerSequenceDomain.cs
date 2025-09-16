@@ -36,7 +36,7 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
     }
 
     // context: uml, build
-    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, bool>> CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
@@ -56,7 +56,7 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
     /// <summary>
     /// Компилирует диаграмму последовательностей.
     /// </summary>
-    protected bool GenerateSingle(IContextClassifier contextClassifier, ExportOptions exportOptions, IDiagramCompileOptions options, DiagramBuilderOptions diagramBuilderOptions, List<ContextInfo> allContexts)
+    protected bool GenerateSingle(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, IDiagramCompileOptions options, DiagramBuilderOptions diagramBuilderOptions, List<ContextInfo> allContexts)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling Sequence {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
         var bf = ContextDiagramBuildersFactory.TransitionBuilder(diagramBuilderOptions, _logger.WriteLog);

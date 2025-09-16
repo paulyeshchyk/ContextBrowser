@@ -1,4 +1,5 @@
 ﻿using ContextBrowserKit.Options;
+using TensorKit.Model;
 
 namespace HtmlKit.Options;
 
@@ -8,9 +9,9 @@ public record HtmlTableOptions
 {
     public SummaryPlacementType SummaryPlacement { get; set; }
 
-    public MatrixOrientationType Orientation { get; set; }
+    public TensorPermutationType Orientation { get; set; }
 
-    public HtmlTableOptions(SummaryPlacementType summaryPlacement, MatrixOrientationType orientation)
+    public HtmlTableOptions(SummaryPlacementType summaryPlacement, TensorPermutationType orientation)
     {
         SummaryPlacement = summaryPlacement;
         Orientation = orientation;

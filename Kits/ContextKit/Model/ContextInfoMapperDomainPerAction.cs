@@ -1,34 +1,44 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using TensorKit.Factories;
+using TensorKit.Model;
 
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public class ContextInfoMapperDomainPerAction : IContextKeyMap<ContextInfo, IContextKey>
+public class ContextInfoMapperDomainPerAction : DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>
 {
-    private Dictionary<IContextKey, List<ContextInfo>>? _data;
+    private Dictionary<DomainPerActionTensor, List<ContextInfo>>? _data;
+    private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
+    private readonly ITensorBuilder _keyBuilder;
 
-    public Dictionary<IContextKey, List<ContextInfo>>? GetMapData()
+    public ContextInfoMapperDomainPerAction(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder)
+    {
+        _keyFactory = keyFactory;
+        _keyBuilder = keyBuilder;
+    }
+
+    public Dictionary<DomainPerActionTensor, List<ContextInfo>>? GetMapData()
     {
         return _data;
     }
 
     // context: ContextInfoMatrix, build
-    public void Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier)
+    public void Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IDomainPerActionContextClassifier contextClassifier)
     {
         _data = contextsList
                     .Where(c => !string.IsNullOrWhiteSpace(c.Name) && c.Contexts.Any())
                     .GroupBy(c =>
                     {
-                        var action = c.Contexts.FirstOrDefault(contextClassifier.IsVerb);
-                        var domain = c.Contexts.FirstOrDefault(contextClassifier.IsNoun);
-                        return new ContextKey(
-                            Action: action ?? contextClassifier.EmptyAction,
-                            Domain: domain ?? contextClassifier.EmptyDomain);
+                        var action = c.Contexts.FirstOrDefault(contextClassifier.IsVerb) ?? contextClassifier.EmptyAction;
+                        var domain = c.Contexts.FirstOrDefault(contextClassifier.IsNoun) ?? contextClassifier.EmptyDomain;
+                        var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { action, domain }, _keyFactory.Create);
+                        return contextKey;
                     })
                     .ToDictionary(
-                        g => (IContextKey)g.Key,
+                        g => (DomainPerActionTensor)g.Key,
                         g => g.ToList());
     }
 

@@ -4,18 +4,19 @@ using System.Threading.Tasks;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ExporterKit.Infrastucture;
+using TensorKit.Model;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
-public class ContextInfoMappingProvider : BaseContextInfoProvider, IContextInfoMapperProvider
+public class ContextInfoMappingProviderDomainPerAction : BaseContextInfoProvider, IContextInfoMapperProvider
 {
     private readonly IContextInfoMapperFactory _mapperFactory;
 
-    private readonly Dictionary<MapperKeyBase, IContextKeyMap<ContextInfo, IContextKey>> _mappers = new();
+    private readonly Dictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> _mappers = new();
 
     private readonly object _lock = new();
 
-    public ContextInfoMappingProvider(
+    public ContextInfoMappingProviderDomainPerAction(
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
         IContextInfoMapperFactory mapperFactory)
@@ -24,7 +25,7 @@ public class ContextInfoMappingProvider : BaseContextInfoProvider, IContextInfoM
         _mapperFactory = mapperFactory;
     }
 
-    public async Task<IContextKeyMap<ContextInfo, IContextKey>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
+    public async Task<DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)
         {

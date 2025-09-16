@@ -18,6 +18,7 @@
 		<ProjectReference Include="..\GraphKit\GraphKit.csproj" />
 		<ProjectReference Include="..\HtmlKit\HtmlKit.csproj" />
 		<ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
+		<ProjectReference Include="..\TensorKit\TensorKit.csproj" />
 		<ProjectReference Include="..\UmlKit\UmlKit.csproj" />
 	</ItemGroup>
 	<ItemGroup>

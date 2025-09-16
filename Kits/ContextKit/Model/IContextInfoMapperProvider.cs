@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TensorKit.Model;
 
 namespace ContextKit.Model;
 
 public interface IContextInfoMapperProvider
 {
-    Task<IContextKeyMap<ContextInfo, IContextKey>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken);
+    Task<DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken);
 }

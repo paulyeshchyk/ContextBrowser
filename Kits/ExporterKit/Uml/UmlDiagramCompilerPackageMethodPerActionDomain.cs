@@ -36,7 +36,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
     }
 
     //context: build, uml
-    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, bool>> CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         CompileDomainGroup(dataset, exportOptions, diagramBuilderOptions);

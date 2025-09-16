@@ -8,5 +8,5 @@ namespace ExporterKit.Uml;
 public interface IContextInfoDatasetBuilder
 {
     // context: ContextInfo, ContextInfoMatrix, build
-    IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier);
+    IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IDomainPerActionContextClassifier contextClassifier);
 }

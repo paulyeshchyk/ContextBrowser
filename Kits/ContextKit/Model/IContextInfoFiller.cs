@@ -21,5 +21,5 @@ public interface IContextInfoFiller
         IContextInfoDataset<ContextInfo> dataset,
         List<ContextInfo> elements,
         ExportMatrixOptions options,
-        IContextClassifier classifier);
+        IDomainPerActionContextClassifier classifier);
 }

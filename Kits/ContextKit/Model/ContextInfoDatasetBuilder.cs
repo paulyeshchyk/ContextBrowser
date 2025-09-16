@@ -23,7 +23,7 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier)
+    public IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IDomainPerActionContextClassifier contextClassifier)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
 

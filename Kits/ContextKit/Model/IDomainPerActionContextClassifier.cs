@@ -2,7 +2,7 @@
 
 namespace ContextKit.Model;
 
-public interface IContextClassifier
+public interface IDomainPerActionContextClassifier
 {
     string EmptyAction { get; }
 
@@ -60,7 +60,7 @@ public interface IContextClassifier
     IEnumerable<string> GetCombinedVerbs(IEnumerable<string> verbs);
 }
 
-public interface IContextClassifierBuilder
+public interface IDomainPerActionContextClassifierBuilder
 {
-    IContextClassifier Build();
+    IDomainPerActionContextClassifier Build();
 }

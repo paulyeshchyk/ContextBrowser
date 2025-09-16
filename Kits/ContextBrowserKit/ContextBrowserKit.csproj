@@ -8,4 +8,12 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Folder Include="Factories\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\TensorKit\TensorKit.csproj" />
+	</ItemGroup>
+
 </Project>

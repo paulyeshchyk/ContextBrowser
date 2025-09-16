@@ -1,12 +1,13 @@
 ﻿using ContextBrowserKit.Options;
 using HtmlKit.Options;
+using TensorKit.Model;
 
 namespace HtmlKit.Helpers;
 
-public class FixedHtmlContentManagerDomainPerAction : IFixedHtmlContentManager
+public class FixedHtmlContentManagerDomainPerAction : IHtmlFixedContentManager
 {
     public string TopLeftCell(HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientationType.ActionRows
+        _options.Orientation == TensorPermutationType.Standard
             ? "Action \\ Domain"
             : "Domain \\ Action";
 

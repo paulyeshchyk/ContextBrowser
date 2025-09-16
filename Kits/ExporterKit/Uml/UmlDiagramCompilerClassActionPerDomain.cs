@@ -10,6 +10,7 @@ using ContextKit.Model;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
 using LoggerKit;
+using TensorKit.Model;
 using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
@@ -31,7 +32,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         _datasetProvider = datasetProvider;
     }
 
-    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, bool>> CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         foreach (var element in dataset)
@@ -42,7 +43,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
     }
 
     //context: uml, build, heatmap, directory
-    internal void Build(KeyValuePair<IContextKey, List<ContextInfo>> cell, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    internal void Build(KeyValuePair<DomainPerActionTensor, List<ContextInfo>> cell, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var contextInfoKey = cell.Key;
         var contextInfoList = cell.Value.Distinct().ToList();

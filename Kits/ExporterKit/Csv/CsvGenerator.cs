@@ -1,17 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using TensorKit.Factories;
+using TensorKit.Model;
 
 namespace ExporterKit.Csv;
 
 // context: heatmap, build
 // pattern: Builder
-public static class CsvGenerator
+public class CsvGenerator : ICsvGenerator
 {
+    private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
+    private readonly ITensorBuilder _keyBuilder;
+
+    public CsvGenerator(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder)
+    {
+        _keyFactory = keyFactory;
+        _keyBuilder = keyBuilder;
+    }
+
     //context: build, csv, heatmap
-    public static void GenerateHeatmapCsv(IContextClassifier contextClassifier, Dictionary<IContextKey, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
+    public void GenerateHeatmap(IDomainPerActionContextClassifier contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 
@@ -29,38 +41,38 @@ public static class CsvGenerator
         // Основная матрица
         foreach (var action in actions)
         {
-            var row = new List<string> { action };
+            var rows = new List<string> { action };
             foreach (var domain in domains)
             {
-                var key = new ContextKey(action, domain);
-                var count = matrix.TryGetValue(key, out var methods) ? methods.Count : 0;
-                row.Add(count.ToString());
+                var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { action, domain }, _keyFactory.Create);
+                var count = matrix.TryGetValue(contextKey, out var methods) ? methods.Count : 0;
+                rows.Add(count.ToString());
             }
-            lines.Add(string.Join(";", row));
+            lines.Add(string.Join(";", rows));
         }
 
         var includeUnclassified = unclassifiedPriority != UnclassifiedPriorityType.None;
 
-        var unclassified = new ContextKey(contextClassifier.EmptyAction, contextClassifier.EmptyDomain);
+        var unclassified = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { contextClassifier.EmptyAction, contextClassifier.EmptyDomain }, _keyFactory.Create);
 
         // Добавим строку для нераспознанных, если нужно
         if (includeUnclassified && matrix.ContainsKey(unclassified))
         {
             var unclassifiedCount = matrix[unclassified].Count;
-            var row = new List<string> { contextClassifier.EmptyAction };
+            var rows = new List<string> { contextClassifier.EmptyAction };
 
             // Заполняем пустыми значениями для всех доменов
             foreach (var _ in domains)
-                row.Add("0");
+                rows.Add("0");
 
             // Добавим колонку "NoDomain" в конец, если она не была в списке
-            row.Add(unclassifiedCount.ToString());
+            rows.Add(unclassifiedCount.ToString());
 
             // Обновим заголовок, добавив "NoDomain" в конец
             if (!domains.Contains(contextClassifier.EmptyDomain))
                 lines[0] += $";{contextClassifier.EmptyDomain}";
 
-            lines.Add(string.Join(";", row));
+            lines.Add(string.Join(";", rows));
         }
 
         File.WriteAllLines(outputPath, lines);

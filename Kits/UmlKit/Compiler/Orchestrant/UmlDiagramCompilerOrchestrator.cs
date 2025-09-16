@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowser;
@@ -29,7 +29,7 @@ public class UmlDiagramCompilerOrchestrator : IUmlDiagramCompilerOrchestrator
         _appLogger = appLogger;
     }
 
-    public async Task CompileAllAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions builderOptions, CancellationToken cancellationToken)
+    public async Task CompileAllAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions builderOptions, CancellationToken cancellationToken)
     {
         foreach (var compiler in _compilers)
         {

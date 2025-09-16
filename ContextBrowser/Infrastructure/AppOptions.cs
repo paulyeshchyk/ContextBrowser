@@ -8,6 +8,7 @@ using ContextKit.Model;
 using HtmlKit.Options;
 using LoggerKit.Model;
 using SemanticKit.Model.Options;
+using TensorKit.Model;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Infrastructure.Options.Activation;
 using UmlKit.Infrastructure.Options.Indication;
@@ -98,7 +99,7 @@ public class AppOptions
             includeAllStandardActions: false,
                             htmlTable: new HtmlTableOptions(
                                 summaryPlacement: SummaryPlacementType.AfterFirst,
-                                     orientation: MatrixOrientationType.DomainRows)),
+                                     orientation: TensorPermutationType.Transposed)),
         filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
@@ -125,7 +126,7 @@ public class AppOptions
                                          indication: new DiagramIndicationOption(useAsync: true));
 
     [CommandLineArgument("context-classifier", "Определение контекста представления")]
-    public IContextClassifier Classifier { get; set; } = new ContextClassifier(
+    public IDomainPerActionContextClassifier Classifier { get; set; } = new DomainPerActionContextClassifier(
             emptyAction: "NoAction",
             emptyDomain: "NoDomain",
              fakeAction: "_fakeAction",

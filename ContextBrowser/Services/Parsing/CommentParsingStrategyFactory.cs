@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Stategies;
@@ -16,7 +16,7 @@ public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFa
         _appLogger = appLogger;
     }
 
-    public IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies(IContextClassifier classifier)
+    public IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies(IDomainPerActionContextClassifier classifier)
     {
         return new List<ICommentParsingStrategy<TContext>>()
         {

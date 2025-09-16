@@ -21,6 +21,7 @@ using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
 using HtmlKit.Writer;
 using LoggerKit;
+using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
@@ -28,7 +29,7 @@ namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextKeyMap<ContextInfo, IContextKey> _mapper;
+    private readonly DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> _mapper;
     private readonly IHtmlPageIndex _indexPageProducer;
 
     public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IHtmlPageIndex indexPageProducer)
@@ -40,7 +41,7 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 
     // context: html, build
 
-    public async Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
+    public async Task CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
 

@@ -7,7 +7,7 @@ namespace UmlKit.Builders.Strategies;
 
 public class DependencyDiagramBuilder : IContextDiagramBuilder
 {
-    public GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts, IContextClassifier classifier)
+    public GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts, IDomainPerActionContextClassifier classifier)
     {
         throw new NotImplementedException();
     }

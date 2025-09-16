@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextKit.Model;
+using TensorKit.Model;
 using UmlKit;
 using UmlKit.Builders;
 using UmlKit.Compiler;
@@ -51,7 +52,7 @@ public class UmlDiagramCompilerClass
         diagram.WriteToFile(_outputPath, writeOptions);
     }
 
-    private static void AddPackage(Func<string, string, string> linkGenerator, UmlDiagramClass diagram, IContextKey cell, int count)
+    private static void AddPackage(Func<string, string, string> linkGenerator, UmlDiagramClass diagram, DomainPerActionTensor cell, int count)
     {
         var packageId = $"{cell.Action}_{cell.Domain}";
         var label = $"{packageId}\\nMethods: {count}";

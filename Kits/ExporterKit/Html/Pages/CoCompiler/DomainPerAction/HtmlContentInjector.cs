@@ -3,13 +3,14 @@ using System.IO;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Page;
+using TensorKit.Model;
 
 namespace HtmlKit.Writer;
 
 // pattern: Builder
 public class HtmlContentInjector : IHtmlContentInjector
 {
-    public string Inject(IContextKey container, int cnt)
+    public string Inject(DomainPerActionTensor container, int cnt)
     {
         if (cnt == 0)
         {

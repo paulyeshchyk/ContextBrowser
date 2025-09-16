@@ -2,6 +2,7 @@
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Options;
+using TensorKit.Model;
 
 namespace HtmlKit.Helpers;
 
@@ -10,31 +11,31 @@ public class HrefManagerDomainPerAction : IHrefManager
     private static readonly long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     public string GetHrefColSummary(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientationType.ActionRows
+        _options.Orientation == TensorPermutationType.Standard
             ? $"pages\\composite_domain_{key}.html?v={TimeStamp}"
             : $"pages\\composite_action_{key}.html?v={TimeStamp}";
 
     public string GetHrefRowSummary(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientationType.ActionRows
+        _options.Orientation == TensorPermutationType.Standard
             ? $"pages\\composite_action_{key}.html?v={TimeStamp}"
             : $"pages\\composite_domain_{key}.html?v={TimeStamp}";
 
     public string GetHRefRow(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientationType.ActionRows
+        _options.Orientation == TensorPermutationType.Standard
             ? $"pages\\composite_action_{key}.html?v={TimeStamp}"
             : $"pages\\composite_domain_{key}.html?v={TimeStamp}";
 
     public string GetHRefRowMeta(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientationType.ActionRows
+        _options.Orientation == TensorPermutationType.Standard
             ? $"pages\\composite_domain_{key}.html?v={TimeStamp}"
             : $"pages\\composite_action_{key}.html?v={TimeStamp}";
 
     public string GetHRefRowHeader(string key, HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientationType.ActionRows
+        _options.Orientation == TensorPermutationType.Standard
             ? $"pages\\composite_action_{key}.html?v={TimeStamp}"
             : $"pages\\composite_domain_{key}.html?v={TimeStamp}";
 
-    public string GetHrefCell(IContextKey cell, HtmlTableOptions _options) =>
+    public string GetHrefCell(DomainPerActionTensor cell, HtmlTableOptions _options) =>
         $"pages\\composite_{cell.Action}_{cell.Domain}.html?v={TimeStamp}";
 
     public string GetHrefSummary(HtmlTableOptions _options) =>
@@ -45,11 +46,11 @@ public class HrefManagerDomainPerAction : IHrefManager
         return _options.SummaryPlacement switch
         {
             SummaryPlacementType.AfterFirst =>
-                _options.Orientation == MatrixOrientationType.ActionRows
+                _options.Orientation == TensorPermutationType.Standard
                 ? $"pages\\domain_summary.html?v={TimeStamp}"
                 : $"pages\\action_summary.html?v={TimeStamp}",
             SummaryPlacementType.AfterLast =>
-                _options.Orientation == MatrixOrientationType.ActionRows
+                _options.Orientation == TensorPermutationType.Standard
                 ? $"pages\\domain_summary.html?v={TimeStamp}"
                 : $"pages\\action_summary.html?v={TimeStamp}",
             SummaryPlacementType.None =>
@@ -63,11 +64,11 @@ public class HrefManagerDomainPerAction : IHrefManager
         return _options.SummaryPlacement switch
         {
             SummaryPlacementType.AfterFirst =>
-                _options.Orientation == MatrixOrientationType.ActionRows
+                _options.Orientation == TensorPermutationType.Standard
                 ? $"pages\\action_summary.html?v={TimeStamp}"
                 : $"pages\\domain_summary.html?v={TimeStamp}",
             SummaryPlacementType.AfterLast =>
-                _options.Orientation == MatrixOrientationType.ActionRows
+                _options.Orientation == TensorPermutationType.Standard
                 ? $"pages\\action_summary.html?v={TimeStamp}"
                 : $"pages\\domain_summary.html?v={TimeStamp}",
             SummaryPlacementType.None =>
@@ -77,7 +78,7 @@ public class HrefManagerDomainPerAction : IHrefManager
     }
 
     public string GetHrefColHeaderSummary(HtmlTableOptions _options) =>
-        _options.Orientation == MatrixOrientationType.ActionRows
+        _options.Orientation == TensorPermutationType.Standard
             ? $"pages\\domain_summary.html?v={TimeStamp}"
             : $"pages\\action_summary.html?v={TimeStamp}";
 }

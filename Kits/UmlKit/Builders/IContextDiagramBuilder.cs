@@ -7,7 +7,7 @@ namespace UmlKit.Builders;
 // context: build, transition
 public interface IContextDiagramBuilder
 {
-    GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts, IContextClassifier classifier);
+    GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts, IDomainPerActionContextClassifier classifier);
 }
 
 public enum FetchType

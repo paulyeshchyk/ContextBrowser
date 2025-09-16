@@ -10,21 +10,22 @@ using ExporterKit;
 using ExporterKit.Html;
 using ExporterKit.Infrastucture;
 using HtmlKit.Document;
+using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // context: htmlmatrix, build
 public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
 {
-    private readonly IContextKeyMap<ContextInfo, IContextKey> _mapper;
+    private readonly DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> _mapper;
 
-    public HtmlMatrixGeneratorDomainPerAction(IContextKeyMap<ContextInfo, IContextKey> mapper)
+    public HtmlMatrixGeneratorDomainPerAction(DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> mapper)
     {
         _mapper = mapper;
     }
 
     // context: build, htmlmatrix
-    public Task<IHtmlMatrix> GenerateAsync(IContextClassifier contextClassifier, MatrixOrientationType matrixOrientation, UnclassifiedPriorityType priority, CancellationToken cancellationToken)
+    public Task<IHtmlMatrix> GenerateAsync(IDomainPerActionContextClassifier contextClassifier, TensorPermutationType matrixOrientation, UnclassifiedPriorityType priority, CancellationToken cancellationToken)
     {
         return Task.Run(() =>
         {
@@ -37,8 +38,8 @@ public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
 
             return matrixOrientation switch
             {
-                MatrixOrientationType.ActionRows => resultMatrix,
-                MatrixOrientationType.DomainRows => resultMatrix.Transpose(),
+                TensorPermutationType.Standard => resultMatrix,
+                TensorPermutationType.Transposed => resultMatrix.Transpose(),
                 _ => throw new NotImplementedException()
             };
         }, cancellationToken);

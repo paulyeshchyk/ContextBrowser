@@ -11,6 +11,7 @@
 		<ProjectReference Include="../LoggerKit/LoggerKit.csproj" />
 		<ProjectReference Include="..\CommandlineKit\CommandlineKit.csproj" />
 		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
+		<ProjectReference Include="..\TensorKit\TensorKit.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Model/ContextInfoData/" />

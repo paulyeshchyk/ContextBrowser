@@ -7,6 +7,7 @@ using HtmlKit;
 using HtmlKit.Document;
 using HtmlKit.Document.Coverage;
 using HtmlKit.Helpers;
+using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
 
@@ -19,7 +20,7 @@ public class HtmlCellColorCalculatorCoverage : IHtmlCellColorCalculator
         _coverageValueExtractor = coverageValueExtractor;
     }
 
-    public string? CalculateBgColor(IContextKey cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<string, ContextInfo>? index)
+    public string? CalculateBgColor(DomainPerActionTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<string, ContextInfo>? index)
     {
         if (contextInfoList != null && contextInfoList.Any() && index != null)
         {

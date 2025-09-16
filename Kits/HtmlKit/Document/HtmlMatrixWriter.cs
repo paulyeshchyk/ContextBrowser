@@ -4,7 +4,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using ContextBrowserKit.Factories;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -13,6 +12,7 @@ using HtmlKit.Extensions;
 using HtmlKit.Helpers;
 using HtmlKit.Options;
 using HtmlKit.Page;
+using TensorKit.Factories;
 
 namespace HtmlKit.Document;
 
@@ -30,9 +30,9 @@ namespace HtmlKit.Document;
 ///    компоненты:
 ///    - IHtmlDataCellBuilder<TKey>: отвечает за отрисовку содержимого
 ///      каждой ячейки, используя специфичные для TKey данные.
-///    - IContextKeyFactory<TKey>: фабрика, которая знает, как создать
+///    - DomainPerActionKeyFactory<TKey>: фабрика, которая знает, как создать
 ///      объект TKey из двух строк.
-///    - IContextKeyBuilder: строитель, который определяет порядок
+///    - DomainPerActionKeyBuilder: строитель, который определяет порядок
 ///      параметров для TKey в зависимости от ориентации матрицы.
 ///
 /// 2. Класс IHtmlMatrixWriter<TKey> использует эти зависимости для
@@ -45,18 +45,18 @@ namespace HtmlKit.Document;
 /// Пример для базового ключа ContextKey:
 ///
 /// hab.Services.AddTransient<IHtmlMatrixWriter, HtmlMatrixWriter<ContextKey>>();
-/// hab.Services.AddTransient<IContextKeyFactory<ContextKey>>(provider =>
+/// hab.Services.AddTransient<DomainPerActionKeyFactory<ContextKey>>(provider =>
 ///     new ContextKeyFactory<ContextKey>((r, c) => new ContextKey(r, c)));
 /// hab.Services.AddTransient<IHtmlDataCellBuilder<ContextKey>, HtmlDataCellBuilder<ContextKey>>();
-/// hab.Services.AddTransient<IContextKeyBuilder, ContextKeyBuilder>();
+/// hab.Services.AddTransient<DomainPerActionKeyBuilder, TensorBuilder>();
 ///
 /// Пример для кастомного ключа DimensionKey:
 ///
 /// hab.Services.AddTransient<IHtmlMatrixWriter, HtmlMatrixWriter<DimensionKey>>();
-/// hab.Services.AddTransient<IContextKeyFactory<DimensionKey>>(provider =>
+/// hab.Services.AddTransient<DomainPerActionKeyFactory<DimensionKey>>(provider =>
 ///     new ContextKeyFactory<DimensionKey>((r, c) => new DimensionKey(r, c)));
 /// hab.Services.AddTransient<IHtmlDataCellBuilder<DimensionKey>, HtmlDataCellBuilder<DimensionKey>>();
-/// hab.Services.AddTransient<IContextKeyBuilder, ContextKeyBuilder>();
+/// hab.Services.AddTransient<DomainPerActionKeyBuilder, TensorBuilder>();
 ///
 /// </summary>
 /// <typeparam name="TKey">Тип ключа для ячейки матрицы. Должен иметь конструктор с двумя строковыми параметрами.</typeparam>
@@ -64,19 +64,20 @@ namespace HtmlKit.Document;
 public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
 {
     private readonly IHrefManager _hRefManager;
-    private readonly IFixedHtmlContentManager _fixedHtmlContentManager;
+    private readonly IHtmlFixedContentManager _htmlFixedContentManager;
     private readonly IHtmlDataCellBuilder<TKey> _dataCellBuilder;
-    private readonly IContextKeyFactory<TKey> _keyFactory;
-    private readonly IContextKeyBuilder _keyBuilder;
+    private readonly ITensorFactory<TKey> _keyFactory;
+    private readonly ITensorBuilder _keyBuilder;
 
     public HtmlMatrixWriter(
         IHtmlDataCellBuilder<TKey> dataCellBuilder,
         IHrefManager hrefManager,
-        IContextKeyFactory<TKey> keyFactory, IContextKeyBuilder keyBuilder,
-        IFixedHtmlContentManager fixedHtmlContentManager)
+        ITensorFactory<TKey> keyFactory, 
+        ITensorBuilder keyBuilder,
+        IHtmlFixedContentManager htmlFixedContentManager)
     {
         _hRefManager = hrefManager;
-        _fixedHtmlContentManager = fixedHtmlContentManager;
+        _htmlFixedContentManager = htmlFixedContentManager;
         _dataCellBuilder = dataCellBuilder;
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
@@ -123,7 +124,7 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
         HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.With(textWriter, () =>
         {
             var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) }, { "style", "some_special_cell_class" } };
-            HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.TopLeftCell(options), isEncodable: false);
+            HtmlBuilderFactory.A.Cell(textWriter, attrs, _htmlFixedContentManager.TopLeftCell(options), isEncodable: false);
         });
     }
 
@@ -134,7 +135,7 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
             HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefColHeaderSummary(options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.FirstSummaryRow(options), isEncodable: false);
+                HtmlBuilderFactory.A.Cell(textWriter, attrs, _htmlFixedContentManager.FirstSummaryRow(options), isEncodable: false);
             });
         }
     }
@@ -159,7 +160,7 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
             HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummary(options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.LastSummaryRow(options), isEncodable: false);
+                HtmlBuilderFactory.A.Cell(textWriter, attrs, _htmlFixedContentManager.LastSummaryRow(options), isEncodable: false);
             });
         }
     }
@@ -173,7 +174,7 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
             HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummaryAfterFirst(options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, _fixedHtmlContentManager.SummaryRow(options), isEncodable: false);
+                HtmlBuilderFactory.A.Cell(textWriter, attrs, _htmlFixedContentManager.SummaryRow(options), isEncodable: false);
             });
 
             if (options.SummaryPlacement == SummaryPlacementType.AfterFirst)
@@ -223,8 +224,8 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
 
             foreach (var col in matrix.cols)
             {
-                var finalKey = _keyBuilder.BuildContextKey(options.Orientation, row, col, _keyFactory.Create);
-                _dataCellBuilder.BuildDataCell(textWriter, finalKey, options);
+                var contextKey = _keyBuilder.BuildTensor(options.Orientation, new[] { row, col }, _keyFactory.Create);
+                _dataCellBuilder.BuildDataCell(textWriter, contextKey, options);
             }
 
             if (options.SummaryPlacement == SummaryPlacementType.AfterLast)

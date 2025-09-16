@@ -11,9 +11,9 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
 {
     private readonly ICommentParsingStrategy<T> _strategy;
     private readonly OnWriteLog? _onWriteLog;
-    private readonly IContextClassifier _contextClassifier;
+    private readonly IDomainPerActionContextClassifier _contextClassifier;
 
-    public ContextValidationDecorator(IContextClassifier contextClassifier, ICommentParsingStrategy<T> strategy, OnWriteLog? onWriteLog = null)
+    public ContextValidationDecorator(IDomainPerActionContextClassifier contextClassifier, ICommentParsingStrategy<T> strategy, OnWriteLog? onWriteLog = null)
     {
         _strategy = strategy;
         _onWriteLog = onWriteLog;

@@ -12,5 +12,5 @@ public interface IContextInfoCommentProcessor<T>
 
 public interface ICommentParsingStrategyFactory<TContext>
 {
-    IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies(IContextClassifier classifier);
+    IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies(IDomainPerActionContextClassifier classifier);
 }

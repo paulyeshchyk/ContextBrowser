@@ -11,7 +11,7 @@ using HtmlKit.Page.Compiler;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
-public class HtmlMatrixIndexerByNameWithClassOwnerName<TContext> : IContextKeyIndexer<TContext>
+public class HtmlMatrixIndexerByNameWithClassOwnerName<TContext> : DomainPerActionKeyIndexer<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private Dictionary<string, TContext>? _index;
@@ -21,7 +21,7 @@ public class HtmlMatrixIndexerByNameWithClassOwnerName<TContext> : IContextKeyIn
         return _index;
     }
 
-    public void Build(IEnumerable<TContext> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier)
+    public void Build(IEnumerable<TContext> contextsList, ExportMatrixOptions matrixOptions, IDomainPerActionContextClassifier contextClassifier)
     {
         if (_index == null)
         {

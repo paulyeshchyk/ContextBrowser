@@ -3,7 +3,7 @@ using HtmlKit.Options;
 
 namespace HtmlKit.Helpers;
 
-public interface IFixedHtmlContentManager
+public interface IHtmlFixedContentManager
 {
     string FirstSummaryRow(HtmlTableOptions _options);
 

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Reflection.Metadata;
 using ContextBrowserKit.Options.Export;
@@ -7,6 +7,7 @@ using ExporterKit.Html.Puml;
 using HtmlKit.Builders.Core;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
+using TensorKit.Model;
 
 namespace HtmlKit.Page.Compiler;
 
@@ -25,11 +26,11 @@ public abstract class PumlEmbeddedContentDatamodel
 
     protected string ContentLocationRemotePath { get; set; } = SLocalHttpServerHost;
 
-    protected abstract string GetPumlFileName(IContextKey contextKey);
+    protected abstract string GetPumlFileName(DomainPerActionTensor contextKey);
 
     protected abstract string GetPumlFileName(string contextKey);
 
-    public HtmlBuilder GetPumlBuilder(IContextKey contextKey, ExportOptions exportOptions)
+    public HtmlBuilder GetPumlBuilder(DomainPerActionTensor contextKey, ExportOptions exportOptions)
     {
         if (IsEmbedded)
         {

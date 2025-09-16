@@ -9,9 +9,9 @@ public class ContextStrategy<T> : ICommentParsingStrategy<T>
 {
     public static string Keyword => "context";
 
-    private readonly IContextClassifier _contextClassifier;
+    private readonly IDomainPerActionContextClassifier _contextClassifier;
 
-    public ContextStrategy(IContextClassifier contextClassifier)
+    public ContextStrategy(IDomainPerActionContextClassifier contextClassifier)
     {
         _contextClassifier = contextClassifier;
     }

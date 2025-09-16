@@ -8,15 +8,15 @@ using ContextKit.Model.Collector;
 
 namespace ContextKit.Model;
 
-public interface IContextKeyIndexer<TContext> : IContextKeyIndexBuilder<TContext>
+public interface DomainPerActionKeyIndexer<TContext> : DomainPerActionKeyIndexBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
 }
 
-public interface IContextKeyIndexBuilder<TContext>
+public interface DomainPerActionKeyIndexBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    void Build(IEnumerable<TContext> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier);
+    void Build(IEnumerable<TContext> contextsList, ExportMatrixOptions matrixOptions, IDomainPerActionContextClassifier contextClassifier);
 
     Dictionary<string, TContext>? GetIndexData();
 }

@@ -50,7 +50,11 @@ public class HtmlPageProducerIndex : HtmlPageProducer, IHtmlPageIndex
 
     protected override IEnumerable<string> GetScripts()
     {
-        yield return Resources.HtmlProducerContentStyleScript;
+        foreach (var script in base.GetScripts())
+        {
+            yield return script;
+        }
+
         yield return Resources.ScriptAutoShrinkEmbeddedTable;
         yield return Resources.ScriptAutoFontShrink;
     }

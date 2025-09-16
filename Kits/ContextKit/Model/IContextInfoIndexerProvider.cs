@@ -6,5 +6,5 @@ namespace ContextKit.Model;
 
 public interface IContextInfoIndexerProvider
 {
-    Task<IContextKeyIndexer<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken);
+    Task<DomainPerActionKeyIndexer<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken);
 }

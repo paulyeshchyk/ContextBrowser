@@ -1,15 +1,16 @@
 ﻿using System;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
+using TensorKit.Model;
 
 namespace ExporterKit.Infrastucture;
 
 public interface IContextInfoMapperFactory
 {
-    IContextKeyMap<ContextInfo, IContextKey> GetMapper(MapperKeyBase type);
+    DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> GetMapper(MapperKeyBase type);
 }
 
 public interface IContextInfoIndexerFactory
 {
-    IContextKeyIndexer<ContextInfo> GetMapper(MapperKeyBase type);
+    DomainPerActionKeyIndexer<ContextInfo> GetMapper(MapperKeyBase type);
 }

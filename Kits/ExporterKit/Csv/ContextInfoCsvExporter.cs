@@ -2,13 +2,14 @@
 using System.IO;
 using System.Linq;
 using ContextKit.Model;
+using TensorKit.Model;
 
 namespace ExporterKit.Csv;
 
 public static class ContextInfoCsvExporter
 {
     //context: build, csv, matrix
-    public static void GenerateCsv(IContextClassifier contextClassifier, Dictionary<IContextKey, List<string>> matrix, string outputPath)
+    public static void GenerateCsv(IDomainPerActionContextClassifier contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath)
     {
         var lines = new List<string>();
         lines.AddRange(contextClassifier.MetaItems);
@@ -21,7 +22,7 @@ public static class ContextInfoCsvExporter
         File.WriteAllLines(outputPath, lines);
     }
 
-    private static void BuildItem(List<string> lines, KeyValuePair<IContextKey, List<string>> cell)
+    private static void BuildItem(List<string> lines, KeyValuePair<DomainPerActionTensor, List<string>> cell)
     {
         var cellInfo = cell.Key;
         var items = cell.Value.Any()

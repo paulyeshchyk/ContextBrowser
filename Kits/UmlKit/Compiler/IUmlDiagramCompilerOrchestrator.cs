@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
@@ -8,5 +8,5 @@ namespace ContextBrowser.Services;
 
 public interface IUmlDiagramCompilerOrchestrator
 {
-    Task CompileAllAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions builderOptions, CancellationToken cancellationToken);
+    Task CompileAllAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions builderOptions, CancellationToken cancellationToken);
 }

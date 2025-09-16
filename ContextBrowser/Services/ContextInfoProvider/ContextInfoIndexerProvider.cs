@@ -10,7 +10,7 @@ public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoI
 {
     private readonly IContextInfoIndexerFactory _mapperFactory;
 
-    private readonly Dictionary<MapperKeyBase, IContextKeyIndexer<ContextInfo>> _mappers = new();
+    private readonly Dictionary<MapperKeyBase, DomainPerActionKeyIndexer<ContextInfo>> _mappers = new();
 
     private readonly object _lock = new();
 
@@ -23,7 +23,7 @@ public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoI
         _mapperFactory = mapperFactory;
     }
 
-    public async Task<IContextKeyIndexer<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
+    public async Task<DomainPerActionKeyIndexer<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)
         {

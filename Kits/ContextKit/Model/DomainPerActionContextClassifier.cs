@@ -10,7 +10,7 @@ namespace ContextBrowser.Infrastructure;
 // context: model, ContextInfo
 // pattern: Strategy
 // parsing: error
-public record ContextClassifier : IContextClassifier
+public record DomainPerActionContextClassifier : IDomainPerActionContextClassifier
 {
     public string EmptyAction { get; }
 
@@ -29,7 +29,7 @@ public record ContextClassifier : IContextClassifier
 
     public IEnumerable<string> MetaItems { get; }
 
-    public ContextClassifier(string emptyAction, string emptyDomain, string fakeAction, string fakeDomain, string[] standardActions, string[] metaItems)
+    public DomainPerActionContextClassifier(string emptyAction, string emptyDomain, string fakeAction, string fakeDomain, string[] standardActions, string[] metaItems)
     {
         EmptyAction = emptyAction;
         EmptyDomain = emptyDomain;
@@ -90,6 +90,7 @@ public record ContextClassifier : IContextClassifier
         {
             return string.IsNullOrEmpty(ctx.Action);
         }
+
         // Проверяем Action и классификатор
         return actionName.Equals(ctx.Action) && this.HasActionAndDomain(ctx);
     }
@@ -100,6 +101,7 @@ public record ContextClassifier : IContextClassifier
         {
             return ctx.Domains.Count() == 0;
         }
+
         // Проверяем домен и классификатор
         return ctx.Domains.Contains(domainName) && this.HasActionAndDomain(ctx);
     }

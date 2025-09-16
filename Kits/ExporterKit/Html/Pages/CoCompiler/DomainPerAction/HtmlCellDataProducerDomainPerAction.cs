@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ContextKit.Model;
 using HtmlKit.Options;
 using HtmlKit.Writer;
+using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
@@ -18,7 +19,7 @@ public class HtmlCellDataProducer : IHtmlCellDataProducer<List<ContextInfo>>
         _contentInjector = contentInjector;
     }
 
-    public async Task<List<ContextInfo>> ProduceDataAsync(IContextKey container, CancellationToken cancellationToken)
+    public async Task<List<ContextInfo>> ProduceDataAsync(DomainPerActionTensor container, CancellationToken cancellationToken)
     {
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
@@ -38,7 +39,7 @@ public class HtmlCellDataProducerDomainPerAction : IHtmlCellDataProducer<string>
         _contentInjector = contentInjector;
     }
 
-    public async Task<string> ProduceDataAsync(IContextKey container, CancellationToken cancellationToken)
+    public async Task<string> ProduceDataAsync(DomainPerActionTensor container, CancellationToken cancellationToken)
     {
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ContextKit.Model;
+using TensorKit.Model;
 
 namespace HtmlKit.Document.Coverage;
 
@@ -13,7 +14,7 @@ public class HtmlCellStyleBuilder : IHtmlCellStyleBuilder
         _colorCalculator = colorCalculator;
     }
 
-    public string? BuildCellStyle(IContextKey cell, IEnumerable<ContextInfo>? stInfo, Dictionary<string, ContextInfo>? index)
+    public string? BuildCellStyle(DomainPerActionTensor cell, IEnumerable<ContextInfo>? stInfo, Dictionary<string, ContextInfo>? index)
     {
         var bgColor = _colorCalculator.CalculateBgColor(cell, stInfo, index);
         return bgColor is null

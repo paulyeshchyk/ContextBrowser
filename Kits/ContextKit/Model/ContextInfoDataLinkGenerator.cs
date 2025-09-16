@@ -9,10 +9,10 @@ namespace ContextBrowser.DiagramFactory.Exporters;
 // context: ContextInfo, build
 public class ContextInfoDataLinkGenerator
 {
-    private readonly IContextClassifier _contextClassifier;
+    private readonly IDomainPerActionContextClassifier _contextClassifier;
     private readonly List<ContextInfo> _elements;
 
-    public ContextInfoDataLinkGenerator(IContextClassifier contextClassifier, List<ContextInfo> elements)
+    public ContextInfoDataLinkGenerator(IDomainPerActionContextClassifier contextClassifier, List<ContextInfo> elements)
     {
         _contextClassifier = contextClassifier;
         _elements = elements;

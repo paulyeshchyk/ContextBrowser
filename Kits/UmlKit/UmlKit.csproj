@@ -12,6 +12,7 @@
 		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
 		<ProjectReference Include="..\ContextKit\ContextKit.csproj" />
 		<ProjectReference Include="..\LoggerKit\LoggerKit.csproj" />
+		<ProjectReference Include="..\TensorKit\TensorKit.csproj" />
 	</ItemGroup>
 
 </Project>

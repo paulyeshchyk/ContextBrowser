@@ -32,7 +32,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
     }
 
     // context: build, uml
-    public async Task<Dictionary<string, bool>> CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, bool>> CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
         var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 

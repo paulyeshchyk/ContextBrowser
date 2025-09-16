@@ -6,10 +6,11 @@ using HtmlKit.Builders.Core;
 using HtmlKit.Helpers;
 using HtmlKit.Options;
 using HtmlKit.Page;
+using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
-public class HtmlDataCellBuilderCoverage : IHtmlDataCellBuilder<ContextKey>
+public class HtmlDataCellBuilderCoverage : IHtmlDataCellBuilder<DomainPerActionTensor>
 {
     private readonly IHtmlCellDataProducer<string> _coverageDataProducer;
     private readonly IHtmlCellDataProducer<List<ContextInfo>> _contextInfoListDataProducer;
@@ -19,7 +20,7 @@ public class HtmlDataCellBuilderCoverage : IHtmlDataCellBuilder<ContextKey>
 
     private readonly Dictionary<string, ContextInfo>? _indexData;
 
-    public HtmlDataCellBuilderCoverage(IHtmlCellDataProducer<string> coverageDataProducer, IHtmlCellDataProducer<List<ContextInfo>> contextInfoListDataProducer, IHrefManager hRefManager, IHtmlCellStyleBuilder cellStyleBuilder, IContextKeyIndexer<ContextInfo> coverageIndexer, IContextInfoDatasetProvider datasetProvider)
+    public HtmlDataCellBuilderCoverage(IHtmlCellDataProducer<string> coverageDataProducer, IHtmlCellDataProducer<List<ContextInfo>> contextInfoListDataProducer, IHrefManager hRefManager, IHtmlCellStyleBuilder cellStyleBuilder, DomainPerActionKeyIndexer<ContextInfo> coverageIndexer, IContextInfoDatasetProvider datasetProvider)
     {
         _coverageDataProducer = coverageDataProducer;
         _contextInfoListDataProducer = contextInfoListDataProducer;
@@ -31,7 +32,7 @@ public class HtmlDataCellBuilderCoverage : IHtmlDataCellBuilder<ContextKey>
         _indexData = coverageIndexer.GetIndexData();
     }
 
-    public void BuildDataCell(TextWriter textWriter, ContextKey cell, HtmlTableOptions options)
+    public void BuildDataCell(TextWriter textWriter, DomainPerActionTensor cell, HtmlTableOptions options)
     {
         var cellData = _coverageDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();
         var contextList = _contextInfoListDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();

@@ -4,7 +4,7 @@ using ContextBrowserKit.Options.Export;
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public interface IContextKeyMap<TContext, TKey> : IContextKeyMapBuilder<TContext, TKey>
+public interface DomainPerActionKeyMap<TContext, TKey> : DomainPerActionKeyMapBuilder<TContext, TKey>
     where TContext : IContextWithReferences<TContext>
     where TKey : notnull
 {
@@ -22,12 +22,12 @@ public interface IContextKeyMap<TContext, TKey> : IContextKeyMapBuilder<TContext
 }
 
 // context: ContextInfoMatrix, build
-public interface IContextKeyMapBuilder<TContext, TKey>
+public interface DomainPerActionKeyMapBuilder<TContext, TKey>
     where TContext : IContextWithReferences<TContext>
     where TKey : notnull
 {
     // context: ContextInfoMatrix, build
-    void Build(IEnumerable<TContext> contextsList, ExportMatrixOptions matrixOptions, IContextClassifier contextClassifier);
+    void Build(IEnumerable<TContext> contextsList, ExportMatrixOptions matrixOptions, IDomainPerActionContextClassifier contextClassifier);
 
     Dictionary<TKey, List<TContext>>? GetMapData();
 }

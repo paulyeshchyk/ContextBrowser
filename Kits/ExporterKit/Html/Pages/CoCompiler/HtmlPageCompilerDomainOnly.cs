@@ -32,7 +32,7 @@ public class HtmlPageCompilerDomainOnly : IHtmlPageCompiler
     }
 
     // context: contextInfo, build, html
-    public async Task CompileAsync(IContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
+    public async Task CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- DomainOnly.Build ---", LogLevelNode.None));
 
