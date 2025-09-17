@@ -1,5 +1,7 @@
 ﻿using ContextBrowserKit.Log;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using SemanticKit.Model;
 
 namespace RoslynKit.Phases.Invocations.Lookup;
@@ -13,15 +15,15 @@ public abstract class SymbolLookupHandler<TContext, TSemanticModel> : ISymbolLoo
     where TSemanticModel : class, ISemanticModelWrapper
 {
     protected ISymbolLookupHandler<TContext, TSemanticModel>? _nextHandler;
-    protected readonly OnWriteLog? _onWriteLog; // Общая зависимость для логирования
+    protected readonly IAppLogger<AppLevel> _logger; // Общая зависимость для логирования
 
     /// <summary>
     /// Конструктор базового обработчика.
     /// </summary>
-    /// <param name="onWriteLog">Зависимость для логирования.</param>
-    protected SymbolLookupHandler(OnWriteLog? onWriteLog)
+    /// <param name="logger">Зависимость для логирования.</param>
+    protected SymbolLookupHandler(IAppLogger<AppLevel> logger)
     {
-        _onWriteLog = onWriteLog;
+        _logger = logger;
     }
 
     /// <summary>

@@ -1,10 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
@@ -19,13 +20,13 @@ namespace RoslynKit.Phases.Syntax.Parsers;
 public class CSharpMethodSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
     private readonly CSharpMethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
     private readonly CSharpCommentTriviaSyntaxParser<TContext> _triviaCommentParser;
 
-    public CSharpMethodSyntaxParser(CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, OnWriteLog? onWriteLog)
+    public CSharpMethodSyntaxParser(CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, IAppLogger<AppLevel> logger)
     {
-        _onWriteLog = onWriteLog;
+        _logger = logger;
         _methodContextInfoBuilder = methodContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
     }
@@ -35,17 +36,17 @@ public class CSharpMethodSyntaxParser<TContext>
     {
         if (availableSyntax is not TypeDeclarationSyntax typeSyntax)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Warn, $"[{typeContext.Name}]:Syntax is not TypeDeclaration syntax");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Warn, $"[{typeContext.Name}]:Syntax is not TypeDeclaration syntax");
 
             return;
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - method syntax");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - method syntax");
 
         var methodDeclarationSyntaxies = typeSyntax.FilteredMethodsList(options);
         if (!methodDeclarationSyntaxies.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"[{typeContext.Name}]:Syntax has no methods in List");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"[{typeContext.Name}]:Syntax has no methods in List");
             return;
         }
 
@@ -60,19 +61,19 @@ public class CSharpMethodSyntaxParser<TContext>
     public List<(TContext context, MethodDeclarationSyntax syntax)> ParseMethodSyntax(TContext parent, IEnumerable<MethodDeclarationSyntax> methods, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
     {
         var result = new List<(TContext, MethodDeclarationSyntax)>();
-        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Iterating methods [{parent.Name}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Iterating methods [{parent.Name}]", LogLevelNode.Start);
 
         foreach (var method in methods)
         {
             if (method is not MethodDeclarationSyntax methodDeclaration)
             {
-                _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"[{parent.Name}]: не найден метод");
+                _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"[{parent.Name}]: не найден метод");
                 continue;
             }
             var methodModel = BuildWrapper(method, semanticModel, cancellationToken);
             if (methodModel == null)
             {
-                _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Warn, $"[{parent.Name}]: не найден символ для метода [{method}]");
+                _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Warn, $"[{parent.Name}]: не найден символ для метода [{method}]");
                 continue;
             }
 
@@ -83,13 +84,13 @@ public class CSharpMethodSyntaxParser<TContext>
             }
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return result;
     }
 
     private CSharpMethodSyntaxWrapper? BuildWrapper(MethodDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
     {
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _onWriteLog, cancellationToken);
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, model, _logger, cancellationToken);
         if (symbol == null)
         {
             return default;

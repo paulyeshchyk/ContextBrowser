@@ -1,10 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 
@@ -13,12 +14,12 @@ namespace RoslynKit.Phases.Syntax;
 public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
     private readonly IEnumerable<ISyntaxParser<TContext>> _parsers;
 
-    public SemanticSyntaxRouter(OnWriteLog? onWriteLog, IEnumerable<ISyntaxParser<TContext>> parsers)
+    public SemanticSyntaxRouter(IAppLogger<AppLevel> logger, IEnumerable<ISyntaxParser<TContext>> parsers)
     {
-        _onWriteLog = onWriteLog;
+        _logger = logger;
         _parsers = parsers;
     }
 
@@ -26,7 +27,7 @@ public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Routing syntaxies - ({availableSyntaxies.Count()})", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Routing syntaxies - ({availableSyntaxies.Count()})", LogLevelNode.Start);
 
         foreach (var item in availableSyntaxies)
         {
@@ -34,13 +35,13 @@ public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
 
             if (parser == null)
             {
-                _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"[MISS]: No parser found for syntax type: {item}");
+                _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"[MISS]: No parser found for syntax type: {item}");
                 continue;
             }
 
             parser.Parse(default, item, model, options, cancellationToken);
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 }

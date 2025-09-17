@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using ContextBrowserKit.Log;
@@ -6,6 +6,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Stategies;
+using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -18,8 +19,8 @@ namespace RoslynKit.Phases.Syntax.Parsers;
 public class CSharpCommentTriviaSyntaxParser<TContext> : CSharpCommentSyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    public CSharpCommentTriviaSyntaxParser(IContextInfoCommentProcessor<TContext> commentProcessor, OnWriteLog? onWriteLog)
-        : base(commentProcessor, onWriteLog)
+    public CSharpCommentTriviaSyntaxParser(IContextInfoCommentProcessor<TContext> commentProcessor, IAppLogger<AppLevel> logger)
+        : base(commentProcessor, logger)
     {
     }
 
@@ -33,7 +34,7 @@ public class CSharpCommentTriviaSyntaxParser<TContext> : CSharpCommentSyntaxPars
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.R_Comments, LogLevel.Dbg, $"Parsing comments for {node.GetType().Name}");
+        _logger.WriteLog(AppLevel.R_Comments, LogLevel.Dbg, $"Parsing comments for {node.GetType().Name}");
 
         foreach (var trivia in memberDeclaration.GetLeadingTrivia().Where(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia)))
         {

@@ -9,11 +9,11 @@ namespace ContextBrowser.Services;
 public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFactory<TContext>
     where TContext : ContextInfo
 {
-    private readonly IAppLogger<AppLevel> _appLogger;
+    private readonly IAppLogger<AppLevel> _logger;
 
-    public CommentParsingStrategyFactory(IAppLogger<AppLevel> appLogger)
+    public CommentParsingStrategyFactory(IAppLogger<AppLevel> logger)
     {
-        _appLogger = appLogger;
+        _logger = logger;
     }
 
     public IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies(IDomainPerActionContextClassifier classifier)
@@ -23,8 +23,8 @@ public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFa
             new CoverageStrategy<TContext>(),
             new ContextValidationDecorator<TContext>(
                 classifier,
-                new ContextStrategy<TContext>(classifier),
-                _appLogger.WriteLog),
+                new ContextStrategy<TContext>(classifier, _logger),
+                _logger),
         };
     }
 }

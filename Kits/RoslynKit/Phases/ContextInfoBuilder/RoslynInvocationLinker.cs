@@ -1,10 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
@@ -15,13 +16,13 @@ public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, Invo
     where TContext : ContextInfo, IContextWithReferences<TContext>
 {
     private readonly IInvocationLinksBuilder<TContext> _linksInvocationBuilder;
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
     private readonly IInvocationSyntaxResolver _invocationSyntaxExtractor;
 
-    public RoslynInvocationLinker(IInvocationLinksBuilder<TContext> linksInvocationBuilder, OnWriteLog? onWriteLog, IInvocationSyntaxResolver invocationSyntaxExtractor)
+    public RoslynInvocationLinker(IInvocationLinksBuilder<TContext> linksInvocationBuilder, IAppLogger<AppLevel> logger, IInvocationSyntaxResolver invocationSyntaxExtractor)
     {
         _linksInvocationBuilder = linksInvocationBuilder;
-        _onWriteLog = onWriteLog;
+        _logger = logger;
         _invocationSyntaxExtractor = invocationSyntaxExtractor;
     }
 
@@ -29,16 +30,16 @@ public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, Invo
     {
         if (!invocationList.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"No invocation to resolve for [{callerContext.FullName}]");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"No invocation to resolve for [{callerContext.FullName}]");
             return;
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"Resolving invocations for [{callerContext.FullName}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Resolving invocations for [{callerContext.FullName}]", LogLevelNode.Start);
         foreach (var invocation in invocationList)
         {
             ResolveSymbolThenLink(invocation, callerContextInfo, _linksInvocationBuilder, options, cancellationToken);
         }
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
     private void ResolveSymbolThenLink(InvocationExpressionSyntax invocation, TContext callerContextInfo, IInvocationLinksBuilder<TContext> linksInvocationBuilder, SemanticOptions options, CancellationToken cancellationToken)

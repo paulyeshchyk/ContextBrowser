@@ -1,7 +1,9 @@
-using System;
+﻿using System;
 using System.Threading;
 using ContextBrowserKit.Log;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
@@ -14,7 +16,7 @@ public static class CSharpISymbolWrapperConverter
     public static CSharpISymbolWrapper FromSymbolInfo(
         ISemanticModelWrapper semanticModel,
         ISyntaxNodeWrapper syntaxWrapper,
-        OnWriteLog? onWriteLog,
+        IAppLogger<AppLevel> logger,
         CancellationToken cancellationToken)
     {
         if (semanticModel is null)
@@ -28,7 +30,7 @@ public static class CSharpISymbolWrapperConverter
         }
 
         var wrapper = new CSharpISymbolWrapper();
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, semanticModel, onWriteLog, cancellationToken);
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, semanticModel, logger, cancellationToken);
 
         if (symbol is ISymbol isymbol)
         {

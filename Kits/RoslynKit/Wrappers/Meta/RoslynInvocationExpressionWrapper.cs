@@ -1,3 +1,6 @@
+﻿using ContextBrowserKit.Log.Options;
+using ContextBrowserKit.Options;
+using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Phases.Invocations;
 using SemanticKit.Model;
@@ -8,13 +11,15 @@ public class RoslynInvocationExpressionWrapper : IInvocationNodeWrapper
 {
     private readonly InvocationExpressionSyntax _invocation;
     private readonly ISemanticInvocationResolver _semanticInvocationResolver;
+    private readonly IAppLogger<AppLevel> _logger;
 
     public object Expression => _invocation.Expression;
 
-    public RoslynInvocationExpressionWrapper(InvocationExpressionSyntax invocation, ISemanticInvocationResolver semanticInvocationResolver)
+    public RoslynInvocationExpressionWrapper(InvocationExpressionSyntax invocation, ISemanticInvocationResolver semanticInvocationResolver, IAppLogger<AppLevel> logger)
     {
         _invocation = invocation;
         _semanticInvocationResolver = semanticInvocationResolver;
+        _logger = logger;
     }
 
     public ISemanticModelWrapper? GetSemanticModel()
@@ -22,14 +27,14 @@ public class RoslynInvocationExpressionWrapper : IInvocationNodeWrapper
         var syntaxTreeWrapper = new RoslynSyntaxTreeWrapper(_invocation.SyntaxTree);
         if (syntaxTreeWrapper == null)
         {
-            // _onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, $"[MISS]: Tree was not provided for invocation [{_invocation}]");
+            _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Err, $"[MISS]: Tree was not provided for invocation [{_invocation}]");
             return null;
         }
 
         return _semanticInvocationResolver.Resolve(syntaxTreeWrapper);
     }
 
-    public ISyntaxTreeWrapper GetTree()
+    public ISyntaxTreeWrapper BuildTree()
     {
         return new RoslynSyntaxTreeWrapper(_invocation.SyntaxTree);
     }

@@ -1,7 +1,9 @@
-using System.Threading;
+﻿using System.Threading;
 using ContextBrowserKit.Log;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Stategies;
+using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SemanticKit.Model;
@@ -13,14 +15,14 @@ public abstract class CSharpCommentSyntaxParser<TContext> : ISyntaxParser<TConte
     where TContext : IContextWithReferences<TContext>
 {
     protected readonly IContextInfoCommentProcessor<TContext> _commentAdapter;
-    protected readonly OnWriteLog? _onWriteLog;
+    protected readonly IAppLogger<AppLevel> _logger;
 
     public bool CanParse(object syntax) => syntax is MemberDeclarationSyntax;
 
-    protected CSharpCommentSyntaxParser(IContextInfoCommentProcessor<TContext> commentProcessor, OnWriteLog? onWriteLog)
+    protected CSharpCommentSyntaxParser(IContextInfoCommentProcessor<TContext> commentProcessor, IAppLogger<AppLevel> logger)
     {
         _commentAdapter = commentProcessor;
-        _onWriteLog = onWriteLog;
+        _logger = logger;
     }
 
     public abstract void Parse(TContext? parent, object node, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);

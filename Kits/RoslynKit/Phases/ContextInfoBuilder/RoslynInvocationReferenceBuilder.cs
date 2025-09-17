@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
@@ -29,11 +29,11 @@ public class RoslynInvocationReferenceBuilder<TContext>
         _collector = collector;
         _invocationSyntaxResolver = invocationSyntaxResolver;
 
-        var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _logger.WriteLog);
-        var methodContextInfoBuilder = new CSharpMethodContextInfoBuilder<TContext>(_collector, _factory, _logger.WriteLog);
-        var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(_collector, _logger.WriteLog, methodContextInfoBuilder, typeContextInfoBuilder);
-        _invocationLinker = new RoslynInvocationLinker<TContext>(linksInvocationBuilder, _logger.WriteLog, _invocationSyntaxResolver);
-        _referenceBuilderValidator = new SemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax>(_logger.WriteLog);
+        var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _logger);
+        var methodContextInfoBuilder = new CSharpMethodContextInfoBuilder<TContext>(_collector, _factory, _logger);
+        var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(_collector, _logger, methodContextInfoBuilder, typeContextInfoBuilder);
+        _invocationLinker = new RoslynInvocationLinker<TContext>(linksInvocationBuilder, _logger, _invocationSyntaxResolver);
+        _referenceBuilderValidator = new SemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax>(_logger);
     }
 
     // context: roslyn, read

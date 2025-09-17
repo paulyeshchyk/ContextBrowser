@@ -41,14 +41,14 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
     public ISemanticSyntaxRouter<TContext> CreateRouter(SemanticOptions options)
     {
         // 1. Создаем билдеры контекстов и другие вспомогательные классы
-        var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _logger.WriteLog);
-        var methodContextInfoBuilder = new CSharpMethodContextInfoBuilder<TContext>(_collector, _factory, _logger.WriteLog);
-        var triviaCommentParser = new CSharpCommentTriviaSyntaxParser<TContext>(_commentProcessor, _logger.WriteLog);
-        var delegateContextInfoBuilder = new CSharpDelegateContextInfoBuilder<TContext>(_collector, _factory, _logger.WriteLog);
-        var interfaceContextInfoBuilder = new CSharpInterfaceContextInfoBuilder<TContext>(_collector, _factory, _logger.WriteLog);
-        var propertyContextInfoBuilder = new CSharpPropertyContextInfoBuilder<TContext>(_collector, _factory, _logger.WriteLog);
-        var recordContextInfoBuilder = new CSharpRecordContextInfoBuilder<TContext>(_collector, _factory, _logger.WriteLog);
-        var enumContextInfoBuilder = new CSharpEnumContextInfoBuilder<TContext>(_collector, _factory, _logger.WriteLog);
+        var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _logger);
+        var methodContextInfoBuilder = new CSharpMethodContextInfoBuilder<TContext>(_collector, _factory, _logger);
+        var triviaCommentParser = new CSharpCommentTriviaSyntaxParser<TContext>(_commentProcessor, _logger);
+        var delegateContextInfoBuilder = new CSharpDelegateContextInfoBuilder<TContext>(_collector, _factory, _logger);
+        var interfaceContextInfoBuilder = new CSharpInterfaceContextInfoBuilder<TContext>(_collector, _factory, _logger);
+        var propertyContextInfoBuilder = new CSharpPropertyContextInfoBuilder<TContext>(_collector, _factory, _logger);
+        var recordContextInfoBuilder = new CSharpRecordContextInfoBuilder<TContext>(_collector, _factory, _logger);
+        var enumContextInfoBuilder = new CSharpEnumContextInfoBuilder<TContext>(_collector, _factory, _logger);
 
         var propertyDeclarationParser = new CSharpTypePropertyParser<TContext>(
             _collector,
@@ -58,19 +58,19 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
             recordContextInfoBuilder,
             enumContextInfoBuilder,
             interfaceContextInfoBuilder,
-            _logger.WriteLog);
+            _logger);
 
-        var enumDeclarationParser = new CSharpEnumSyntaxParser<TContext>(_logger.WriteLog);
-        var delegateDeclarationParser = new CSharpDelegateSyntaxParser<TContext>(delegateContextInfoBuilder, triviaCommentParser, _logger.WriteLog);
+        var enumDeclarationParser = new CSharpEnumSyntaxParser<TContext>(_logger);
+        var delegateDeclarationParser = new CSharpDelegateSyntaxParser<TContext>(delegateContextInfoBuilder, triviaCommentParser, _logger);
 
-        var methodSyntaxParser = new CSharpMethodSyntaxParser<TContext>(methodContextInfoBuilder, triviaCommentParser, _logger.WriteLog);
+        var methodSyntaxParser = new CSharpMethodSyntaxParser<TContext>(methodContextInfoBuilder, triviaCommentParser, _logger);
 
         var interfaceDeclarationParser = new CSharpInterfaceSyntaxParser<TContext>(
             interfaceContextInfoBuilder,
             propertyDeclarationParser,
             methodSyntaxParser,
             triviaCommentParser,
-            _logger.WriteLog);
+            _logger);
 
         var typeDeclarationParser = new CSharpTypeClassSyntaxParser<TContext>(
             _collector,
@@ -79,7 +79,7 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
             methodSyntaxParser,
             triviaCommentParser,
             options,
-            _logger.WriteLog);
+            _logger);
 
         var recordDeclarationParser = new CSharpTypeRecordSyntaxParser<TContext>(
             _collector,
@@ -88,7 +88,7 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
             methodSyntaxParser,
             triviaCommentParser,
             options,
-            _logger.WriteLog);
+            _logger);
 
         // 4. Собираем все парсеры в список для роутера
         var parsers = new List<ISyntaxParser<TContext>>
@@ -101,6 +101,6 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
             recordDeclarationParser
         };
 
-        return new SemanticSyntaxRouter<TContext>(_logger.WriteLog, parsers);
+        return new SemanticSyntaxRouter<TContext>(_logger, parsers);
     }
 }

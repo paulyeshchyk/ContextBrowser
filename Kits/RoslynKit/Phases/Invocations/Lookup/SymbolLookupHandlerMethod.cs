@@ -2,6 +2,7 @@
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using SemanticKit.Model;
 
 namespace RoslynKit.Phases.Invocations.Lookup;
@@ -22,9 +23,9 @@ public class SymbolLookupHandlerMethod<TContext, TSemanticModel> : SymbolLookupH
     /// Конструктор обработчика MethodSymbolLookupHandler.
     /// </summary>
     /// <param name="collector">Зависимость для сбора данных.</param>
-    /// <param name="onWriteLog">Зависимость для логирования.</param>
-    public SymbolLookupHandlerMethod(IContextCollector<TContext> collector, OnWriteLog? onWriteLog)
-        : base(onWriteLog)
+    /// <param name="logger">Зависимость для логирования.</param>
+    public SymbolLookupHandlerMethod(IContextCollector<TContext> collector, IAppLogger<AppLevel> logger)
+        : base(logger)
     {
         _collector = collector;
     }
@@ -38,21 +39,21 @@ public class SymbolLookupHandlerMethod<TContext, TSemanticModel> : SymbolLookupH
     {
         if (!symbolDto.IsValid || symbolDto.FullName is not string fullName)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol is not IMethodSymbol: {symbolDto.FullName}");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol is not IMethodSymbol: {symbolDto.FullName}");
             return base.Handle(symbolDto);
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[FALLBACK] Trying full signature: {fullName}");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[FALLBACK] Trying full signature: {fullName}");
 
         if (!_collector.BySymbolDisplayName.TryGetValue(fullName, out var result))
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol exists but fallback lookup failed: {fullName}");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol exists but fallback lookup failed: {fullName}");
 
             // Если не применимо или не найдено, передаем запрос следующему обработчику.
             return base.Handle(symbolDto);
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[HIT] Recovered callee via full symbol: {fullName}");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[HIT] Recovered callee via full symbol: {fullName}");
         return result;
     }
 }

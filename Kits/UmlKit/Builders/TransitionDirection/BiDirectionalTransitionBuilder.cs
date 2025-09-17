@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using ContextBrowserKit.Log;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using UmlKit.Builders.Model;
 using UmlKit.Infrastructure.Options;
 
@@ -13,10 +15,10 @@ public class BiDirectionalTransitionBuilder : ITransitionBuilder
     private readonly OutgoingTransitionBuilder _outgoing;
     private readonly IncomingTransitionBuilder _incoming;
 
-    public BiDirectionalTransitionBuilder(OnWriteLog? onWriteLog)
+    public BiDirectionalTransitionBuilder(IAppLogger<AppLevel> logger)
     {
-        _outgoing = new OutgoingTransitionBuilder(onWriteLog);
-        _incoming = new IncomingTransitionBuilder(onWriteLog);
+        _outgoing = new OutgoingTransitionBuilder(logger);
+        _incoming = new IncomingTransitionBuilder(logger);
     }
 
     public GrouppedSortedTransitionList BuildTransitions(List<ContextInfo> methodsList, List<ContextInfo> allContexts)

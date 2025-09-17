@@ -4,6 +4,7 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using UmlKit.Builders.Model;
 
 namespace UmlKit.Builders;
@@ -12,24 +13,24 @@ public class UmlTransitionDtoBuilder
 {
     public const string SUnknownDomainName = "unknown";
 
-    public static UmlTransitionDto? CreateTransition(ContextInfo? caller, ContextInfo? callee, OnWriteLog? log, string? parentUid)
+    public static UmlTransitionDto? CreateTransition(ContextInfo? caller, ContextInfo? callee, IAppLogger<AppLevel> logger, string? parentUid)
     {
         // Метод -> Метод
         if (caller?.MethodOwner == null)
         {
-            log?.Invoke(AppLevel.P_Tran, LogLevel.Err, $"[SKIP] Caller method owner not found for {caller?.Name ?? string.Empty}");
+            logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, $"[SKIP] Caller method owner not found for {caller?.Name ?? string.Empty}");
             return default;
         }
         if ((callee?.MethodOwner == null))
         {
-            log?.Invoke(AppLevel.P_Tran, LogLevel.Err, $"[SKIP] Callee method owner not found for {callee?.Name ?? string.Empty}");
+            logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, $"[SKIP] Callee method owner not found for {callee?.Name ?? string.Empty}");
             return null;
         }
 
-        return CreateTransitionFromMethodCall(caller, callee, log, parentUid);
+        return CreateTransitionFromMethodCall(caller, callee, logger, parentUid);
     }
 
-    private static UmlTransitionDto CreateTransitionFromMethodCall(ContextInfo caller, ContextInfo callee, OnWriteLog? log, string? parentUid)
+    private static UmlTransitionDto CreateTransitionFromMethodCall(ContextInfo caller, ContextInfo callee, IAppLogger<AppLevel> logger, string? parentUid)
     {
         var callerInfo = ExtractParticipantInfo(caller);
         var calleeInfo = ExtractParticipantInfo(callee);
@@ -38,7 +39,7 @@ public class UmlTransitionDtoBuilder
         var ownerClass = caller.MethodOwner?.ClassOwner?.Name;
         var ownerMethod = caller.MethodOwner?.Name;
 
-        log?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[ADD] method call: {caller.FullName} -> {callee.FullName}");
+        logger.WriteLog(AppLevel.P_Tran, LogLevel.Dbg, $"[ADD] method call: {caller.FullName} -> {callee.FullName}");
 
         return new UmlTransitionDto(
             uid: callee.Identifier,

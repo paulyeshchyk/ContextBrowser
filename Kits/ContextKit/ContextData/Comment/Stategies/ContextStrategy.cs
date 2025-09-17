@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
+using ContextBrowserKit.Log.Options;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 
 namespace ContextKit.Stategies;
 
@@ -10,10 +13,12 @@ public class ContextStrategy<T> : ICommentParsingStrategy<T>
     public static string Keyword => "context";
 
     private readonly IDomainPerActionContextClassifier _contextClassifier;
+    private readonly IAppLogger<AppLevel> _logger;
 
-    public ContextStrategy(IDomainPerActionContextClassifier contextClassifier)
+    public ContextStrategy(IDomainPerActionContextClassifier contextClassifier, IAppLogger<AppLevel> logger)
     {
         _contextClassifier = contextClassifier;
+        _logger = logger;
     }
 
     public void Execute(T? container, string comment)
@@ -26,7 +31,7 @@ public class ContextStrategy<T> : ICommentParsingStrategy<T>
         }
         if (!(container != null && container is not null))
         {
-            //_onWriteLog?.Invoke(AppLevel.Roslyn, LogLevel.Err, "Comment container is null");
+            _logger.WriteLog(AppLevel.R_Comments, LogLevel.Err, "Comment container is null");
             return;
         }
 

@@ -6,6 +6,7 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
@@ -34,8 +35,8 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
         CSharpRecordContextInfoBuilder<TContext> recordSyntaxBuilder,
         CSharpEnumContextInfoBuilder<TContext> enumSyntaxBuilder,
         CSharpInterfaceContextInfoBuilder<TContext> interfaceSyntaxBuilder,
-        OnWriteLog? onWriteLog)
-        : base(onWriteLog)
+        IAppLogger<AppLevel> logger)
+        : base(logger)
     {
         _collector = collector;
         _propertyContextInfoBuilder = propertyContextInfoBuilder;
@@ -52,24 +53,24 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
     {
         if (syntax is not PropertyDeclarationSyntax propertySyntax)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, $"Syntax is not PropertyDeclarationSyntax");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"Syntax is not PropertyDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"Parsing files: phase 1 - property syntax");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Parsing files: phase 1 - property syntax");
 
         //1.Создание контекста для самого свойства
         var propertyContext = _propertyContextInfoBuilder.BuildContextInfo(parent, propertySyntax, model, cancellationToken);
         if (propertyContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, "Failed to build context for property.", LogLevelNode.End);
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, "Failed to build context for property.", LogLevelNode.End);
             return;
         }
 
         parent?.Properties.Add(propertyContext);
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"{parent?.Name}.{propertyContext.Name} added");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"{parent?.Name}.{propertyContext.Name} added");
 
         // 2. Парсинг комментариев
         _triviaCommentParser.Parse(propertyContext, propertySyntax, model, options, cancellationToken);
@@ -103,13 +104,13 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
         var declarationSyntax = typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
         if (!typeSymbol.IsImplicitlyDeclared && declarationSyntax == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[{typeSymbol}] Symbol is not implicitly declared");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[{typeSymbol}] Symbol is not implicitly declared");
             return;
         }
 
         if (declarationSyntax == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, $"[{typeSymbol}] Symbol is not implicitly declared, but has no declared syntax");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[{typeSymbol}] Symbol is not implicitly declared, but has no declared syntax");
             return;
         }
 
@@ -135,7 +136,7 @@ public class CSharpTypePropertyParser<TContext> : BaseSyntaxParser<TContext>
         }
         else
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, $"Syntax was not parsed: {declarationSyntax} ");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"Syntax was not parsed: {declarationSyntax} ");
         }
     }
 }

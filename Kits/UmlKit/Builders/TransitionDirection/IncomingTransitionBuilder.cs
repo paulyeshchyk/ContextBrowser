@@ -4,6 +4,7 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using UmlKit.Builders.Model;
 using UmlKit.Infrastructure.Options;
 
@@ -11,11 +12,11 @@ namespace UmlKit.Builders.TransitionDirection;
 
 public class IncomingTransitionBuilder : ITransitionBuilder
 {
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
 
-    public IncomingTransitionBuilder(OnWriteLog? onWriteLog)
+    public IncomingTransitionBuilder(IAppLogger<AppLevel> onWriteLog)
     {
-        _onWriteLog = onWriteLog;
+        _logger = onWriteLog;
     }
 
     public DiagramDirection Direction => DiagramDirection.Incoming;
@@ -24,13 +25,13 @@ public class IncomingTransitionBuilder : ITransitionBuilder
     {
         var resultList = new GrouppedSortedTransitionList();
 
-        _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"Build incoming", LogLevelNode.Start);
+        _logger?.WriteLog(AppLevel.P_Tran, LogLevel.Dbg, $"Build incoming", LogLevelNode.Start);
 
         foreach (var callee in domainMethods)
         {
             BuildCallee(resultList, callee);
         }
-        _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger?.WriteLog(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
         return resultList;
     }
 
@@ -39,26 +40,26 @@ public class IncomingTransitionBuilder : ITransitionBuilder
         var invokedByList = callee.InvokedBy;
         if (!invokedByList.Any())
         {
-            _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] No invoked by found for {callee.FullName}");
+            _logger?.WriteLog(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] No invoked by found for {callee.FullName}");
             return;
         }
 
-        _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, $"[OK] Invoked found for {callee.FullName}", LogLevelNode.Start);
+        _logger?.WriteLog(AppLevel.P_Tran, LogLevel.Dbg, $"[OK] Invoked found for {callee.FullName}", LogLevelNode.Start);
         var theKey = callee.Identifier;
         foreach (var caller in invokedByList)
         {
             if (caller.ElementType != ContextInfoElementType.method)
             {
-                _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Warn, $"[SKIP] Caller is not method {callee.FullName} -> {caller.FullName}");
+                _logger?.WriteLog(AppLevel.P_Tran, LogLevel.Warn, $"[SKIP] Caller is not method {callee.FullName} -> {caller.FullName}");
                 continue;
             }
 
-            var result = UmlTransitionDtoBuilder.CreateTransition(caller, callee, _onWriteLog, theKey);
+            var result = UmlTransitionDtoBuilder.CreateTransition(caller, callee, _logger, theKey);
             if (result != null)
             {
                 resultList.Add((UmlTransitionDto)result, theKey.ToString());
             }
         }
-        _onWriteLog?.Invoke(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger?.WriteLog(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 }

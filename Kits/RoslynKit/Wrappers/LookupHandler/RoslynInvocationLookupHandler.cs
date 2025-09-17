@@ -4,6 +4,7 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Invocations.Lookup;
 using RoslynKit.Signature;
@@ -23,7 +24,8 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
     private readonly CSharpMethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
     private readonly CSharpTypeContextInfoBulder<TContext> _typeContextInfoBuilder;
 
-    public RoslynInvocationLookupHandler(IContextCollector<TContext> collector, OnWriteLog? onWriteLog, SemanticOptions options, CSharpTypeContextInfoBulder<TContext> typeContextInfoBuilder, CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder) : base(onWriteLog)
+    public RoslynInvocationLookupHandler(IContextCollector<TContext> collector, IAppLogger<AppLevel> logger, SemanticOptions options, CSharpTypeContextInfoBulder<TContext> typeContextInfoBuilder, CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder)
+        : base(logger)
     {
         _options = options;
         _typeContextInfoBuilder = typeContextInfoBuilder;
@@ -37,11 +39,11 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
         {
             // Если создание искусственных узлов не разрешено, возвращаем null
 
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Fallback fake callee be not used for {symbolDto.FullName}, because of disabled option CreateFailedCallees");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Fallback fake callee be not used for {symbolDto.FullName}, because of disabled option CreateFailedCallees");
             return base.Handle(symbolDto);
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"[CREATE] Fallback fake callee created for: {symbolDto.FullName}");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[CREATE] Fallback fake callee created for: {symbolDto.FullName}");
 
         // Логика создания искусственного узла
 
@@ -49,7 +51,7 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
         var typeContext = _typeContextInfoBuilder.BuildContextInfo(ownerContext: default, typeModel);
         if (typeContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, $"[FAIL] Typecontext not found for: {symbolDto.FullName}");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[FAIL] Typecontext not found for: {symbolDto.FullName}");
             return default;
         }
 
@@ -60,11 +62,11 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
 
         if (methodContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, $"[FAIL] Methodcontext not found for: {symbolDto.FullName}");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[FAIL] Methodcontext not found for: {symbolDto.FullName}");
             return default;
         }
 
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"[DONE] Fallback fake callee created for: {symbolDto.FullName}");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[DONE] Fallback fake callee created for: {symbolDto.FullName}");
 
         typeContext.Owns.Add(methodContext);
         _collector.Append(methodContext);

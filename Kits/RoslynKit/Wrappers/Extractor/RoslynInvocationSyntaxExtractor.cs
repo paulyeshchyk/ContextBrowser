@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
@@ -15,7 +15,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Wrappers.Extractor;
 
-//context roslyn, builder
+//context: roslyn, builder
 public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
 {
     private readonly IAppLogger<AppLevel> _logger;
@@ -47,7 +47,7 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var invocationWrapper = new RoslynInvocationExpressionWrapper(byInvocation, _semanticInvocationResolver);
+        var invocationWrapper = new RoslynInvocationExpressionWrapper(byInvocation, _semanticInvocationResolver, _logger);
         var invocationSemanticModel = FindSemanticModel(invocationWrapper);
         if (invocationSemanticModel == null)
         {
@@ -55,7 +55,7 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
             return CSharpInvocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
         }
 
-        var symbol = RoslynMethodSymbolExtractor.GetMethodSymbol(invocationWrapper, invocationSemanticModel, _logger.WriteLog, cancellationToken);
+        var symbol = RoslynMethodSymbolExtractor.GetMethodSymbol(invocationWrapper, invocationSemanticModel, _logger, cancellationToken);
         return (symbol != null)
             ? CSharpInvocationSyntaxWrapperConverter.FromSymbols(symbol, byInvocation)
             : CSharpInvocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
@@ -64,7 +64,7 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
     // context: roslyn, read
     private ISemanticModelWrapper? FindSemanticModel(IInvocationNodeWrapper wrapper)
     {
-        var treeWrapper = wrapper.GetTree();
+        var treeWrapper = wrapper.BuildTree();
         if (treeWrapper == null)
         {
             _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Err, $"[MISS]: Tree was not provided for invocation [{wrapper}]");

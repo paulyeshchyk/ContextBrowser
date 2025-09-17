@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 
@@ -17,16 +18,16 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
 {
     protected readonly IContextCollector<TContext> _collector;
     protected readonly IContextFactory<TContext> _factory;
-    protected readonly OnWriteLog? _onWriteLog;
+    protected readonly IAppLogger<AppLevel> _logger;
 
     public BaseContextInfoBuilder(
         IContextCollector<TContext> collector,
         IContextFactory<TContext> factory,
-        OnWriteLog? onWriteLog)
+        IAppLogger<AppLevel> logger)
     {
         _collector = collector;
         _factory = factory;
-        _onWriteLog = onWriteLog;
+        _logger = logger;
     }
 
     public abstract ContextInfoElementType ElementType { get; }
@@ -38,7 +39,7 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
         var syntaxNodeWrapper = new TWrapper();
         syntaxNodeWrapper.SetSyntax(syntaxNode);
 
-        var symbolInfo = CSharpISymbolWrapperConverter.FromSymbolInfo(semanticModel, syntaxNodeWrapper, _onWriteLog, cancellationToken);
+        var symbolInfo = CSharpISymbolWrapperConverter.FromSymbolInfo(semanticModel, syntaxNodeWrapper, _logger, cancellationToken);
         var dto = ContextInfoDtoConverter.ConvertFromSyntaxNodeWrapper(ownerContext, syntaxNodeWrapper, symbolInfo, ElementType);
 
         return BuildContextInfo(ownerContext, dto);
@@ -46,7 +47,7 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
 
     protected virtual TContext? BuildContextInfo(TContext? ownerContext, IContextInfo dto)
     {
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");
 
         var availableItem = _collector.GetItem(dto.FullName);
         if (availableItem != null)
@@ -56,7 +57,7 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
 
         if (result == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Err, $"Creating method ContextInfo failed {dto.Name}");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"Creating method ContextInfo failed {dto.Name}");
             return default;
         }
 

@@ -1,8 +1,9 @@
-using System.Threading;
+﻿using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Phases.ContextInfoBuilder;
 using SemanticKit.Model;
@@ -17,8 +18,8 @@ public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     private readonly CSharpDelegateContextInfoBuilder<TContext> _delegateContextInfoBuilder;
     private readonly CSharpCommentTriviaSyntaxParser<TContext> _triviaCommentParser;
 
-    public CSharpDelegateSyntaxParser(CSharpDelegateContextInfoBuilder<TContext> delegateContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, OnWriteLog? onWriteLog)
-        : base(onWriteLog)
+    public CSharpDelegateSyntaxParser(CSharpDelegateContextInfoBuilder<TContext> delegateContextInfoBuilder, CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser, IAppLogger<AppLevel> logger)
+        : base(logger)
     {
         _delegateContextInfoBuilder = delegateContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
@@ -31,18 +32,18 @@ public class CSharpDelegateSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     {
         if (syntax is not DelegateDeclarationSyntax delegateSyntax)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax is not DelegateDeclarationSyntax");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax is not DelegateDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - delegate syntax");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - delegate syntax");
 
         var delegateContext = _delegateContextInfoBuilder.BuildContextInfo(default, delegateSyntax, model, cancellationToken);
         if (delegateContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{delegateSyntax}\" was not resolved");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{delegateSyntax}\" was not resolved");
             return;
         }
 

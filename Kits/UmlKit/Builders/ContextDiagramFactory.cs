@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ContextBrowserKit.Log;
+using ContextBrowserKit.Options;
+using LoggerKit;
 using UmlKit.Builders.Strategies;
 using UmlKit.Builders.TransitionDirection;
 using UmlKit.Infrastructure.Options;
@@ -14,30 +16,30 @@ public static class ContextDiagramBuildersFactory
 
     private static readonly ConcurrentDictionary<string, IContextDiagramBuilder> _builderInstances = new(StringComparer.OrdinalIgnoreCase);
 
-    public static IContextDiagramBuilder BuilderForType(DiagramBuilderKeys key, DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(key, options, onWriteLog);
+    public static IContextDiagramBuilder BuilderForType(DiagramBuilderKeys key, DiagramBuilderOptions options, IAppLogger<AppLevel> logger) => GetOrCreate(key, options, logger);
 
-    public static IContextDiagramBuilder TransitionBuilder(DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(DiagramBuilderKeys.Transition, options, onWriteLog);
+    public static IContextDiagramBuilder TransitionBuilder(DiagramBuilderOptions options, IAppLogger<AppLevel> logger) => GetOrCreate(DiagramBuilderKeys.Transition, options, logger);
 
-    public static IContextDiagramBuilder DependenciesBuilder(DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(DiagramBuilderKeys.Dependencies, options, onWriteLog);
+    public static IContextDiagramBuilder DependenciesBuilder(DiagramBuilderOptions options, IAppLogger<AppLevel> logger) => GetOrCreate(DiagramBuilderKeys.Dependencies, options, logger);
 
-    public static IContextDiagramBuilder MethodsOnlyBuilder(DiagramBuilderOptions options, OnWriteLog? onWriteLog = null) => GetOrCreate(DiagramBuilderKeys.MethodFlow, options, onWriteLog);
+    public static IContextDiagramBuilder MethodsOnlyBuilder(DiagramBuilderOptions options, IAppLogger<AppLevel> logger) => GetOrCreate(DiagramBuilderKeys.MethodFlow, options, logger);
 
-    private static readonly Dictionary<string, Func<DiagramBuilderOptions, OnWriteLog?, IContextDiagramBuilder>> _builderFactories = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly Dictionary<string, Func<DiagramBuilderOptions, IAppLogger<AppLevel>, IContextDiagramBuilder>> _builderFactories = new(StringComparer.OrdinalIgnoreCase);
 
-    private static List<ITransitionBuilder> DefaultDirectionBuilders(OnWriteLog? onWriteLog) => new() {
-            new OutgoingTransitionBuilder(onWriteLog),
-            new IncomingTransitionBuilder(onWriteLog),
-            new BiDirectionalTransitionBuilder(onWriteLog),
+    private static List<ITransitionBuilder> DefaultDirectionBuilders(IAppLogger<AppLevel> logger) => new() {
+            new OutgoingTransitionBuilder(logger),
+            new IncomingTransitionBuilder(logger),
+            new BiDirectionalTransitionBuilder(logger),
         };
 
     static ContextDiagramBuildersFactory()
     {
-        RegisterBuilder(DiagramBuilderKeys.Transition, (options, onWriteLog) => new ContextTransitionDiagramBuilder(options, DefaultDirectionBuilders(onWriteLog), onWriteLog));
-        RegisterBuilder(DiagramBuilderKeys.MethodFlow, (options, onWriteLog) => new MethodFlowDiagramBuilder());
-        RegisterBuilder(DiagramBuilderKeys.Dependencies, (options, onWriteLog) => new DependencyDiagramBuilder());
+        RegisterBuilder(DiagramBuilderKeys.Transition, (options, logger) => new ContextTransitionDiagramBuilder(options, DefaultDirectionBuilders(logger), logger));
+        RegisterBuilder(DiagramBuilderKeys.MethodFlow, (options, logger) => new MethodFlowDiagramBuilder());
+        RegisterBuilder(DiagramBuilderKeys.Dependencies, (options, logger) => new DependencyDiagramBuilder());
     }
 
-    public static void RegisterBuilder(string name, Func<DiagramBuilderOptions, OnWriteLog?, IContextDiagramBuilder> factoryFunc)
+    public static void RegisterBuilder(string name, Func<DiagramBuilderOptions, IAppLogger<AppLevel>, IContextDiagramBuilder> factoryFunc)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Builder name cannot be null or whitespace.", nameof(name));
@@ -55,25 +57,25 @@ public static class ContextDiagramBuildersFactory
         }
     }
 
-    private static void RegisterBuilder(DiagramBuilderKeys key, Func<DiagramBuilderOptions, OnWriteLog?, IContextDiagramBuilder> factoryFunc)
+    private static void RegisterBuilder(DiagramBuilderKeys key, Func<DiagramBuilderOptions, IAppLogger<AppLevel>, IContextDiagramBuilder> factoryFunc)
     {
         RegisterBuilder(key.ToKeyString(), factoryFunc);
     }
 
-    private static IContextDiagramBuilder GetOrCreate(string name, DiagramBuilderOptions options, OnWriteLog? onWriteLog = null)
+    private static IContextDiagramBuilder GetOrCreate(string name, DiagramBuilderOptions options, IAppLogger<AppLevel> logger)
     {
         return _builderInstances.GetOrAdd(name, key =>
         {
             if (!_builderFactories.TryGetValue(key, out var factoryFunc))
                 throw new ArgumentException($"Builder not found for key '{key}'. Ensure it is registered.");
 
-            return factoryFunc(options, onWriteLog);
+            return factoryFunc(options, logger);
         });
     }
 
-    private static IContextDiagramBuilder GetOrCreate(DiagramBuilderKeys key, DiagramBuilderOptions options, OnWriteLog? onWriteLog = null)
+    private static IContextDiagramBuilder GetOrCreate(DiagramBuilderKeys key, DiagramBuilderOptions options, IAppLogger<AppLevel> logger)
     {
-        return GetOrCreate(key.ToKeyString(), options, onWriteLog);
+        return GetOrCreate(key.ToKeyString(), options, logger);
     }
 
     public static void ClearCache()

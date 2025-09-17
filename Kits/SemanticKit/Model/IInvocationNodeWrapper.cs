@@ -1,10 +1,10 @@
-namespace SemanticKit.Model;
+﻿namespace SemanticKit.Model;
 
 public interface IInvocationNodeWrapper
 {
     ISemanticModelWrapper? GetSemanticModel();
 
-    ISyntaxTreeWrapper GetTree();
+    ISyntaxTreeWrapper BuildTree();
 
     object Expression { get; }
 }

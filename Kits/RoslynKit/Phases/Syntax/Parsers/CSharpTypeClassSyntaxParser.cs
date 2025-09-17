@@ -1,9 +1,10 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
 using RoslynKit.Phases.ContextInfoBuilder;
@@ -28,7 +29,7 @@ public class CSharpTypeClassSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         CSharpMethodSyntaxParser<TContext> methodSyntaxParser,
         CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser,
         SemanticOptions options,
-        OnWriteLog? onWriteLog) : base(onWriteLog)
+        IAppLogger<AppLevel> logger) : base(logger)
     {
         _typeContextInfoBuilder = typeContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
@@ -42,20 +43,20 @@ public class CSharpTypeClassSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     {
         if (syntax is not ClassDeclarationSyntax typeSyntax)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax ({nameof(syntax)}) is not ClassDeclarationSyntax");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax ({nameof(syntax)}) is not ClassDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - type syntax");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - type syntax");
 
-        var symbol = CSharpSymbolLoader.LoadSymbol(typeSyntax, model, _onWriteLog, cancellationToken);
+        var symbol = CSharpSymbolLoader.LoadSymbol(typeSyntax, model, _logger, cancellationToken);
 
         var typeContext = _typeContextInfoBuilder.BuildContextInfo(parent, typeSyntax, model, cancellationToken);
         if (typeContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {typeSyntax.GetNamespaceOrGlobal()}");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {typeSyntax.GetNamespaceOrGlobal()}");
             return;
         }
 

@@ -23,11 +23,5 @@ public static partial class HtmlBuilderFactory
 
             sb.WriteLine(innerHtml);
         }
-
-        // context: html, build
-        public void With(TextWriter writer, Action block)
-        {
-            block?.Invoke();
-        }
     }
 }

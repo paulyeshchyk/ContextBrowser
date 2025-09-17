@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Phases.ContextInfoBuilder;
 using SemanticKit.Model;
@@ -28,7 +29,7 @@ public class CSharpTypeRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         CSharpMethodSyntaxParser<TContext> methodSyntaxParser,
         CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser,
         SemanticOptions options,
-        OnWriteLog? onWriteLog) : base(onWriteLog)
+        IAppLogger<AppLevel>logger) : base(logger)
     {
         _recordContextInfoBuilder = typeContextInfoBuilder;
         _options = options;
@@ -48,12 +49,12 @@ public class CSharpTypeRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - record syntax");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - record syntax");
 
         var recordContext = _recordContextInfoBuilder.BuildContextInfo(parent, recordSyntax, model, cancellationToken);
         if (recordContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{recordSyntax}\" was not resolved");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{recordSyntax}\" was not resolved");
             return;
         }
 

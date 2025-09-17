@@ -1,8 +1,9 @@
-using System.Linq;
+﻿using System.Linq;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 
 namespace SemanticKit.Model;
 
@@ -10,11 +11,11 @@ public class SemanticReferenceBuilderValidator<TContext, TInvocationExpressionSy
     where TContext : ContextInfo, IContextWithReferences<TContext>
     where TInvocationExpressionSyntax : class
 {
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
 
-    public SemanticReferenceBuilderValidator(OnWriteLog? onWriteLog)
+    public SemanticReferenceBuilderValidator(IAppLogger<AppLevel> logger)
     {
-        _onWriteLog = onWriteLog;
+        _logger = logger;
     }
 
     /// <summary>
@@ -23,10 +24,10 @@ public class SemanticReferenceBuilderValidator<TContext, TInvocationExpressionSy
     /// <returns>Экземпляр ValidationResult с данными или null, если валидация не пройдена.</returns>
     public SemanticReferenceBuilderValidationResult<TContext, TInvocationExpressionSyntax>? Validate(TContext callerContext, IContextCollector<TContext> collector)
     {
-        _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"Validating context [{callerContext.FullName}]");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Validating context [{callerContext.FullName}]");
         if (string.IsNullOrWhiteSpace(callerContext.FullName) || !collector.BySymbolDisplayName.TryGetValue(callerContext.FullName, out var callerContextInfo))
         {
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Symbol not found in {collector.BySymbolDisplayName} for {callerContext.FullName}");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Symbol not found in {collector.BySymbolDisplayName} for {callerContext.FullName}");
             return null;
         }
 
@@ -34,7 +35,7 @@ public class SemanticReferenceBuilderValidator<TContext, TInvocationExpressionSy
         if (callerSyntaxNode == null)
         {
             // срабатывает для функций, напр, nameof()
-            _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] SyntaxNode is not defined for {callerContext.FullName}");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] SyntaxNode is not defined for {callerContext.FullName}");
 #warning to be checked twice
             return new SemanticReferenceBuilderValidationResult<TContext, TInvocationExpressionSyntax>(callerContextInfo, Enumerable.Empty<TInvocationExpressionSyntax>());
         }
@@ -47,16 +48,16 @@ public class SemanticReferenceBuilderValidator<TContext, TInvocationExpressionSy
         {
             if (canRaiseNoInvocationError)
             {
-                _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Invocation not found for {callerContextInfo.FullName}");
+                _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Invocation not found for {callerContextInfo.FullName}");
             }
             else
             {
-                _onWriteLog?.Invoke(AppLevel.R_Cntx, LogLevel.Dbg, $"[SKIP] Invocation not found for {callerContextInfo.FullName}");
+                _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[SKIP] Invocation not found for {callerContextInfo.FullName}");
             }
         }
         else
         {
-            _onWriteLog?.Invoke(AppLevel.R_Invocation, LogLevel.Dbg, $"[OK] Invocation was found for {callerContextInfo.FullName}");
+            _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"[OK] Invocation was found for {callerContextInfo.FullName}");
         }
 
         return new SemanticReferenceBuilderValidationResult<TContext, TInvocationExpressionSyntax>(callerContextInfo, invocationList);

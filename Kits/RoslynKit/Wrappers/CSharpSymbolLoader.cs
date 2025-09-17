@@ -3,6 +3,7 @@ using System.Threading;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
@@ -12,7 +13,7 @@ namespace RoslynKit.Wrappers;
 
 public static class CSharpSymbolLoader
 {
-    public static ISymbol? LoadSymbol(MemberDeclarationSyntax? syntax, ISemanticModelWrapper model, OnWriteLog? onWriteLog, CancellationToken cancellationToken)
+    public static ISymbol? LoadSymbol(MemberDeclarationSyntax? syntax, ISemanticModelWrapper model, IAppLogger<AppLevel> logger, CancellationToken cancellationToken)
     {
         if (syntax == null)
         {
@@ -35,8 +36,8 @@ public static class CSharpSymbolLoader
         }
         catch (Exception ex)
         {
-            onWriteLog?.Invoke(AppLevel.R_Symbol, LogLevel.Exception, $"{syntax.GetIdentifier()} - {ex.Message}");
-            onWriteLog?.Invoke(AppLevel.R_Symbol, LogLevel.Trace, $"{syntax}");
+            logger.WriteLog(AppLevel.R_Symbol, LogLevel.Exception, $"{syntax.GetIdentifier()} - {ex.Message}");
+            logger.WriteLog(AppLevel.R_Symbol, LogLevel.Trace, $"{syntax}");
             return default;
         }
     }

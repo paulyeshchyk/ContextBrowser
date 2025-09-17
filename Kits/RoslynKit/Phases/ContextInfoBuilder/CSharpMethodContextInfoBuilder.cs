@@ -1,5 +1,7 @@
 ﻿using ContextBrowserKit.Log;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Extensions;
 using RoslynKit.Wrappers;
@@ -12,8 +14,8 @@ namespace RoslynKit.Phases.ContextInfoBuilder;
 public class CSharpMethodContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, MethodDeclarationSyntax, ISemanticModelWrapper, CSharpMethodSyntaxNodeWrapper>
     where TContext : IContextWithReferences<TContext>
 {
-    public CSharpMethodContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, OnWriteLog? onWriteLog)
-        : base(collector, factory, onWriteLog)
+    public CSharpMethodContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IAppLogger<AppLevel> logger)
+        : base(collector, factory, logger)
     {
     }
 

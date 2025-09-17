@@ -4,6 +4,7 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Phases.ContextInfoBuilder;
 using SemanticKit.Model;
@@ -24,8 +25,8 @@ public class CSharpInterfaceSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         CSharpTypePropertyParser<TContext> propertyDeclarationParser,
         CSharpMethodSyntaxParser<TContext> methodSyntaxParser,
         CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser,
-        OnWriteLog? onWriteLog)
-        : base(onWriteLog)
+        IAppLogger<AppLevel> logger)
+        : base(logger)
     {
         _interfaceContextInfoBuilder = interfaceContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
@@ -39,18 +40,18 @@ public class CSharpInterfaceSyntaxParser<TContext> : BaseSyntaxParser<TContext>
     {
         if (syntax is not InterfaceDeclarationSyntax interfaceSyntax)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, $"Syntax is not InterfaceDeclarationSyntax");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax is not InterfaceDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - interface syntax");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - interface syntax");
 
         var interfaceContext = _interfaceContextInfoBuilder.BuildContextInfo(default, interfaceSyntax, model, cancellationToken);
         if (interfaceContext == null)
         {
-            _onWriteLog?.Invoke(AppLevel.R_Syntax, LogLevel.Err, "Failed to build context for interface.");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, "Failed to build context for interface.");
             return;
         }
 
