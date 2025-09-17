@@ -22,18 +22,19 @@ public class ContextInfoCacheService : IContextInfoCacheService
 {
     private readonly IAppLogger<AppLevel> _appLogger;
     private readonly IFileCacheStrategy _cacheStrategy;
+    private readonly IAppOptionsStore _optionsStore;
 
     private Task<IEnumerable<ContextInfo>>? _inMemoryCacheTask;
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-    public ContextInfoCacheService(IFileCacheStrategy fileCacheStrategy, IAppLogger<AppLevel> appLogger)
+    public ContextInfoCacheService(IFileCacheStrategy fileCacheStrategy, IAppLogger<AppLevel> appLogger, IAppOptionsStore optionsStore)
     {
         _appLogger = appLogger;
         _cacheStrategy = fileCacheStrategy;
+        _optionsStore = optionsStore;
     }
 
     public async Task<IEnumerable<ContextInfo>> GetOrParseAndCacheAsync(
-        CacheJsonModel cacheModel,
         Func<CancellationToken, Task<IEnumerable<ContextInfo>>> parseJob,
         Func<List<ContextInfoSerializableModel>, CancellationToken, Task<IEnumerable<ContextInfo>>> onRelationCallback,
         CancellationToken cancellationToken)
@@ -43,6 +44,8 @@ public class ContextInfoCacheService : IContextInfoCacheService
             _appLogger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, "Returning data from in-memory cache.");
             return _inMemoryCacheTask.Result;
         }
+
+        var cacheModel = _optionsStore.GetOptions<ExportFilePaths>().CacheModel;
 
         await _semaphore.WaitAsync(cancellationToken);
         try

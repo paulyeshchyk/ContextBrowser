@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
@@ -25,15 +26,23 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerClassActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
+    public UmlDiagramCompilerClassActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
+        _optionsStore = optionsStore;
     }
 
-    public async Task<Dictionary<string, bool>> CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken)
     {
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassActionPerDomain");
+
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var exportOptions = _optionsStore.GetOptions<ExportOptions>();
+        var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
+
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         foreach (var element in dataset)
         {

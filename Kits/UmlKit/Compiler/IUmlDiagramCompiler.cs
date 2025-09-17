@@ -9,5 +9,5 @@ namespace UmlKit.Compiler;
 
 public interface IUmlDiagramCompiler
 {
-    Task<Dictionary<string, bool>> CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken);
+    Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken);
 }

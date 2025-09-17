@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
@@ -23,17 +24,26 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
+    public UmlDiagramCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
+        _optionsStore = optionsStore;
     }
 
     //context: uml, build
-    public async Task<Dictionary<string, bool>> CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken)
     {
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile Namespaces only");
+
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var exportOptions = _optionsStore.GetOptions<ExportOptions>();
+        var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
+
         var namespaces = GetNamespaces(dataset).ToList();
         foreach (var nameSpace in namespaces)
         {

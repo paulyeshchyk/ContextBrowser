@@ -71,18 +71,17 @@ public class MainService : IMainService
     public async Task RunAsync(CancellationToken cancellationToken)
     {
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
-        var classifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
-        var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         ExportPathDirectoryPreparer.Prepare(exportOptions.FilePaths);
 
+        //необязательный шаг: принудительная загрузка контента
         await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         //компиляция диаграмм
-        await _diagramCompilerOrchestrator.CompileAllAsync(classifier, exportOptions, diagramBuilderOptions, cancellationToken);
+        await _diagramCompilerOrchestrator.CompileAllAsync(cancellationToken);
 
         // компиляция html
-        await _htmlCompilerOrchestrator.CompileAllAsync(classifier, exportOptions, cancellationToken);
+        await _htmlCompilerOrchestrator.CompileAllAsync(cancellationToken);
 
         // запуск кастомных html & puml серверов
         _serverStartSignal.Signal();

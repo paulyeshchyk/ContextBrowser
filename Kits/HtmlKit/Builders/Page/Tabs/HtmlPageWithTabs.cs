@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using HtmlKit;
@@ -28,7 +30,7 @@ public abstract class HtmlPageWithTabsBuilder<DTO>
         _tabbedPageBuilder = tabbedPageBuilder;
     }
 
-    public abstract void Build();
+    public abstract Task BuildAsync(CancellationToken cancellationToken);
 }
 
 public class HtmlTabbedPageBuilder<DTO>

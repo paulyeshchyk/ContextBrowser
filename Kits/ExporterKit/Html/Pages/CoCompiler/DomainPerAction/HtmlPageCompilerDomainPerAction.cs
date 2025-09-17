@@ -31,25 +31,29 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
     private readonly IAppLogger<AppLevel> _logger;
     private readonly DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> _mapper;
     private readonly IHtmlPageIndex _indexPageProducer;
+    private readonly IAppOptionsStore _optionsStore;
+    private readonly IHtmlMatrixGenerator _matrixGenerator;
 
-    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IHtmlPageIndex indexPageProducer)
+    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IHtmlPageIndex indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
     {
         _logger = logger;
         _mapper = contextInfoMapperContainer.GetMapper(GlobalMapperKeys.DomainPerAction);
         _indexPageProducer = indexPageProducer;
+        _optionsStore = optionsStore;
+        _matrixGenerator = matrixGenerator;
     }
 
     // context: html, build
-
-    public async Task CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
+    public async Task CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
 
+        var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var exportMatrixOptions = exportOptions.ExportMatrix;
-        var matrixGenerator = new HtmlMatrixGeneratorDomainPerAction(_mapper);
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
 
-        var matrix = await matrixGenerator.GenerateAsync(contextClassifier, exportMatrixOptions.HtmlTable.Orientation, exportMatrixOptions.UnclassifiedPriority, cancellationToken);
-        var result = await _indexPageProducer.ProduceAsync(matrix, exportMatrixOptions.HtmlTable, cancellationToken);
+        var matrix = await _matrixGenerator.GenerateAsync(cancellationToken);
+        var result = await _indexPageProducer.ProduceAsync(matrix, cancellationToken);
 
         var outputFile = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.index, "index.html");
 

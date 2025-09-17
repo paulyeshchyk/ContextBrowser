@@ -1,8 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
@@ -24,19 +26,22 @@ where DTO : ContextKeyContainer
         _onGetFileName = onGetFileName;
     }
 
-    public override void Build()
+    public override Task BuildAsync(CancellationToken cancellationToken)
     {
-        foreach (var contextInfoItem in _contextInfoDataset)
+        return Task.Run(() =>
         {
-            var cellData = new ContextKeyContainer
-            (
-                contextInfoList: contextInfoItem.Value.Distinct(),
-                contextKey: contextInfoItem.Key);
+            foreach (var contextInfoItem in _contextInfoDataset)
+            {
+                var cellData = new ContextKeyContainer
+                (
+                    contextInfoList: contextInfoItem.Value.Distinct(),
+                    contextKey: contextInfoItem.Key);
 
-            var filename = _onGetFileName((DTO)cellData);
-            var title = $" {cellData.ContextKey.Action}  ->  {cellData.ContextKey.Domain} ";
+                var filename = _onGetFileName((DTO)cellData);
+                var title = $" {cellData.ContextKey.Action}  ->  {cellData.ContextKey.Domain} ";
 
-            _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
-        }
+                _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
+            }
+        });
     }
 }

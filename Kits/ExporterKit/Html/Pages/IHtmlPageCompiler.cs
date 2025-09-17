@@ -7,5 +7,5 @@ namespace HtmlKit.Page.Compiler;
 
 public interface IHtmlPageCompiler
 {
-    Task CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken);
+    Task CompileAsync(CancellationToken cancellationToken);
 }

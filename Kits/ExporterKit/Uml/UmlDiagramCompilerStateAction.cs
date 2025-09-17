@@ -30,18 +30,26 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
     protected readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider _datasetProvider;
     private readonly IContextInfoMapperProvider _mapperProvider;
+    private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerStateAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IContextInfoMapperProvider mapperProvider)
+    public UmlDiagramCompilerStateAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IContextInfoMapperProvider mapperProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _mapperProvider = mapperProvider;
+        _optionsStore = optionsStore;
     }
 
     // context: uml, build
-    public async Task<Dictionary<string, bool>> CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken)
     {
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile StateAction");
+
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var exportOptions = _optionsStore.GetOptions<ExportOptions>();
+        var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken);
@@ -67,7 +75,7 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
         var generator = new SequenceDiagramGenerator<UmlState>(renderer, diagramBuilderOptions, _logger, factory);
         var diagramBuilder = ContextDiagramBuildersFactory.BuilderForType(diagramBuilderOptions.DiagramType, diagramBuilderOptions, _logger.WriteLog);
 
-        var compiler = new UmlStateDiagramCompilerAction(contextClassifier, diagramBuilderOptions, diagramBuilder, exportOptions, generator, _logger.WriteLog);
+        var compiler = new UmlStateDiagramCompilerAction(contextClassifier, diagramBuilderOptions, diagramBuilder, exportOptions, generator, _logger);
         var rendered = compiler.CompileAsync(options.MetaItem, options.DiagramId, options.OutputFileName, allContexts, CancellationToken.None);
 
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);

@@ -16,11 +16,9 @@ public class HtmlMatrixIndexerByNameWithClassOwnerName<TContext> : IKeyIndexBuil
     where TContext : IContextWithReferences<TContext>
 {
     private Dictionary<string, TContext>? _index;
-    protected readonly IAppOptionsStore _optionsStore;
 
-    public HtmlMatrixIndexerByNameWithClassOwnerName(IAppOptionsStore optionsStore)
+    public HtmlMatrixIndexerByNameWithClassOwnerName()
     {
-        _optionsStore = optionsStore;
     }
 
     public Dictionary<string, TContext>? GetIndexData()
@@ -32,9 +30,6 @@ public class HtmlMatrixIndexerByNameWithClassOwnerName<TContext> : IKeyIndexBuil
     {
         if (_index == null)
         {
-            var matrixOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
-            var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
-
             _index = contextsList
                 .Where(c => !string.IsNullOrWhiteSpace(c.Name))
                 .GroupBy(c => c.NameWithClassOwnerName)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using ContextBrowserKit.Matrix;
+using ContextBrowserKit.Options;
 using HtmlKit.Builders.Core;
 using HtmlKit.Extensions;
 using HtmlKit.Options;
@@ -13,12 +14,17 @@ public abstract class HtmlPageProducer
 {
     public string Title { get; set; } = string.Empty;
 
-    public HtmlPageProducer()
+    protected readonly IAppOptionsStore _optionsStore;
+
+    public HtmlPageProducer(IAppOptionsStore optionsStore)
     {
+        _optionsStore = optionsStore;
     }
 
-    protected void Produce(TextWriter writer, IHtmlMatrix matrix, HtmlTableOptions options)
+    protected void Produce(TextWriter writer, IHtmlMatrix matrix)
     {
+        var options = _optionsStore.GetOptions<HtmlTableOptions>();
+
         HtmlBuilderFactory.Html.With(writer, () =>
         {
             HtmlBuilderFactory.Head.With(writer, () =>

@@ -24,17 +24,21 @@ public class HtmlPageCompilerDomainOnly : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlPageCompilerDomainOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider)
+    public HtmlPageCompilerDomainOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
+        _optionsStore = optionsStore;
     }
 
     // context: contextInfo, build, html
-    public async Task CompileAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, CancellationToken cancellationToken)
+    public async Task CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- DomainOnly.Build ---", LogLevelNode.None));
+
+        var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
         var registrations = new List<IHtmlTabRegistration<ContextKeyContainer>>
         {
@@ -50,6 +54,6 @@ public class HtmlPageCompilerDomainOnly : IHtmlPageCompiler
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         var builder = new HtmlPageWithTabsEntityListBuilder<ContextKeyContainer>(dataset, tabbedPageBuilder, (cellData) => $"composite_domain_{cellData.ContextKey.Domain}.html");
-        builder.Build();
+        await builder.BuildAsync(cancellationToken);
     }
 }

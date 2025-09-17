@@ -5,11 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
+using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit;
 using ExporterKit.Html;
 using ExporterKit.Infrastucture;
 using HtmlKit.Document;
+using HtmlKit.Options;
 using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
@@ -18,15 +20,22 @@ namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
 {
     private readonly DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> _mapper;
+    private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlMatrixGeneratorDomainPerAction(DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> mapper)
+    public HtmlMatrixGeneratorDomainPerAction(DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> mapper, IAppOptionsStore optionsStore)
     {
         _mapper = mapper;
+        _optionsStore = optionsStore;
     }
 
     // context: build, htmlmatrix
-    public Task<IHtmlMatrix> GenerateAsync(IDomainPerActionContextClassifier contextClassifier, TensorPermutationType matrixOrientation, UnclassifiedPriorityType priority, CancellationToken cancellationToken)
+    public Task<IHtmlMatrix> GenerateAsync(CancellationToken cancellationToken)
     {
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var matrixOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
+        var matrixOrientation = matrixOptions.HtmlTable.Orientation;
+        var priority = matrixOptions.UnclassifiedPriority;
+
         return Task.Run(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();

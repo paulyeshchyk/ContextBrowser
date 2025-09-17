@@ -6,6 +6,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Compiler.CoCompiler;
 using UmlKit.DiagramGenerator;
@@ -19,7 +20,7 @@ public class UmlStateDiagramCompilerAction : UmlDiagramCompilerState
 {
     protected override FetchType _fetchType => FetchType.FetchAction;
 
-    public UmlStateDiagramCompilerAction(IDomainPerActionContextClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, OnWriteLog? onWriteLog) : base(classifier, options, builder, exportOptions, renderer, onWriteLog)
+    public UmlStateDiagramCompilerAction(IDomainPerActionContextClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, IAppLogger<AppLevel> logger) : base(classifier, options, builder, exportOptions, renderer, logger)
     {
     }
 }
@@ -28,20 +29,19 @@ public class UmlStateDiagramCompilerDomain : UmlDiagramCompilerState
 {
     protected override FetchType _fetchType => FetchType.FetchDomain;
 
-    public UmlStateDiagramCompilerDomain(IDomainPerActionContextClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, OnWriteLog? onWriteLog) : base(classifier, options, builder, exportOptions, renderer, onWriteLog)
+    public UmlStateDiagramCompilerDomain(IDomainPerActionContextClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, IAppLogger<AppLevel> logger) : base(classifier, options, builder, exportOptions, renderer, logger)
     {
     }
 }
 
 public abstract class UmlDiagramCompilerState
 {
-    // Свойства класса, инициализируемые в конструкторе
     private readonly IDomainPerActionContextClassifier _classifier;
     private readonly DiagramBuilderOptions _options;
     private readonly IContextDiagramBuilder _builder;
     private readonly ExportOptions _exportOptions;
     private readonly SequenceDiagramGenerator<UmlState> _renderer;
-    private readonly OnWriteLog? _onWriteLog;
+    private readonly IAppLogger<AppLevel> _logger;
 
     protected abstract FetchType _fetchType { get; }
 
@@ -60,14 +60,14 @@ public abstract class UmlDiagramCompilerState
         IContextDiagramBuilder builder,
         ExportOptions exportOptions,
         SequenceDiagramGenerator<UmlState> renderer,
-        OnWriteLog? onWriteLog)
+        IAppLogger<AppLevel> logger)
     {
         _classifier = classifier;
         _options = options;
         _builder = builder;
         _exportOptions = exportOptions;
         _renderer = renderer;
-        _onWriteLog = onWriteLog;
+        _logger = logger;
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public abstract class UmlDiagramCompilerState
     /// <param name="allContexts">Список всех контекстных элементов.</param>
     public bool CompileAsync(string metaItem, string diagramId, string diagramFileName, List<ContextInfo> allContexts, CancellationToken cancellationToken)
     {
-        _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile state for [{metaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile state for [{metaItem}]", LogLevelNode.Start);
 
         var diagram = new UmlDiagramState(_options, diagramId: diagramId);
         diagram.SetTitle($"Context: {metaItem}");
@@ -97,7 +97,7 @@ public abstract class UmlDiagramCompilerState
             diagram.WriteToFile(path, writeOptons);
         }
 
-        _onWriteLog?.Invoke(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
         return rendered;
     }

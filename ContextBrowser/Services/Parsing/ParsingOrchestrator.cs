@@ -55,10 +55,7 @@ public class ParsingOrchestrator : IParsingOrchestrator
     // context: parsing, build
     public async Task<IEnumerable<ContextInfo>> GetParsedContextsAsync(CancellationToken cancellationToken)
     {
-        var cacheModel = _optionsStore.GetOptions<ExportFilePaths>().CacheModel;
-
         var result = await _contextInfoCacheService.GetOrParseAndCacheAsync(
-            cacheModel,
             ParsingJobAsync,
             _relationManager.ConvertToContextInfoAsync,
             cancellationToken);
@@ -71,9 +68,10 @@ public class ParsingOrchestrator : IParsingOrchestrator
         return result;
     }
 
-    private async Task<IEnumerable<ContextInfo>> ParsingJobAsync(CancellationToken token)
+    private Task<IEnumerable<ContextInfo>> ParsingJobAsync(CancellationToken token)
     {
         var parsingOptions = _optionsStore.GetOptions<CodeParsingOptions>();
+
         var declarationParser = _declarationParserFactory.Create(parsingOptions.SemanticOptions);
         var referenceParser = _referenceParserFactory.Create();
 
@@ -86,6 +84,6 @@ public class ParsingOrchestrator : IParsingOrchestrator
             };
 
         var parserChain = new ParserChain(fileParsers);
-        return await _codeParseService.Parse(parserChain, token);
+        return _codeParseService.Parse(parserChain, token);
     }
 }

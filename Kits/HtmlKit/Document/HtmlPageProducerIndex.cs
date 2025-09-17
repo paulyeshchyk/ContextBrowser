@@ -21,7 +21,7 @@ namespace HtmlKit.Document;
 //context: htmlmatrix, model
 public interface IHtmlPageIndex
 {
-    Task<string> ProduceAsync(IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken);
+    Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken);
 }
 
 //context: htmlmatrix, model
@@ -30,18 +30,18 @@ public class HtmlPageProducerIndex : HtmlPageProducer, IHtmlPageIndex
     private readonly IHtmlMatrixWriter _matrixWriter;
     private readonly IHtmlMatrixSummaryBuilder _summaryBuilder;
 
-    public HtmlPageProducerIndex(IHtmlMatrixWriter matrixWriter, IHtmlMatrixSummaryBuilder summaryBuilder) : base()
+    public HtmlPageProducerIndex(IHtmlMatrixWriter matrixWriter, IHtmlMatrixSummaryBuilder summaryBuilder, IAppOptionsStore optionsStore) : base(optionsStore)
     {
         _matrixWriter = matrixWriter;
         _summaryBuilder = summaryBuilder;
     }
 
-    public Task<string> ProduceAsync(IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken)
+    public Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken)
     {
         return Task.Run(() =>
         {
             using var sw = new StringWriter();
-            Produce(sw, matrix, options);
+            Produce(sw, matrix);
 
             var result = sw.ToString();
             return result;

@@ -12,7 +12,6 @@ public interface IContextInfoCacheService
 {
     // context: relations, build
     Task<IEnumerable<ContextInfo>> GetOrParseAndCacheAsync(
-        CacheJsonModel cacheModel,
         Func<CancellationToken, Task<IEnumerable<ContextInfo>>> parseJob,
         Func<List<ContextInfoSerializableModel>, CancellationToken, Task<IEnumerable<ContextInfo>>> onRelationCallback,
         CancellationToken cancellationToken);

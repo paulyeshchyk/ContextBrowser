@@ -8,5 +8,5 @@ namespace ContextBrowser.Services;
 
 public interface IUmlDiagramCompilerOrchestrator
 {
-    Task CompileAllAsync(IDomainPerActionContextClassifier contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions builderOptions, CancellationToken cancellationToken);
+    Task CompileAllAsync(CancellationToken cancellationToken);
 }

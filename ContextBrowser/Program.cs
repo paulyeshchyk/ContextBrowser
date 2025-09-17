@@ -78,6 +78,8 @@ public static class Program
             return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultCW, dependencies: defaultDependencies);
         });
 
+        hab.Services.AddTransient<IHtmlMatrixGenerator, HtmlMatrixGeneratorDomainPerAction>();
+
         // # Tensor
         //
         hab.Services.AddTransient<ITensorBuilder, TensorBuilder>();

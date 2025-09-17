@@ -12,8 +12,6 @@ public class ContextInfoDatasetProvider : BaseContextInfoProvider, IContextInfoD
 {
     private readonly IContextInfoDatasetBuilder _datasetBuilder;
 
-    private IAppOptionsStore _optionsStore;
-
     // Приватное поле для кэширования результата.
     private IContextInfoDataset<ContextInfo>? _dataset;
 
@@ -26,7 +24,6 @@ public class ContextInfoDatasetProvider : BaseContextInfoProvider, IContextInfoD
         IContextInfoDatasetBuilder datasetBuilder)
         : base(parsingOrchestrant)
     {
-        _optionsStore = optionsStore;
         _datasetBuilder = datasetBuilder;
     }
 
@@ -52,9 +49,7 @@ public class ContextInfoDatasetProvider : BaseContextInfoProvider, IContextInfoD
         }
 
         var contextsList = await GetParsedContextsAsync(cancellationToken);
-        var exportOptions = _optionsStore.GetOptions<ExportOptions>();
-        var classifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
-        var newDataset = _datasetBuilder.Build(contextsList, exportOptions.ExportMatrix, classifier);
+        var newDataset = _datasetBuilder.Build(contextsList);
 
         lock (_lock)
         {

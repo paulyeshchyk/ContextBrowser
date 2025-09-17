@@ -1,8 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
@@ -24,21 +26,24 @@ where DTO : EntitynameContainer
         _onGetFileName = onGetFileName;
     }
 
-    public override void Build()
+    public override Task BuildAsync(CancellationToken cancellationToken)
     {
-        var entitiesList = _contextInfoDataset.GetAll()
-            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.@record) || (c.ElementType == ContextInfoElementType.@interface))
-            .Cast<IContextInfo>();
-
-        foreach (var contextInfoItem in entitiesList)
+        return Task.Run(() =>
         {
-            var filename = _onGetFileName(contextInfoItem.FullName);
-            var title = $" Class {contextInfoItem.FullName}";
-            var cellData = new EntitynameContainer(
-                contextInfoList: new List<IContextInfo>() { contextInfoItem },
-                contextKey: contextInfoItem.FullName);
+            var entitiesList = _contextInfoDataset.GetAll()
+                .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.@record) || (c.ElementType == ContextInfoElementType.@interface))
+                .Cast<IContextInfo>();
 
-            _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
-        }
+            foreach (var contextInfoItem in entitiesList)
+            {
+                var filename = _onGetFileName(contextInfoItem.FullName);
+                var title = $" Class {contextInfoItem.FullName}";
+                var cellData = new EntitynameContainer(
+                    contextInfoList: new List<IContextInfo>() { contextInfoItem },
+                    contextKey: contextInfoItem.FullName);
+
+                _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
+            }
+        });
     }
 }

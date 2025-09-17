@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
 
 namespace ContextKit.Model;
@@ -27,7 +29,7 @@ public interface DomainPerActionKeyMapBuilder<TContext, TKey>
     where TKey : notnull
 {
     // context: ContextInfoMatrix, build
-    void Build(IEnumerable<TContext> contextsList, ExportMatrixOptions matrixOptions, IDomainPerActionContextClassifier contextClassifier);
+    Task BuildAsync(IEnumerable<TContext> contextsList, CancellationToken cancellationToken);
 
     Dictionary<TKey, List<TContext>>? GetMapData();
 }

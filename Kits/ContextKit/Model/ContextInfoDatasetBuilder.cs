@@ -15,17 +15,22 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IEnumerable<IContextInfoFiller> _contextInfoFiller;
+    private readonly IAppOptionsStore _optionsStore;
 
-    public ContextInfoDatasetBuilder(IAppLogger<AppLevel> logger, IEnumerable<IContextInfoFiller> contextInfoFiller)
+    public ContextInfoDatasetBuilder(IAppLogger<AppLevel> logger, IEnumerable<IContextInfoFiller> contextInfoFiller, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _contextInfoFiller = contextInfoFiller;
+        _optionsStore = optionsStore;
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList, ExportMatrixOptions matrixOptions, IDomainPerActionContextClassifier contextClassifier)
+    public IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
+
+        var exportOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
+        var classifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
 
         var elements = contextsList.ToList();
         var dataset = new ContextInfoDataset<ContextInfo>();
@@ -33,7 +38,7 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
         var orderedFillers = _contextInfoFiller.OrderBy(f => f.Order);
         foreach (var filler in orderedFillers)
         {
-            filler.Fill(dataset, elements, matrixOptions, contextClassifier);
+            filler.Fill(dataset, elements, exportOptions, classifier);
         }
 
         return dataset;
