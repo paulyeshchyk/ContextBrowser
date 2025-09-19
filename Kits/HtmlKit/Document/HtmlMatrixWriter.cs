@@ -83,8 +83,11 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
         _keyBuilder = keyBuilder;
     }
 
-    public void Write(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary summary, HtmlTableOptions options)
+    public void Write(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions originalOptions)
     {
+        //если summary не пришло, то просто говорим, что summary рисовать не нужно
+        var options = summary == null ? originalOptions with { SummaryPlacement = SummaryPlacementType.None } : originalOptions;
+
         HtmlBuilderFactory.Table.With(writer, () =>
         {
             WriteHeaderRow(writer, matrix, options);
@@ -105,13 +108,13 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
         });
     }
 
-    protected void WriteSummaryRowIf(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary summary, HtmlTableOptions options, SummaryPlacementType placement)
+    protected void WriteSummaryRowIf(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions options, SummaryPlacementType placement)
     {
         if (options.SummaryPlacement == placement)
             WriteSummaryRow(textWriter, matrix, options, summary);
     }
 
-    protected void WriteAllDataRows(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary summary, HtmlTableOptions options)
+    protected void WriteAllDataRows(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions options)
     {
         foreach (var row in matrix.rows)
             WriteDataRow(textWriter, matrix, options, row, summary);
@@ -165,9 +168,9 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
         }
     }
 
-    internal void WriteSummaryRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, HtmlMatrixSummary summary)
+    internal void WriteSummaryRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, HtmlMatrixSummary? summary)
     {
-        var total = summary.ColsSummary?.Values.Sum() ?? 0;
+        var total = summary?.ColsSummary?.Values.Sum() ?? 0;
 
         HtmlBuilderFactory.HtmlBuilderTableRow.Summary.With(textWriter, () =>
         {
@@ -190,7 +193,7 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
             {
                 HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.With(textWriter, () =>
                 {
-                    var sum = summary.ColsSummary?.GetValueOrDefault(col).ToString() ?? string.Empty;
+                    var sum = summary?.ColsSummary?.GetValueOrDefault(col).ToString() ?? string.Empty;
                     var href = _hRefManager.GetHrefColSummary(col, options);
                     var colCellAttrs = new HtmlTagAttributes() { { "href", href } };
                     HtmlBuilderFactory.A.Cell(textWriter, colCellAttrs, sum, isEncodable: false);
@@ -208,7 +211,7 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
         });
     }
 
-    internal void WriteDataRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, string row, HtmlMatrixSummary summary)
+    internal void WriteDataRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, string row, HtmlMatrixSummary? summary)
     {
         HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(textWriter, () =>
         {
@@ -233,11 +236,11 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
         });
     }
 
-    internal void WriteRowSummaryCell(TextWriter textWriter, HtmlTableOptions options, string row, HtmlMatrixSummary summary)
+    internal void WriteRowSummaryCell(TextWriter textWriter, HtmlTableOptions options, string row, HtmlMatrixSummary? summary)
     {
         HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.With(textWriter, () =>
         {
-            var rowSum = summary.RowsSummary.GetValueOrDefault(row).ToString() ?? string.Empty;
+            var rowSum = summary?.RowsSummary?.GetValueOrDefault(row).ToString() ?? string.Empty;
             var attributes = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, options) } };
             HtmlBuilderFactory.A.Cell(textWriter, attributes, rowSum, isEncodable: false);
         });

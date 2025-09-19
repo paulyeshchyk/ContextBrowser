@@ -48,13 +48,8 @@ public class HtmlPageProducerIndex : HtmlPageProducer, IHtmlPageIndex
         }, cancellationToken);
     }
 
-    protected override IEnumerable<string> GetScripts()
+    protected override IEnumerable<string> GetAdditionalScripts()
     {
-        foreach (var script in base.GetScripts())
-        {
-            yield return script;
-        }
-
         yield return Resources.ScriptAutoShrinkEmbeddedTable;
         yield return Resources.ScriptAutoFontShrink;
     }
@@ -68,6 +63,6 @@ public class HtmlPageProducerIndex : HtmlPageProducer, IHtmlPageIndex
 
         var summary = _summaryBuilder.Build(matrix, options.Orientation);
 
-        _matrixWriter.Write(writer, matrix, summary, options);
+        _matrixWriter.Write(writer, matrix, null, options);
     }
 }

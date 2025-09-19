@@ -37,6 +37,9 @@ public abstract class HtmlPageProducer
                 foreach (var script in GetScripts())
                     HtmlBuilderFactory.Script.Cell(writer, innerHtml: script, isEncodable: false);
 
+                foreach (var script in GetAdditionalScripts())
+                    HtmlBuilderFactory.Script.Cell(writer, innerHtml: script, isEncodable: false);
+
                 HtmlBuilderFactory.Body.With(writer, () =>
                 {
                     HtmlBuilderFactory.H1.Cell(writer, innerHtml: Title);
@@ -46,7 +49,9 @@ public abstract class HtmlPageProducer
         });
     }
 
-    protected virtual IEnumerable<string> GetScripts()
+    protected abstract IEnumerable<string> GetAdditionalScripts();
+
+    protected IEnumerable<string> GetScripts()
     {
         yield return Resources.HtmlProducerContentStyleScript;
     }

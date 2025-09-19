@@ -7,5 +7,5 @@ namespace HtmlKit.Document;
 
 public interface IHtmlMatrixWriter
 {
-    void Write(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary summary, HtmlTableOptions options);
+    void Write(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions options);
 }
