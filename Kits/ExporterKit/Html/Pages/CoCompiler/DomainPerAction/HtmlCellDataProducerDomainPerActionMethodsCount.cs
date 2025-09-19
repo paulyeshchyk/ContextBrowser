@@ -8,12 +8,12 @@ using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
-public class HtmlCellDataProducer : IHtmlCellDataProducer<List<ContextInfo>>
+public class HtmlCellDataProducerrDomainPerActionMethodsList : IHtmlCellDataProducer<List<ContextInfo>, DomainPerActionTensor>
 {
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IHtmlContentInjector _contentInjector;
 
-    public HtmlCellDataProducer(IContextInfoDatasetProvider datasetProvider, IHtmlContentInjector contentInjector)
+    public HtmlCellDataProducerrDomainPerActionMethodsList(IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IHtmlContentInjector contentInjector)
     {
         _datasetProvider = datasetProvider;
         _contentInjector = contentInjector;
@@ -28,12 +28,12 @@ public class HtmlCellDataProducer : IHtmlCellDataProducer<List<ContextInfo>>
     }
 }
 
-public class HtmlCellDataProducerDomainPerAction : IHtmlCellDataProducer<string>
+public class HtmlCellDataProducerDomainPerActionMethodsCount : IHtmlCellDataProducer<string, DomainPerActionTensor>
 {
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IHtmlContentInjector _contentInjector;
 
-    public HtmlCellDataProducerDomainPerAction(IContextInfoDatasetProvider datasetProvider, IHtmlContentInjector contentInjector)
+    public HtmlCellDataProducerDomainPerActionMethodsCount(IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IHtmlContentInjector contentInjector)
     {
         _datasetProvider = datasetProvider;
         _contentInjector = contentInjector;

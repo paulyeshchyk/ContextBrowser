@@ -62,8 +62,9 @@ namespace HtmlKit.Document;
 /// <typeparam name="TKey">Тип ключа для ячейки матрицы. Должен иметь конструктор с двумя строковыми параметрами.</typeparam>
 //context: htmlmatrix, build
 public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
+    where TKey : notnull
 {
-    private readonly IHrefManager _hRefManager;
+    private readonly IHrefManager<TKey> _hRefManager;
     private readonly IHtmlFixedContentManager _htmlFixedContentManager;
     private readonly IHtmlDataCellBuilder<TKey> _dataCellBuilder;
     private readonly ITensorFactory<TKey> _keyFactory;
@@ -71,7 +72,7 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
 
     public HtmlMatrixWriter(
         IHtmlDataCellBuilder<TKey> dataCellBuilder,
-        IHrefManager hrefManager,
+        IHrefManager<TKey> hrefManager,
         ITensorFactory<TKey> keyFactory, 
         ITensorBuilder keyBuilder,
         IHtmlFixedContentManager htmlFixedContentManager)

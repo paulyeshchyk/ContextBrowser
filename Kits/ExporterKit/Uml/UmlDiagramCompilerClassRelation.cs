@@ -10,6 +10,7 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Uml;
 using LoggerKit;
+using TensorKit.Model;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
@@ -22,10 +23,10 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerClassRelation(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerClassRelation(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;

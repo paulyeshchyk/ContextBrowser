@@ -15,6 +15,7 @@ using HtmlKit.Builders.Core;
 using HtmlKit.Model;
 using HtmlKit.Page;
 using LoggerKit;
+using TensorKit.Model;
 using UmlKit.Infrastructure.Options;
 
 namespace HtmlKit.Page.Compiler;
@@ -23,10 +24,10 @@ namespace HtmlKit.Page.Compiler;
 public class HtmlPageCompilerDomainOnly : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlPageCompilerDomainOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
+    public HtmlPageCompilerDomainOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -40,7 +41,7 @@ public class HtmlPageCompilerDomainOnly : IHtmlPageCompiler
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
-        var registrations = new List<IHtmlTabRegistration<ContextKeyContainer>>
+        var registrations = new List<IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>>>
         {
             TabsheetFactory.DomainOnlyClassesTabsheetRegistration(exportOptions),
             TabsheetFactory.DomainOnlyMethodsTabsheetRegistration(),
@@ -49,11 +50,11 @@ public class HtmlPageCompilerDomainOnly : IHtmlPageCompiler
             TabsheetFactory.DomainOnlyMindmap(exportOptions),
         };
 
-        var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextKeyContainer>(registrations);
-        var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextKeyContainer>(exportOptions, tabsheetDataProvider);
+        var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextKeyContainer<DomainPerActionTensor>>(registrations);
+        var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextKeyContainer<DomainPerActionTensor>>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var builder = new HtmlPageWithTabsEntityListBuilder<ContextKeyContainer>(dataset, tabbedPageBuilder, (cellData) => $"composite_domain_{cellData.ContextKey.Domain}.html");
+        var builder = new HtmlPageWithTabsEntityListBuilder<ContextKeyContainer<DomainPerActionTensor>, DomainPerActionTensor>(dataset, tabbedPageBuilder, (cellData) => $"composite_domain_{cellData.ContextKey.Domain}.html");
         await builder.BuildAsync(cancellationToken);
     }
 }

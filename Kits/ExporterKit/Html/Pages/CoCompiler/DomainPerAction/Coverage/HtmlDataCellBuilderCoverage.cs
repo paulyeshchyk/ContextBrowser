@@ -10,17 +10,23 @@ using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
-public class HtmlDataCellBuilderCoverage : IHtmlDataCellBuilder<DomainPerActionTensor>
+public class HtmlDataCellBuilderCoverage<TKey> : IHtmlDataCellBuilder<TKey>
+    where TKey : notnull
 {
-    private readonly IHtmlCellDataProducer<string> _coverageDataProducer;
-    private readonly IHtmlCellDataProducer<List<ContextInfo>> _contextInfoListDataProducer;
-    private readonly IHrefManager _hRefManager;
-    private readonly IHtmlCellStyleBuilder _cellStyleBuilder;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IHtmlCellDataProducer<string, TKey> _coverageDataProducer;
+    private readonly IHtmlCellDataProducer<List<ContextInfo>, TKey> _contextInfoListDataProducer;
+    private readonly IHrefManager<TKey> _hRefManager;
+    private readonly IHtmlCellStyleBuilder<TKey> _cellStyleBuilder;
+    private readonly IContextInfoDatasetProvider<TKey> _datasetProvider;
 
     private readonly Dictionary<string, ContextInfo>? _indexData;
 
-    public HtmlDataCellBuilderCoverage(IHtmlCellDataProducer<string> coverageDataProducer, IHtmlCellDataProducer<List<ContextInfo>> contextInfoListDataProducer, IHrefManager hRefManager, IHtmlCellStyleBuilder cellStyleBuilder, IKeyIndexBuilder<ContextInfo> coverageIndexer, IContextInfoDatasetProvider datasetProvider)
+    public HtmlDataCellBuilderCoverage(
+        IHtmlCellDataProducer<string, TKey> coverageDataProducer, 
+        IHtmlCellDataProducer<List<ContextInfo>, TKey> contextInfoListDataProducer, 
+        IHrefManager<TKey> hRefManager, 
+        IHtmlCellStyleBuilder<TKey> cellStyleBuilder, 
+        IKeyIndexBuilder<ContextInfo> coverageIndexer, IContextInfoDatasetProvider<TKey> datasetProvider)
     {
         _coverageDataProducer = coverageDataProducer;
         _contextInfoListDataProducer = contextInfoListDataProducer;
@@ -32,7 +38,7 @@ public class HtmlDataCellBuilderCoverage : IHtmlDataCellBuilder<DomainPerActionT
         _indexData = coverageIndexer.GetIndexData();
     }
 
-    public void BuildDataCell(TextWriter textWriter, DomainPerActionTensor cell, HtmlTableOptions options)
+    public void BuildDataCell(TextWriter textWriter, TKey cell, HtmlTableOptions options)
     {
         var cellData = _coverageDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();
         var contextList = _contextInfoListDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();

@@ -6,7 +6,7 @@ using TensorKit.Model;
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public class ContextInfoDataset<TContext> : IContextInfoDataset<TContext>
+public class ContextInfoDatasetDomainPerAction<TContext> : IContextInfoDataset<TContext, DomainPerActionTensor>
     where TContext : IContextWithReferences<TContext>
 {
     public Dictionary<DomainPerActionTensor, List<TContext>> Data { get; } = new();

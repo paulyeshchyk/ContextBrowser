@@ -10,7 +10,7 @@ using TensorKit.Model;
 namespace ExporterKit.Uml;
 
 // context: ContextInfo, ContextInfoMatrix, build
-public class ContextInfoFillerDomainPerActionEmptyData : IContextInfoFiller
+public class ContextInfoFillerDomainPerActionEmptyData : IContextInfoFiller<DomainPerActionTensor>
 {
     private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
@@ -24,7 +24,7 @@ public class ContextInfoFillerDomainPerActionEmptyData : IContextInfoFiller
     public int Order { get; } = int.MaxValue;
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public void Fill(IContextInfoDataset<ContextInfo> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IDomainPerActionContextClassifier contextClassifier)
+    public void Fill(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IDomainPerActionContextClassifier contextClassifier)
     {
         if (!_matrixOptions.IncludeAllStandardActions)
             return;

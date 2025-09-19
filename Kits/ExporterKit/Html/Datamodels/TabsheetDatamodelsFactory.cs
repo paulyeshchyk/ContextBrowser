@@ -19,5 +19,5 @@ public interface IPumlEnbeddedInjectionDatamodel : IHtmlTabsheetDataModel
 
 public interface IMethodListDatamodel : IHtmlTabsheetDataModel
 {
-    IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto);
+    IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto);
 }

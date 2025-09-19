@@ -5,8 +5,8 @@ using ContextKit.Model;
 namespace ExporterKit.Uml;
 
 // context: ContextInfo, ContextInfoMatrix, build
-public interface IContextInfoDatasetBuilder
+public interface IContextInfoDatasetBuilder<TKey>
 {
     // context: ContextInfo, ContextInfoMatrix, build
-    IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList);
+    IContextInfoDataset<ContextInfo, TKey> Build(IEnumerable<ContextInfo> contextsList);
 }

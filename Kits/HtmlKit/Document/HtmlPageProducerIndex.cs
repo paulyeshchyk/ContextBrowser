@@ -63,6 +63,6 @@ public class HtmlPageProducerIndex : HtmlPageProducer, IHtmlPageIndex
 
         var summary = _summaryBuilder.Build(matrix, options.Orientation);
 
-        _matrixWriter.Write(writer, matrix, null, options);
+        _matrixWriter.Write(writer, matrix, summary, options);
     }
 }

@@ -66,10 +66,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> ActionOnlyClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> ActionOnlyClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<ActionOnlyClassesDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<ActionOnlyClassesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -83,10 +83,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> MethodsTabRegistration()
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> MethodsTabRegistration()
     {
         // Вкладка: Методы
-        return TabRegistration.For<ActionOnlyMethodListDataModel, ContextKeyContainer>(
+        return TabRegistration.For<ActionOnlyMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
@@ -106,10 +106,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> StatesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> StatesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
-        return TabRegistration.For<ActionOnlyStatesDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<ActionOnlyStatesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "StatesTab",
             caption: "Состояния",
             isActive: false,
@@ -123,10 +123,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> SequenceTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> SequenceTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Компоненты (PUML)
-        return TabRegistration.For<ActionOnlySequenceDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<ActionOnlySequenceDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "SequenceTab",
             caption: "Последовательности",
             isActive: false,
@@ -140,10 +140,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyMethodsTabRegistration()
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyMethodsTabRegistration()
     {
         // Вкладка: Методы
-        return TabRegistration.For<ActionPerDomainSummaryMethodListDataModel, ContextKeyContainer>(
+        return TabRegistration.For<ActionPerDomainSummaryMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
@@ -163,10 +163,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<DomainSummaryComponentsDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainSummaryComponentsDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -180,10 +180,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyMindmap(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyMindmap(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
-        return TabRegistration.For<DomainOnlyMindmapDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlyMindmapDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MindmapTab",
             caption: "Mindmap",
             isActive: false,
@@ -197,10 +197,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyStates(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyStates(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
-        return TabRegistration.For<DomainOnlyStatesDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlyStatesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "StatesTab",
             caption: "Состояния",
             isActive: false,
@@ -214,10 +214,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlySequence(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlySequence(ExportOptions exportOptions)
     {
         // Вкладка: Компоненты (PUML)
-        return TabRegistration.For<DomainOnlySequenceDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlySequenceDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "SequenceTab",
             caption: "Последовательности",
             isActive: false,
@@ -231,10 +231,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyMethodsTabsheetRegistration()
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyMethodsTabsheetRegistration()
     {
         // Вкладка: Методы
-        return TabRegistration.For<DomainOnlyMethodListDataModel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlyMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
@@ -254,10 +254,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyClassesTabsheetRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyClassesTabsheetRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<DomainOnlyClassesDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlyClassesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -271,10 +271,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> ActionPerDomainMethodsTabRegistration()
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> ActionPerDomainMethodsTabRegistration()
     {
         // Вкладка: Методы
-        return TabRegistration.For<ActionPerDomainMethodListDataModel, ContextKeyContainer>(
+        return TabRegistration.For<ActionPerDomainMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
@@ -294,10 +294,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> ActionPerDomainClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> ActionPerDomainClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<ActionSummaryDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<ActionSummaryDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -314,22 +314,22 @@ public static class TabsheetFactory
 
 internal class ActionPerDomainSummaryMethodListDataModel : IMethodListDatamodel
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
 internal class ActionPerDomainMethodListDataModel : IMethodListDatamodel
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
 internal class DomainOnlyMethodListDataModel : IMethodListDatamodel
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
 internal class ActionOnlyMethodListDataModel : IMethodListDatamodel
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
 internal class NamespaceOnlyDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel

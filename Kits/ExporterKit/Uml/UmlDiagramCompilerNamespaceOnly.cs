@@ -11,6 +11,7 @@ using ContextKit.Model;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml.Model;
 using LoggerKit;
+using TensorKit.Model;
 using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
@@ -23,10 +24,10 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -88,24 +89,24 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
         diagram.WriteToFile(fileName, writeOptons);
     }
 
-    private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo> contextInfoDataSet)
+    private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
         return(nameSpace) => contextInfoDataSet.GetAll()
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
             .Where(c => c.Namespace == nameSpace);
     }
 
-    private IEnumerable<string> GetNamespaces(IContextInfoDataset<ContextInfo> contextInfoDataSet)
+    private IEnumerable<string> GetNamespaces(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
         return contextInfoDataSet.GetAll().Select(c => c.Namespace).Distinct();
     }
 
-    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo> contextInfoDataSet)
+    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
         return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
-    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo> contextInfoDataSet)
+    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
         return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }

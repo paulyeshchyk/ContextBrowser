@@ -12,15 +12,17 @@ using HtmlKit.Builders.Page;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 using HtmlKit.Page;
+using TensorKit.Model;
 
 namespace ExporterKit.Html;
 
-public class HtmlPageWithTabsNamespaceEntityBuilder<DTO> : HtmlPageWithTabsBuilder<DTO>
-where DTO : NamespacenameContainer
+public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TKey> : HtmlPageWithTabsBuilder<DTO, TKey>
+    where DTO : NamespacenameContainer
+    where TKey : DomainPerActionTensor
 {
     private readonly Func<string, string> _onGetFileName;
 
-    public HtmlPageWithTabsNamespaceEntityBuilder(IContextInfoDataset<ContextInfo> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName)
+    public HtmlPageWithTabsNamespaceEntityBuilder(IContextInfoDataset<ContextInfo, TKey> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;

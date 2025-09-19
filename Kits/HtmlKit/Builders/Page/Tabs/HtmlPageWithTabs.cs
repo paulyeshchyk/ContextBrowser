@@ -19,12 +19,13 @@ using Microsoft.VisualBasic;
 namespace ExporterKit.Html;
 
 //context: build, html
-public abstract class HtmlPageWithTabsBuilder<DTO>
+public abstract class HtmlPageWithTabsBuilder<DTO, TKey>
+    where TKey : notnull
 {
-    protected readonly IContextInfoDataset<ContextInfo> _contextInfoDataset;
+    protected readonly IContextInfoDataset<ContextInfo, TKey> _contextInfoDataset;
     protected readonly HtmlTabbedPageBuilder<DTO> _tabbedPageBuilder;
 
-    protected HtmlPageWithTabsBuilder(IContextInfoDataset<ContextInfo> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder)
+    protected HtmlPageWithTabsBuilder(IContextInfoDataset<ContextInfo, TKey> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder)
     {
         _contextInfoDataset = contextInfoDataset;
         _tabbedPageBuilder = tabbedPageBuilder;

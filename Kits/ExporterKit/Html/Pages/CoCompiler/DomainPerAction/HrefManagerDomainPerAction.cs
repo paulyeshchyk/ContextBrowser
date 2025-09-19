@@ -6,7 +6,7 @@ using TensorKit.Model;
 
 namespace HtmlKit.Helpers;
 
-public class HrefManagerDomainPerAction : IHrefManager
+public class HrefManagerDomainPerAction : IHrefManager<DomainPerActionTensor>
 {
     private static readonly long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 

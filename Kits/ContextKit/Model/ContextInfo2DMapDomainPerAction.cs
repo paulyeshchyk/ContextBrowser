@@ -10,14 +10,14 @@ using TensorKit.Model;
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public class ContextInfoMapperDomainPerAction : DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>
+public class ContextInfo2DMapDomainPerAction : IContextInfo2DMap<ContextInfo, DomainPerActionTensor>
 {
     private Dictionary<DomainPerActionTensor, List<ContextInfo>>? _data;
     private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
     private readonly IAppOptionsStore _optionsStore;
 
-    public ContextInfoMapperDomainPerAction(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore optionsStore)
+    public ContextInfo2DMapDomainPerAction(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore optionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;

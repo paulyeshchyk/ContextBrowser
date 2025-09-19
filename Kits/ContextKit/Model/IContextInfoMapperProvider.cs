@@ -5,7 +5,8 @@ using TensorKit.Model;
 
 namespace ContextKit.Model;
 
-public interface IContextInfoMapperProvider
+public interface IContextInfoMapperProvider<TKey>
+    where TKey : notnull
 {
-    Task<DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken);
+    Task<IContextInfo2DMap<ContextInfo, TKey>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken);
 }

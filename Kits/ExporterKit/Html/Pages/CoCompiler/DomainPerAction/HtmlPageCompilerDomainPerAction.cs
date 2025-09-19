@@ -29,12 +29,12 @@ namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> _mapper;
+    private readonly IContextInfo2DMap<ContextInfo, DomainPerActionTensor> _mapper;
     private readonly IHtmlPageIndex _indexPageProducer;
     private readonly IAppOptionsStore _optionsStore;
     private readonly IHtmlMatrixGenerator _matrixGenerator;
 
-    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IHtmlPageIndex indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
+    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory<DomainPerActionTensor> contextInfoMapperContainer, IHtmlPageIndex indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
     {
         _logger = logger;
         _mapper = contextInfoMapperContainer.GetMapper(GlobalMapperKeys.DomainPerAction);

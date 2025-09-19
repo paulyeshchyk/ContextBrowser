@@ -5,9 +5,10 @@ using TensorKit.Model;
 
 namespace ExporterKit.Infrastucture;
 
-public interface IContextInfoMapperFactory
+public interface IContextInfoMapperFactory<TKey>
+    where TKey : notnull
 {
-    DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> GetMapper(MapperKeyBase type);
+    IContextInfo2DMap<ContextInfo, TKey> GetMapper(MapperKeyBase type);
 }
 
 public interface IContextInfoIndexerFactory

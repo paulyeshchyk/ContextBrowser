@@ -12,15 +12,17 @@ using HtmlKit.Builders.Page;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 using HtmlKit.Page;
+using TensorKit.Model;
 
 namespace ExporterKit.Html;
 
-public class HtmlPageWithTabsEntityListBuilder<DTO> : HtmlPageWithTabsBuilder<DTO>
-where DTO : ContextKeyContainer
+public class HtmlPageWithTabsEntityListBuilder<DTO, TKey> : HtmlPageWithTabsBuilder<DTO, TKey>
+    where DTO : ContextKeyContainer<TKey>
+    where TKey : DomainPerActionTensor
 {
     private readonly Func<DTO, string> _onGetFileName;
 
-    public HtmlPageWithTabsEntityListBuilder(IContextInfoDataset<ContextInfo> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<DTO, string> onGetFileName)
+    public HtmlPageWithTabsEntityListBuilder(IContextInfoDataset<ContextInfo, TKey> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<DTO, string> onGetFileName)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;
@@ -32,7 +34,7 @@ where DTO : ContextKeyContainer
         {
             foreach (var contextInfoItem in _contextInfoDataset)
             {
-                var cellData = new ContextKeyContainer
+                var cellData = new ContextKeyContainer<TKey>
                 (
                     contextInfoList: contextInfoItem.Value.Distinct(),
                     contextKey: contextInfoItem.Key);

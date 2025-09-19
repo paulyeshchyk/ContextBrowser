@@ -5,7 +5,8 @@ using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
-public interface IHtmlCellDataProducer<TData>
+public interface IHtmlCellDataProducer<TData, TKey>
+    where TData : notnull
 {
-    Task<TData> ProduceDataAsync(DomainPerActionTensor container, CancellationToken cancellationToken);
+    Task<TData> ProduceDataAsync(TKey container, CancellationToken cancellationToken);
 }

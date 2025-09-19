@@ -19,10 +19,10 @@ namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 // context: htmlmatrix, build
 public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
 {
-    private readonly DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> _mapper;
+    private readonly IContextInfo2DMap<ContextInfo, DomainPerActionTensor> _mapper;
     private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlMatrixGeneratorDomainPerAction(DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> mapper, IAppOptionsStore optionsStore)
+    public HtmlMatrixGeneratorDomainPerAction(IContextInfo2DMap<ContextInfo, DomainPerActionTensor> mapper, IAppOptionsStore optionsStore)
     {
         _mapper = mapper;
         _optionsStore = optionsStore;

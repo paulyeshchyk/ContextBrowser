@@ -4,9 +4,10 @@ using TensorKit.Model;
 
 namespace HtmlKit.Model;
 
-public class ContextKeyContainer : BaseKeyAndDataContainer<DomainPerActionTensor>
+public class ContextKeyContainer<TKey> : BaseKeyAndDataContainer<TKey>
+    where TKey : notnull
 {
-    public ContextKeyContainer(DomainPerActionTensor contextKey, IEnumerable<IContextInfo> contextInfoList) : base(contextKey, contextInfoList)
+    public ContextKeyContainer(TKey contextKey, IEnumerable<IContextInfo> contextInfoList) : base(contextKey, contextInfoList)
     {
     }
 }

@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 
 namespace ContextKit.Model;
 
-public interface IContextInfoDatasetProvider
+public interface IContextInfoDatasetProvider<TKey>
+    where TKey : notnull
 {
-    Task<IContextInfoDataset<ContextInfo>> GetDatasetAsync(CancellationToken cancellationToken);
+    Task<IContextInfoDataset<ContextInfo, TKey>> GetDatasetAsync(CancellationToken cancellationToken);
 }

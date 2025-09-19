@@ -12,13 +12,14 @@ namespace ContextKit.Model;
 /// </summary>
 
 // context: ContextInfo, ContextInfoMatrix, build
-public interface IContextInfoFiller
+public interface IContextInfoFiller<TKey>
+    where TKey : notnull
 {
     int Order { get; }
 
     // context: ContextInfo, ContextInfoMatrix, build
     void Fill(
-        IContextInfoDataset<ContextInfo> dataset,
+        IContextInfoDataset<ContextInfo, TKey> dataset,
         List<ContextInfo> elements,
         ExportMatrixOptions options,
         IDomainPerActionContextClassifier classifier);

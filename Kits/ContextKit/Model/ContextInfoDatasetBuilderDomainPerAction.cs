@@ -7,17 +7,18 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using LoggerKit;
+using TensorKit.Model;
 
 namespace ExporterKit.Uml;
 
 // context: ContextInfo, ContextInfoMatrix, build
-public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
+public class ContextInfoDatasetBuilderDomainPerAction : IContextInfoDatasetBuilder<DomainPerActionTensor>
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IEnumerable<IContextInfoFiller> _contextInfoFiller;
+    private readonly IEnumerable<IContextInfoFiller<DomainPerActionTensor>> _contextInfoFiller;
     private readonly IAppOptionsStore _optionsStore;
 
-    public ContextInfoDatasetBuilder(IAppLogger<AppLevel> logger, IEnumerable<IContextInfoFiller> contextInfoFiller, IAppOptionsStore optionsStore)
+    public ContextInfoDatasetBuilderDomainPerAction(IAppLogger<AppLevel> logger, IEnumerable<IContextInfoFiller<DomainPerActionTensor>> contextInfoFiller, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _contextInfoFiller = contextInfoFiller;
@@ -25,7 +26,7 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList)
+    public IContextInfoDataset<ContextInfo, DomainPerActionTensor> Build(IEnumerable<ContextInfo> contextsList)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
 
@@ -33,7 +34,7 @@ public class ContextInfoDatasetBuilder : IContextInfoDatasetBuilder
         var classifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
 
         var elements = contextsList.ToList();
-        var dataset = new ContextInfoDataset<ContextInfo>();
+        var dataset = new ContextInfoDatasetDomainPerAction<ContextInfo>();
 
         var orderedFillers = _contextInfoFiller.OrderBy(f => f.Order);
         foreach (var filler in orderedFillers)
