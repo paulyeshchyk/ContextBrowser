@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TensorKit.Model;
@@ -31,7 +32,7 @@ public abstract record TensorBase<TDataType> : ITensor<TDataType>
     }
 
     // Метод для получения всех измерений.
-    public TDataType[] GetDimensions() => _dimensions;
+    public IEnumerable<TDataType> Dimensions => _dimensions;
 
     public virtual bool Equals(TensorBase<TDataType>? other)
     {

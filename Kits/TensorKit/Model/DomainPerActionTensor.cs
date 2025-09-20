@@ -23,14 +23,14 @@ public record DomainPerActionTensor : TensorBase<string>, IDomainPerActionTensor
 
     public string Action
     {
-        get => this[0];
-        init => _dimensions[0] = value;
+        get => this[DomainPerActionDimensionType.Action];
+        init => _dimensions[DomainPerActionDimensionType.Action] = value;
     }
 
     public string Domain
     {
-        get => this[1];
-        init => _dimensions[1] = value;
+        get => this[DomainPerActionDimensionType.Domain];
+        init => _dimensions[DomainPerActionDimensionType.Domain] = value;
     }
 
     public DomainPerActionTensor(params string[] dimensions) : base(dimensions) { }

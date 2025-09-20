@@ -313,104 +313,111 @@ public static class TabsheetFactory
     }
 }
 
-internal class ActionPerDomainSummaryMethodListDataModel : IMethodListDatamodel
+internal abstract class PumlEmbeddedContentDatamodelDomainPerAction : PumlEmbeddedContentDatamodel<DomainPerActionTensor>
+{
+    protected override string GetPumlFileName(DomainPerActionTensor contextKey) => throw new NotImplementedException();
+
+    protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
+}
+
+internal class ActionPerDomainSummaryMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
     public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
-internal class ActionPerDomainMethodListDataModel : IMethodListDatamodel
+internal class ActionPerDomainMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
     public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
-internal class DomainOnlyMethodListDataModel : IMethodListDatamodel
+internal class DomainOnlyMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
     public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
-internal class ActionOnlyMethodListDataModel : IMethodListDatamodel
+internal class ActionOnlyMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
     public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
-internal class NamespaceOnlyDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class NamespaceOnlyDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => throw new NotImplementedException();
 
     protected override string GetPumlFileName(string contextKey) => $"namespace_only_{contextKey.AlphanumericOnly()}.puml";
 }
 
-internal class DomainSummaryComponentsDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainSummaryComponentsDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"class_{contextKey.Action}_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class DomainOnlyStatesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainOnlyStatesDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"state_domain_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class DomainOnlyMindmapDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainOnlyMindmapDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"mindmap_domain_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class DomainOnlySequenceDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainOnlySequenceDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"sequence_domain_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class DomainOnlyClassesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainOnlyClassesDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"class_domain_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ActionOnlyStatesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ActionOnlyStatesDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"state_action_{contextKey.Action}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ActionOnlySequenceDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ActionOnlySequenceDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"sequence_action_{contextKey.Action}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ActionOnlyClassesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ActionOnlyClassesDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"class_action_{contextKey.Action}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ActionSummaryDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ActionSummaryDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"class_{contextKey.Action}_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ClassOnlyDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ClassOnlyDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => throw new NotImplementedException();
 
     protected override string GetPumlFileName(string contextKey) => $"class_only_{contextKey.AlphanumericOnly()}.puml";
 }
 
-internal class MindmapDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class MindmapDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => throw new NotImplementedException();
 

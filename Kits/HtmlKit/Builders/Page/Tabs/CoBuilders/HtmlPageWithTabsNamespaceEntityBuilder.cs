@@ -13,14 +13,12 @@ using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 using HtmlKit.Page;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html;
 
-#warning remove domainperaction
 public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TKey> : HtmlPageWithTabsBuilder<DTO, TKey>
     where DTO : NamespacenameContainer
-    where TKey : DomainPerActionTensor
+    where TKey : TensorBase<string>
 {
     private readonly Func<string, string> _onGetFileName;
 

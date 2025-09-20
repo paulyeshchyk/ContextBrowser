@@ -12,7 +12,6 @@ using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
 
-#warning remove domainperaction
 public class HtmlCellColorCalculatorCoverageDomainPerAction : IHtmlCellColorCalculator<DomainPerActionTensor>
 {
     private readonly ICoverageValueExtractor _coverageValueExtractor;

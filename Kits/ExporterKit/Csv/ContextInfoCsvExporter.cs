@@ -8,7 +8,6 @@ using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Csv;
 
-#warning remove domainperaction
 public static class ContextInfoCsvExporter
 {
     //context: build, csv, matrix

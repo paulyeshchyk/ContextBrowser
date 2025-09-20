@@ -7,19 +7,19 @@ using HtmlKit.Builders.Core;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
 namespace ContextBrowser.Samples.HtmlPages;
 
-#warning remove domainperaction
-public interface IPumlEnbeddedInjectionDatamodel : IHtmlTabsheetDataModel
+public interface IPumlEnbeddedInjectionDatamodel<TKey> : IHtmlTabsheetDataModel
+    where TKey : TensorBase<string>
 {
-    HtmlBuilder GetPumlBuilder(DomainPerActionTensor contextKey, ExportOptions exportOptions);
+    HtmlBuilder GetPumlBuilder(TKey contextKey, ExportOptions exportOptions);
 
     HtmlBuilder GetPumlBuilder(string contextKey, ExportOptions exportOptions);
 }
 
-public interface IMethodListDatamodel : IHtmlTabsheetDataModel
+public interface IMethodListDatamodel<TKey> : IHtmlTabsheetDataModel
+    where TKey : TensorBase<string>
 {
-    IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto);
+    IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<TKey> dto);
 }

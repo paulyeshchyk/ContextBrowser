@@ -12,13 +12,13 @@ using HtmlKit.Builders.Page;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 using HtmlKit.Page;
-using TensorKit.Model.DomainPerAction;
+using TensorKit.Model;
 
 namespace ExporterKit.Html;
 
 public class HtmlPageWithTabsEntityListBuilder<DTO, TKey> : HtmlPageWithTabsBuilder<DTO, TKey>
     where DTO : ContextKeyContainer<TKey>
-    where TKey : DomainPerActionTensor
+    where TKey : TensorBase<string>
 {
     private readonly Func<DTO, string> _onGetFileName;
 
@@ -40,7 +40,7 @@ public class HtmlPageWithTabsEntityListBuilder<DTO, TKey> : HtmlPageWithTabsBuil
                     contextKey: contextInfoItem.Key);
 
                 var filename = _onGetFileName((DTO)cellData);
-                var title = $" {cellData.ContextKey.Action}  ->  {cellData.ContextKey.Domain} ";
+                var title = string.Join(" -> ", cellData.ContextKey.Dimensions);
 
                 _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
             }
