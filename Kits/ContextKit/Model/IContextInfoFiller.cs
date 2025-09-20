@@ -12,11 +12,11 @@ namespace ContextKit.Model;
 /// Интерфейс для всех "заполнителей" (fillers).
 /// </summary>
 // context: ContextInfo, ContextInfoMatrix, build
-public interface IContextInfoFiller<TKey>
-    where TKey : notnull
+public interface IContextInfoFiller<TTensor>
+    where TTensor : notnull
 {
     int Order { get; }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    void Fill(IContextInfoDataset<ContextInfo, TKey> dataset, List<ContextInfo> elements, ExportMatrixOptions options);
+    void Fill(IContextInfoDataset<ContextInfo, TTensor> dataset, List<ContextInfo> elements, ExportMatrixOptions options);
 }

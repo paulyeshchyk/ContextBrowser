@@ -8,19 +8,19 @@ using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
-public class HtmlCellDataProducerListOfItems<TKey> : IHtmlCellDataProducer<List<ContextInfo>, TKey>
-    where TKey : notnull
+public class HtmlCellDataProducerListOfItems<TTensor> : IHtmlCellDataProducer<List<ContextInfo>, TTensor>
+    where TTensor : notnull
 {
-    private readonly IContextInfoDatasetProvider<TKey> _datasetProvider;
-    private readonly IHtmlContentInjector<TKey> _contentInjector;
+    private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
+    private readonly IHtmlContentInjector<TTensor> _contentInjector;
 
-    public HtmlCellDataProducerListOfItems(IContextInfoDatasetProvider<TKey> datasetProvider, IHtmlContentInjector<TKey> contentInjector)
+    public HtmlCellDataProducerListOfItems(IContextInfoDatasetProvider<TTensor> datasetProvider, IHtmlContentInjector<TTensor> contentInjector)
     {
         _datasetProvider = datasetProvider;
         _contentInjector = contentInjector;
     }
 
-    public async Task<List<ContextInfo>> ProduceDataAsync(TKey container, CancellationToken cancellationToken)
+    public async Task<List<ContextInfo>> ProduceDataAsync(TTensor container, CancellationToken cancellationToken)
     {
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
@@ -29,19 +29,19 @@ public class HtmlCellDataProducerListOfItems<TKey> : IHtmlCellDataProducer<List<
     }
 }
 
-public class HtmlCellDataProducerDomainPerActionMethodsCount<TKey> : IHtmlCellDataProducer<string, TKey>
-    where TKey : notnull
+public class HtmlCellDataProducerDomainPerActionMethodsCount<TTensor> : IHtmlCellDataProducer<string, TTensor>
+    where TTensor : notnull
 {
-    private readonly IContextInfoDatasetProvider<TKey> _datasetProvider;
-    private readonly IHtmlContentInjector<TKey> _contentInjector;
+    private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
+    private readonly IHtmlContentInjector<TTensor> _contentInjector;
 
-    public HtmlCellDataProducerDomainPerActionMethodsCount(IContextInfoDatasetProvider<TKey> datasetProvider, IHtmlContentInjector<TKey> contentInjector)
+    public HtmlCellDataProducerDomainPerActionMethodsCount(IContextInfoDatasetProvider<TTensor> datasetProvider, IHtmlContentInjector<TTensor> contentInjector)
     {
         _datasetProvider = datasetProvider;
         _contentInjector = contentInjector;
     }
 
-    public async Task<string> ProduceDataAsync(TKey container, CancellationToken cancellationToken)
+    public async Task<string> ProduceDataAsync(TTensor container, CancellationToken cancellationToken)
     {
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 

@@ -8,18 +8,19 @@ using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using ContextKit.Model.Collector;
 using LoggerKit;
+using TensorKit.Model;
 
 namespace ExporterKit.Uml;
 
 // context: ContextInfo, ContextInfoMatrix, build
-public class ContextInfoDatasetBuilder<TKey> : IContextInfoDatasetBuilder<TKey>
-    where TKey : notnull
+public class ContextInfoDatasetBuilder<TTensor> : IContextInfoDatasetBuilder<TTensor>
+    where TTensor : notnull
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IEnumerable<IContextInfoFiller<TKey>> _contextInfoFiller;
+    private readonly IEnumerable<IContextInfoFiller<TTensor>> _contextInfoFiller;
     private readonly IAppOptionsStore _optionsStore;
 
-    public ContextInfoDatasetBuilder(IAppLogger<AppLevel> logger, IEnumerable<IContextInfoFiller<TKey>> contextInfoFiller, IAppOptionsStore optionsStore)
+    public ContextInfoDatasetBuilder(IAppLogger<AppLevel> logger, IEnumerable<IContextInfoFiller<TTensor>> contextInfoFiller, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _contextInfoFiller = contextInfoFiller;
@@ -27,14 +28,14 @@ public class ContextInfoDatasetBuilder<TKey> : IContextInfoDatasetBuilder<TKey>
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public IContextInfoDataset<ContextInfo, TKey> Build(IEnumerable<ContextInfo> contextsList)
+    public IContextInfoDataset<ContextInfo, TTensor> Build(IEnumerable<ContextInfo> contextsList)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
 
         var exportOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
 
         var elements = contextsList.ToList();
-        var dataset = new ContextInfoDataset<ContextInfo, TKey>();
+        var dataset = new ContextInfoDataset<ContextInfo, TTensor>();
 
         var orderedFillers = _contextInfoFiller.OrderBy(f => f.Order);
         foreach (var filler in orderedFillers)

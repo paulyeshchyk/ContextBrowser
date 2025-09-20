@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
@@ -28,15 +29,15 @@ using TensorKit.Model.DomainPerAction;
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // context: html, build
-public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
+public class HtmlPageCompilerIndexDomainPerAction : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfo2DMap<ContextInfo, DomainPerActionTensor> _mapper;
-    private readonly IHtmlPageIndex _indexPageProducer;
+    private readonly IHtmlPageIndexProducer<DomainPerActionTensor> _indexPageProducer;
     private readonly IAppOptionsStore _optionsStore;
     private readonly IHtmlMatrixGenerator _matrixGenerator;
 
-    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory<DomainPerActionTensor> contextInfoMapperContainer, IHtmlPageIndex indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
+    public HtmlPageCompilerIndexDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory<DomainPerActionTensor> contextInfoMapperContainer, IHtmlPageIndexProducer<DomainPerActionTensor> indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
     {
         _logger = logger;
         _mapper = contextInfoMapperContainer.GetMapper(GlobalMapperKeys.DomainPerAction);

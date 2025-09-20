@@ -12,8 +12,8 @@ using TensorKit.Model;
 
 namespace HtmlKit.Page.Compiler;
 
-public abstract class PumlEmbeddedContentDatamodel<TKey>
-    where TKey : TensorBase<string>
+public abstract class PumlEmbeddedContentDatamodel<TTensor>
+    where TTensor : notnull
 {
     static readonly string SLocalHttpServerHost = "http://localhost:5500";
     static readonly string SLocalJavaServerHost = "http://localhost:8080";
@@ -28,11 +28,11 @@ public abstract class PumlEmbeddedContentDatamodel<TKey>
 
     protected string ContentLocationRemotePath { get; set; } = SLocalHttpServerHost;
 
-    protected abstract string GetPumlFileName(TKey contextKey);
+    protected abstract string GetPumlFileName(TTensor contextKey);
 
     protected abstract string GetPumlFileName(string contextKey);
 
-    public HtmlBuilder GetPumlBuilder(TKey contextKey, ExportOptions exportOptions)
+    public HtmlBuilder GetPumlBuilder(TTensor contextKey, ExportOptions exportOptions)
     {
         if (IsEmbedded)
         {

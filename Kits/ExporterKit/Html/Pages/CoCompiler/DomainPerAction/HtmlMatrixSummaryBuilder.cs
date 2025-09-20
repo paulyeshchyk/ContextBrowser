@@ -15,15 +15,15 @@ using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
-public class HtmlMatrixSummaryBuilder<TKey> : IHtmlMatrixSummaryBuilder
-    where TKey : notnull
+public class HtmlMatrixSummaryBuilder<TTensor> : IHtmlMatrixSummaryBuilder
+    where TTensor : notnull
 {
-    private readonly IContextInfoDatasetProvider<TKey> _datasetProvider;
-    private readonly IContextInfoDataset<ContextInfo, TKey> _matrix;
-    private readonly ITensorFactory<TKey> _keyFactory;
+    private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
+    private readonly IContextInfoDataset<ContextInfo, TTensor> _matrix;
+    private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
 
-    public HtmlMatrixSummaryBuilder(IContextInfoDatasetProvider<TKey> datasetProvider, ITensorFactory<TKey> keyFactory, ITensorBuilder keyBuilder)
+    public HtmlMatrixSummaryBuilder(IContextInfoDatasetProvider<TTensor> datasetProvider, ITensorFactory<TTensor> keyFactory, ITensorBuilder keyBuilder)
     {
         _datasetProvider = datasetProvider;
         _matrix = datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();

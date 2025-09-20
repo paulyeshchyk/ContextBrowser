@@ -10,23 +10,23 @@ using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
-public class HtmlDataCellBuilderCoverage<TKey> : IHtmlDataCellBuilder<TKey>
-    where TKey : notnull
+public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor>
+    where TTensor : notnull
 {
-    private readonly IHtmlCellDataProducer<string, TKey> _coverageDataProducer;
-    private readonly IHtmlCellDataProducer<List<ContextInfo>, TKey> _contextInfoListDataProducer;
-    private readonly IHrefManager<TKey> _hRefManager;
-    private readonly IHtmlCellStyleBuilder<TKey> _cellStyleBuilder;
-    private readonly IContextInfoDatasetProvider<TKey> _datasetProvider;
+    private readonly IHtmlCellDataProducer<string, TTensor> _coverageDataProducer;
+    private readonly IHtmlCellDataProducer<List<ContextInfo>, TTensor> _contextInfoListDataProducer;
+    private readonly IHrefManager<TTensor> _hRefManager;
+    private readonly IHtmlCellStyleBuilder<TTensor> _cellStyleBuilder;
+    private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
 
     private readonly Dictionary<string, ContextInfo>? _indexData;
 
     public HtmlDataCellBuilderCoverage(
-        IHtmlCellDataProducer<string, TKey> coverageDataProducer, 
-        IHtmlCellDataProducer<List<ContextInfo>, TKey> contextInfoListDataProducer, 
-        IHrefManager<TKey> hRefManager, 
-        IHtmlCellStyleBuilder<TKey> cellStyleBuilder, 
-        IKeyIndexBuilder<ContextInfo> coverageIndexer, IContextInfoDatasetProvider<TKey> datasetProvider)
+        IHtmlCellDataProducer<string, TTensor> coverageDataProducer, 
+        IHtmlCellDataProducer<List<ContextInfo>, TTensor> contextInfoListDataProducer, 
+        IHrefManager<TTensor> hRefManager, 
+        IHtmlCellStyleBuilder<TTensor> cellStyleBuilder, 
+        IKeyIndexBuilder<ContextInfo> coverageIndexer, IContextInfoDatasetProvider<TTensor> datasetProvider)
     {
         _coverageDataProducer = coverageDataProducer;
         _contextInfoListDataProducer = contextInfoListDataProducer;
@@ -38,7 +38,7 @@ public class HtmlDataCellBuilderCoverage<TKey> : IHtmlDataCellBuilder<TKey>
         _indexData = coverageIndexer.GetIndexData();
     }
 
-    public void BuildDataCell(TextWriter textWriter, TKey cell, HtmlTableOptions options)
+    public void BuildDataCell(TextWriter textWriter, TTensor cell, HtmlTableOptions options)
     {
         var cellData = _coverageDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();
         var contextList = _contextInfoListDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();

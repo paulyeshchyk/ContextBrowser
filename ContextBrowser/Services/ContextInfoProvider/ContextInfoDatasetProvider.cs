@@ -7,25 +7,25 @@ using ContextKit.Model;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
-public class ContextInfoDatasetProvider<TKey> : BaseContextInfoProvider, IContextInfoDatasetProvider<TKey>
-    where TKey : notnull
+public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, IContextInfoDatasetProvider<TTensor>
+    where TTensor : notnull
 {
-    private readonly IContextInfoDatasetBuilder<TKey> _datasetBuilder;
+    private readonly IContextInfoDatasetBuilder<TTensor> _datasetBuilder;
 
-    private IContextInfoDataset<ContextInfo, TKey>? _dataset;
+    private IContextInfoDataset<ContextInfo, TTensor>? _dataset;
 
     private readonly object _lock = new object();
 
     public ContextInfoDatasetProvider(
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
-        IContextInfoDatasetBuilder<TKey> datasetBuilder)
+        IContextInfoDatasetBuilder<TTensor> datasetBuilder)
         : base(parsingOrchestrant)
     {
         _datasetBuilder = datasetBuilder;
     }
 
-    public async Task<IContextInfoDataset<ContextInfo, TKey>> GetDatasetAsync(CancellationToken cancellationToken)
+    public async Task<IContextInfoDataset<ContextInfo, TTensor>> GetDatasetAsync(CancellationToken cancellationToken)
     {
         if (_dataset == null)
         {
@@ -35,7 +35,7 @@ public class ContextInfoDatasetProvider<TKey> : BaseContextInfoProvider, IContex
     }
 
     // Приватный метод для однократной сборки датасета.
-    private async Task BuildDatasetAsync(CancellationToken cancellationToken)
+    internal async Task BuildDatasetAsync(CancellationToken cancellationToken)
     {
         lock (_lock)
         {

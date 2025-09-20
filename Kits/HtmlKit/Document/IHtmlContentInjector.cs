@@ -7,8 +7,8 @@ using TensorKit.Model;
 
 namespace HtmlKit.Writer;
 
-public interface IHtmlContentInjector<TKey>
-    where TKey : notnull
+public interface IHtmlContentInjector<TTensor>
+    where TTensor : notnull
 {
-    string Inject(TKey container, int cnt);
+    string Inject(TTensor container, int cnt);
 }

@@ -6,12 +6,12 @@ using ContextBrowserKit.Options.Export;
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, build
-public interface IContextInfoMap<TContext, TKey>
+public interface IContextInfoMap<TContext, TTensor>
     where TContext : IContextWithReferences<TContext>
-    where TKey : notnull
+    where TTensor : notnull
 {
     // context: ContextInfoMatrix, build
     Task BuildAsync(IEnumerable<TContext> contextsList, CancellationToken cancellationToken);
 
-    Dictionary<TKey, List<TContext>>? GetMapData();
+    Dictionary<TTensor, List<TContext>>? GetMapData();
 }

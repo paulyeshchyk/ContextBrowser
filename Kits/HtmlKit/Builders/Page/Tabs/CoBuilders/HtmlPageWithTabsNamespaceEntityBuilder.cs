@@ -16,13 +16,13 @@ using TensorKit.Model;
 
 namespace ExporterKit.Html;
 
-public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TKey> : HtmlPageWithTabsBuilder<DTO, TKey>
+public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TTensor> : HtmlPageWithTabsBuilder<DTO, TTensor>
     where DTO : NamespacenameContainer
-    where TKey : TensorBase<string>
+    where TTensor : notnull
 {
     private readonly Func<string, string> _onGetFileName;
 
-    public HtmlPageWithTabsNamespaceEntityBuilder(IContextInfoDataset<ContextInfo, TKey> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName)
+    public HtmlPageWithTabsNamespaceEntityBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;

@@ -37,7 +37,7 @@ public abstract class BaseContextInfoProvider
             }
         }
 
-        var contextsList = await _parsingOrchestrant.GetParsedContextsAsync(cancellationToken);
+        var contextsList = await _parsingOrchestrant.GetOrchestratedContextsAsync(cancellationToken);
 
         lock (_lock)
         {

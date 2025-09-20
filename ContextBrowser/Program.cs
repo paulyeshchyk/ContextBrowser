@@ -172,7 +172,7 @@ public static class Program
 
         //
 
-        hab.Services.AddTransient<IHtmlMatrixWriter, HtmlMatrixWriter<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IHtmlMatrixWriter<DomainPerActionTensor>, HtmlMatrixWriter<DomainPerActionTensor>>();
 
         //
 
@@ -181,10 +181,10 @@ public static class Program
         hab.Services.AddScoped<IHtmlCellStyleBuilder<DomainPerActionTensor>, HtmlCellStyleBuilder<DomainPerActionTensor>>();
 
         // Регистрация IHtmlPageMatrix (HtmlPageProducerMatrix) как транзитного сервиса.
-        hab.Services.AddTransient<IHtmlPageIndex, HtmlPageProducerIndex>();
+        hab.Services.AddTransient<IHtmlPageIndexProducer<DomainPerActionTensor>, HtmlPageProducerIndex<DomainPerActionTensor>>();
 
         // PageCompilers
-        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerDomainPerAction>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerIndexDomainPerAction>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerNamespaceOnly>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerClassOnly>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerActionPerDomain>();
@@ -245,17 +245,17 @@ public static class Program
     }
 }
 
-public class ContextInfoMapperFactory<TKey> : IContextInfoMapperFactory<TKey>
-    where TKey : notnull
+public class ContextInfoMapperFactory<TTensor> : IContextInfoMapperFactory<TTensor>
+    where TTensor : notnull
 {
-    private readonly IDictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, TKey>> _mappers;
+    private readonly IDictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, TTensor>> _mappers;
 
-    public ContextInfoMapperFactory(IDictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, TKey>> mappers)
+    public ContextInfoMapperFactory(IDictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, TTensor>> mappers)
     {
         _mappers = mappers;
     }
 
-    public IContextInfo2DMap<ContextInfo, TKey> GetMapper(MapperKeyBase type)
+    public IContextInfo2DMap<ContextInfo, TTensor> GetMapper(MapperKeyBase type)
     {
         if (_mappers.TryGetValue(type, out var mapper))
         {

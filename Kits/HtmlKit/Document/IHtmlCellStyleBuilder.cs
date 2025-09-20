@@ -4,8 +4,8 @@ using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
-public interface IHtmlCellStyleBuilder<TKey>
-    where TKey : notnull
+public interface IHtmlCellStyleBuilder<TTensor>
+    where TTensor : notnull
 {
     /// <summary>
     /// Создает строку стиля на основе данных о ячейке.
@@ -14,5 +14,5 @@ public interface IHtmlCellStyleBuilder<TKey>
     /// <param name="stInfo">Список информации о контексте.</param>
     /// <param name="index">Индекс для быстрого поиска.</param>
     /// <returns>Строка стиля HTML или null.</returns>
-    string? BuildCellStyle(TKey cell, IEnumerable<ContextInfo>? stInfo, Dictionary<string, ContextInfo>? index);
+    string? BuildCellStyle(TTensor cell, IEnumerable<ContextInfo>? stInfo, Dictionary<string, ContextInfo>? index);
 }

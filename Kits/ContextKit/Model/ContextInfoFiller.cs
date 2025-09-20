@@ -11,10 +11,10 @@ using TensorKit.Model;
 namespace ExporterKit.Uml;
 
 // context: ContextInfo, ContextInfoMatrix, build
-public class ContextInfoFiller<TKey> : IContextInfoFiller<TKey>
-    where TKey : notnull
+public class ContextInfoFiller<TTensor> : IContextInfoFiller<TTensor>
+    where TTensor : notnull
 {
-    private readonly ITensorFactory<TKey> _keyFactory;
+    private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
     private readonly IWordRoleClassifier _wordRoleClassifier;
     private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
@@ -22,7 +22,7 @@ public class ContextInfoFiller<TKey> : IContextInfoFiller<TKey>
 
     public int Order { get; } = int.MinValue;
 
-    public ContextInfoFiller(ITensorFactory<TKey> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
+    public ContextInfoFiller(ITensorFactory<TTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
@@ -32,7 +32,7 @@ public class ContextInfoFiller<TKey> : IContextInfoFiller<TKey>
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public void Fill(IContextInfoDataset<ContextInfo, TKey> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions)
+    public void Fill(IContextInfoDataset<ContextInfo, TTensor> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions)
     {
         bool includeUnclassified = _matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
 

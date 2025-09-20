@@ -3,9 +3,9 @@
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public interface IContextInfo2DMap<TContext, TKey> : IContextInfoMap<TContext, TKey>
+public interface IContextInfo2DMap<TContext, TTensor> : IContextInfoMap<TContext, TTensor>
     where TContext : IContextWithReferences<TContext>
-    where TKey : notnull
+    where TTensor : notnull
 {
     // context: ContextInfoMatrix, read
     IEnumerable<string> GetRows();

@@ -6,16 +6,16 @@ using TensorKit.Model;
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public class ContextInfoDataset<TContext, TKey> : IContextInfoDataset<TContext, TKey>
+public class ContextInfoDataset<TContext, TTensor> : IContextInfoDataset<TContext, TTensor>
     where TContext : IContextWithReferences<TContext>
-    where TKey : notnull
+    where TTensor : notnull
 {
-    public Dictionary<TKey, List<TContext>> Data { get; } = new();
+    public Dictionary<TTensor, List<TContext>> Data { get; } = new();
 
     public IEnumerable<TContext> GetAll() => Data.SelectMany(pair => pair.Value);
 
     // context: ContextInfoMatrix, update
-    public void Add(TContext? item, TKey toCell)
+    public void Add(TContext? item, TTensor toCell)
     {
         if (!Data.ContainsKey(toCell))
             Data[toCell] = new List<TContext>();
@@ -26,7 +26,7 @@ public class ContextInfoDataset<TContext, TKey> : IContextInfoDataset<TContext, 
     }
 
     // context: ContextInfoMatrix, read
-    public bool TryGetValue(TKey key, out List<TContext> value)
+    public bool TryGetValue(TTensor key, out List<TContext> value)
     {
         var extracted = Data.TryGetValue(key, out var theValue);
         value = extracted
@@ -36,7 +36,7 @@ public class ContextInfoDataset<TContext, TKey> : IContextInfoDataset<TContext, 
     }
 
     // context: ContextInfoMatrix, read
-    public IEnumerator<KeyValuePair<TKey, List<TContext>>> GetEnumerator()
+    public IEnumerator<KeyValuePair<TTensor, List<TContext>>> GetEnumerator()
     {
         foreach (var entry in Data)
         {

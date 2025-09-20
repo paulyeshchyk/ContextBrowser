@@ -11,16 +11,16 @@ using TensorKit.Model;
 namespace ExporterKit.Uml;
 
 // context: ContextInfo, ContextInfoMatrix, build
-public class ContextInfoFillerEmptyData<TKey> : IContextInfoFiller<TKey>
-    where TKey : notnull
+public class ContextInfoFillerEmptyData<TTensor> : IContextInfoFiller<TTensor>
+    where TTensor : notnull
 {
-    private readonly ITensorFactory<TKey> _keyFactory;
+    private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
     private readonly IWordRoleClassifier _wordRoleClassifier;
     private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
     private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
 
-    public ContextInfoFillerEmptyData(ITensorFactory<TKey> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
+    public ContextInfoFillerEmptyData(ITensorFactory<TTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
@@ -32,7 +32,7 @@ public class ContextInfoFillerEmptyData<TKey> : IContextInfoFiller<TKey>
     public int Order { get; } = int.MaxValue;
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public void Fill(IContextInfoDataset<ContextInfo, TKey> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions)
+    public void Fill(IContextInfoDataset<ContextInfo, TTensor> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions)
     {
         if (!_matrixOptions.IncludeAllStandardActions)
             return;

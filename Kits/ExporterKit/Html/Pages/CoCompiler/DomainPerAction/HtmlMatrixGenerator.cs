@@ -18,13 +18,13 @@ using TensorKit.Model;
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // context: htmlmatrix, build
-public class HtmlMatrixGenerator<TKey> : IHtmlMatrixGenerator
-    where TKey : notnull
+public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
+    where TTensor : notnull
 {
-    private readonly IContextInfo2DMap<ContextInfo, TKey> _mapper;
+    private readonly IContextInfo2DMap<ContextInfo, TTensor> _mapper;
     private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlMatrixGenerator(IContextInfo2DMap<ContextInfo, TKey> mapper, IAppOptionsStore optionsStore)
+    public HtmlMatrixGenerator(IContextInfo2DMap<ContextInfo, TTensor> mapper, IAppOptionsStore optionsStore)
     {
         _mapper = mapper;
         _optionsStore = optionsStore;

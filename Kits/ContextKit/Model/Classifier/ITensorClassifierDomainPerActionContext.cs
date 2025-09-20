@@ -53,7 +53,7 @@ public record DomainPerActionContextTensorClassifier : ITensorClassifierDomainPe
             return dimensionType switch
             {
                 DomainPerActionDimensionType.Action => string.IsNullOrEmpty(ctx.Action),
-                DomainPerActionDimensionType.Domain => ctx.Domains.Count() == 0,
+                DomainPerActionDimensionType.Domain => ctx.Domains.Count == 0,
                 _ => false
             };
         }

@@ -9,21 +9,21 @@ using ExporterKit.Infrastucture;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
-public class ContextInfoMappingProvider<TKey> : BaseContextInfoProvider, IContextInfoMapperProvider<TKey>
-    where TKey : notnull
+public class ContextInfoMappingProvider<TTensor> : BaseContextInfoProvider, IContextInfoMapperProvider<TTensor>
+    where TTensor : notnull
 {
-    private readonly IContextInfoMapperFactory<TKey> _mapperFactory;
+    private readonly IContextInfoMapperFactory<TTensor> _mapperFactory;
 
-    private readonly Dictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, TKey>> _mappers = new();
+    private readonly Dictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, TTensor>> _mappers = new();
 
     private readonly object _lock = new();
 
-    public ContextInfoMappingProvider(IParsingOrchestrator parsingOrchestrant, IContextInfoMapperFactory<TKey> mapperFactory) : base(parsingOrchestrant)
+    public ContextInfoMappingProvider(IParsingOrchestrator parsingOrchestrant, IContextInfoMapperFactory<TTensor> mapperFactory) : base(parsingOrchestrant)
     {
         _mapperFactory = mapperFactory;
     }
 
-    public async Task<IContextInfo2DMap<ContextInfo, TKey>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
+    public async Task<IContextInfo2DMap<ContextInfo, TTensor>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)
         {

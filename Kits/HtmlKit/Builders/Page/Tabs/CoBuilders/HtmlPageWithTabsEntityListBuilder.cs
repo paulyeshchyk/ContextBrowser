@@ -16,13 +16,13 @@ using TensorKit.Model;
 
 namespace ExporterKit.Html;
 
-public class HtmlPageWithTabsEntityListBuilder<DTO, TKey> : HtmlPageWithTabsBuilder<DTO, TKey>
-    where DTO : ContextKeyContainer<TKey>
-    where TKey : TensorBase<string>
+public class HtmlPageWithTabsEntityListBuilder<DTO, TTensor> : HtmlPageWithTabsBuilder<DTO, TTensor>
+    where DTO : ContextKeyContainer<TTensor>
+    where TTensor : ITensor<string>
 {
     private readonly Func<DTO, string> _onGetFileName;
 
-    public HtmlPageWithTabsEntityListBuilder(IContextInfoDataset<ContextInfo, TKey> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<DTO, string> onGetFileName)
+    public HtmlPageWithTabsEntityListBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<DTO, string> onGetFileName)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;
@@ -34,7 +34,7 @@ public class HtmlPageWithTabsEntityListBuilder<DTO, TKey> : HtmlPageWithTabsBuil
         {
             foreach (var contextInfoItem in _contextInfoDataset)
             {
-                var cellData = new ContextKeyContainer<TKey>
+                var cellData = new ContextKeyContainer<TTensor>
                 (
                     contextInfoList: contextInfoItem.Value.Distinct(),
                     contextKey: contextInfoItem.Key);

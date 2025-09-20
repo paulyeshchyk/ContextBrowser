@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace ContextBrowserKit;
 
-public class LRUCache<TKey, TValue>
-    where TKey : notnull
+public class LRUCache<TMap, TValue>
+    where TMap : notnull
 {
     private readonly int _capacity;
-    private readonly Dictionary<TKey, LinkedListNode<(TKey Key, TValue Value)>> _map;
-    private readonly LinkedList<(TKey Key, TValue Value)> _order;
+    private readonly Dictionary<TMap, LinkedListNode<(TMap Key, TValue Value)>> _map;
+    private readonly LinkedList<(TMap Key, TValue Value)> _order;
     private readonly object _sync = new();
 
     public LRUCache(int capacity)
@@ -18,8 +18,8 @@ public class LRUCache<TKey, TValue>
             throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be non-negative.");
 
         _capacity = capacity;
-        _map = new Dictionary<TKey, LinkedListNode<(TKey, TValue)>>();
-        _order = new LinkedList<(TKey, TValue)>();
+        _map = new Dictionary<TMap, LinkedListNode<(TMap, TValue)>>();
+        _order = new LinkedList<(TMap, TValue)>();
     }
 
     public bool IsInfinite => _capacity == 0;
@@ -33,7 +33,7 @@ public class LRUCache<TKey, TValue>
         }
     }
 
-    public void Add(TKey key, TValue value)
+    public void Add(TMap key, TValue value)
     {
         lock (_sync)
         {
@@ -47,13 +47,13 @@ public class LRUCache<TKey, TValue>
                 RemoveOldest_NoLock();
             }
 
-            var node = new LinkedListNode<(TKey, TValue)>((key, value));
+            var node = new LinkedListNode<(TMap, TValue)>((key, value));
             _order.AddLast(node);
             _map[key] = node;
         }
     }
 
-    public bool TryGetValue(TKey key, out TValue? value)
+    public bool TryGetValue(TMap key, out TValue? value)
     {
         lock (_sync)
         {
@@ -71,7 +71,7 @@ public class LRUCache<TKey, TValue>
         }
     }
 
-    public IEnumerable<TKey> Keys
+    public IEnumerable<TMap> Keys
     {
         get
         {

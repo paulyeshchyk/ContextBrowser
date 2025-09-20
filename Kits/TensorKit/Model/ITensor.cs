@@ -1,8 +1,13 @@
-﻿namespace TensorKit.Model;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-public interface ITensor<TValue>
+namespace TensorKit.Model;
+
+public interface ITensor<TDataType>
 {
     int Rank { get; }
 
-    TValue this[int index] { get; }
+    TDataType this[int index] { get; }
+
+    public IEnumerable<TDataType> Dimensions { get; }
 }
