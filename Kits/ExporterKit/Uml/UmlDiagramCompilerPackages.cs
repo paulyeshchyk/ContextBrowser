@@ -42,7 +42,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
 
         var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 

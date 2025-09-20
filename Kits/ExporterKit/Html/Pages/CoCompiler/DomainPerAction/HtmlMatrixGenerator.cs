@@ -17,12 +17,13 @@ using TensorKit.Model;
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // context: htmlmatrix, build
-public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
+public class HtmlMatrixGenerator<TKey> : IHtmlMatrixGenerator
+    where TKey : notnull
 {
-    private readonly IContextInfo2DMap<ContextInfo, DomainPerActionTensor> _mapper;
+    private readonly IContextInfo2DMap<ContextInfo, TKey> _mapper;
     private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlMatrixGeneratorDomainPerAction(IContextInfo2DMap<ContextInfo, DomainPerActionTensor> mapper, IAppOptionsStore optionsStore)
+    public HtmlMatrixGenerator(IContextInfo2DMap<ContextInfo, TKey> mapper, IAppOptionsStore optionsStore)
     {
         _mapper = mapper;
         _optionsStore = optionsStore;
@@ -31,7 +32,7 @@ public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
     // context: build, htmlmatrix
     public Task<IHtmlMatrix> GenerateAsync(CancellationToken cancellationToken)
     {
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
         var matrixOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
         var matrixOrientation = matrixOptions.HtmlTable.Orientation;
         var priority = matrixOptions.UnclassifiedPriority;

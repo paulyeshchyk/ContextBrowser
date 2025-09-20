@@ -25,7 +25,7 @@ public class RoslynSemanticModelWrapper : ISemanticModelWrapper
         {
             return _semanticModel.GetSymbolInfo(syntaxNode, cancellationToken);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }

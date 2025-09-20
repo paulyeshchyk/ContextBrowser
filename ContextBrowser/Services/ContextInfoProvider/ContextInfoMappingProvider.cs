@@ -6,11 +6,10 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ExporterKit.Infrastucture;
-using TensorKit.Model;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
-public class ContextInfoMappingProviderDomainPerAction<TKey> : BaseContextInfoProvider, IContextInfoMapperProvider<TKey>
+public class ContextInfoMappingProvider<TKey> : BaseContextInfoProvider, IContextInfoMapperProvider<TKey>
     where TKey : notnull
 {
     private readonly IContextInfoMapperFactory<TKey> _mapperFactory;
@@ -19,7 +18,7 @@ public class ContextInfoMappingProviderDomainPerAction<TKey> : BaseContextInfoPr
 
     private readonly object _lock = new();
 
-    public ContextInfoMappingProviderDomainPerAction(IParsingOrchestrator parsingOrchestrant, IContextInfoMapperFactory<TKey> mapperFactory) : base(parsingOrchestrant)
+    public ContextInfoMappingProvider(IParsingOrchestrator parsingOrchestrant, IContextInfoMapperFactory<TKey> mapperFactory) : base(parsingOrchestrant)
     {
         _mapperFactory = mapperFactory;
     }

@@ -12,10 +12,10 @@ public class ContextStrategy<T> : ICommentParsingStrategy<T>
 {
     public static string Keyword => "context";
 
-    private readonly IDomainPerActionContextClassifier _contextClassifier;
+    private readonly IDomainPerActionContextTensorClassifier _contextClassifier;
     private readonly IAppLogger<AppLevel> _logger;
 
-    public ContextStrategy(IDomainPerActionContextClassifier contextClassifier, IAppLogger<AppLevel> logger)
+    public ContextStrategy(IDomainPerActionContextTensorClassifier contextClassifier, IAppLogger<AppLevel> logger)
     {
         _contextClassifier = contextClassifier;
         _logger = logger;

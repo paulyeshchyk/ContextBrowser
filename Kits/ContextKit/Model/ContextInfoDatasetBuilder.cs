@@ -31,7 +31,7 @@ public class ContextInfoDatasetBuilder<TKey> : IContextInfoDatasetBuilder<TKey>
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
 
         var exportOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
-        var classifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var classifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
 
         var elements = contextsList.ToList();
         var dataset = new ContextInfoDataset<ContextInfo, TKey>();

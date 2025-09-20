@@ -10,21 +10,22 @@ using TensorKit.Model;
 namespace ExporterKit.Uml;
 
 // context: ContextInfo, ContextInfoMatrix, build
-public class ContextInfoFillerDomainPerAction : IContextInfoFiller<DomainPerActionTensor>
+public class ContextInfoFiller<TKey> : IContextInfoFiller<TKey>
+    where TKey : notnull
 {
-    private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
+    private readonly ITensorFactory<TKey> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
 
     public int Order { get; } = int.MinValue;
 
-    public ContextInfoFillerDomainPerAction(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder)
+    public ContextInfoFiller(ITensorFactory<TKey> keyFactory, ITensorBuilder keyBuilder)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public void Fill(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IDomainPerActionContextClassifier contextClassifier)
+    public void Fill(IContextInfoDataset<ContextInfo, TKey> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions, IDomainPerActionContextTensorClassifier contextClassifier)
     {
         bool includeUnclassified = _matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
 

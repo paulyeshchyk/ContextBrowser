@@ -16,7 +16,7 @@ public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFa
         _logger = logger;
     }
 
-    public IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies(IDomainPerActionContextClassifier classifier)
+    public IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies(IDomainPerActionContextTensorClassifier classifier)
     {
         return new List<ICommentParsingStrategy<TContext>>()
         {

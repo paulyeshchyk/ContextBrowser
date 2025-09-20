@@ -19,7 +19,7 @@ public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
         _factory = factory;
         _optionsStore = optionsStore;
 
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
         _strategies = _factory.CreateStrategies(contextClassifier).ToList();
     }
 

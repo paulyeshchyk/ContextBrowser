@@ -126,7 +126,7 @@ public class AppOptions
                                          indication: new DiagramIndicationOption(useAsync: true));
 
     [CommandLineArgument("context-classifier", "Определение контекста представления")]
-    public IDomainPerActionContextClassifier Classifier { get; set; } = new DomainPerActionContextClassifier(
+    public IDomainPerActionContextTensorClassifier Classifier { get; set; } = new DomainPerActionContextTensorClassifier(
             emptyAction: "NoAction",
             emptyDomain: "NoDomain",
              fakeAction: "_fakeAction",

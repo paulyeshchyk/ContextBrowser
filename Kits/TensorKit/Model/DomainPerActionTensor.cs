@@ -2,43 +2,31 @@
 
 namespace TensorKit.Model;
 
-/// <summary>
-/// Представляет тензор-ключ для многомерных данных.
-/// Этот класс принимает массив строковых измерений и
-/// сохраняет их в упорядоченном виде.
-/// Свойства, представляющие измерения тензора, должены соответствовать порядку в массиве dimensions.
-/// </summary>
-/// 
-public record DomainPerActionTensor : ITensor<string>
+public interface IDomainPerActionTensor<TDataType> : ITensor<TDataType>
+    where TDataType : notnull
 {
-    public int Rank => 2;
+    TDataType Action { get; }
 
-    //rank 2: row
-    public string Action { get; init; }
+    TDataType Domain { get; }
+}
 
-    //rank 2: col
-    public string Domain { get; init; }
+public record DomainPerActionTensor : TensorBase<string>, IDomainPerActionTensor<string>
+{
+    public override int Rank => 2;
 
-    public string this[int index] => GetDimensions()[index];
-
-    public string[] GetDimensions() => new string[] { Action, Domain };
-
-    /// <summary>
-    /// Конструктор, который принимает массив строковых измерений.
-    /// Он выполняет валидацию и присваивает значения свойствам.
-    /// </summary>
-    /// <param name="dimensions">Массив измерений, представляющий тензор.</param>
-    public DomainPerActionTensor(params string[] dimensions)
+    public string Action
     {
-        // Внутренняя валидация: проверяем, что количество измерений
-        // соответствует ожидаемому (в данном случае, 2).
-        if (dimensions.Length != Rank)
-        {
-            throw new ArgumentException($"Incorrect number of dimensions provided. Expected {Rank}.", nameof(dimensions));
-        }
-
-        // Порядок здесь имеет критическое значение.
-        Action = dimensions[0];
-        Domain = dimensions[1];
+        get => this[0];
+        init => _dimensions[0] = value;
     }
+
+    public string Domain
+    {
+        get => this[1];
+        init => _dimensions[1] = value;
+    }
+
+    public DomainPerActionTensor(params string[] dimensions) : base(dimensions) { }
+
+    public DomainPerActionTensor(string action, string domain) : base(action, domain) { }
 }

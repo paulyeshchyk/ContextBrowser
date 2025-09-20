@@ -22,5 +22,5 @@ public interface IContextInfoFiller<TKey>
         IContextInfoDataset<ContextInfo, TKey> dataset,
         List<ContextInfo> elements,
         ExportMatrixOptions options,
-        IDomainPerActionContextClassifier classifier);
+        IDomainPerActionContextTensorClassifier classifier);
 }

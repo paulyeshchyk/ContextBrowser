@@ -23,7 +23,7 @@ namespace UmlKit.Compiler.CoCompiler;
 public class UmlDiagramCompilerSequence
 {
     // Свойства класса, инициализируемые в конструкторе
-    private readonly IDomainPerActionContextClassifier _classifier;
+    private readonly IDomainPerActionContextTensorClassifier _classifier;
     private readonly ExportOptions _exportOptions;
     private readonly IAppLogger<AppLevel> _logger;
     private readonly DiagramBuilderOptions _options;
@@ -39,7 +39,7 @@ public class UmlDiagramCompilerSequence
     /// <param name="diagramBuilder">Построителя диаграмм.</param>
     public UmlDiagramCompilerSequence(
         IAppLogger<AppLevel> logger,
-        IDomainPerActionContextClassifier classifier,
+        IDomainPerActionContextTensorClassifier classifier,
         ExportOptions exportOptions,
         DiagramBuilderOptions options,
         IContextDiagramBuilder diagramBuilder)

@@ -20,7 +20,7 @@ public class UmlStateDiagramCompilerAction : UmlDiagramCompilerState
 {
     protected override FetchType _fetchType => FetchType.FetchAction;
 
-    public UmlStateDiagramCompilerAction(IDomainPerActionContextClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, IAppLogger<AppLevel> logger) : base(classifier, options, builder, exportOptions, renderer, logger)
+    public UmlStateDiagramCompilerAction(IDomainPerActionContextTensorClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, IAppLogger<AppLevel> logger) : base(classifier, options, builder, exportOptions, renderer, logger)
     {
     }
 }
@@ -29,14 +29,14 @@ public class UmlStateDiagramCompilerDomain : UmlDiagramCompilerState
 {
     protected override FetchType _fetchType => FetchType.FetchDomain;
 
-    public UmlStateDiagramCompilerDomain(IDomainPerActionContextClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, IAppLogger<AppLevel> logger) : base(classifier, options, builder, exportOptions, renderer, logger)
+    public UmlStateDiagramCompilerDomain(IDomainPerActionContextTensorClassifier classifier, DiagramBuilderOptions options, IContextDiagramBuilder builder, ExportOptions exportOptions, SequenceDiagramGenerator<UmlState> renderer, IAppLogger<AppLevel> logger) : base(classifier, options, builder, exportOptions, renderer, logger)
     {
     }
 }
 
 public abstract class UmlDiagramCompilerState
 {
-    private readonly IDomainPerActionContextClassifier _classifier;
+    private readonly IDomainPerActionContextTensorClassifier _classifier;
     private readonly DiagramBuilderOptions _options;
     private readonly IContextDiagramBuilder _builder;
     private readonly ExportOptions _exportOptions;
@@ -55,7 +55,7 @@ public abstract class UmlDiagramCompilerState
     /// <param name="renderer">Рендерер переходов.</param>
     /// <param name="onWriteLog">Делегат для записи логов.</param>
     public UmlDiagramCompilerState(
-        IDomainPerActionContextClassifier classifier,
+        IDomainPerActionContextTensorClassifier classifier,
         DiagramBuilderOptions options,
         IContextDiagramBuilder builder,
         ExportOptions exportOptions,

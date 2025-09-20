@@ -36,13 +36,13 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
             {
                 if (callee.ElementType != ContextInfoElementType.method)
                 {
-                    _logger?.WriteLog(AppLevel.P_Tran, LogLevel.Warn, $"Найдена ссылка, записанная в Reference, но не являющаяся методом [{callee.Name}]");
+                    _logger.WriteLog(AppLevel.P_Tran, LogLevel.Warn, $"Найдена ссылка, записанная в Reference, но не являющаяся методом [{callee.Name}]");
                     continue;
                 }
                 var result = UmlTransitionDtoBuilder.CreateTransition(ctx, callee, _logger, theKey);
                 if (result == null)
                 {
-                    _logger?.WriteLog(AppLevel.P_Tran, LogLevel.Err, "Объект UmlTransitionDto не создан");
+                    _logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, "Объект UmlTransitionDto не создан");
                     continue;
                 }
 

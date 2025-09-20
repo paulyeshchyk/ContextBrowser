@@ -34,7 +34,7 @@ public class ContextInfo2DMapDomainPerAction : IContextInfo2DMap<ContextInfo, Do
     {
         return Task.Run(() =>
         {
-            var classifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+            var classifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
 
             _data = contextsList
                         .Where(c => !string.IsNullOrWhiteSpace(c.Name) && c.Contexts.Any())

@@ -7,10 +7,8 @@ using ContextBrowser.Services;
 using ContextBrowser.Services.ContextInfoProvider;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using ExporterKit.Infrastucture;
-using ExporterKit.Uml;
 
-namespace ContextBrowser.Services.ContextInfoProvider;
+namespace ContextKit.Model;
 
 // Абстрактный базовый класс для провайдеров, которым нужен список контекстов.
 public abstract class BaseContextInfoProvider

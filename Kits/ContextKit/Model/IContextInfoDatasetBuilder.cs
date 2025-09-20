@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
 
-namespace ExporterKit.Uml;
+namespace ContextKit.Model;
 
 // context: ContextInfo, ContextInfoMatrix, build
 public interface IContextInfoDatasetBuilder<TKey>

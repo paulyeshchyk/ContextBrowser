@@ -23,7 +23,7 @@ public class CsvGenerator : ICsvGenerator
     }
 
     //context: build, csv, heatmap
-    public void GenerateHeatmap(IDomainPerActionContextClassifier contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
+    public void GenerateHeatmap(IDomainPerActionContextTensorClassifier contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 

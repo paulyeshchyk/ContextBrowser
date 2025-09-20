@@ -78,7 +78,7 @@ public static class Program
             return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultCW, dependencies: defaultDependencies);
         });
 
-        hab.Services.AddTransient<IHtmlMatrixGenerator, HtmlMatrixGeneratorDomainPerAction>();
+        hab.Services.AddTransient<IHtmlMatrixGenerator, HtmlMatrixGenerator<DomainPerActionTensor>>();
 
         // # Tensor
         //
@@ -87,11 +87,11 @@ public static class Program
         // ## Tensor DomainPerAction
         hab.Services.AddTransient<ITensorFactory<DomainPerActionTensor>>(provider => new TensorFactory<DomainPerActionTensor>(dimensions => new DomainPerActionTensor(dimensions)));
 
-        hab.Services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFillerDomainPerAction>();
-        hab.Services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFillerDomainPerActionEmptyData>();
+        hab.Services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFiller<DomainPerActionTensor>>();
+        hab.Services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFillerEmptyData<DomainPerActionTensor>>();
 
         //
-        hab.Services.AddSingleton<IContextInfoMapperProvider<DomainPerActionTensor>, ContextInfoMappingProviderDomainPerAction<DomainPerActionTensor>>();
+        hab.Services.AddSingleton<IContextInfoMapperProvider<DomainPerActionTensor>, ContextInfoMappingProvider<DomainPerActionTensor>>();
         hab.Services.AddSingleton<IContextInfoIndexerProvider, ContextInfoIndexerProvider>();
 
         hab.Services.AddTransient<ICsvGenerator, CsvGenerator>();
@@ -156,11 +156,11 @@ public static class Program
         hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
 
         hab.Services.AddTransient<IHtmlFixedContentManager, FixedHtmlContentManagerDomainPerAction>();
-        hab.Services.AddTransient<IHtmlContentInjector, HtmlContentInjector>();
+        hab.Services.AddTransient<IHtmlContentInjector<DomainPerActionTensor>, HtmlContentInjector<DomainPerActionTensor>>();
         hab.Services.AddTransient<IHrefManager<DomainPerActionTensor>, HrefManagerDomainPerAction>();
 
-        hab.Services.AddTransient<IHtmlCellDataProducer<string, DomainPerActionTensor>, HtmlCellDataProducerDomainPerActionMethodsCount>();
-        hab.Services.AddTransient<IHtmlCellDataProducer<List<ContextInfo>, DomainPerActionTensor>, HtmlCellDataProducerrDomainPerActionMethodsList>();
+        hab.Services.AddTransient<IHtmlCellDataProducer<string, DomainPerActionTensor>, HtmlCellDataProducerDomainPerActionMethodsCount<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IHtmlCellDataProducer<List<ContextInfo>, DomainPerActionTensor>, HtmlCellDataProducerListOfItems<DomainPerActionTensor>>();
 
         //
         // Построитель таблицы(HtmlMatrixWriter) для отображения к-ва методов в пересечении домена-действия с выводом coverage

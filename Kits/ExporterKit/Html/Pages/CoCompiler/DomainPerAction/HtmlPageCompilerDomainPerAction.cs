@@ -50,7 +50,7 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var exportMatrixOptions = exportOptions.ExportMatrix;
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
 
         var matrix = await _matrixGenerator.GenerateAsync(cancellationToken);
         var result = await _indexPageProducer.ProduceAsync(matrix, cancellationToken);

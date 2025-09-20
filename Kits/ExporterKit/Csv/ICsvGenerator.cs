@@ -10,5 +10,5 @@ namespace ExporterKit.Csv;
 
 public interface ICsvGenerator
 {
-    void GenerateHeatmap(IDomainPerActionContextClassifier contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None);
+    void GenerateHeatmap(IDomainPerActionContextTensorClassifier contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None);
 }

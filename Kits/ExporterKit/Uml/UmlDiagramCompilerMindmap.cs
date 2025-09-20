@@ -39,7 +39,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
         _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 

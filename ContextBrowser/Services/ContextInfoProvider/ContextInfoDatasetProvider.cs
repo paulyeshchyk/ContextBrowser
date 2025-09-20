@@ -4,8 +4,6 @@ using ContextBrowser.Infrastructure;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using ExporterKit.Uml;
-using TensorKit.Model;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
@@ -14,10 +12,8 @@ public class ContextInfoDatasetProvider<TKey> : BaseContextInfoProvider, IContex
 {
     private readonly IContextInfoDatasetBuilder<TKey> _datasetBuilder;
 
-    // Приватное поле для кэширования результата.
     private IContextInfoDataset<ContextInfo, TKey>? _dataset;
 
-    // Объект для синхронизации доступа.
     private readonly object _lock = new object();
 
     public ContextInfoDatasetProvider(
@@ -29,7 +25,6 @@ public class ContextInfoDatasetProvider<TKey> : BaseContextInfoProvider, IContex
         _datasetBuilder = datasetBuilder;
     }
 
-    // Метод для асинхронного получения уже сформированного датасета.
     public async Task<IContextInfoDataset<ContextInfo, TKey>> GetDatasetAsync(CancellationToken cancellationToken)
     {
         if (_dataset == null)
