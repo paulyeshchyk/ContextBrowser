@@ -172,7 +172,7 @@ public static class Program
 
         //
 
-        hab.Services.AddTransient<IHtmlMatrixWriter<DomainPerActionTensor>, HtmlMatrixWriter<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IHtmlTensorWriter<DomainPerActionTensor>, HtmlTensorWriter<DomainPerActionTensor>>();
 
         //
 

@@ -62,7 +62,7 @@ namespace HtmlKit.Document;
 /// </summary>
 /// <typeparam name="TTensor">Тип ключа для ячейки матрицы. Должен иметь конструктор с двумя строковыми параметрами.</typeparam>
 //context: htmlmatrix, build
-public class HtmlMatrixWriter<TTensor> : IHtmlMatrixWriter<TTensor>
+public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
     where TTensor : ITensor<string>
 {
     private readonly IHrefManager<TTensor> _hRefManager;
@@ -71,7 +71,7 @@ public class HtmlMatrixWriter<TTensor> : IHtmlMatrixWriter<TTensor>
     private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
 
-    public HtmlMatrixWriter(
+    public HtmlTensorWriter(
         IHtmlDataCellBuilder<TTensor> dataCellBuilder,
         IHrefManager<TTensor> hrefManager,
         ITensorFactory<TTensor> keyFactory, 

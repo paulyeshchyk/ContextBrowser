@@ -30,10 +30,10 @@ public interface IHtmlPageIndexProducer<TTensor>
 public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexProducer<TTensor>
     where TTensor : ITensor<string>
 {
-    private readonly IHtmlMatrixWriter<TTensor> _matrixWriter;
+    private readonly IHtmlTensorWriter<TTensor> _matrixWriter;
     private readonly IHtmlMatrixSummaryBuilder _summaryBuilder;
 
-    public HtmlPageProducerIndex(IHtmlMatrixWriter<TTensor> matrixWriter, IHtmlMatrixSummaryBuilder summaryBuilder, IAppOptionsStore optionsStore) : base(optionsStore)
+    public HtmlPageProducerIndex(IHtmlTensorWriter<TTensor> matrixWriter, IHtmlMatrixSummaryBuilder summaryBuilder, IAppOptionsStore optionsStore) : base(optionsStore)
     {
         _matrixWriter = matrixWriter;
         _summaryBuilder = summaryBuilder;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using TensorKit.Model;
 
 namespace TensorKit.Factories;
@@ -13,30 +14,54 @@ public interface ITensorBuilder
     /// Строит тензор-ключ, нормализуя порядок его измерений
     /// в зависимости от типа перестановки.
     /// </summary>
-    /// <typeparam name="TKey">Тип тензор-ключа.</typeparam>
+    /// <typeparam name="TTensor">Тип тензор-ключа.</typeparam>
     /// <param name="permutationType">Тип перестановки (порядок).</param>
     /// <param name="inputDimensions">Массив исходных измерений.</param>
     /// <param name="createKey">Функция-фабрика для создания тензора.</param>
     /// <returns>Готовый тензор-ключ.</returns>
-    TKey BuildTensor<TKey>(TensorPermutationType permutationType, string[] inputDimensions, Func<string[], TKey> createKey);
+    TTensor BuildTensor<TTensor>(TensorPermutationType permutationType, string[] inputDimensions, Func<string[], TTensor> createKey);
 }
 
 public class TensorBuilder : ITensorBuilder
 {
-    public TKey BuildTensor<TKey>(TensorPermutationType permutationType, string[] inputDimensions, Func<string[], TKey> createKey)
+    public TTensor BuildTensor<TTensor>(TensorPermutationType permutationType, string[] inputDimensions, Func<string[], TTensor> createKey)
     {
-        if (permutationType == TensorPermutationType.Transposed)
+        var permutationOrder = TensorBuilder.GetPermutationOrder(inputDimensions, permutationType);
+
+        var reorderedDimensions = new string[inputDimensions.Length];
+
+        for (int i = 0; i < inputDimensions.Length; i++)
         {
-            // Логика перестановки для двумерных тензоров.
-            if (inputDimensions.Length == 2)
-            {
-                var reorderedDimensions = new string[2];
-                reorderedDimensions[0] = inputDimensions[1];
-                reorderedDimensions[1] = inputDimensions[0];
-                return createKey(reorderedDimensions);
-            }
+            var newIndex = permutationOrder[i];
+            reorderedDimensions[i] = inputDimensions[newIndex];
         }
 
-        return createKey(inputDimensions);
+        return createKey(reorderedDimensions);
+    }
+
+    /// <summary>
+    /// TransposedPermutation<br>
+    /// rank 2: new int[] { 1, 0 }<br>
+    /// rank 3: new int[] { 2, 1, 0 }<br>
+    /// rank 4: new int[] { 3, 2, 1, 0 }<br>
+    ///
+    /// StandardPermutation<br>
+    /// rank 2: new int[] { 0, 1 }<br>
+    /// rank 3: new int[] { 0, 1, 2 }<br>
+    /// rank 4: new int[] { 0, 1, 2, 3 }<br>
+    /// </summary>
+    /// <param name="inputDimensions"></param>
+    /// <param name="permutationType"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static int[] GetPermutationOrder(string[] inputDimensions, TensorPermutationType permutationType)
+    {
+        var rank = inputDimensions.Length;
+        return permutationType switch
+        {
+            TensorPermutationType.Standard => Enumerable.Range(0, rank).ToArray(),
+            TensorPermutationType.Transposed => Enumerable.Range(0, rank).Reverse().ToArray(),
+            _ => throw new ArgumentOutOfRangeException(nameof(permutationType), $"The provided permutation type is not supported.")
+        };
     }
 }

@@ -9,5 +9,5 @@ public interface ITensor<TDataType>
 
     TDataType this[int index] { get; }
 
-    public IEnumerable<TDataType> Dimensions { get; }
+    IEnumerable<TDataType> Dimensions { get; }
 }
