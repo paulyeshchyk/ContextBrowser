@@ -6,7 +6,9 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using LoggerKit;
+using TensorKit.Model.DomainPerAction;
 using UmlKit.Builders.Model;
 using UmlKit.Infrastructure.Options;
 
@@ -19,17 +21,21 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     private readonly IAppLogger<AppLevel> _logger;
     private readonly ContextTransitionDiagramBuilderCache _cache;
     private readonly DiagramBuilderOptions _options;
+    private readonly IAppOptionsStore _optionsStore;
+    private readonly ITensorClassifierDomainPerActionContext _contextClassifier;
 
-    public ContextTransitionDiagramBuilder(DiagramBuilderOptions options, IEnumerable<ITransitionBuilder> transitionBuilders, IAppLogger<AppLevel> logger)
+    public ContextTransitionDiagramBuilder(DiagramBuilderOptions options, IEnumerable<ITransitionBuilder> transitionBuilders, IAppLogger<AppLevel> logger, IAppOptionsStore optionsStore)
     {
         _options = options;
         _transitionBuilders = transitionBuilders.Where(b => b.Direction == _options.DiagramDirection).ToList();
         _logger = logger;
+        _optionsStore = optionsStore;
         _cache = new ContextTransitionDiagramBuilderCache(_logger);
+        _contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
     }
 
     // context: builder, transition
-    public GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts, IDomainPerActionContextTensorClassifier classifier)
+    public GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts)
     {
         if (!allContexts.Any())
         {
@@ -46,7 +52,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 
         _logger.WriteLog(AppLevel.P_Tran, LogLevel.Cntx, $"Fetch transitions for {fetchType} [{metaItem}]", LogLevelNode.Start);
 
-        var result = FetchAndBuildTransitions(metaItem, fetchType, allContexts, classifier);
+        var result = FetchAndBuildTransitions(metaItem, fetchType, allContexts);
 
         _cache.AddToCache(metaItem, result);
 
@@ -58,9 +64,9 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     /// Унифицированный метод для выборки и построения переходов.
     /// </summary>
     // context: builder, transition
-    internal GrouppedSortedTransitionList? FetchAndBuildTransitions(string name, FetchType fetchType, List<ContextInfo> allContexts, IDomainPerActionContextTensorClassifier classifier)
+    internal GrouppedSortedTransitionList? FetchAndBuildTransitions(string name, FetchType fetchType, List<ContextInfo> allContexts)
     {
-        var methods = FetchAllMethods(name, fetchType, allContexts, classifier);
+        var methods = FetchAllMethods(name, fetchType, allContexts, _contextClassifier);
         if (!methods.Any())
         {
             _logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, $"[MISS] Fetch Не найдено методов для {fetchType} [{name}]");
@@ -70,12 +76,12 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     }
 
     // context: builder, transition
-    internal static List<ContextInfo> FetchAllMethods(string name, FetchType fetchType, List<ContextInfo> allContexts, IDomainPerActionContextTensorClassifier classifier)
+    internal static List<ContextInfo> FetchAllMethods(string name, FetchType fetchType, List<ContextInfo> allContexts, ITensorClassifierDomainPerActionContext contextClassifier)
     {
         Func<ContextInfo, string, bool> filterFunc = fetchType switch
         {
-            FetchType.FetchDomain => (ctx, domain) => classifier.IsDomainApplicable(ctx, domain),
-            FetchType.FetchAction => (ctx, action) => classifier.IsActionApplicable(ctx, action),
+            FetchType.FetchDomain => (ctx, domain) => contextClassifier.IsDimensionApplicable(ctx, domain, DomainPerActionDimensionType.Domain),
+            FetchType.FetchAction => (ctx, action) => contextClassifier.IsDimensionApplicable(ctx, action, DomainPerActionDimensionType.Action),
             _ => throw new ArgumentOutOfRangeException(nameof(fetchType), $"Unsupported FetchType: {fetchType}")
         };
 

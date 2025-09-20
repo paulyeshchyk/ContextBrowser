@@ -8,6 +8,7 @@ using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using ContextKit.Model.Collector;
 using ExporterKit;
 using ExporterKit.Html;
@@ -22,6 +23,7 @@ using HtmlKit.Page.Compiler;
 using HtmlKit.Writer;
 using LoggerKit;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
@@ -50,7 +52,7 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var exportMatrixOptions = exportOptions.ExportMatrix;
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
 
         var matrix = await _matrixGenerator.GenerateAsync(cancellationToken);
         var result = await _indexPageProducer.ProduceAsync(matrix, cancellationToken);

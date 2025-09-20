@@ -18,7 +18,6 @@ public abstract record TensorBase<TDataType> : ITensor<TDataType>
     // Массив для хранения измерений.
     protected readonly TDataType[] _dimensions;
 
-    // Индексатор для доступа к элементам массива по индексу.
     public TDataType this[int index] => _dimensions[index];
 
     protected TensorBase(params TDataType[] dimensions)

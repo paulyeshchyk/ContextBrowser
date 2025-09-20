@@ -7,9 +7,11 @@ using HtmlKit.Builders.Core;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ContextBrowser.Samples.HtmlPages;
 
+#warning remove domainperaction
 public interface IPumlEnbeddedInjectionDatamodel : IHtmlTabsheetDataModel
 {
     HtmlBuilder GetPumlBuilder(DomainPerActionTensor contextKey, ExportOptions exportOptions);

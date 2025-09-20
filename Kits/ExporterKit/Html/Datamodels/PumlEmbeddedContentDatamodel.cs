@@ -8,9 +8,11 @@ using HtmlKit.Builders.Core;
 using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Page.Compiler;
 
+#warning remove domainperaction
 public abstract class PumlEmbeddedContentDatamodel
 {
     static readonly string SLocalHttpServerHost = "http://localhost:5500";

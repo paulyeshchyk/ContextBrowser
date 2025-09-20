@@ -2,14 +2,17 @@
 using System.IO;
 using System.Linq;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Csv;
 
+#warning remove domainperaction
 public static class ContextInfoCsvExporter
 {
     //context: build, csv, matrix
-    public static void GenerateCsv(IDomainPerActionContextTensorClassifier contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath)
+    public static void GenerateCsv(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath)
     {
         var lines = new List<string>();
         lines.AddRange(contextClassifier.MetaItems);

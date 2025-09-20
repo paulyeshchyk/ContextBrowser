@@ -5,6 +5,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using ContextKit.Model.Collector;
 using LoggerKit;
 
@@ -31,7 +32,6 @@ public class ContextInfoDatasetBuilder<TKey> : IContextInfoDatasetBuilder<TKey>
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
 
         var exportOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
-        var classifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
 
         var elements = contextsList.ToList();
         var dataset = new ContextInfoDataset<ContextInfo, TKey>();
@@ -39,7 +39,7 @@ public class ContextInfoDatasetBuilder<TKey> : IContextInfoDatasetBuilder<TKey>
         var orderedFillers = _contextInfoFiller.OrderBy(f => f.Order);
         foreach (var filler in orderedFillers)
         {
-            filler.Fill(dataset, elements, exportOptions, classifier);
+            filler.Fill(dataset, elements, exportOptions);
         }
 
         return dataset;

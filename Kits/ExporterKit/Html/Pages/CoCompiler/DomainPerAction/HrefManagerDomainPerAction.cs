@@ -3,6 +3,7 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Options;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Helpers;
 

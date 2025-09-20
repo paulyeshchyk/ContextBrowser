@@ -18,6 +18,7 @@ using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
 using LoggerKit;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.MatrixCellSummary;
 

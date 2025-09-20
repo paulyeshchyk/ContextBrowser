@@ -1,6 +1,13 @@
 ﻿using System;
+using ContextKit.Model.Classifier;
 
-namespace TensorKit.Model;
+namespace TensorKit.Model.DomainPerAction;
+
+public class DomainPerActionDimensionType : ITensorDimensionType
+{
+    public const int Action = 0;
+    public const int Domain = 1;
+}
 
 public interface IDomainPerActionTensor<TDataType> : ITensor<TDataType>
     where TDataType : notnull

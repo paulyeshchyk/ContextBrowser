@@ -4,8 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.Model.Classifier;
 using TensorKit.Factories;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ContextKit.Model;
 
@@ -16,12 +18,14 @@ public class ContextInfo2DMapDomainPerAction : IContextInfo2DMap<ContextInfo, Do
     private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
     private readonly IAppOptionsStore _optionsStore;
+    private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
 
     public ContextInfo2DMapDomainPerAction(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore optionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
         _optionsStore = optionsStore;
+        _FakeDimensionClassifier = _optionsStore.GetOptions<IFakeDimensionClassifier>();
     }
 
     public Dictionary<DomainPerActionTensor, List<ContextInfo>>? GetMapData()
@@ -34,14 +38,15 @@ public class ContextInfo2DMapDomainPerAction : IContextInfo2DMap<ContextInfo, Do
     {
         return Task.Run(() =>
         {
-            var classifier = _optionsStore.GetOptions<IDomainPerActionContextTensorClassifier>();
+            var wordClassifier = _optionsStore.GetOptions<IWordRoleClassifier>();
+            var emptyClassifier = _optionsStore.GetOptions<IEmptyDimensionClassifier>();
 
             _data = contextsList
                         .Where(c => !string.IsNullOrWhiteSpace(c.Name) && c.Contexts.Any())
                         .GroupBy(c =>
                         {
-                            var action = c.Contexts.FirstOrDefault(classifier.IsVerb) ?? classifier.EmptyAction;
-                            var domain = c.Contexts.FirstOrDefault(classifier.IsNoun) ?? classifier.EmptyDomain;
+                            var action = c.Contexts.FirstOrDefault(c => wordClassifier.IsVerb(c, _FakeDimensionClassifier)) ?? emptyClassifier.EmptyAction;
+                            var domain = c.Contexts.FirstOrDefault(c => wordClassifier.IsNoun(c, _FakeDimensionClassifier)) ?? emptyClassifier.EmptyDomain;
                             var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { action, domain }, _keyFactory.Create);
                             return contextKey;
                         })

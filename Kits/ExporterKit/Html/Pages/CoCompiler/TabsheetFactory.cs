@@ -10,6 +10,7 @@ using HtmlKit.Model;
 using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.CoCompiler;
 

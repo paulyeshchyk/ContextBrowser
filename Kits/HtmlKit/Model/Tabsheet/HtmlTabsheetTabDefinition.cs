@@ -1,5 +1,5 @@
 ﻿using System;
-using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Model.Tabsheet;
 
@@ -13,6 +13,7 @@ public class HtmlTabsheetTabDefinition
 
     public bool IsActive { get; init; }
 
+#warning remove domainperaction
     public HtmlTabsheetTabDefinition(string buttonText, string tabId, Func<ContextKeyContainer<DomainPerActionTensor>, string> contentGenerator, bool isActive)
     {
         ButtonText = buttonText;

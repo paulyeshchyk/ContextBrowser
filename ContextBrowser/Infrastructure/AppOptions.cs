@@ -5,6 +5,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextBrowserKit.Options.Import;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using HtmlKit.Options;
 using LoggerKit.Model;
 using SemanticKit.Model.Options;
@@ -103,7 +104,7 @@ public class AppOptions
         filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
-                 cacheModel: new CacheJsonModel(renewCache: false,
+                 cacheModel: new CacheJsonModel(renewCache: true,
                                                      input: ".//cache//roslyn.json",
                                                     output: ".//cache//roslyn.json")),
         webPaths: new ExportWebPaths(
@@ -126,13 +127,13 @@ public class AppOptions
                                          indication: new DiagramIndicationOption(useAsync: true));
 
     [CommandLineArgument("context-classifier", "Определение контекста представления")]
-    public IDomainPerActionContextTensorClassifier Classifier { get; set; } = new DomainPerActionContextTensorClassifier(
-            emptyAction: "NoAction",
-            emptyDomain: "NoDomain",
-             fakeAction: "_fakeAction",
-             fakeDomain: "_fakeDomain",
-        standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" },
-              metaItems: new[] { "Action;Domain;Elements" })
+    public ITensorClassifierDomainPerActionContext Classifier { get; set; } = new DomainPerActionContextTensorClassifier(
+        emptyDimensionClassifier: new EmptyDimensionClassifierDomainPerAction(emptyAction: "EmptyAction", emptyDomain: "EmptyDomain"),
+         fakeDimensionClassifier: new FakeDimensionClassifierDomainPerAction(fakeAction: "_fakeAction", fakeDomain: "_fakeDomain"),
+                       metaItems: new[] { "Action;Domain;Elements" },
+              wordRoleClassifier: new WordRoleClassifier(
+                 standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" }
+             ))
     {
     };
 }

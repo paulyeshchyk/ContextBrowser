@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using TensorKit.Factories;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Csv;
 
@@ -15,21 +17,25 @@ public class CsvGenerator : ICsvGenerator
 {
     private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
+    private readonly IWordRoleClassifier _wordRoleClassifier;
+    private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
 
-    public CsvGenerator(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder)
+    public CsvGenerator(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
+        _wordRoleClassifier = appOptionsStore.GetOptions<IWordRoleClassifier>();
+        _emptyDimensionClassifier = appOptionsStore.GetOptions<IEmptyDimensionClassifier>();
     }
 
     //context: build, csv, heatmap
-    public void GenerateHeatmap(IDomainPerActionContextTensorClassifier contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
+    public void GenerateHeatmap(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 
         // Отфильтруем обычные ключи
         var filteredKeys = matrix.Keys
-            .Where(k => k.Action != contextClassifier.EmptyAction && k.Domain != contextClassifier.EmptyDomain)
+            .Where(k => k.Action != _emptyDimensionClassifier.EmptyAction && k.Domain != _emptyDimensionClassifier.EmptyDomain)
             .ToList();
 
         var actions = filteredKeys.Select(k => k.Action).Distinct().OrderBy(x => x).ToList();
@@ -53,13 +59,13 @@ public class CsvGenerator : ICsvGenerator
 
         var includeUnclassified = unclassifiedPriority != UnclassifiedPriorityType.None;
 
-        var unclassified = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { contextClassifier.EmptyAction, contextClassifier.EmptyDomain }, _keyFactory.Create);
+        var unclassified = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { _emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain }, _keyFactory.Create);
 
         // Добавим строку для нераспознанных, если нужно
         if (includeUnclassified && matrix.ContainsKey(unclassified))
         {
             var unclassifiedCount = matrix[unclassified].Count;
-            var rows = new List<string> { contextClassifier.EmptyAction };
+            var rows = new List<string> { _emptyDimensionClassifier.EmptyAction };
 
             // Заполняем пустыми значениями для всех доменов
             foreach (var _ in domains)
@@ -69,8 +75,8 @@ public class CsvGenerator : ICsvGenerator
             rows.Add(unclassifiedCount.ToString());
 
             // Обновим заголовок, добавив "NoDomain" в конец
-            if (!domains.Contains(contextClassifier.EmptyDomain))
-                lines[0] += $";{contextClassifier.EmptyDomain}";
+            if (!domains.Contains(_emptyDimensionClassifier.EmptyDomain))
+                lines[0] += $";{_emptyDimensionClassifier.EmptyDomain}";
 
             lines.Add(string.Join(";", rows));
         }

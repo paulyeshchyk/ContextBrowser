@@ -30,7 +30,7 @@ using RoslynKit.Phases.Syntax.Parsers;
 using RoslynKit.Tree;
 using RoslynKit.Wrappers.Extractor;
 using SemanticKit.Model;
-using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser.Services;

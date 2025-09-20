@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using ContextKit.Model.Service;
 
 namespace ContextBrowser.DiagramFactory.Exporters;
@@ -9,22 +11,24 @@ namespace ContextBrowser.DiagramFactory.Exporters;
 // context: ContextInfo, build
 public class ContextInfoDataLinkGenerator
 {
-    private readonly IDomainPerActionContextTensorClassifier _contextClassifier;
-    private readonly List<ContextInfo> _elements;
+    private readonly ITensorClassifierDomainPerActionContext _contextClassifier;
+    private readonly IWordRoleClassifier _wordRoleClassifier;
+    private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
 
-    public ContextInfoDataLinkGenerator(IDomainPerActionContextTensorClassifier contextClassifier, List<ContextInfo> elements)
+    public ContextInfoDataLinkGenerator(IAppOptionsStore appOptionsStore)
     {
-        _contextClassifier = contextClassifier;
-        _elements = elements;
+        _contextClassifier = appOptionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
+        _wordRoleClassifier = appOptionsStore.GetOptions<IWordRoleClassifier>();
+        _FakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
     }
 
     // context: ContextInfo, read
-    public HashSet<(string From, string To)> Generate()
+    public HashSet<(string From, string To)> Generate(List<ContextInfo> elements)
     {
-        var methodToCell = MapMethodsToCells();
+        var methodToCell = MapMethodsToCells(elements);
         var links = new HashSet<(string From, string To)>();
 
-        foreach (var callerMethod in _elements.Where(e => e.ElementType == ContextInfoElementType.method))
+        foreach (var callerMethod in elements.Where(e => e.ElementType == ContextInfoElementType.method))
         {
             var callerId = GetMethodId(callerMethod);
             if (string.IsNullOrWhiteSpace(callerId) || !methodToCell.TryGetValue(callerId, out var fromCell))
@@ -33,7 +37,7 @@ public class ContextInfoDataLinkGenerator
             var references = ContextInfoService.GetReferencesSortedByInvocation(callerMethod);
             foreach (var calledName in references)
             {
-                var calleeMethod = _elements.FirstOrDefault(m => string.Equals(m.Name, calledName.Name, StringComparison.OrdinalIgnoreCase));
+                var calleeMethod = elements.FirstOrDefault(m => string.Equals(m.Name, calledName.Name, StringComparison.OrdinalIgnoreCase));
                 var calleeId = GetMethodId(calleeMethod);
 
                 if (string.IsNullOrWhiteSpace(calleeId) || !methodToCell.TryGetValue(calleeId, out var toCell) || fromCell == toCell)
@@ -46,13 +50,13 @@ public class ContextInfoDataLinkGenerator
         return links;
     }
 
-    private Dictionary<string, string> MapMethodsToCells()
+    private Dictionary<string, string> MapMethodsToCells(List<ContextInfo> elements)
     {
         var methodToCell = new Dictionary<string, string>();
-        foreach (var item in _elements.Where(e => e.ElementType == ContextInfoElementType.method))
+        foreach (var item in elements.Where(e => e.ElementType == ContextInfoElementType.method))
         {
-            var action = item.Contexts.FirstOrDefault(_contextClassifier.IsVerb);
-            var domain = item.Contexts.FirstOrDefault(_contextClassifier.IsNoun);
+            var action = item.Contexts.FirstOrDefault(c => _wordRoleClassifier.IsVerb(c, _FakeDimensionClassifier));
+            var domain = item.Contexts.FirstOrDefault(c => _wordRoleClassifier.IsNoun(c, _FakeDimensionClassifier));
 
             if (action == null || domain == null)
                 continue;

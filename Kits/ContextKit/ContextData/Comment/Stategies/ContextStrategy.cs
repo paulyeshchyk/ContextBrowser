@@ -3,6 +3,7 @@ using System.Linq;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using LoggerKit;
 
 namespace ContextKit.Stategies;
@@ -12,12 +13,14 @@ public class ContextStrategy<T> : ICommentParsingStrategy<T>
 {
     public static string Keyword => "context";
 
-    private readonly IDomainPerActionContextTensorClassifier _contextClassifier;
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IWordRoleClassifier _wordRoleClassifier;
+    private readonly IFakeDimensionClassifier _fakeDimensionClassifier;
 
-    public ContextStrategy(IDomainPerActionContextTensorClassifier contextClassifier, IAppLogger<AppLevel> logger)
+    public ContextStrategy(IAppOptionsStore appOptionsStore, IAppLogger<AppLevel> logger)
     {
-        _contextClassifier = contextClassifier;
+        _wordRoleClassifier = appOptionsStore.GetOptions<IWordRoleClassifier>();
+        _fakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
         _logger = logger;
     }
 
@@ -38,10 +41,10 @@ public class ContextStrategy<T> : ICommentParsingStrategy<T>
         var tags = content.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
                           .Select(t => t.Trim().ToLowerInvariant());
 
-        var actions = tags.Where(t => _contextClassifier.IsVerb(t)).ToList();
+        var actions = tags.Where(t => _wordRoleClassifier.IsVerb(t, _fakeDimensionClassifier)).ToList();
         container.Action = string.Join(";", actions);
 
-        var domains = tags.Where(t => _contextClassifier.IsNoun(t)).ToList();
+        var domains = tags.Where(t => _wordRoleClassifier.IsNoun(t, _fakeDimensionClassifier)).ToList();
         foreach (var domain in domains)
         {
             container.Domains.Add(domain.ToLower());

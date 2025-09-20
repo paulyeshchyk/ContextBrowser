@@ -16,6 +16,7 @@ using HtmlKit.Model;
 using HtmlKit.Page;
 using LoggerKit;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 using UmlKit.Infrastructure.Options;
 
 namespace HtmlKit.Page.Compiler;

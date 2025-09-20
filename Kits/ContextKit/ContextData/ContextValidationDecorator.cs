@@ -2,6 +2,7 @@
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using LoggerKit;
 
 namespace ContextKit.Stategies;
@@ -12,9 +13,9 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
 {
     private readonly ICommentParsingStrategy<T> _strategy;
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IDomainPerActionContextTensorClassifier _contextClassifier;
+    private readonly ITensorClassifierDomainPerActionContext _contextClassifier;
 
-    public ContextValidationDecorator(IDomainPerActionContextTensorClassifier contextClassifier, ICommentParsingStrategy<T> strategy, IAppLogger<AppLevel> logger)
+    public ContextValidationDecorator(ITensorClassifierDomainPerActionContext contextClassifier, ICommentParsingStrategy<T> strategy, IAppLogger<AppLevel> logger)
     {
         _strategy = strategy;
         _logger = logger;

@@ -5,6 +5,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.TransitionFactory;
@@ -23,7 +24,7 @@ namespace UmlKit.Compiler.CoCompiler;
 public class UmlDiagramCompilerSequence
 {
     // Свойства класса, инициализируемые в конструкторе
-    private readonly IDomainPerActionContextTensorClassifier _classifier;
+    private readonly ITensorClassifierDomainPerActionContext _classifier;
     private readonly ExportOptions _exportOptions;
     private readonly IAppLogger<AppLevel> _logger;
     private readonly DiagramBuilderOptions _options;
@@ -39,7 +40,7 @@ public class UmlDiagramCompilerSequence
     /// <param name="diagramBuilder">Построителя диаграмм.</param>
     public UmlDiagramCompilerSequence(
         IAppLogger<AppLevel> logger,
-        IDomainPerActionContextTensorClassifier classifier,
+        ITensorClassifierDomainPerActionContext classifier,
         ExportOptions exportOptions,
         DiagramBuilderOptions options,
         IContextDiagramBuilder diagramBuilder)
@@ -69,7 +70,7 @@ public class UmlDiagramCompilerSequence
         diagram.SetTitle(title);
         diagram.SetSkinParam("componentStyle", "rectangle");
 
-        var transitions = _diagramBuilder.Build(metaItem, fetchType, contextItems, _classifier);
+        var transitions = _diagramBuilder.Build(metaItem, fetchType, contextItems);
 
         var factory = new UmlTransitionParticipantFactory();
         var renderer = new SequenceDiagramRendererPlain<UmlParticipant>(_logger, _options, factory);

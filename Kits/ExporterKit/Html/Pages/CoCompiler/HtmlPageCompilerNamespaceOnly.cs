@@ -12,6 +12,7 @@ using ExporterKit.Html.Pages.CoCompiler;
 using HtmlKit.Model;
 using LoggerKit;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Page.Compiler;
 
