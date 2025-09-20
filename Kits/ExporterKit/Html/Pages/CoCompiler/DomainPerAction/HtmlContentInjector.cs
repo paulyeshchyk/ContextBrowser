@@ -8,9 +8,10 @@ using TensorKit.Model;
 namespace HtmlKit.Writer;
 
 // pattern: Builder
-public class HtmlContentInjector : IHtmlContentInjector
+public class HtmlContentInjector<TTensor> : IHtmlContentInjector<TTensor>
+    where TTensor : notnull
 {
-    public string Inject(DomainPerActionTensor container, int cnt)
+    public string Inject(TTensor container, int cnt)
     {
         if (cnt == 0)
         {

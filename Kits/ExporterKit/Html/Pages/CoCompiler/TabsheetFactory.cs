@@ -10,6 +10,7 @@ using HtmlKit.Model;
 using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.CoCompiler;
 
@@ -66,10 +67,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> ActionOnlyClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> ActionOnlyClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<ActionOnlyClassesDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<ActionOnlyClassesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -83,10 +84,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> MethodsTabRegistration()
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> MethodsTabRegistration()
     {
         // Вкладка: Методы
-        return TabRegistration.For<ActionOnlyMethodListDataModel, ContextKeyContainer>(
+        return TabRegistration.For<ActionOnlyMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
@@ -106,10 +107,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> StatesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> StatesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
-        return TabRegistration.For<ActionOnlyStatesDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<ActionOnlyStatesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "StatesTab",
             caption: "Состояния",
             isActive: false,
@@ -123,10 +124,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> SequenceTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> SequenceTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Компоненты (PUML)
-        return TabRegistration.For<ActionOnlySequenceDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<ActionOnlySequenceDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "SequenceTab",
             caption: "Последовательности",
             isActive: false,
@@ -140,10 +141,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyMethodsTabRegistration()
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyMethodsTabRegistration()
     {
         // Вкладка: Методы
-        return TabRegistration.For<ActionPerDomainSummaryMethodListDataModel, ContextKeyContainer>(
+        return TabRegistration.For<ActionPerDomainSummaryMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
@@ -163,10 +164,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<DomainSummaryComponentsDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainSummaryComponentsDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -180,10 +181,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyMindmap(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyMindmap(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
-        return TabRegistration.For<DomainOnlyMindmapDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlyMindmapDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MindmapTab",
             caption: "Mindmap",
             isActive: false,
@@ -197,10 +198,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyStates(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyStates(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
-        return TabRegistration.For<DomainOnlyStatesDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlyStatesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "StatesTab",
             caption: "Состояния",
             isActive: false,
@@ -214,10 +215,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlySequence(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlySequence(ExportOptions exportOptions)
     {
         // Вкладка: Компоненты (PUML)
-        return TabRegistration.For<DomainOnlySequenceDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlySequenceDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "SequenceTab",
             caption: "Последовательности",
             isActive: false,
@@ -231,10 +232,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyMethodsTabsheetRegistration()
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyMethodsTabsheetRegistration()
     {
         // Вкладка: Методы
-        return TabRegistration.For<DomainOnlyMethodListDataModel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlyMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
@@ -254,10 +255,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> DomainOnlyClassesTabsheetRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyClassesTabsheetRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<DomainOnlyClassesDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<DomainOnlyClassesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -271,10 +272,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> ActionPerDomainMethodsTabRegistration()
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> ActionPerDomainMethodsTabRegistration()
     {
         // Вкладка: Методы
-        return TabRegistration.For<ActionPerDomainMethodListDataModel, ContextKeyContainer>(
+        return TabRegistration.For<ActionPerDomainMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
@@ -294,10 +295,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer> ActionPerDomainClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> ActionPerDomainClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<ActionSummaryDatamodel, ContextKeyContainer>(
+        return TabRegistration.For<ActionSummaryDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -312,104 +313,111 @@ public static class TabsheetFactory
     }
 }
 
-internal class ActionPerDomainSummaryMethodListDataModel : IMethodListDatamodel
+internal abstract class PumlEmbeddedContentDatamodelDomainPerAction : PumlEmbeddedContentDatamodel<DomainPerActionTensor>
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto) => dto.ContextInfoList;
+    protected override string GetPumlFileName(DomainPerActionTensor contextKey) => throw new NotImplementedException();
+
+    protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ActionPerDomainMethodListDataModel : IMethodListDatamodel
+internal class ActionPerDomainSummaryMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
-internal class DomainOnlyMethodListDataModel : IMethodListDatamodel
+internal class ActionPerDomainMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
-internal class ActionOnlyMethodListDataModel : IMethodListDatamodel
+internal class DomainOnlyMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
-internal class NamespaceOnlyDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ActionOnlyMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
+{
+    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
+}
+
+internal class NamespaceOnlyDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => throw new NotImplementedException();
 
     protected override string GetPumlFileName(string contextKey) => $"namespace_only_{contextKey.AlphanumericOnly()}.puml";
 }
 
-internal class DomainSummaryComponentsDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainSummaryComponentsDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"class_{contextKey.Action}_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class DomainOnlyStatesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainOnlyStatesDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"state_domain_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class DomainOnlyMindmapDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainOnlyMindmapDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"mindmap_domain_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class DomainOnlySequenceDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainOnlySequenceDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"sequence_domain_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class DomainOnlyClassesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class DomainOnlyClassesDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"class_domain_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ActionOnlyStatesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ActionOnlyStatesDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"state_action_{contextKey.Action}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ActionOnlySequenceDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ActionOnlySequenceDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"sequence_action_{contextKey.Action}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ActionOnlyClassesDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ActionOnlyClassesDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"class_action_{contextKey.Action}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ActionSummaryDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ActionSummaryDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => $"class_{contextKey.Action}_{contextKey.Domain}.puml";
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
 
-internal class ClassOnlyDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class ClassOnlyDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => throw new NotImplementedException();
 
     protected override string GetPumlFileName(string contextKey) => $"class_only_{contextKey.AlphanumericOnly()}.puml";
 }
 
-internal class MindmapDatamodel : PumlEmbeddedContentDatamodel, IPumlEnbeddedInjectionDatamodel
+internal class MindmapDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
 {
     protected override string GetPumlFileName(DomainPerActionTensor contextKey) => throw new NotImplementedException();
 

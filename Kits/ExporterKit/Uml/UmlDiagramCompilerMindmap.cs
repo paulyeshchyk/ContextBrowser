@@ -9,8 +9,11 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using GraphKit.Walkers;
 using LoggerKit;
+using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
@@ -22,10 +25,10 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerMindmap(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerMindmap(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -38,7 +41,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
         _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
@@ -81,7 +84,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
     /// <param name="domain">Домен, для которого ищутся дети.</param>
     /// <param name="dataset">Набор данных о контексте.</param>
     /// <returns>Коллекция узлов UmlNode, представляющих дочерние домены.</returns>
-    private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo> dataset)
+    private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain));
 
@@ -98,7 +101,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
     /// <param name="domain">Домен, для которого ищутся родители.</param>
     /// <param name="dataset">Набор данных о контексте.</param>
     /// <returns>Коллекция узлов UmlNode, представляющих родительские домены.</returns>
-    private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo> dataset)
+    private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain));
 

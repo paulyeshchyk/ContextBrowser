@@ -8,8 +8,11 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using ExporterKit.Uml;
 using LoggerKit;
+using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Model;
@@ -22,10 +25,10 @@ namespace UmlKit.Exporter;
 public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerClassRelation(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerClassRelation(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -39,13 +42,12 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         var contextInfoList = dataset.GetAll().ToList();
-        var linkGenerator = new ContextInfoDataLinkGenerator(contextClassifier, contextInfoList);
-        var links = linkGenerator.Generate();
+        var linkGenerator = new ContextInfoDataLinkGenerator(_optionsStore);
+        var links = linkGenerator.Generate(contextInfoList);
 
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.pumlExtra, "uml.4.links.puml");
         var diagramId = $"relation_{outputPath}".AlphanumericOnly();

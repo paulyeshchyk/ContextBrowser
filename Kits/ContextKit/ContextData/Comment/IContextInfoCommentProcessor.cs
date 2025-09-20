@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 
 namespace ContextKit.Stategies;
 
@@ -12,5 +13,5 @@ public interface IContextInfoCommentProcessor<T>
 
 public interface ICommentParsingStrategyFactory<TContext>
 {
-    IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies(IDomainPerActionContextClassifier classifier);
+    IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies();
 }

@@ -3,11 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using ContextKit.Model.Collector;
 using ExporterKit;
 using ExporterKit.Html;
@@ -22,19 +24,20 @@ using HtmlKit.Page.Compiler;
 using HtmlKit.Writer;
 using LoggerKit;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // context: html, build
-public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
+public class HtmlPageCompilerIndexDomainPerAction : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> _mapper;
-    private readonly IHtmlPageIndex _indexPageProducer;
+    private readonly IContextInfo2DMap<ContextInfo, DomainPerActionTensor> _mapper;
+    private readonly IHtmlPageIndexProducer<DomainPerActionTensor> _indexPageProducer;
     private readonly IAppOptionsStore _optionsStore;
     private readonly IHtmlMatrixGenerator _matrixGenerator;
 
-    public HtmlPageCompilerDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IHtmlPageIndex indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
+    public HtmlPageCompilerIndexDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory<DomainPerActionTensor> contextInfoMapperContainer, IHtmlPageIndexProducer<DomainPerActionTensor> indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
     {
         _logger = logger;
         _mapper = contextInfoMapperContainer.GetMapper(GlobalMapperKeys.DomainPerAction);
@@ -50,7 +53,7 @@ public class HtmlPageCompilerDomainPerAction : IHtmlPageCompiler
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var exportMatrixOptions = exportOptions.ExportMatrix;
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
 
         var matrix = await _matrixGenerator.GenerateAsync(cancellationToken);
         var result = await _indexPageProducer.ProduceAsync(matrix, cancellationToken);

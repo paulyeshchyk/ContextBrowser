@@ -16,6 +16,8 @@ using HtmlKit.Model;
 using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
 using LoggerKit;
+using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser.Samples.HtmlPages;
@@ -24,11 +26,15 @@ namespace ContextBrowser.Samples.HtmlPages;
 public class HtmlPageCompilerActionOnly : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoMapperFactory _contextInfoMapperContainer;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoMapperFactory<DomainPerActionTensor> _contextInfoMapperContainer;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlPageCompilerActionOnly(IAppLogger<AppLevel> logger, IContextInfoMapperFactory contextInfoMapperContainer, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
+    public HtmlPageCompilerActionOnly(
+        IAppLogger<AppLevel> logger, 
+        IContextInfoMapperFactory<DomainPerActionTensor> contextInfoMapperContainer, 
+        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, 
+        IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _contextInfoMapperContainer = contextInfoMapperContainer;
@@ -43,7 +49,7 @@ public class HtmlPageCompilerActionOnly : IHtmlPageCompiler
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
-        var registrations = new List<IHtmlTabRegistration<ContextKeyContainer>>
+        var registrations = new List<IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>>>
         {
             TabsheetFactory.ActionOnlyClassesTabRegistration(exportOptions),
             TabsheetFactory.MethodsTabRegistration(),
@@ -52,9 +58,9 @@ public class HtmlPageCompilerActionOnly : IHtmlPageCompiler
         };
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
-        var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextKeyContainer>(registrations);
-        var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextKeyContainer>(exportOptions, tabsheetDataProvider);
-        var builder = new HtmlPageWithTabsEntityListBuilder<ContextKeyContainer>(dataset, tabbedPageBuilder, (cellData) => $"composite_action_{cellData.ContextKey.Action}.html");
+        var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextKeyContainer<DomainPerActionTensor>>(registrations);
+        var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextKeyContainer<DomainPerActionTensor>>(exportOptions, tabsheetDataProvider);
+        var builder = new HtmlPageWithTabsEntityListBuilder<ContextKeyContainer<DomainPerActionTensor>, DomainPerActionTensor>(dataset, tabbedPageBuilder, (cellData) => $"composite_action_{cellData.ContextKey.Action}.html");
         await builder.BuildAsync(cancellationToken);
     }
 }

@@ -10,10 +10,13 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
 using LoggerKit;
+using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 using UmlKit.Builders;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
@@ -28,10 +31,10 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 {
     private const string SParentheses = "()";
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerPackageMethodPerActionDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerPackageMethodPerActionDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -45,7 +48,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
@@ -58,7 +61,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         return new Dictionary<string, bool>();
     }
 
-    private static void CompileActionGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileActionGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var actionContexts = contextInfoDataset
             .SelectMany(cell => cell.Value.Select(context => (action: cell.Key.Action, context: context)))
@@ -77,7 +80,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         }
     }
 
-    private static void CompileNoActionGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileNoActionGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var actionContexts = contextInfoDataset
                 .SelectMany(cell => cell.Value)
@@ -87,7 +90,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         BuildPackageAction(actionContexts, exportOptions, diagramBuilderOptions, "NoAction", "?");
     }
 
-    private static void CompileDomainGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileDomainGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)
@@ -108,7 +111,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         }
     }
 
-    private static void CompileNoDomainGroup(IContextInfoDataset<ContextInfo> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    private static void CompileNoDomainGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)

@@ -20,7 +20,7 @@ namespace ContextBrowser.Services;
 public interface IParsingOrchestrator
 {
     // context: parsing, build
-    Task<IEnumerable<ContextInfo>> GetParsedContextsAsync(CancellationToken cancellationToken);
+    Task<IEnumerable<ContextInfo>> GetOrchestratedContextsAsync(CancellationToken cancellationToken);
 }
 
 // context: parsing, build
@@ -53,7 +53,7 @@ public class ParsingOrchestrator : IParsingOrchestrator
     }
 
     // context: parsing, build
-    public async Task<IEnumerable<ContextInfo>> GetParsedContextsAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ContextInfo>> GetOrchestratedContextsAsync(CancellationToken cancellationToken)
     {
         var result = await _contextInfoCacheService.GetOrParseAndCacheAsync(
             ParsingJobAsync,
@@ -68,7 +68,8 @@ public class ParsingOrchestrator : IParsingOrchestrator
         return result;
     }
 
-    private Task<IEnumerable<ContextInfo>> ParsingJobAsync(CancellationToken token)
+    // context: parsing, build
+    internal Task<IEnumerable<ContextInfo>> ParsingJobAsync(CancellationToken token)
     {
         var parsingOptions = _optionsStore.GetOptions<CodeParsingOptions>();
 

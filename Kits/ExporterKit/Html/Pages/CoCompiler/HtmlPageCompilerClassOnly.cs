@@ -15,16 +15,18 @@ using ExporterKit.Html.Pages.CoCompiler;
 using HtmlKit.Builders.Core;
 using HtmlKit.Model;
 using LoggerKit;
+using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Page.Compiler;
 
 public class HtmlPageCompilerClassOnly : IHtmlPageCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlPageCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider datasetProvider, IAppOptionsStore optionsStore)
+    public HtmlPageCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -48,7 +50,7 @@ public class HtmlPageCompilerClassOnly : IHtmlPageCompiler
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<EntitynameContainer>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var builder = new HtmlPageWithTabsEntityBuilder<EntitynameContainer>(dataset, tabbedPageBuilder, (contextInfo) => $"class_only_{contextInfo.AlphanumericOnly()}.html");
+        var builder = new HtmlPageWithTabsEntityBuilder<EntitynameContainer, DomainPerActionTensor>(dataset, tabbedPageBuilder, (contextInfo) => $"class_only_{contextInfo.AlphanumericOnly()}.html");
         await builder.BuildAsync(cancellationToken);
     }
 }

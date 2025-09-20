@@ -6,24 +6,24 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ExporterKit.Infrastucture;
-using TensorKit.Model;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
-public class ContextInfoMappingProviderDomainPerAction : BaseContextInfoProvider, IContextInfoMapperProvider
+public class ContextInfoMappingProvider<TTensor> : BaseContextInfoProvider, IContextInfoMapperProvider<TTensor>
+    where TTensor : notnull
 {
-    private readonly IContextInfoMapperFactory _mapperFactory;
+    private readonly IContextInfoMapperFactory<TTensor> _mapperFactory;
 
-    private readonly Dictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> _mappers = new();
+    private readonly Dictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, TTensor>> _mappers = new();
 
     private readonly object _lock = new();
 
-    public ContextInfoMappingProviderDomainPerAction(IParsingOrchestrator parsingOrchestrant, IContextInfoMapperFactory mapperFactory) : base(parsingOrchestrant)
+    public ContextInfoMappingProvider(IParsingOrchestrator parsingOrchestrant, IContextInfoMapperFactory<TTensor> mapperFactory) : base(parsingOrchestrant)
     {
         _mapperFactory = mapperFactory;
     }
 
-    public async Task<DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
+    public async Task<IContextInfo2DMap<ContextInfo, TTensor>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)
         {

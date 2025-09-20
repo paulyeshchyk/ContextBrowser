@@ -4,11 +4,13 @@ using System.IO;
 using System.Linq;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Csv;
 
 public interface ICsvGenerator
 {
-    void GenerateHeatmap(IDomainPerActionContextClassifier contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None);
+    void GenerateHeatmap(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None);
 }

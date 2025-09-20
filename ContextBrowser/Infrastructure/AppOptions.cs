@@ -5,6 +5,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextBrowserKit.Options.Import;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using HtmlKit.Options;
 using LoggerKit.Model;
 using SemanticKit.Model.Options;
@@ -126,13 +127,13 @@ public class AppOptions
                                          indication: new DiagramIndicationOption(useAsync: true));
 
     [CommandLineArgument("context-classifier", "Определение контекста представления")]
-    public IDomainPerActionContextClassifier Classifier { get; set; } = new DomainPerActionContextClassifier(
-            emptyAction: "NoAction",
-            emptyDomain: "NoDomain",
-             fakeAction: "_fakeAction",
-             fakeDomain: "_fakeDomain",
-        standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" },
-              metaItems: new[] { "Action;Domain;Elements" })
+    public ITensorClassifierDomainPerActionContext Classifier { get; set; } = new DomainPerActionContextTensorClassifier(
+        emptyDimensionClassifier: new EmptyDimensionClassifierDomainPerAction(emptyAction: "EmptyAction", emptyDomain: "EmptyDomain"),
+         fakeDimensionClassifier: new FakeDimensionClassifierDomainPerAction(fakeAction: "_fakeAction", fakeDomain: "_fakeDomain"),
+                       metaItems: new[] { "Action;Domain;Elements" },
+              wordRoleClassifier: new WordRoleClassifier(
+                 standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" }
+             ))
     {
     };
 }

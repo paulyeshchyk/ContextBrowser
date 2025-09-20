@@ -13,7 +13,7 @@ namespace ContextBrowser.FileManager;
 // context: relations, build
 public interface IContextInfoRelationManager
 {
-    //relations, build
+    //context: relations, build
     Task<IEnumerable<ContextInfo>> ConvertToContextInfoAsync(List<ContextInfoSerializableModel> serializableModelList, CancellationToken cancellationToken);
 }
 

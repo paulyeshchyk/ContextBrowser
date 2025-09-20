@@ -2,6 +2,7 @@
 using System.Linq;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 
 namespace ContextKit.Stategies;
 
@@ -19,8 +20,7 @@ public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
         _factory = factory;
         _optionsStore = optionsStore;
 
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
-        _strategies = _factory.CreateStrategies(contextClassifier).ToList();
+        _strategies = _factory.CreateStrategies().ToList();
     }
 
     // context: contextInfo, comment, build

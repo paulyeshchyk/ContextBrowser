@@ -6,9 +6,10 @@ using TensorKit.Model;
 
 namespace HtmlKit.Helpers;
 
-public interface IHrefManager
+public interface IHrefManager<TTensor>
+    where TTensor : notnull
 {
-    string GetHrefCell(DomainPerActionTensor cell, HtmlTableOptions _options);
+    string GetHrefCell(TTensor cell, HtmlTableOptions _options);
 
     string GetHrefColSummary(string key, HtmlTableOptions _options);
 

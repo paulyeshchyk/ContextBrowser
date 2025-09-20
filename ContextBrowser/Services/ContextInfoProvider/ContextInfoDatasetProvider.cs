@@ -4,31 +4,28 @@ using ContextBrowser.Infrastructure;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using ExporterKit.Uml;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
-public class ContextInfoDatasetProvider : BaseContextInfoProvider, IContextInfoDatasetProvider
+public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, IContextInfoDatasetProvider<TTensor>
+    where TTensor : notnull
 {
-    private readonly IContextInfoDatasetBuilder _datasetBuilder;
+    private readonly IContextInfoDatasetBuilder<TTensor> _datasetBuilder;
 
-    // Приватное поле для кэширования результата.
-    private IContextInfoDataset<ContextInfo>? _dataset;
+    private IContextInfoDataset<ContextInfo, TTensor>? _dataset;
 
-    // Объект для синхронизации доступа.
     private readonly object _lock = new object();
 
     public ContextInfoDatasetProvider(
         IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
-        IContextInfoDatasetBuilder datasetBuilder)
+        IContextInfoDatasetBuilder<TTensor> datasetBuilder)
         : base(parsingOrchestrant)
     {
         _datasetBuilder = datasetBuilder;
     }
 
-    // Метод для асинхронного получения уже сформированного датасета.
-    public async Task<IContextInfoDataset<ContextInfo>> GetDatasetAsync(CancellationToken cancellationToken)
+    public async Task<IContextInfoDataset<ContextInfo, TTensor>> GetDatasetAsync(CancellationToken cancellationToken)
     {
         if (_dataset == null)
         {
@@ -38,7 +35,7 @@ public class ContextInfoDatasetProvider : BaseContextInfoProvider, IContextInfoD
     }
 
     // Приватный метод для однократной сборки датасета.
-    private async Task BuildDatasetAsync(CancellationToken cancellationToken)
+    internal async Task BuildDatasetAsync(CancellationToken cancellationToken)
     {
         lock (_lock)
         {

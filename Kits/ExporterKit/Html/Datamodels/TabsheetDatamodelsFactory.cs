@@ -10,14 +10,16 @@ using TensorKit.Model;
 
 namespace ContextBrowser.Samples.HtmlPages;
 
-public interface IPumlEnbeddedInjectionDatamodel : IHtmlTabsheetDataModel
+public interface IPumlEnbeddedInjectionDatamodel<TTensor> : IHtmlTabsheetDataModel
+    where TTensor : notnull
 {
-    HtmlBuilder GetPumlBuilder(DomainPerActionTensor contextKey, ExportOptions exportOptions);
+    HtmlBuilder GetPumlBuilder(TTensor contextKey, ExportOptions exportOptions);
 
     HtmlBuilder GetPumlBuilder(string contextKey, ExportOptions exportOptions);
 }
 
-public interface IMethodListDatamodel : IHtmlTabsheetDataModel
+public interface IMethodListDatamodel<TTensor> : IHtmlTabsheetDataModel
+    where TTensor : ITensor<string>
 {
-    IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer dto);
+    IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<TTensor> dto);
 }

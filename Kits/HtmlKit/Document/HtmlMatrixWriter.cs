@@ -13,6 +13,7 @@ using HtmlKit.Helpers;
 using HtmlKit.Options;
 using HtmlKit.Page;
 using TensorKit.Factories;
+using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
@@ -59,20 +60,21 @@ namespace HtmlKit.Document;
 /// hab.Services.AddTransient<DomainPerActionKeyBuilder, TensorBuilder>();
 ///
 /// </summary>
-/// <typeparam name="TKey">Тип ключа для ячейки матрицы. Должен иметь конструктор с двумя строковыми параметрами.</typeparam>
+/// <typeparam name="TTensor">Тип ключа для ячейки матрицы. Должен иметь конструктор с двумя строковыми параметрами.</typeparam>
 //context: htmlmatrix, build
-public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
+public class HtmlMatrixWriter<TTensor> : IHtmlMatrixWriter<TTensor>
+    where TTensor : ITensor<string>
 {
-    private readonly IHrefManager _hRefManager;
+    private readonly IHrefManager<TTensor> _hRefManager;
     private readonly IHtmlFixedContentManager _htmlFixedContentManager;
-    private readonly IHtmlDataCellBuilder<TKey> _dataCellBuilder;
-    private readonly ITensorFactory<TKey> _keyFactory;
+    private readonly IHtmlDataCellBuilder<TTensor> _dataCellBuilder;
+    private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
 
     public HtmlMatrixWriter(
-        IHtmlDataCellBuilder<TKey> dataCellBuilder,
-        IHrefManager hrefManager,
-        ITensorFactory<TKey> keyFactory, 
+        IHtmlDataCellBuilder<TTensor> dataCellBuilder,
+        IHrefManager<TTensor> hrefManager,
+        ITensorFactory<TTensor> keyFactory, 
         ITensorBuilder keyBuilder,
         IHtmlFixedContentManager htmlFixedContentManager)
     {
@@ -111,13 +113,17 @@ public class HtmlMatrixWriter<TKey> : IHtmlMatrixWriter
     protected void WriteSummaryRowIf(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions options, SummaryPlacementType placement)
     {
         if (options.SummaryPlacement == placement)
+        {
             WriteSummaryRow(textWriter, matrix, options, summary);
+        }
     }
 
     protected void WriteAllDataRows(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions options)
     {
         foreach (var row in matrix.rows)
+        {
             WriteDataRow(textWriter, matrix, options, row, summary);
+        }
     }
 
     // Внутренние методы, которые не меняют бизнес-логику, но теперь используют

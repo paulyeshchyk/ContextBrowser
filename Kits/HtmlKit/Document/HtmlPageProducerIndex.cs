@@ -15,22 +15,25 @@ using HtmlKit.Helpers;
 using HtmlKit.Options;
 using HtmlKit.Page;
 using HtmlKit.Writer;
+using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
 //context: htmlmatrix, model
-public interface IHtmlPageIndex
+public interface IHtmlPageIndexProducer<TTensor>
+    where TTensor : ITensor<string>
 {
     Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken);
 }
 
 //context: htmlmatrix, model
-public class HtmlPageProducerIndex : HtmlPageProducer, IHtmlPageIndex
+public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexProducer<TTensor>
+    where TTensor : ITensor<string>
 {
-    private readonly IHtmlMatrixWriter _matrixWriter;
+    private readonly IHtmlMatrixWriter<TTensor> _matrixWriter;
     private readonly IHtmlMatrixSummaryBuilder _summaryBuilder;
 
-    public HtmlPageProducerIndex(IHtmlMatrixWriter matrixWriter, IHtmlMatrixSummaryBuilder summaryBuilder, IAppOptionsStore optionsStore) : base(optionsStore)
+    public HtmlPageProducerIndex(IHtmlMatrixWriter<TTensor> matrixWriter, IHtmlMatrixSummaryBuilder summaryBuilder, IAppOptionsStore optionsStore) : base(optionsStore)
     {
         _matrixWriter = matrixWriter;
         _summaryBuilder = summaryBuilder;
@@ -63,6 +66,6 @@ public class HtmlPageProducerIndex : HtmlPageProducer, IHtmlPageIndex
 
         var summary = _summaryBuilder.Build(matrix, options.Orientation);
 
-        _matrixWriter.Write(writer, matrix, null, options);
+        _matrixWriter.Write(writer, matrix, summary, options);
     }
 }

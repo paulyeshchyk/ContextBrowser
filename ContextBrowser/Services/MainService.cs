@@ -30,6 +30,7 @@ using RoslynKit.Phases.Syntax.Parsers;
 using RoslynKit.Tree;
 using RoslynKit.Wrappers.Extractor;
 using SemanticKit.Model;
+using TensorKit.Model.DomainPerAction;
 using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser.Services;
@@ -46,7 +47,7 @@ public class MainService : IMainService
 {
     private readonly IAppLogger<AppLevel> _appLogger;
     private readonly IAppOptionsStore _optionsStore;
-    private readonly IContextInfoDatasetProvider _datasetProvider;
+    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IUmlDiagramCompilerOrchestrator _diagramCompilerOrchestrator;
     private readonly IHtmlCompilerOrchestrator _htmlCompilerOrchestrator;
     private readonly IServerStartSignal _serverStartSignal;
@@ -54,7 +55,7 @@ public class MainService : IMainService
     public MainService(
         IAppLogger<AppLevel> appLogger,
         IAppOptionsStore optionsStore,
-        IContextInfoDatasetProvider datasetProvider,
+        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider,
         IUmlDiagramCompilerOrchestrator diagramCompilerOrchestrator,
         IHtmlCompilerOrchestrator htmlCompilerOrchestrator,
         IServerStartSignal serverStartSignal)

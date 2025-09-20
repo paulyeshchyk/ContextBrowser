@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
 
-namespace ExporterKit.Uml;
+namespace ContextKit.Model;
 
 // context: ContextInfo, ContextInfoMatrix, build
-public interface IContextInfoDatasetBuilder
+public interface IContextInfoDatasetBuilder<TTensor>
+    where TTensor : notnull
 {
     // context: ContextInfo, ContextInfoMatrix, build
-    IContextInfoDataset<ContextInfo> Build(IEnumerable<ContextInfo> contextsList);
+    IContextInfoDataset<ContextInfo, TTensor> Build(IEnumerable<ContextInfo> contextsList);
 }

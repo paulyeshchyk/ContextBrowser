@@ -7,6 +7,7 @@ using ContextBrowserKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Classifier;
 using ExporterKit;
 using ExporterKit.Html;
 using ExporterKit.Infrastucture;
@@ -17,12 +18,13 @@ using TensorKit.Model;
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // context: htmlmatrix, build
-public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
+public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
+    where TTensor : notnull
 {
-    private readonly DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> _mapper;
+    private readonly IContextInfo2DMap<ContextInfo, TTensor> _mapper;
     private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlMatrixGeneratorDomainPerAction(DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> mapper, IAppOptionsStore optionsStore)
+    public HtmlMatrixGenerator(IContextInfo2DMap<ContextInfo, TTensor> mapper, IAppOptionsStore optionsStore)
     {
         _mapper = mapper;
         _optionsStore = optionsStore;
@@ -31,17 +33,18 @@ public class HtmlMatrixGeneratorDomainPerAction : IHtmlMatrixGenerator
     // context: build, htmlmatrix
     public Task<IHtmlMatrix> GenerateAsync(CancellationToken cancellationToken)
     {
-        var contextClassifier = _optionsStore.GetOptions<IDomainPerActionContextClassifier>();
+        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
         var matrixOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
         var matrixOrientation = matrixOptions.HtmlTable.Orientation;
         var priority = matrixOptions.UnclassifiedPriority;
+        var emptyDimensionClassifier = _optionsStore.GetOptions<IEmptyDimensionClassifier>();
 
         return Task.Run(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var rows = SortList(_mapper.GetRows().Distinct().ToList(), contextClassifier.EmptyAction, priority);
-            var cols = SortList(_mapper.GetCols().Distinct().ToList(), contextClassifier.EmptyDomain, priority);
+            var rows = SortList(_mapper.GetRows().Distinct().ToList(), emptyDimensionClassifier.EmptyAction, priority);
+            var cols = SortList(_mapper.GetCols().Distinct().ToList(), emptyDimensionClassifier.EmptyDomain, priority);
 
             var resultMatrix = new HtmlMatrix(rows, cols);
 

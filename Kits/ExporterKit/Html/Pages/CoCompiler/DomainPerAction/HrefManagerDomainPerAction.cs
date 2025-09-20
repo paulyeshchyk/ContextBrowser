@@ -3,10 +3,11 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Options;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Helpers;
 
-public class HrefManagerDomainPerAction : IHrefManager
+public class HrefManagerDomainPerAction : IHrefManager<DomainPerActionTensor>
 {
     private static readonly long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 

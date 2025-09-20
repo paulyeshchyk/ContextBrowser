@@ -39,7 +39,7 @@ using RoslynKit.Tree;
 using RoslynKit.Wrappers.Extractor;
 using SemanticKit.Model;
 using TensorKit.Factories;
-using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 using UmlKit.Compiler;
 using UmlKit.Compiler.Orchestrant;
 using UmlKit.Exporter;
@@ -78,7 +78,7 @@ public static class Program
             return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultCW, dependencies: defaultDependencies);
         });
 
-        hab.Services.AddTransient<IHtmlMatrixGenerator, HtmlMatrixGeneratorDomainPerAction>();
+        hab.Services.AddTransient<IHtmlMatrixGenerator, HtmlMatrixGenerator<DomainPerActionTensor>>();
 
         // # Tensor
         //
@@ -87,11 +87,11 @@ public static class Program
         // ## Tensor DomainPerAction
         hab.Services.AddTransient<ITensorFactory<DomainPerActionTensor>>(provider => new TensorFactory<DomainPerActionTensor>(dimensions => new DomainPerActionTensor(dimensions)));
 
-        hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerDomainPerAction>();
-        hab.Services.AddSingleton<IContextInfoFiller, ContextInfoFillerDomainPerActionEmptyData>();
+        hab.Services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFiller<DomainPerActionTensor>>();
+        hab.Services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFillerEmptyData<DomainPerActionTensor>>();
 
         //
-        hab.Services.AddSingleton<IContextInfoMapperProvider, ContextInfoMappingProviderDomainPerAction>();
+        hab.Services.AddSingleton<IContextInfoMapperProvider<DomainPerActionTensor>, ContextInfoMappingProvider<DomainPerActionTensor>>();
         hab.Services.AddSingleton<IContextInfoIndexerProvider, ContextInfoIndexerProvider>();
 
         hab.Services.AddTransient<ICsvGenerator, CsvGenerator>();
@@ -111,18 +111,18 @@ public static class Program
             };
         });
 
-        hab.Services.AddSingleton<DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>, ContextInfoMapperDomainPerAction>();
-        hab.Services.AddTransient<IContextInfoMapperFactory, ContextInfoMapperFactory>();
+        hab.Services.AddSingleton<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>, ContextInfo2DMapDomainPerAction>();
+        hab.Services.AddTransient<IContextInfoMapperFactory<DomainPerActionTensor>, ContextInfoMapperFactory<DomainPerActionTensor>>();
 
-        hab.Services.AddSingleton<IDictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>>>(provider =>
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, DomainPerActionTensor>>>(provider =>
         {
-            return new Dictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>>
+            return new Dictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, DomainPerActionTensor>>
             {
-                { GlobalMapperKeys.DomainPerAction, provider.GetRequiredService<DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>>() }
+                { GlobalMapperKeys.DomainPerAction, provider.GetRequiredService<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>>() }
             };
         });
 
-        hab.Services.AddTransient<IContextInfoDatasetBuilder, ContextInfoDatasetBuilder>();
+        hab.Services.AddTransient<IContextInfoDatasetBuilder<DomainPerActionTensor>, ContextInfoDatasetBuilder<DomainPerActionTensor>>();
 
         hab.Services.AddSingleton<ICompilationBuilder, RoslynCompilationBuilder>();
         hab.Services.AddTransient<ICodeParseService, CodeParseService>();
@@ -137,7 +137,7 @@ public static class Program
         hab.Services.AddTransient<IDeclarationParserFactory, DeclarationParserFactory>();
         hab.Services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
 
-        hab.Services.AddSingleton<IContextInfoDatasetProvider, ContextInfoDatasetProvider>();
+        hab.Services.AddSingleton<IContextInfoDatasetProvider<DomainPerActionTensor>, ContextInfoDatasetProvider<DomainPerActionTensor>>();
 
         // uml compilers
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassActionPerDomain>();
@@ -156,32 +156,35 @@ public static class Program
         hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
 
         hab.Services.AddTransient<IHtmlFixedContentManager, FixedHtmlContentManagerDomainPerAction>();
-        hab.Services.AddTransient<IHtmlContentInjector, HtmlContentInjector>();
-        hab.Services.AddTransient<IHrefManager, HrefManagerDomainPerAction>();
+        hab.Services.AddTransient<IHtmlContentInjector<DomainPerActionTensor>, HtmlContentInjector<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IHrefManager<DomainPerActionTensor>, HrefManagerDomainPerAction>();
 
-        hab.Services.AddTransient<IHtmlCellDataProducer<string>, HtmlCellDataProducerDomainPerAction>();
-        hab.Services.AddTransient<IHtmlCellDataProducer<List<ContextInfo>>, HtmlCellDataProducer>();
+        hab.Services.AddTransient<IHtmlCellDataProducer<string, DomainPerActionTensor>, HtmlCellDataProducerDomainPerActionMethodsCount<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IHtmlCellDataProducer<List<ContextInfo>, DomainPerActionTensor>, HtmlCellDataProducerListOfItems<DomainPerActionTensor>>();
 
         //
         // Построитель таблицы(HtmlMatrixWriter) для отображения к-ва методов в пересечении домена-действия с выводом coverage
         // и сопутствующие этому модули
         //
 
-        hab.Services.AddTransient<IHtmlMatrixSummaryBuilder, HtmlMatrixSummaryBuilderDomainPerAction>();
-        hab.Services.AddTransient<IHtmlDataCellBuilder<DomainPerActionTensor>, HtmlDataCellBuilderCoverage>();
-        hab.Services.AddTransient<IHtmlMatrixWriter, HtmlMatrixWriter<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IHtmlMatrixSummaryBuilder, HtmlMatrixSummaryBuilder<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IHtmlDataCellBuilder<DomainPerActionTensor>, HtmlDataCellBuilderCoverage<DomainPerActionTensor>>();
+
+        //
+
+        hab.Services.AddTransient<IHtmlMatrixWriter<DomainPerActionTensor>, HtmlMatrixWriter<DomainPerActionTensor>>();
 
         //
 
         hab.Services.AddScoped<ICoverageValueExtractor, CoverageValueExtractor>();
-        hab.Services.AddScoped<IHtmlCellColorCalculator, HtmlCellColorCalculatorCoverage>();
-        hab.Services.AddScoped<IHtmlCellStyleBuilder, HtmlCellStyleBuilder>();
+        hab.Services.AddScoped<IHtmlCellColorCalculator<DomainPerActionTensor>, HtmlCellColorCalculatorCoverageDomainPerAction>();
+        hab.Services.AddScoped<IHtmlCellStyleBuilder<DomainPerActionTensor>, HtmlCellStyleBuilder<DomainPerActionTensor>>();
 
         // Регистрация IHtmlPageMatrix (HtmlPageProducerMatrix) как транзитного сервиса.
-        hab.Services.AddTransient<IHtmlPageIndex, HtmlPageProducerIndex>();
+        hab.Services.AddTransient<IHtmlPageIndexProducer<DomainPerActionTensor>, HtmlPageProducerIndex<DomainPerActionTensor>>();
 
         // PageCompilers
-        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerDomainPerAction>();
+        hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerIndexDomainPerAction>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerNamespaceOnly>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerClassOnly>();
         hab.Services.AddTransient<IHtmlPageCompiler, HtmlPageCompilerActionPerDomain>();
@@ -242,16 +245,17 @@ public static class Program
     }
 }
 
-public class ContextInfoMapperFactory : IContextInfoMapperFactory
+public class ContextInfoMapperFactory<TTensor> : IContextInfoMapperFactory<TTensor>
+    where TTensor : notnull
 {
-    private readonly IDictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> _mappers;
+    private readonly IDictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, TTensor>> _mappers;
 
-    public ContextInfoMapperFactory(IDictionary<MapperKeyBase, DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor>> mappers)
+    public ContextInfoMapperFactory(IDictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, TTensor>> mappers)
     {
         _mappers = mappers;
     }
 
-    public DomainPerActionKeyMap<ContextInfo, DomainPerActionTensor> GetMapper(MapperKeyBase type)
+    public IContextInfo2DMap<ContextInfo, TTensor> GetMapper(MapperKeyBase type)
     {
         if (_mappers.TryGetValue(type, out var mapper))
         {

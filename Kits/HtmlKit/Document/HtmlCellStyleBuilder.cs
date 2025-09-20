@@ -4,17 +4,18 @@ using TensorKit.Model;
 
 namespace HtmlKit.Document.Coverage;
 
-public class HtmlCellStyleBuilder : IHtmlCellStyleBuilder
+public class HtmlCellStyleBuilder<TTensor> : IHtmlCellStyleBuilder<TTensor>
+    where TTensor : notnull
 {
     private const string SCssStyleTemplate = "style=\"background-color:{0}; color:black\"";
-    private readonly IHtmlCellColorCalculator _colorCalculator;
+    private readonly IHtmlCellColorCalculator<TTensor> _colorCalculator;
 
-    public HtmlCellStyleBuilder(IHtmlCellColorCalculator colorCalculator)
+    public HtmlCellStyleBuilder(IHtmlCellColorCalculator<TTensor> colorCalculator)
     {
         _colorCalculator = colorCalculator;
     }
 
-    public string? BuildCellStyle(DomainPerActionTensor cell, IEnumerable<ContextInfo>? stInfo, Dictionary<string, ContextInfo>? index)
+    public string? BuildCellStyle(TTensor cell, IEnumerable<ContextInfo>? stInfo, Dictionary<string, ContextInfo>? index)
     {
         var bgColor = _colorCalculator.CalculateBgColor(cell, stInfo, index);
         return bgColor is null

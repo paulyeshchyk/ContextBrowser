@@ -4,7 +4,8 @@ using TensorKit.Model;
 
 namespace HtmlKit.Document;
 
-public interface IHtmlCellColorCalculator
+public interface IHtmlCellColorCalculator<TTensor>
+    where TTensor : notnull
 {
     /// <summary>
     /// Вычисляет цвет для ячейки на основе данных.
@@ -13,5 +14,5 @@ public interface IHtmlCellColorCalculator
     /// <param name="contextInfoList">Список связанной контекстной информации.</param>
     /// <param name="index">Индекс для быстрого поиска.</param>
     /// <returns>Строка с HEX-цветом или null.</returns>
-    string? CalculateBgColor(DomainPerActionTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<string, ContextInfo>? index);
+    string? CalculateBgColor(TTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<string, ContextInfo>? index);
 }
