@@ -12,16 +12,17 @@ using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
 
-public class HtmlCellColorCalculatorCoverageDomainPerAction : IHtmlCellColorCalculator<DomainPerActionTensor>
+public class HtmlCellColorCalculatorCoverage<TTensor> : IHtmlCellColorCalculator<TTensor>
+    where TTensor : IDomainPerActionTensor
 {
     private readonly ICoverageValueExtractor _coverageValueExtractor;
 
-    public HtmlCellColorCalculatorCoverageDomainPerAction(ICoverageValueExtractor coverageValueExtractor)
+    public HtmlCellColorCalculatorCoverage(ICoverageValueExtractor coverageValueExtractor)
     {
         _coverageValueExtractor = coverageValueExtractor;
     }
 
-    public string? CalculateBgColor(DomainPerActionTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<object, ContextInfo>? index)
+    public string? CalculateBgColor(TTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<object, ContextInfo>? index)
     {
         if (contextInfoList != null && contextInfoList.Any() && index != null)
         {

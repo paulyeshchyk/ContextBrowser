@@ -5,15 +5,16 @@ using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Matrix;
 
-public class HtmlMatrixMethods : IHtmlMatrix
+public class HtmlMatrixMethods<TDataTensor> : IHtmlMatrix
+    where TDataTensor : notnull
 {
     public List<object> rows { get; }
 
     public List<object> cols { get; }
 
-    public ContextInfoKeyContainerTensor<DomainPerActionTensor> OwnerTensor { get; }
+    public ContextInfoKeyContainerTensor<TDataTensor> OwnerTensor { get; }
 
-    public HtmlMatrixMethods(IEnumerable<int> methods, ContextInfoKeyContainerTensor<DomainPerActionTensor> ownerTensor)
+    public HtmlMatrixMethods(IEnumerable<int> methods, ContextInfoKeyContainerTensor<TDataTensor> ownerTensor)
     {
         OwnerTensor = ownerTensor;
         rows = methods.Cast<object>().ToList();

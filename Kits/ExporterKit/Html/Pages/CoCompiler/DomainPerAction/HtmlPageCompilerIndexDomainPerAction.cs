@@ -28,15 +28,16 @@ using TensorKit.Model.DomainPerAction;
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // context: html, build
-public class HtmlPageCompilerIndexDomainPerAction : IHtmlPageCompiler
+public class HtmlPageCompilerIndexDomainPerAction<TDataTensor> : IHtmlPageCompiler
+    where TDataTensor : notnull
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfo2DMap<ContextInfo, DomainPerActionTensor> _mapper;
-    private readonly IHtmlPageIndexProducer<DomainPerActionTensor> _indexPageProducer;
+    private readonly IContextInfo2DMap<ContextInfo, TDataTensor> _mapper;
+    private readonly IHtmlPageIndexProducer<TDataTensor> _indexPageProducer;
     private readonly IAppOptionsStore _optionsStore;
     private readonly IHtmlMatrixGenerator _matrixGenerator;
 
-    public HtmlPageCompilerIndexDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory<DomainPerActionTensor> contextInfoMapperContainer, IHtmlPageIndexProducer<DomainPerActionTensor> indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
+    public HtmlPageCompilerIndexDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory<TDataTensor> contextInfoMapperContainer, IHtmlPageIndexProducer<TDataTensor> indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
     {
         _logger = logger;
         _mapper = contextInfoMapperContainer.GetMapper(GlobalMapperKeys.DomainPerAction);

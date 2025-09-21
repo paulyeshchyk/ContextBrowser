@@ -20,14 +20,14 @@ namespace HtmlKit.Document;
 
 //context: htmlmatrix, model
 public interface IHtmlPageIndexProducer<TTensor>
-    where TTensor : ITensor
+    where TTensor : notnull
 {
     Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken);
 }
 
 //context: htmlmatrix, model
 public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexProducer<TTensor>
-    where TTensor : ITensor
+    where TTensor : notnull
 {
     private readonly IHtmlTensorWriter<TTensor> _matrixWriter;
     private readonly IHtmlMatrixSummaryBuilder<TTensor> _summaryBuilder;

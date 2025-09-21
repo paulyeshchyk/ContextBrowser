@@ -17,13 +17,14 @@ using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Page.Compiler;
 
-public class HtmlPageCompilerNamespaceOnly : IHtmlPageCompiler
+public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
+    where TDataTensor : IDomainPerActionTensor
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
+    private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlPageCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public HtmlPageCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -39,14 +40,14 @@ public class HtmlPageCompilerNamespaceOnly : IHtmlPageCompiler
 
         var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerNamespace>>
         {
-            TabsheetFactory.NamespaceTabRegistration(exportOptions),
+            TabsheetFactory<TDataTensor>.NamespaceTabRegistration(exportOptions),
         };
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerNamespace>(registrations);
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerNamespace>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var builder = new HtmlPageWithTabsNamespaceEntityBuilder<ContextInfoKeyContainerNamespace, DomainPerActionTensor>(dataset, tabbedPageBuilder, (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html");
+        var builder = new HtmlPageWithTabsNamespaceEntityBuilder<ContextInfoKeyContainerNamespace, TDataTensor>(dataset, tabbedPageBuilder, (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html");
         await builder.BuildAsync(cancellationToken);
     }
 }

@@ -20,7 +20,7 @@ public interface IPumlEnbeddedInjectionDatamodel<TTensor> : IHtmlTabsheetDataMod
 }
 
 public interface IMethodListDatamodel<TTensor> : IHtmlTabsheetDataModel
-    where TTensor : ITensor
+    where TTensor : notnull
 {
     IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto);
 }

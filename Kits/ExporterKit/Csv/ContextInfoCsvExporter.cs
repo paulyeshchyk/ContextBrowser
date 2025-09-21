@@ -8,10 +8,11 @@ using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Csv;
 
-public static class ContextInfoCsvExporter
+public static class ContextInfoCsvExporter<TDataTensor>
+    where TDataTensor : IDomainPerActionTensor
 {
     //context: build, csv, matrix
-    public static void GenerateCsv(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath)
+    public static void GenerateCsv(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<TDataTensor, List<string>> matrix, string outputPath)
     {
         var lines = new List<string>();
         lines.AddRange(contextClassifier.MetaItems);
@@ -24,7 +25,7 @@ public static class ContextInfoCsvExporter
         File.WriteAllLines(outputPath, lines);
     }
 
-    private static void BuildItem(List<string> lines, KeyValuePair<DomainPerActionTensor, List<string>> cell)
+    private static void BuildItem(List<string> lines, KeyValuePair<TDataTensor, List<string>> cell)
     {
         var cellInfo = cell.Key;
         var items = cell.Value.Any()

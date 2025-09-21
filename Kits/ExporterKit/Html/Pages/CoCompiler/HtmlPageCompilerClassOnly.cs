@@ -21,13 +21,14 @@ using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Page.Compiler;
 
-public class HtmlPageCompilerClassOnly : IHtmlPageCompiler
+public class HtmlPageCompilerClassOnly<TDataTensor> : IHtmlPageCompiler
+    where TDataTensor : IDomainPerActionTensor
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
+    private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public HtmlPageCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public HtmlPageCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -43,15 +44,15 @@ public class HtmlPageCompilerClassOnly : IHtmlPageCompiler
 
         var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerEntityName>>
         {
-            TabsheetFactory.ClassesTabRegistration(exportOptions),
-            TabsheetFactory.MindmapTabRegistration(exportOptions),
+            TabsheetFactory<TDataTensor>.ClassesTabRegistration(exportOptions),
+            TabsheetFactory<TDataTensor>.MindmapTabRegistration(exportOptions),
         };
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerEntityName>(registrations);
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerEntityName>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var builder = new HtmlPageWithTabsEntityBuilder<ContextInfoKeyContainerEntityName, DomainPerActionTensor>(dataset, tabbedPageBuilder, (contextInfo) => $"class_only_{contextInfo.AlphanumericOnly()}.html");
+        var builder = new HtmlPageWithTabsEntityBuilder<ContextInfoKeyContainerEntityName, TDataTensor>(dataset, tabbedPageBuilder, (contextInfo) => $"class_only_{contextInfo.AlphanumericOnly()}.html");
         await builder.BuildAsync(cancellationToken);
     }
 }

@@ -12,15 +12,16 @@ using TensorKit.Model.DomainPerAction;
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public class ContextInfo2DMapDomainPerAction : IContextInfo2DMap<ContextInfo, DomainPerActionTensor>
+public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
+    where TTensor : IDomainPerActionTensor
 {
-    private Dictionary<DomainPerActionTensor, List<ContextInfo>>? _data;
-    private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
+    private Dictionary<TTensor, List<ContextInfo>>? _data;
+    private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
     private readonly IAppOptionsStore _optionsStore;
     private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
 
-    public ContextInfo2DMapDomainPerAction(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore optionsStore)
+    public ContextInfo2DMap(ITensorFactory<TTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore optionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
@@ -28,7 +29,7 @@ public class ContextInfo2DMapDomainPerAction : IContextInfo2DMap<ContextInfo, Do
         _FakeDimensionClassifier = _optionsStore.GetOptions<IFakeDimensionClassifier>();
     }
 
-    public Dictionary<DomainPerActionTensor, List<ContextInfo>>? GetMapData()
+    public Dictionary<TTensor, List<ContextInfo>>? GetMapData()
     {
         return _data;
     }
@@ -51,7 +52,7 @@ public class ContextInfo2DMapDomainPerAction : IContextInfo2DMap<ContextInfo, Do
                             return contextKey;
                         })
                         .ToDictionary(
-                            g => (DomainPerActionTensor)g.Key,
+                            g => (TTensor)g.Key,
                             g => g.ToList());
         }, cancellationToken);
     }

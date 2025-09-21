@@ -14,14 +14,15 @@ namespace ExporterKit.Csv;
 
 // context: heatmap, build
 // pattern: Builder
-public class CsvGenerator : ICsvGenerator
+public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
+    where TDataTensor : IDomainPerActionTensor
 {
-    private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
+    private readonly ITensorFactory<TDataTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
     private readonly IWordRoleClassifier _wordRoleClassifier;
     private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
 
-    public CsvGenerator(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
+    public CsvGenerator(ITensorFactory<TDataTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
@@ -30,7 +31,7 @@ public class CsvGenerator : ICsvGenerator
     }
 
     //context: build, csv, heatmap
-    public void GenerateHeatmap(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<DomainPerActionTensor, List<object>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
+    public void GenerateHeatmap(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<TDataTensor, List<object>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 

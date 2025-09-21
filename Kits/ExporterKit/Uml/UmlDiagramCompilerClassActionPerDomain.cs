@@ -24,13 +24,14 @@ namespace UmlKit.Exporter;
 
 // context: uml, build
 // pattern: Builder
-public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
+public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCompiler
+    where TDataTensor : IDomainPerActionTensor
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
+    private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerClassActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerClassActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -54,7 +55,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
     }
 
     //context: uml, build, heatmap, directory
-    internal void Build(KeyValuePair<DomainPerActionTensor, List<ContextInfo>> cell, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    internal void Build(KeyValuePair<TDataTensor, List<ContextInfo>> cell, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var contextInfoKey = cell.Key;
         var contextInfoList = cell.Value.Distinct().ToList();

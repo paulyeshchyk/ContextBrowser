@@ -26,15 +26,16 @@ using UmlKit.Infrastructure.Options;
 namespace HtmlKit.Page.Compiler;
 
 // context: contextInfo, build, html
-public class HtmlPageCompilerDomainOnly : IHtmlPageCompiler
+public class HtmlPageCompilerDomainOnly<TDataTensor> : IHtmlPageCompiler
+    where TDataTensor : IDomainPerActionTensor
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
+    private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
-    private readonly IHtmlTensorWriter<MethodListTensor> _matrixWriter;
-    private readonly ITensorFactory<MethodListTensor> _keyFactory;
+    private readonly IHtmlTensorWriter<MethodListTensor<TDataTensor>> _matrixWriter;
+    private readonly ITensorFactory<MethodListTensor<TDataTensor>> _keyFactory;
 
-    public HtmlPageCompilerDomainOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, IHtmlTensorWriter<MethodListTensor> matrixWriter, ITensorFactory<MethodListTensor> keyFactory)
+    public HtmlPageCompilerDomainOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore, IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -50,20 +51,20 @@ public class HtmlPageCompilerDomainOnly : IHtmlPageCompiler
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
-        var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>>>
+        var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>>>
         {
-            TabsheetFactory.DomainOnlyClassesTabsheetRegistration(exportOptions),
-            TabsheetFactory.DomainOnlyMethodsTabsheetRegistration(_matrixWriter, _keyFactory),
-            TabsheetFactory.DomainOnlySequence(exportOptions),
-            TabsheetFactory.DomainOnlyStates(exportOptions),
-            TabsheetFactory.DomainOnlyMindmap(exportOptions),
+            TabsheetFactory<TDataTensor>.DomainOnlyClassesTabsheetRegistration(exportOptions),
+            TabsheetFactory<TDataTensor>.DomainOnlyMethodsTabsheetRegistration(_matrixWriter, _keyFactory),
+            TabsheetFactory<TDataTensor>.DomainOnlySequence(exportOptions),
+            TabsheetFactory<TDataTensor>.DomainOnlyStates(exportOptions),
+            TabsheetFactory<TDataTensor>.DomainOnlyMindmap(exportOptions),
         };
 
-        var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerTensor<DomainPerActionTensor>>(registrations);
-        var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerTensor<DomainPerActionTensor>>(exportOptions, tabsheetDataProvider);
+        var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerTensor<TDataTensor>>(registrations);
+        var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerTensor<TDataTensor>>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<DomainPerActionTensor>, DomainPerActionTensor>(dataset, tabbedPageBuilder, (cellData) => $"composite_domain_{cellData.ContextKey.Domain}.html");
+        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(dataset, tabbedPageBuilder, (cellData) => $"composite_domain_{cellData.ContextKey.Domain}.html");
         await builder.BuildAsync(cancellationToken);
     }
 }

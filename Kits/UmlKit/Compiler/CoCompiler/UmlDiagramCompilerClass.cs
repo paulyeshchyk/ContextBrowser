@@ -17,7 +17,8 @@ using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Compiler.CoCompiler;
 
-public class UmlDiagramCompilerClass
+public class UmlDiagramCompilerClass<TDataTensor>
+    where TDataTensor : IDomainPerActionTensor
 {
     private readonly DiagramBuilderOptions _options;
     private readonly string _outputPath;
@@ -30,7 +31,7 @@ public class UmlDiagramCompilerClass
         _linkGenerator = linkGenerator;
     }
 
-    public void Build(IContextInfoDataset<ContextInfo, DomainPerActionTensor> matrix)
+    public void Build(IContextInfoDataset<ContextInfo, TDataTensor> matrix)
     {
         var diagramId = $"actionPerDomain_{_outputPath}".AlphanumericOnly();
 
@@ -52,7 +53,7 @@ public class UmlDiagramCompilerClass
         diagram.WriteToFile(_outputPath, writeOptions);
     }
 
-    private static void AddPackage(Func<string, string, string> linkGenerator, UmlDiagramClass diagram, DomainPerActionTensor cell, int count)
+    private static void AddPackage(Func<string, string, string> linkGenerator, UmlDiagramClass diagram, TDataTensor cell, int count)
     {
         var packageId = $"{cell.Action}_{cell.Domain}";
         var label = $"{packageId}\\nMethods: {count}";

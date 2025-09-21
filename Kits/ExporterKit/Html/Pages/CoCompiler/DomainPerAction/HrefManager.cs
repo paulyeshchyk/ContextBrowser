@@ -9,9 +9,10 @@ using ExporterKit.Html.Containers;
 
 namespace HtmlKit.Helpers;
 
-public class HrefManagerMethodList : IHrefManager<MethodListTensor>
+public class HrefManagerMethodList<TDataTensor> : IHrefManager<MethodListTensor<TDataTensor>>
+    where TDataTensor : notnull
 {
-    public string GetHrefCell(MethodListTensor cell, HtmlTableOptions _options)
+    public string GetHrefCell(MethodListTensor<TDataTensor> cell, HtmlTableOptions _options)
     {
         return string.Empty;
     }
@@ -62,7 +63,8 @@ public class HrefManagerMethodList : IHrefManager<MethodListTensor>
     }
 }
 
-public class HrefManagerDomainPerAction : IHrefManager<DomainPerActionTensor>
+public class HrefManager<TTensor> : IHrefManager<TTensor>
+    where TTensor : IDomainPerActionTensor
 {
     private static readonly long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -91,7 +93,7 @@ public class HrefManagerDomainPerAction : IHrefManager<DomainPerActionTensor>
             ? $"pages\\composite_action_{key}.html?v={TimeStamp}"
             : $"pages\\composite_domain_{key}.html?v={TimeStamp}";
 
-    public string GetHrefCell(DomainPerActionTensor cell, HtmlTableOptions _options) =>
+    public string GetHrefCell(TTensor cell, HtmlTableOptions _options) =>
         $"pages\\composite_{cell.Action}_{cell.Domain}.html?v={TimeStamp}";
 
     public string GetHrefSummary(HtmlTableOptions _options) =>

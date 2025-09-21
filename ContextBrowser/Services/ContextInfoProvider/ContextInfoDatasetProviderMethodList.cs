@@ -7,23 +7,24 @@ using TensorKit.Model.DomainPerAction;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
-public class ContextInfoDatasetProviderMethodList : BaseContextInfoProvider, IContextInfoDatasetProvider<MethodListTensor>
+public class ContextInfoDatasetProviderMethodList<TDataTensor> : BaseContextInfoProvider, IContextInfoDatasetProvider<MethodListTensor<TDataTensor>>
+    where TDataTensor : IDomainPerActionTensor
 {
-    private readonly IContextInfoDatasetBuilder<MethodListTensor> _datasetBuilder;
+    private readonly IContextInfoDatasetBuilder<MethodListTensor<TDataTensor>> _datasetBuilder;
 
-    private IContextInfoDataset<ContextInfo, MethodListTensor>? _dataset;
+    private IContextInfoDataset<ContextInfo, MethodListTensor<TDataTensor>>? _dataset;
 
     private readonly object _lock = new object();
 
     public ContextInfoDatasetProviderMethodList(
         IParsingOrchestrator parsingOrchestrant,
-        IContextInfoDatasetBuilder<MethodListTensor> datasetBuilder)
+        IContextInfoDatasetBuilder<MethodListTensor<TDataTensor>> datasetBuilder)
         : base(parsingOrchestrant)
     {
         _datasetBuilder = datasetBuilder;
     }
 
-    public async Task<IContextInfoDataset<ContextInfo, MethodListTensor>> GetDatasetAsync(CancellationToken cancellationToken)
+    public async Task<IContextInfoDataset<ContextInfo, MethodListTensor<TDataTensor>>> GetDatasetAsync(CancellationToken cancellationToken)
     {
         if (_dataset == null)
         {
