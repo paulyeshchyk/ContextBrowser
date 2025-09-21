@@ -15,13 +15,13 @@ namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 public class HtmlMatrixIndexerByNameWithClassOwnerName<TContext> : IKeyIndexBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private Dictionary<string, TContext>? _index;
+    private Dictionary<object, TContext>? _index;
 
     public HtmlMatrixIndexerByNameWithClassOwnerName()
     {
     }
 
-    public Dictionary<string, TContext>? GetIndexData()
+    public Dictionary<object, TContext>? GetIndexData()
     {
         return _index;
     }
@@ -34,7 +34,7 @@ public class HtmlMatrixIndexerByNameWithClassOwnerName<TContext> : IKeyIndexBuil
                 .Where(c => !string.IsNullOrWhiteSpace(c.Name))
                 .GroupBy(c => c.NameWithClassOwnerName)
                 .ToDictionary(
-                    g => g.Key,
+                    g => (object)g.Key,
                     g => g.First());
         }
     }

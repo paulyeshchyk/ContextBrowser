@@ -57,14 +57,8 @@ public class ContextInfo2DMapDomainPerAction : IContextInfo2DMap<ContextInfo, Do
     }
 
     // context: ContextInfoMatrix, read
-    public IEnumerable<string> GetCols() => _data!.Select(k => k.Key.Domain);
+    public IEnumerable<object> GetCols() => _data!.Select(k => k.Key.Domain);
 
     // context: ContextInfoMatrix, read
-    public IEnumerable<string> GetRows() => _data!.Select(k => k.Key.Action);
-
-    // context: ContextInfoMatrix, read
-    public List<ContextInfo> GetDataByRow(string action) => _data!.Where(kvp => kvp.Key.Action == action).SelectMany(kvp => kvp.Value).Distinct().ToList();
-
-    // context: ContextInfoMatrix, read
-    public List<ContextInfo> GetDataByCol(string domain) => _data!.Where(kvp => kvp.Key.Domain == domain).SelectMany(kvp => kvp.Value).Distinct().ToList();
+    public IEnumerable<object> GetRows() => _data!.Select(k => k.Key.Action);
 }

@@ -56,7 +56,7 @@ public class UmlDiagramCompilerClass
     {
         var packageId = $"{cell.Action}_{cell.Domain}";
         var label = $"{packageId}\\nMethods: {count}";
-        var url = linkGenerator(cell.Action, cell.Domain);
+        var url = linkGenerator((string)cell.Action, (string)cell.Domain);
 
         var package = new UmlPackage(packageId, alias: packageId.AlphanumericOnly(), url: null);
         package.Add(new UmlComponent(label, url));

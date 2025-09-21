@@ -4,13 +4,12 @@ using System.Data;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Matrix;
+using HtmlKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using ExporterKit.Html;
 using HtmlKit.Builders.Core;
-using HtmlKit.Extensions;
 using HtmlKit.Helpers;
 using HtmlKit.Options;
 using HtmlKit.Page;
@@ -21,19 +20,19 @@ namespace HtmlKit.Document;
 
 //context: htmlmatrix, model
 public interface IHtmlPageIndexProducer<TTensor>
-    where TTensor : ITensor<string>
+    where TTensor : ITensor
 {
     Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken);
 }
 
 //context: htmlmatrix, model
 public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexProducer<TTensor>
-    where TTensor : ITensor<string>
+    where TTensor : ITensor
 {
     private readonly IHtmlTensorWriter<TTensor> _matrixWriter;
-    private readonly IHtmlMatrixSummaryBuilder _summaryBuilder;
+    private readonly IHtmlMatrixSummaryBuilder<TTensor> _summaryBuilder;
 
-    public HtmlPageProducerIndex(IHtmlTensorWriter<TTensor> matrixWriter, IHtmlMatrixSummaryBuilder summaryBuilder, IAppOptionsStore optionsStore) : base(optionsStore)
+    public HtmlPageProducerIndex(IHtmlTensorWriter<TTensor> matrixWriter, IHtmlMatrixSummaryBuilder<TTensor> summaryBuilder, IAppOptionsStore optionsStore) : base(optionsStore)
     {
         _matrixWriter = matrixWriter;
         _summaryBuilder = summaryBuilder;

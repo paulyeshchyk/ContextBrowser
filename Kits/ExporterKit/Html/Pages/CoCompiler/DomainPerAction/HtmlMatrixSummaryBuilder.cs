@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using ContextBrowserKit.Matrix;
+using HtmlKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ExporterKit;
 using ExporterKit.Html;
 using HtmlKit;
-using HtmlKit.Extensions;
 using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
 using TensorKit.Factories;
@@ -15,7 +14,7 @@ using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
-public class HtmlMatrixSummaryBuilder<TTensor> : IHtmlMatrixSummaryBuilder
+public class HtmlMatrixSummaryBuilder<TTensor> : IHtmlMatrixSummaryBuilder<TTensor>
     where TTensor : notnull
 {
     private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
@@ -38,7 +37,7 @@ public class HtmlMatrixSummaryBuilder<TTensor> : IHtmlMatrixSummaryBuilder
         return new HtmlMatrixSummary(colsSummary: colsSummary, rowsSummary: rowsSummary);
     }
 
-    public Dictionary<string, int> ColsSummary(IHtmlMatrix uiMatrix, TensorPermutationType orientation)
+    public Dictionary<object, int> ColsSummary(IHtmlMatrix uiMatrix, TensorPermutationType orientation)
     {
         return uiMatrix.cols.ToDictionary(col => col, domain => uiMatrix.rows.Sum(action =>
         {
@@ -47,7 +46,7 @@ public class HtmlMatrixSummaryBuilder<TTensor> : IHtmlMatrixSummaryBuilder
         }));
     }
 
-    public Dictionary<string, int> RowsSummary(IHtmlMatrix uiMatrix, TensorPermutationType orientation)
+    public Dictionary<object, int> RowsSummary(IHtmlMatrix uiMatrix, TensorPermutationType orientation)
     {
         return uiMatrix.rows.ToDictionary(row => row, action => uiMatrix.cols.Sum(domain =>
         {

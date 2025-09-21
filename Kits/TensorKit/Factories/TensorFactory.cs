@@ -13,7 +13,7 @@ public interface ITensorFactory<TKey>
     /// </summary>
     /// <param name="dimensions">Массив измерений.</param>
     /// <returns>Экземпляр тензор-ключа указанного типа.</returns>
-    TKey Create(string[] dimensions);
+    TKey Create(object[] dimensions);
 }
 
 /// <summary>
@@ -22,13 +22,13 @@ public interface ITensorFactory<TKey>
 /// <typeparam name="TKey">Тип тензор-ключа.</typeparam>
 public class TensorFactory<TKey> : ITensorFactory<TKey>
 {
-    private readonly Func<string[], TKey> _creationFunc;
+    private readonly Func<object[], TKey> _creationFunc;
 
     /// <summary>
     /// Инициализирует новый экземпляр TensorFactory.
     /// </summary>
     /// <param name="creationFunc">Функция, которая знает, как создать TKey из массива строк.</param>
-    public TensorFactory(Func<string[], TKey> creationFunc)
+    public TensorFactory(Func<object[], TKey> creationFunc)
     {
         _creationFunc = creationFunc;
     }
@@ -38,7 +38,7 @@ public class TensorFactory<TKey> : ITensorFactory<TKey>
     /// </summary>
     /// <param name="dimensions">Массив измерений для тензора.</param>
     /// <returns>Готовый тензор-ключ.</returns>
-    public TKey Create(string[] dimensions)
+    public TKey Create(object[] dimensions)
     {
         return _creationFunc(dimensions);
     }

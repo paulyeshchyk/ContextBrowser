@@ -14,5 +14,5 @@ public interface IHtmlCellColorCalculator<TTensor>
     /// <param name="contextInfoList">Список связанной контекстной информации.</param>
     /// <param name="index">Индекс для быстрого поиска.</param>
     /// <returns>Строка с HEX-цветом или null.</returns>
-    string? CalculateBgColor(TTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<string, ContextInfo>? index);
+    string? CalculateBgColor(TTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<object, ContextInfo>? index);
 }

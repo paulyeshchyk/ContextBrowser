@@ -37,7 +37,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         _optionsStore = optionsStore;
     }
 
-    public async Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassOnly");
 
@@ -58,7 +58,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
                       methods: GetMethods(contextInfoDataset),
                    properties: GetProperties(contextInfoDataset));
         }
-        return new Dictionary<string, bool> { };
+        return new Dictionary<object, bool> { };
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)

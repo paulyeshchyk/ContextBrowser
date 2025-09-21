@@ -42,7 +42,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
     }
 
     //context: build, uml
-    public async Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile PackageMethodPerAction");
 
@@ -58,7 +58,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         CompileActionGroup(dataset, exportOptions, diagramBuilderOptions);
         CompileNoActionGroup(dataset, exportOptions, diagramBuilderOptions);
 
-        return new Dictionary<string, bool>();
+        return new Dictionary<object, bool>();
     }
 
     private static void CompileActionGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
@@ -66,11 +66,11 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         var actionContexts = contextInfoDataset
             .SelectMany(cell => cell.Value.Select(context => (action: cell.Key.Action, context: context)))
             .GroupBy(item => item.action)
-            .Where(group => !string.IsNullOrWhiteSpace(group.Key));
+            .Where(group => !string.IsNullOrWhiteSpace((string)group.Key));
 
         foreach (var group in actionContexts)
         {
-            var action = group.Key;
+            var action = (string)group.Key;
             var contexts = group.Select(item => item.context).Distinct().ToList();
 
             if (contexts.Any())

@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TensorKit.Model;
 
-public interface ITensor<TDataType>
+public interface ITensor
 {
     int Rank { get; }
 
-    TDataType this[int index] { get; }
+    object this[int index] { get; }
 
-    IEnumerable<TDataType> Dimensions { get; }
+    IEnumerable<object> Dimensions { get; }
 }

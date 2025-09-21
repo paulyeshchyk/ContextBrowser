@@ -41,7 +41,7 @@ public class UmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
     }
 
     // context: uml, build
-    public async Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile SequenceAction");
 
@@ -54,7 +54,7 @@ public class UmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken);
         var distinctRows = mapper.GetRows().Distinct();
 
-        var renderedCache = new Dictionary<string, bool>();
+        var renderedCache = new Dictionary<object, bool>();
         foreach (var row in distinctRows)
         {
             var compileOptions = DiagramCompileOptionsFactory.ActionSequenceCompileOptions(row);

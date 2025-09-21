@@ -5,6 +5,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
+using HtmlKit.Options;
 using TensorKit.Factories;
 using TensorKit.Model;
 

@@ -19,16 +19,16 @@ public interface ITensorBuilder
     /// <param name="inputDimensions">Массив исходных измерений.</param>
     /// <param name="createKey">Функция-фабрика для создания тензора.</param>
     /// <returns>Готовый тензор-ключ.</returns>
-    TTensor BuildTensor<TTensor>(TensorPermutationType permutationType, string[] inputDimensions, Func<string[], TTensor> createKey);
+    TTensor BuildTensor<TTensor>(TensorPermutationType permutationType, object[] inputDimensions, Func<object[], TTensor> createKey);
 }
 
 public class TensorBuilder : ITensorBuilder
 {
-    public TTensor BuildTensor<TTensor>(TensorPermutationType permutationType, string[] inputDimensions, Func<string[], TTensor> createKey)
+    public TTensor BuildTensor<TTensor>(TensorPermutationType permutationType, object[] inputDimensions, Func<object[], TTensor> createKey)
     {
         var permutationOrder = TensorBuilder.GetPermutationOrder(inputDimensions, permutationType);
 
-        var reorderedDimensions = new string[inputDimensions.Length];
+        var reorderedDimensions = new object[inputDimensions.Length];
 
         for (int i = 0; i < inputDimensions.Length; i++)
         {
@@ -54,7 +54,7 @@ public class TensorBuilder : ITensorBuilder
     /// <param name="permutationType"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static int[] GetPermutationOrder(string[] inputDimensions, TensorPermutationType permutationType)
+    public static int[] GetPermutationOrder(object[] inputDimensions, TensorPermutationType permutationType)
     {
         var rank = inputDimensions.Length;
         return permutationType switch

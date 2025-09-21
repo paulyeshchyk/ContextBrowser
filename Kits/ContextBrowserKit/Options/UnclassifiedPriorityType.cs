@@ -1,4 +1,4 @@
-﻿namespace ContextBrowserKit.Options;
+﻿namespace HtmlKit.Options;
 
 // context: model, contextInfo
 public enum UnclassifiedPriorityType

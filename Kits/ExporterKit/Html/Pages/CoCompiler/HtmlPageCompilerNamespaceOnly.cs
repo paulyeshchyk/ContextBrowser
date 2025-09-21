@@ -10,6 +10,7 @@ using ContextKit.Model;
 using ExporterKit.Html;
 using ExporterKit.Html.Pages.CoCompiler;
 using HtmlKit.Model;
+using HtmlKit.Model.Containers;
 using LoggerKit;
 using TensorKit.Model;
 using TensorKit.Model.DomainPerAction;
@@ -36,16 +37,16 @@ public class HtmlPageCompilerNamespaceOnly : IHtmlPageCompiler
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
-        var registrations = new List<IHtmlTabRegistration<NamespacenameContainer>>
+        var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerNamespace>>
         {
             TabsheetFactory.NamespaceTabRegistration(exportOptions),
         };
 
-        var tabsheetDataProvider = new ComposableTabsheetDataProvider<NamespacenameContainer>(registrations);
-        var tabbedPageBuilder = new HtmlTabbedPageBuilder<NamespacenameContainer>(exportOptions, tabsheetDataProvider);
+        var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerNamespace>(registrations);
+        var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerNamespace>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var builder = new HtmlPageWithTabsNamespaceEntityBuilder<NamespacenameContainer, DomainPerActionTensor>(dataset, tabbedPageBuilder, (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html");
+        var builder = new HtmlPageWithTabsNamespaceEntityBuilder<ContextInfoKeyContainerNamespace, DomainPerActionTensor>(dataset, tabbedPageBuilder, (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html");
         await builder.BuildAsync(cancellationToken);
     }
 }

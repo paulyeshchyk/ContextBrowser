@@ -4,16 +4,17 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using ContextBrowserKit.Matrix;
+using HtmlKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
-using HtmlKit.Extensions;
 using HtmlKit.Helpers;
 using HtmlKit.Options;
 using HtmlKit.Page;
 using TensorKit.Factories;
 using TensorKit.Model;
+using LoggerKit;
+using ContextBrowserKit.Log.Options;
 
 namespace HtmlKit.Document;
 
@@ -63,26 +64,29 @@ namespace HtmlKit.Document;
 /// <typeparam name="TTensor">Тип ключа для ячейки матрицы. Должен иметь конструктор с двумя строковыми параметрами.</typeparam>
 //context: htmlmatrix, build
 public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
-    where TTensor : ITensor<string>
+    where TTensor : ITensor
 {
     private readonly IHrefManager<TTensor> _hRefManager;
     private readonly IHtmlFixedContentManager _htmlFixedContentManager;
     private readonly IHtmlDataCellBuilder<TTensor> _dataCellBuilder;
     private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
+    private readonly IAppLogger<AppLevel> _logger;
 
     public HtmlTensorWriter(
         IHtmlDataCellBuilder<TTensor> dataCellBuilder,
         IHrefManager<TTensor> hrefManager,
-        ITensorFactory<TTensor> keyFactory, 
+        ITensorFactory<TTensor> keyFactory,
         ITensorBuilder keyBuilder,
-        IHtmlFixedContentManager htmlFixedContentManager)
+        IHtmlFixedContentManager htmlFixedContentManager,
+        IAppLogger<AppLevel> logger)
     {
         _hRefManager = hrefManager;
         _htmlFixedContentManager = htmlFixedContentManager;
         _dataCellBuilder = dataCellBuilder;
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
+        _logger = logger;
     }
 
     public void Write(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions originalOptions)
@@ -157,7 +161,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
             HtmlBuilderFactory.HtmlBuilderTableCell.ColMeta.With(textWriter, () =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", href }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, col, isEncodable: false);
+                HtmlBuilderFactory.A.Cell(textWriter, attrs, $"{col}", isEncodable: false);
             });
         }
     }
@@ -217,15 +221,19 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
         });
     }
 
-    internal void WriteDataRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, string row, HtmlMatrixSummary? summary)
+    internal void WriteDataRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, object row, HtmlMatrixSummary? summary)
     {
         HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(textWriter, () =>
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.With(textWriter, () =>
+            var attrs = new HtmlTagAttributes();
+
+            attrs.Add("class", "cell_row_meta center-aligned");
+
+            HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.With(textWriter, attributes: attrs, () =>
             {
                 var href = _hRefManager.GetHRefRowHeader(row, options);
                 var attrs = new HtmlTagAttributes() { { "href", href } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, row, isEncodable: false);
+                HtmlBuilderFactory.A.Cell(textWriter, attrs, $"{row}", isEncodable: false);
             });
 
             if (options.SummaryPlacement == SummaryPlacementType.AfterFirst)
@@ -242,7 +250,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
         });
     }
 
-    internal void WriteRowSummaryCell(TextWriter textWriter, HtmlTableOptions options, string row, HtmlMatrixSummary? summary)
+    internal void WriteRowSummaryCell(TextWriter textWriter, HtmlTableOptions options, object row, HtmlMatrixSummary? summary)
     {
         HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.With(textWriter, () =>
         {

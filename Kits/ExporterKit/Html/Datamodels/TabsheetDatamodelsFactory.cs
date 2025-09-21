@@ -5,6 +5,7 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Model;
+using HtmlKit.Model.Containers;
 using HtmlKit.Model.Tabsheet;
 using TensorKit.Model;
 
@@ -19,7 +20,7 @@ public interface IPumlEnbeddedInjectionDatamodel<TTensor> : IHtmlTabsheetDataMod
 }
 
 public interface IMethodListDatamodel<TTensor> : IHtmlTabsheetDataModel
-    where TTensor : ITensor<string>
+    where TTensor : ITensor
 {
-    IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<TTensor> dto);
+    IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto);
 }

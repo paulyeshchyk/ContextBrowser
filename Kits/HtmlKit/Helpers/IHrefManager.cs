@@ -11,17 +11,17 @@ public interface IHrefManager<TTensor>
 {
     string GetHrefCell(TTensor cell, HtmlTableOptions _options);
 
-    string GetHrefColSummary(string key, HtmlTableOptions _options);
+    string GetHrefColSummary(object key, HtmlTableOptions _options);
 
     string GetHRefRow(string key, HtmlTableOptions _options);
 
-    string GetHRefRowHeader(string key, HtmlTableOptions _options);
+    string GetHRefRowHeader(object key, HtmlTableOptions _options);
 
     string GetHrefRowHeaderSummary(HtmlTableOptions _options);
 
-    string GetHRefRowMeta(string key, HtmlTableOptions _options);
+    string GetHRefRowMeta(object key, HtmlTableOptions _options);
 
-    string GetHrefRowSummary(string key, HtmlTableOptions _options);
+    string GetHrefRowSummary(object key, HtmlTableOptions _options);
 
     string GetHrefSummary(HtmlTableOptions _options);
 

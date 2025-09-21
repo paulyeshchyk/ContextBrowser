@@ -7,14 +7,17 @@
 		<Nullable>enable</Nullable>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Model\ContextInfoData\**" />
+	  <EmbeddedResource Remove="Model\ContextInfoData\**" />
+	  <None Remove="Model\ContextInfoData\**" />
+	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="../LoggerKit/LoggerKit.csproj" />
 		<ProjectReference Include="..\CommandlineKit\CommandlineKit.csproj" />
 		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
 		<ProjectReference Include="..\TensorKit\TensorKit.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-		<Folder Include="Model/ContextInfoData/" />
 	</ItemGroup>
 
 </Project>

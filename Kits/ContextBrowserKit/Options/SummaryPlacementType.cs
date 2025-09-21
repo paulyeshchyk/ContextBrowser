@@ -1,4 +1,4 @@
-﻿namespace ContextBrowserKit.Options;
+﻿namespace HtmlKit.Options;
 
 public enum SummaryPlacementType
 {

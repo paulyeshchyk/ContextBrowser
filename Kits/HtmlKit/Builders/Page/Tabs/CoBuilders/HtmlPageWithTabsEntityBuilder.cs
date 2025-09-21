@@ -10,6 +10,7 @@ using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Builders.Page;
 using HtmlKit.Model;
+using HtmlKit.Model.Containers;
 using HtmlKit.Model.Tabsheet;
 using HtmlKit.Page;
 using TensorKit.Model;
@@ -17,7 +18,7 @@ using TensorKit.Model;
 namespace ExporterKit.Html;
 
 public class HtmlPageWithTabsEntityBuilder<DTO, TTensor> : HtmlPageWithTabsBuilder<DTO, TTensor>
-    where DTO : EntitynameContainer
+    where DTO : ContextInfoKeyContainerEntityName
     where TTensor : notnull
 {
     private readonly Func<string, string> _onGetFileName;
@@ -40,7 +41,7 @@ public class HtmlPageWithTabsEntityBuilder<DTO, TTensor> : HtmlPageWithTabsBuild
             {
                 var filename = _onGetFileName(contextInfoItem.FullName);
                 var title = $" Class {contextInfoItem.FullName}";
-                var cellData = new EntitynameContainer(
+                var cellData = new ContextInfoKeyContainerEntityName(
                     contextInfoList: new List<IContextInfo>() { contextInfoItem },
                     contextKey: contextInfoItem.FullName);
 

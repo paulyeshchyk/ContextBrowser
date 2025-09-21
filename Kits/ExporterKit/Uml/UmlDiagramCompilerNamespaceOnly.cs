@@ -37,7 +37,7 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
     }
 
     //context: uml, build
-    public async Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile Namespaces only");
 
@@ -57,7 +57,7 @@ public class UmlDiagramCompilerNamespaceOnly : IUmlDiagramCompiler
                                 methods: GetMethods(dataset),
                              properties: GetProperties(dataset));
         }
-        return new Dictionary<string, bool> { };
+        return new Dictionary<object, bool> { };
     }
 
     //context: uml, build

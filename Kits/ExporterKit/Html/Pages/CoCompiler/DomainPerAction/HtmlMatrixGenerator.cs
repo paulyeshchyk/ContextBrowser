@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Matrix;
+using HtmlKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
@@ -46,7 +46,7 @@ public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
             var rows = SortList(_mapper.GetRows().Distinct().ToList(), emptyDimensionClassifier.EmptyAction, priority);
             var cols = SortList(_mapper.GetCols().Distinct().ToList(), emptyDimensionClassifier.EmptyDomain, priority);
 
-            var resultMatrix = new HtmlMatrix(rows, cols);
+            var resultMatrix = new HtmlMatrixDomainPerAction(rows, cols);
 
             return matrixOrientation switch
             {
@@ -58,7 +58,7 @@ public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
     }
 
     // context: ContextInfoMatrix, htmlmatrix, read
-    internal List<string> SortList(List<string> list, string emptyValue, UnclassifiedPriorityType priority)
+    internal List<object> SortList(List<object> list, string emptyValue, UnclassifiedPriorityType priority)
     {
         return priority switch
         {

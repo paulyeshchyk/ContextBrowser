@@ -10,18 +10,17 @@ namespace TensorKit.Model;
 /// сохраняет их в упорядоченном виде.
 /// Свойства, представляющие измерения тензора, должены соответствовать порядку в массиве dimensions.
 /// </summary>
-public abstract record TensorBase<TDataType> : ITensor<TDataType>
-    where TDataType : notnull
+public abstract record TensorBase : ITensor
 {
     // Свойство Rank остается абстрактным, так как его значение зависит от наследника.
     public abstract int Rank { get; }
 
     // Массив для хранения измерений.
-    protected readonly TDataType[] _dimensions;
+    protected readonly object[] _dimensions;
 
-    public TDataType this[int index] => _dimensions[index];
+    public object this[int index] => _dimensions[index];
 
-    protected TensorBase(params TDataType[] dimensions)
+    protected TensorBase(params object[] dimensions)
     {
         if (dimensions.Length != Rank)
         {
@@ -32,9 +31,9 @@ public abstract record TensorBase<TDataType> : ITensor<TDataType>
     }
 
     // Метод для получения всех измерений.
-    public IEnumerable<TDataType> Dimensions => _dimensions;
+    public IEnumerable<object> Dimensions => _dimensions;
 
-    public virtual bool Equals(TensorBase<TDataType>? other)
+    public virtual bool Equals(TensorBase? other)
     {
         if (other is null || Rank != other.Rank)
         {

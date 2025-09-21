@@ -15,7 +15,7 @@ public class HtmlCellStyleBuilder<TTensor> : IHtmlCellStyleBuilder<TTensor>
         _colorCalculator = colorCalculator;
     }
 
-    public string? BuildCellStyle(TTensor cell, IEnumerable<ContextInfo>? stInfo, Dictionary<string, ContextInfo>? index)
+    public string? BuildCellStyle(TTensor cell, IEnumerable<ContextInfo>? stInfo, Dictionary<object, ContextInfo>? index)
     {
         var bgColor = _colorCalculator.CalculateBgColor(cell, stInfo, index);
         return bgColor is null

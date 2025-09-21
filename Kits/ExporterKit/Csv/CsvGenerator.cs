@@ -5,6 +5,7 @@ using System.Linq;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
+using HtmlKit.Options;
 using TensorKit.Factories;
 using TensorKit.Model;
 using TensorKit.Model.DomainPerAction;
@@ -29,7 +30,7 @@ public class CsvGenerator : ICsvGenerator
     }
 
     //context: build, csv, heatmap
-    public void GenerateHeatmap(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<DomainPerActionTensor, List<string>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
+    public void GenerateHeatmap(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<DomainPerActionTensor, List<object>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 
@@ -47,10 +48,10 @@ public class CsvGenerator : ICsvGenerator
         // Основная матрица
         foreach (var action in actions)
         {
-            var rows = new List<string> { action };
+            var rows = new List<object> { action };
             foreach (var domain in domains)
             {
-                var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { action, domain }, _keyFactory.Create);
+                var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new [] { action, domain }, _keyFactory.Create);
                 var count = matrix.TryGetValue(contextKey, out var methods) ? methods.Count : 0;
                 rows.Add(count.ToString());
             }
@@ -59,7 +60,7 @@ public class CsvGenerator : ICsvGenerator
 
         var includeUnclassified = unclassifiedPriority != UnclassifiedPriorityType.None;
 
-        var unclassified = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { _emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain }, _keyFactory.Create);
+        var unclassified = _keyBuilder.BuildTensor(permutationType: TensorPermutationType.Standard, inputDimensions: new[] { _emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain }, createKey: _keyFactory.Create);
 
         // Добавим строку для нераспознанных, если нужно
         if (includeUnclassified && matrix.ContainsKey(unclassified))

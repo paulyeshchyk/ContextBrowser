@@ -10,6 +10,7 @@ using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Builders.Page;
 using HtmlKit.Model;
+using HtmlKit.Model.Containers;
 using HtmlKit.Model.Tabsheet;
 using HtmlKit.Page;
 using TensorKit.Model;
@@ -17,7 +18,7 @@ using TensorKit.Model;
 namespace ExporterKit.Html;
 
 public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TTensor> : HtmlPageWithTabsBuilder<DTO, TTensor>
-    where DTO : NamespacenameContainer
+    where DTO : ContextInfoKeyContainerNamespace
     where TTensor : notnull
 {
     private readonly Func<string, string> _onGetFileName;
@@ -43,7 +44,7 @@ public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TTensor> : HtmlPageWith
 
                 var filename = _onGetFileName(ns);
                 var title = $" Namespace {ns}";
-                var cellData = new NamespacenameContainer(
+                var cellData = new ContextInfoKeyContainerNamespace(
                     contextInfoList: filtered,
                     contextKey: ns);
 

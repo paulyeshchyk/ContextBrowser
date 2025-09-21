@@ -37,7 +37,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         _optionsStore = optionsStore;
     }
 
-    public async Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassActionPerDomain");
 
@@ -50,7 +50,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         {
             Build(element, exportOptions, diagramBuilderOptions);
         }
-        return new Dictionary<string, bool> { };
+        return new Dictionary<object, bool> { };
     }
 
     //context: uml, build, heatmap, directory
@@ -61,7 +61,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"class_{contextInfoKey.Action}_{contextInfoKey.Domain}.puml");
 
         var diagramId = $"class_{contextInfoKey.Action}_{contextInfoKey.Domain}".AlphanumericOnly();
-        var diagramTitle = $"{contextInfoKey.Action.ToUpper()} -> {contextInfoKey.Domain}";
+        var diagramTitle = $"{contextInfoKey.Action} -> {contextInfoKey.Domain}";
 
         var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
         diagram.SetTitle(diagramTitle);

@@ -9,31 +9,30 @@ public class DomainPerActionDimensionType : ITensorDimensionType
     public const int Domain = 1;
 }
 
-public interface IDomainPerActionTensor<TDataType> : ITensor<TDataType>
-    where TDataType : notnull
+public interface IDomainPerActionTensor : ITensor
 {
-    TDataType Action { get; }
+    string Action { get; }
 
-    TDataType Domain { get; }
+    string Domain { get; }
 }
 
-public record DomainPerActionTensor : TensorBase<string>, IDomainPerActionTensor<string>
+public record DomainPerActionTensor : TensorBase, IDomainPerActionTensor
 {
     public override int Rank => 2;
 
     public string Action
     {
-        get => this[DomainPerActionDimensionType.Action];
+        get => (string)this[DomainPerActionDimensionType.Action];
         init => _dimensions[DomainPerActionDimensionType.Action] = value;
     }
 
     public string Domain
     {
-        get => this[DomainPerActionDimensionType.Domain];
+        get => (string)this[DomainPerActionDimensionType.Domain];
         init => _dimensions[DomainPerActionDimensionType.Domain] = value;
     }
 
-    public DomainPerActionTensor(params string[] dimensions) : base(dimensions) { }
+    public DomainPerActionTensor(params object[] dimensions) : base(dimensions) { }
 
-    public DomainPerActionTensor(string action, string domain) : base(action, domain) { }
+    public DomainPerActionTensor(object action, object domain) : base(action, domain) { }
 }

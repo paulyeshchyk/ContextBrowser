@@ -423,6 +423,18 @@ td.hover-col.hover-cell {
     pointer-events: none; /* Полностью отключаем события мыши, чтобы нельзя было нажать */
 }
 
+.left-aligned {
+    text-align: left;
+}
+
+.center-aligned {
+    text-align: center;
+}
+
+.right-aligned {
+    text-align: right;
+}
+
     </value>
   </data>
   <data name="HtmlProducerContentStyleScript" xml:space="preserve">

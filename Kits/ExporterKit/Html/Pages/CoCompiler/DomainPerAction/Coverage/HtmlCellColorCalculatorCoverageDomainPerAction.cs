@@ -21,7 +21,7 @@ public class HtmlCellColorCalculatorCoverageDomainPerAction : IHtmlCellColorCalc
         _coverageValueExtractor = coverageValueExtractor;
     }
 
-    public string? CalculateBgColor(DomainPerActionTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<string, ContextInfo>? index)
+    public string? CalculateBgColor(DomainPerActionTensor cell, IEnumerable<ContextInfo>? contextInfoList, Dictionary<object, ContextInfo>? index)
     {
         if (contextInfoList != null && contextInfoList.Any() && index != null)
         {

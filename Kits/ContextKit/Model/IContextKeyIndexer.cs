@@ -13,5 +13,5 @@ public interface IKeyIndexBuilder<TContext>
 {
     void Build(IEnumerable<TContext> contextsList);
 
-    Dictionary<string, TContext>? GetIndexData();
+    Dictionary<object, TContext>? GetIndexData();
 }

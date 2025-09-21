@@ -7,6 +7,7 @@ using HtmlKit.Helpers;
 using HtmlKit.Options;
 using HtmlKit.Page;
 using TensorKit.Model;
+using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Document;
 
@@ -19,7 +20,7 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
     private readonly IHtmlCellStyleBuilder<TTensor> _cellStyleBuilder;
     private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
 
-    private readonly Dictionary<string, ContextInfo>? _indexData;
+    private readonly Dictionary<object, ContextInfo>? _indexData;
 
     public HtmlDataCellBuilderCoverage(
         IHtmlCellDataProducer<string, TTensor> coverageDataProducer, 

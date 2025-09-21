@@ -30,5 +30,5 @@ public abstract class MapperKeyBase : IEquatable<MapperKeyBase>
 
     public override bool Equals(object? obj) => Equals(obj as MapperKeyBase);
 
-    public bool Equals(MapperKeyBase? other) => !(other is null) && _value == other._value;
+    public bool Equals(MapperKeyBase? other) => other is not null && _value == other._value;
 }

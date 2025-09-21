@@ -36,7 +36,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
     }
 
     //context: build, uml, links
-    public async Task<Dictionary<string, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassRelation");
 
@@ -62,7 +62,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
         diagram.WriteToFile(outputPath, writeOptons);
-        return new Dictionary<string, bool>();
+        return new Dictionary<object, bool>();
     }
 
     private static void AddRelation(DiagramBuilderOptions options, UmlDiagramClass diagram, string from, string to)

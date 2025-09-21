@@ -12,7 +12,7 @@ public interface IContextInfo : ISemanticInfo, ISpanInfo, ISemanticContainer
 }
 
 // context: IContextWithReferences, model
-public interface IContextWithReferences<T> : IContextInfo, IContextDataContainer
+public interface IContextWithReferences<T> : IContextInfo, IContextDataContainerDomainPerAction
     where T : IContextWithReferences<T>
 {
     // context: IContextWithReferences, read
@@ -26,4 +26,11 @@ public interface IContextWithReferences<T> : IContextInfo, IContextDataContainer
 
     // context: IContextWithReferences, read
     HashSet<T> Owns { get; }
+}
+
+public interface IContextDataContainerDomainPerAction
+{
+    string? Action { get; set; }
+
+    HashSet<string> Domains { get; }
 }

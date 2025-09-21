@@ -6,6 +6,7 @@ using ContextBrowserKit.Options.Export;
 using ContextBrowserKit.Options.Import;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
+using HtmlKit.Matrix;
 using HtmlKit.Options;
 using LoggerKit.Model;
 using SemanticKit.Model.Options;

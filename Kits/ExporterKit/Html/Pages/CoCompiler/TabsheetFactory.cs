@@ -5,10 +5,16 @@ using ContextBrowser.Samples.HtmlPages;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ExporterKit.Html.Containers;
 using HtmlKit.Builders.Core;
+using HtmlKit.Document;
+using HtmlKit.Matrix;
 using HtmlKit.Model;
+using HtmlKit.Model.Containers;
+using HtmlKit.Options;
 using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
+using TensorKit.Factories;
 using TensorKit.Model;
 using TensorKit.Model.DomainPerAction;
 
@@ -16,10 +22,10 @@ namespace ExporterKit.Html.Pages.CoCompiler;
 
 public static class TabsheetFactory
 {
-    public static IHtmlTabRegistration<EntitynameContainer> MindmapTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> MindmapTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Mindmap (PUML)
-        return TabRegistration.For<MindmapDatamodel, EntitynameContainer>(
+        return TabRegistration.For<MindmapDatamodel, ContextInfoKeyContainerEntityName>(
             tabId: "MindmapTab",
             caption: "Mindmap",
             isActive: false,
@@ -33,10 +39,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<EntitynameContainer> ClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> ClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<ClassOnlyDatamodel, EntitynameContainer>(
+        return TabRegistration.For<ClassOnlyDatamodel, ContextInfoKeyContainerEntityName>(
             tabId: "ClassesTab",
             caption: "Общая",
             isActive: true,
@@ -50,10 +56,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<NamespacenameContainer> NamespaceTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerNamespace> NamespaceTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<NamespaceOnlyDatamodel, NamespacenameContainer>(
+        return TabRegistration.For<NamespaceOnlyDatamodel, ContextInfoKeyContainerNamespace>(
             tabId: "NamespacesTab",
             caption: "Общая",
             isActive: true,
@@ -67,10 +73,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> ActionOnlyClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> ActionOnlyClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<ActionOnlyClassesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<ActionOnlyClassesDatamodel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -84,33 +90,30 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> MethodsTabRegistration()
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> MethodsTabRegistration(IHtmlTensorWriter<MethodListTensor> matrixWriter, ITensorFactory<MethodListTensor> keyFactory)
     {
         // Вкладка: Методы
-        return TabRegistration.For<ActionOnlyMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<ActionOnlyMethodListDataModel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
             model: new ActionOnlyMethodListDataModel(),
             build: (writer, model, dto) =>
             {
-                var methods = model.GetMethodsList(dto);
+                var theAction = (string)dto.ContextKey.Action;
+                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{theAction.ToUpper()} -> {dto.ContextKey.Domain}");
 
-                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{dto.ContextKey.Action.ToUpper()}");
-                HtmlBuilderFactory.P.Cell(writer, innerHtml: $"Methods: {methods.Count()}");
-
-                HtmlBuilderFactory.Ul.With(writer, () =>
-                {
-                    foreach (var method in methods.Distinct())
-                        HtmlBuilderFactory.Li.Cell(writer, innerHtml: method.FullName);
-                });
+                var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
+                IHtmlMatrix methodsMatrix = new HtmlMatrixMethods(methodNames, dto);
+                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
+                matrixWriter.Write(writer, methodsMatrix, null, options);
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> StatesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> StatesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
-        return TabRegistration.For<ActionOnlyStatesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<ActionOnlyStatesDatamodel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "StatesTab",
             caption: "Состояния",
             isActive: false,
@@ -124,10 +127,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> SequenceTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> SequenceTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Компоненты (PUML)
-        return TabRegistration.For<ActionOnlySequenceDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<ActionOnlySequenceDatamodel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "SequenceTab",
             caption: "Последовательности",
             isActive: false,
@@ -141,33 +144,30 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyMethodsTabRegistration()
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> DomainOnlyMethodsTabRegistration(IHtmlTensorWriter<MethodListTensor> matrixWriter, ITensorFactory<MethodListTensor> keyFactory)
     {
         // Вкладка: Методы
-        return TabRegistration.For<ActionPerDomainSummaryMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<ActionPerDomainSummaryMethodListDataModel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
             model: new ActionPerDomainSummaryMethodListDataModel(),
             build: (writer, model, dto) =>
             {
-                var methods = model.GetMethodsList(dto);
+                var theAction = (string)dto.ContextKey.Action;
+                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{theAction.ToUpper()} -> {dto.ContextKey.Domain}");
 
-                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{dto.ContextKey.Action.ToUpper()} -> {dto.ContextKey.Domain}");
-                HtmlBuilderFactory.P.Cell(writer, innerHtml: $"Methods: {methods.Count()}");
-
-                HtmlBuilderFactory.Ul.With(writer, () =>
-                {
-                    foreach (var method in methods.Distinct())
-                        HtmlBuilderFactory.Li.Cell(writer, innerHtml: method.FullName);
-                });
+                var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
+                IHtmlMatrix methodsMatrix = new HtmlMatrixMethods(methodNames, dto);
+                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
+                matrixWriter.Write(writer, methodsMatrix, null, options);
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> DomainOnlyClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<DomainSummaryComponentsDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<DomainSummaryComponentsDatamodel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -181,10 +181,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyMindmap(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> DomainOnlyMindmap(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
-        return TabRegistration.For<DomainOnlyMindmapDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<DomainOnlyMindmapDatamodel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "MindmapTab",
             caption: "Mindmap",
             isActive: false,
@@ -198,10 +198,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyStates(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> DomainOnlyStates(ExportOptions exportOptions)
     {
         // Вкладка: Состояния (PUML)
-        return TabRegistration.For<DomainOnlyStatesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<DomainOnlyStatesDatamodel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "StatesTab",
             caption: "Состояния",
             isActive: false,
@@ -215,10 +215,10 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlySequence(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> DomainOnlySequence(ExportOptions exportOptions)
     {
         // Вкладка: Компоненты (PUML)
-        return TabRegistration.For<DomainOnlySequenceDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<DomainOnlySequenceDatamodel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "SequenceTab",
             caption: "Последовательности",
             isActive: false,
@@ -232,33 +232,30 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyMethodsTabsheetRegistration()
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> DomainOnlyMethodsTabsheetRegistration(IHtmlTensorWriter<MethodListTensor> matrixWriter, ITensorFactory<MethodListTensor> keyFactory)
     {
         // Вкладка: Методы
-        return TabRegistration.For<DomainOnlyMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<DomainOnlyMethodListDataModel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
             model: new DomainOnlyMethodListDataModel(),
             build: (writer, model, dto) =>
             {
-                var methods = model.GetMethodsList(dto);
+                var theDomain = (string)dto.ContextKey.Domain;
+                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{theDomain.ToUpper()} -> {dto.ContextKey.Domain}");
 
-                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{dto.ContextKey.Domain.ToUpper()}");
-                HtmlBuilderFactory.P.Cell(writer, innerHtml: $"Methods: {methods.Count()}");
-
-                HtmlBuilderFactory.Ul.With(writer, () =>
-                {
-                    foreach (var method in methods.Distinct())
-                        HtmlBuilderFactory.Li.Cell(writer, innerHtml: method.FullName);
-                });
+                var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
+                IHtmlMatrix methodsMatrix = new HtmlMatrixMethods(methodNames, dto);
+                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
+                matrixWriter.Write(writer, methodsMatrix, null, options);
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> DomainOnlyClassesTabsheetRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> DomainOnlyClassesTabsheetRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<DomainOnlyClassesDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<DomainOnlyClassesDatamodel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -272,33 +269,30 @@ public static class TabsheetFactory
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> ActionPerDomainMethodsTabRegistration()
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> ActionPerDomainMethodsTabRegistration(IHtmlTensorWriter<MethodListTensor> matrixWriter, ITensorFactory<MethodListTensor> keyFactory)
     {
         // Вкладка: Методы
-        return TabRegistration.For<ActionPerDomainMethodListDataModel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<ActionPerDomainMethodListDataModel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
             model: new ActionPerDomainMethodListDataModel(),
             build: (writer, model, dto) =>
             {
-                var methods = model.GetMethodsList(dto);
+                var theAction = (string)dto.ContextKey.Action;
+                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{theAction.ToUpper()} -> {dto.ContextKey.Domain}");
 
-                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{dto.ContextKey.Action.ToUpper()} -> {dto.ContextKey.Domain}");
-                HtmlBuilderFactory.P.Cell(writer, innerHtml: $"Methods: {methods.Count()}");
-
-                HtmlBuilderFactory.Ul.With(writer, () =>
-                {
-                    foreach (var method in methods.Distinct())
-                        HtmlBuilderFactory.Li.Cell(writer, innerHtml: method.FullName);
-                });
+                var methodIndexList = model.GetMethodsList(dto).Select((m, index) => index);
+                IHtmlMatrix methodsMatrix = new HtmlMatrixMethods(methodIndexList, dto);
+                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
+                matrixWriter.Write(writer, methodsMatrix, null, options);
             });
     }
 
-    public static IHtmlTabRegistration<ContextKeyContainer<DomainPerActionTensor>> ActionPerDomainClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>> ActionPerDomainClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
-        return TabRegistration.For<ActionSummaryDatamodel, ContextKeyContainer<DomainPerActionTensor>>(
+        return TabRegistration.For<ActionSummaryDatamodel, ContextInfoKeyContainerTensor<DomainPerActionTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
@@ -322,22 +316,22 @@ internal abstract class PumlEmbeddedContentDatamodelDomainPerAction : PumlEmbedd
 
 internal class ActionPerDomainSummaryMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
 internal class ActionPerDomainMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
 internal class DomainOnlyMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
 internal class ActionOnlyMethodListDataModel : IMethodListDatamodel<DomainPerActionTensor>
 {
-    public IEnumerable<IContextInfo> GetMethodsList(ContextKeyContainer<DomainPerActionTensor> dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<DomainPerActionTensor> dto) => dto.ContextInfoList;
 }
 
 internal class NamespaceOnlyDatamodel : PumlEmbeddedContentDatamodelDomainPerAction, IPumlEnbeddedInjectionDatamodel<DomainPerActionTensor>
