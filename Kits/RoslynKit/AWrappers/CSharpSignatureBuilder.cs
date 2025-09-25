@@ -4,13 +4,17 @@ using Microsoft.CodeAnalysis;
 
 namespace RoslynKit.AWrappers;
 
-public class CSharpSignatureBuilder
+public abstract class SignatureBuilder
 {
-    private bool _includeGenerics = true;
-    private bool _includeParameters = true;
-    private bool _includeReturnType = true;
-    private bool _includeNamespace = false;
-    private bool _includeContainingType = true;
+    public bool _includeGenerics = true;
+    public bool _includeParameters = true;
+    public bool _includeReturnType = true;
+    public bool _includeNamespace = false;
+    public bool _includeContainingType = true;
+}
+
+public class CSharpSignatureBuilder: SignatureBuilder
+{
 
     public CSharpSignatureBuilder IncludeGenerics(bool value)
     {
@@ -46,15 +50,27 @@ public class CSharpSignatureBuilder
     {
         return symbol switch
         {
-            IMethodSymbol methodSymbol => BuildMethodSignature(methodSymbol),
-            ITypeSymbol typeSymbol => BuildTypeSignature(typeSymbol),
+            IMethodSymbol methodSymbol => new CSharpMethodSignatureBuilder().BuildMethodSignature(methodSymbol),
+            ITypeSymbol typeSymbol => new CSharpTypeSignatureBuilder().BuildTypeSignature(typeSymbol),
             _ => BuildDefault(symbol)
         };
     }
 
-    private string BuildTypeSignature(ITypeSymbol typeSymbol)
+    private string BuildDefault(ISymbol symbol)
     {
-        var (name, generics) = typeSymbol.GetTypeDetails();
+        if (_includeNamespace && symbol.ContainingNamespace != null && !symbol.ContainingNamespace.IsGlobalNamespace)
+        {
+            return $"{symbol.ContainingNamespace.ToDisplayString()}.{symbol.Name}";
+        }
+        return symbol.Name;
+    }
+}
+
+internal class CSharpTypeSignatureBuilder : SignatureBuilder
+{
+    public string BuildTypeSignature(ITypeSymbol typeSymbol)
+    {
+        var typeDetailDto = typeSymbol.GetTypeDetails();
         var sb = new StringBuilder();
 
         if (_includeNamespace && !typeSymbol.ContainingNamespace.IsGlobalNamespace)
@@ -67,24 +83,28 @@ public class CSharpSignatureBuilder
             sb.Append(typeSymbol.ContainingType.Name).Append('.');
         }
 
-        sb.Append(name);
+        sb.Append(typeDetailDto.Name);
 
-        if (_includeGenerics && generics.Any())
+        if (_includeGenerics && typeDetailDto.GenericParameters.Any())
         {
-            sb.Append($"<{string.Join(", ", generics)}>");
+            sb.Append($"<{string.Join(", ", typeDetailDto.GenericParameters)}>");
         }
 
         return sb.ToString();
     }
+}
 
-    private string BuildMethodSignature(IMethodSymbol methodSymbol)
+internal class CSharpMethodSignatureBuilder: SignatureBuilder
+{
+
+    public string BuildMethodSignature(IMethodSymbol methodSymbol)
     {
-        var (ReturnType, Name, GenericParameters, Parameters) = methodSymbol.GetMethodDetails();
+        var methodDetailDto = methodSymbol.GetMethodDetails();
         var sb = new StringBuilder();
 
         if (_includeReturnType)
         {
-            sb.Append(ReturnType).Append(' ');
+            sb.Append(methodDetailDto.ReturnType).Append(' ');
         }
 
         if (_includeNamespace && !methodSymbol.ContainingNamespace.IsGlobalNamespace)
@@ -97,30 +117,20 @@ public class CSharpSignatureBuilder
             sb.Append(methodSymbol.ContainingType.Name).Append('.');
         }
 
-        sb.Append(Name);
+        sb.Append(methodDetailDto.Name);
 
-        if (_includeGenerics && GenericParameters.Any())
+        if (_includeGenerics && methodDetailDto.GenericParameters.Any())
         {
-            sb.Append($"<{string.Join(", ", GenericParameters)}>");
+            sb.Append($"<{string.Join(", ", methodDetailDto.GenericParameters)}>");
         }
 
         if (_includeParameters)
         {
             sb.Append('(');
-            sb.Append(string.Join(", ",
-                Parameters.Select(p => $"{p.Type} {p.Name}")));
+            sb.Append(string.Join(", ", methodDetailDto.Parameters.Select(p => $"{p.Type} {p.Name}")));
             sb.Append(')');
         }
 
         return sb.ToString();
-    }
-
-    private string BuildDefault(ISymbol symbol)
-    {
-        if (_includeNamespace && symbol.ContainingNamespace != null && !symbol.ContainingNamespace.IsGlobalNamespace)
-        {
-            return $"{symbol.ContainingNamespace.ToDisplayString()}.{symbol.Name}";
-        }
-        return symbol.Name;
     }
 }

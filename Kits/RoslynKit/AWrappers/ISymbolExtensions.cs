@@ -89,7 +89,7 @@ public static class ISymbolExtensions
         return builder.Build(symbol);
     }
 
-    public static (string Name, IEnumerable<string> GenericParameters) GetTypeDetails(this ITypeSymbol typeSymbol)
+    public static TypeDetailDto GetTypeDetails(this ITypeSymbol typeSymbol)
     {
         var name = typeSymbol.Name;
 
@@ -102,8 +102,7 @@ public static class ISymbolExtensions
         return (name, Enumerable.Empty<string>());
     }
 
-    public static (string ReturnType, string Name, IEnumerable<string> GenericParameters, IEnumerable<(string Type, string Name)> Parameters)
-        GetMethodDetails(this IMethodSymbol methodSymbol)
+    public static MethodDetailDto  GetMethodDetails(this IMethodSymbol methodSymbol)
     {
         var returnType = methodSymbol.ReturnsVoid ? "void" : methodSymbol.ReturnType.ToDisplayString();
         var name = methodSymbol.Name;
@@ -111,5 +110,31 @@ public static class ISymbolExtensions
         var parameters = methodSymbol.Parameters.Select(p => (p.Type.ToDisplayString(), p.Name)).ToList();
 
         return (returnType, name, genericParameters, parameters);
+    }
+}
+
+public record struct TypeDetailDto(string Name, IEnumerable<string> GenericParameters)
+{
+    public static implicit operator (string Name, IEnumerable<string> GenericParameters)(TypeDetailDto value)
+    {
+        return (value.Name, value.GenericParameters);
+    }
+
+    public static implicit operator TypeDetailDto((string Name, IEnumerable<string> GenericParameters) value)
+    {
+        return new TypeDetailDto(value.Name, value.GenericParameters);
+    }
+}
+
+public record struct MethodDetailDto(string ReturnType, string Name, IEnumerable<string> GenericParameters, IEnumerable<(string Type, string Name)> Parameters)
+{
+    public static implicit operator (string ReturnType, string Name, IEnumerable<string> GenericParameters, IEnumerable<(string Type, string Name)> Parameters)(MethodDetailDto value)
+    {
+        return (value.ReturnType, value.Name, value.GenericParameters, value.Parameters);
+    }
+
+    public static implicit operator MethodDetailDto((string ReturnType, string Name, IEnumerable<string> GenericParameters, IEnumerable<(string Type, string Name)> Parameters) value)
+    {
+        return new MethodDetailDto(value.ReturnType, value.Name, value.GenericParameters, value.Parameters);
     }
 }
