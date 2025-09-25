@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
 
-namespace ContextBrowser.FileManager;
+namespace ContextKit.Model.CacheManager;
 
 // context: relations, build
 public interface IContextInfoCacheService

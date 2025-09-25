@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;
@@ -115,7 +114,7 @@ public class RoslynCompilationBuilder : ICompilationBuilder
             : result;
     }
 
-    private string PsoudoCodeInject(SemanticOptions _options, string filePath)
+    private static string PsoudoCodeInject(SemanticOptions _options, string filePath)
     {
         var code = File.ReadAllText(filePath);
         if (!_options.IncludePseudoCode)

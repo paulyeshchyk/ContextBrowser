@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using UmlKit.PlantUmlSpecification.Attributes;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 // context: model, uml
 // pattern: Composite leaf

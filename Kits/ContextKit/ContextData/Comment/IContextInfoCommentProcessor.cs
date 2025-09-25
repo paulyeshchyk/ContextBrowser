@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using ContextKit.Model;
-using ContextKit.Model.Classifier;
 
-namespace ContextKit.Stategies;
+namespace ContextKit.ContextData.Comment;
 
 // context: contextInfo, build
 public interface IContextInfoCommentProcessor<T>

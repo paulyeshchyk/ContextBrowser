@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SemanticKit.Model.Options;
 
-namespace RoslynKit.Extensions;
+namespace RoslynKit.AWrappers;
 
 internal static class MemberDeclarationSyntaxExtensions
 {

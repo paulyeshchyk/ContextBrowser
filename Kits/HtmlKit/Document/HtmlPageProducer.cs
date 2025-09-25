@@ -2,9 +2,8 @@
 using System.IO;
 using ContextBrowserKit.Options;
 using HtmlKit.Builders.Core;
+using HtmlKit.Builders.Page;
 using HtmlKit.Matrix;
-using HtmlKit.Options;
-using HtmlKit.Page;
 
 namespace HtmlKit.Document;
 

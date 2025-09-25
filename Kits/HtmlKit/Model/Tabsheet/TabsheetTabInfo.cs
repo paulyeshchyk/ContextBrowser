@@ -1,7 +1,4 @@
-using System;
-using System.IO;
-
-namespace HtmlKit.Model.Tabsheet;
+﻿namespace HtmlKit.Model.Tabsheet;
 
 public record TabsheetTabInfo : ITabsheetTabInfo
 {

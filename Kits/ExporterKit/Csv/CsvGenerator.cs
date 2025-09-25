@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ContextBrowserKit.Options;
-using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using HtmlKit.Options;
 using TensorKit.Factories;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Csv;
 

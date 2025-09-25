@@ -1,13 +1,9 @@
-﻿using System.Text.RegularExpressions;
-using ContextBrowserKit.Extensions;
-using ContextBrowserKit.Log;
-using ContextBrowserKit.Log.Options;
+﻿using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Invocations.Lookup;
-using RoslynKit.Signature;
 using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;

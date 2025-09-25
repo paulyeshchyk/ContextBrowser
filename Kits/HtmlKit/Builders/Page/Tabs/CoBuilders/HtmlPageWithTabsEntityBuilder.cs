@@ -1,21 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using HtmlKit.Builders.Core;
-using HtmlKit.Builders.Page;
-using HtmlKit.Model;
 using HtmlKit.Model.Containers;
-using HtmlKit.Model.Tabsheet;
-using HtmlKit.Page;
-using TensorKit.Model;
 
-namespace ExporterKit.Html;
+namespace HtmlKit.Builders.Page.Tabs.CoBuilders;
 
 public class HtmlPageWithTabsEntityBuilder<DTO, TTensor> : HtmlPageWithTabsBuilder<DTO, TTensor>
     where DTO : ContextInfoKeyContainerEntityName

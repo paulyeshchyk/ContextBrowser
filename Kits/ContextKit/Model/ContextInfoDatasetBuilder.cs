@@ -1,16 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
-using ContextKit.Model.Classifier;
-using ContextKit.Model.Collector;
 using LoggerKit;
-using TensorKit.Model;
 
-namespace ExporterKit.Uml;
+namespace ContextKit.Model;
 
 // context: ContextInfo, ContextInfoMatrix, build
 public class ContextInfoDatasetBuilder<TTensor> : IContextInfoDatasetBuilder<TTensor>

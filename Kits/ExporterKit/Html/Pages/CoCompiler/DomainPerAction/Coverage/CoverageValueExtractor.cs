@@ -1,5 +1,4 @@
-﻿using System;
-using ContextKit.Model;
+﻿using ContextKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
 

@@ -24,7 +24,7 @@ public static class CommandLineHelpProducer
             if (argAttr != null)
             {
                 // Помечаем обязательные параметры
-                var isRequired = prop.GetCustomAttribute<System.Runtime.CompilerServices.RequiredMemberAttribute>() != null;
+                var isRequired = prop.GetCustomAttribute<RequiredMemberAttribute>() != null;
                 var requiredMarker = isRequired ? " (обязательный)" : string.Empty;
 
                 helpText.AppendLine($"  {argumentPrefix}{argAttr.Name}{requiredMarker}: {argAttr.Description}");
@@ -52,7 +52,7 @@ public static class CommandLineHelpProducer
                 var argAttr = targetProp.GetCustomAttribute<CommandLineArgumentAttribute>();
                 if (argAttr != null)
                 {
-                    var isRequired = targetProp.GetCustomAttribute<System.Runtime.CompilerServices.RequiredMemberAttribute>() != null;
+                    var isRequired = targetProp.GetCustomAttribute<RequiredMemberAttribute>() != null;
                     var requiredMarker = isRequired ? " (обязательный)" : string.Empty;
 
                     helpText.AppendLine($"Справка по параметру '{argumentPrefix}{argAttr.Name}':");
@@ -80,7 +80,7 @@ public static class CommandLineHelpProducer
             var argAttr = prop.GetCustomAttribute<CommandLineArgumentAttribute>();
             if (argAttr != null)
             {
-                var isRequired = prop.GetCustomAttribute<System.Runtime.CompilerServices.RequiredMemberAttribute>() != null;
+                var isRequired = prop.GetCustomAttribute<RequiredMemberAttribute>() != null;
                 var requiredMarker = isRequired ? " (обязательный)" : string.Empty;
 
                 helpText.AppendLine($"  {argumentPrefix}{argAttr.Name}{requiredMarker}: {argAttr.Description}");

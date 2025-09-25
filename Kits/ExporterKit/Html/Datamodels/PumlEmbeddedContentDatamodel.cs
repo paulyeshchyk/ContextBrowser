@@ -1,16 +1,11 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
-using System.Reflection.Metadata;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
 using ExporterKit.Html.Puml;
 using HtmlKit.Builders.Core;
-using HtmlKit.Model;
-using HtmlKit.Model.Tabsheet;
-using TensorKit.Model;
+using HtmlKit.Builders.Page;
 
-namespace HtmlKit.Page.Compiler;
+namespace ExporterKit.Html.Datamodels;
 
 public abstract class PumlEmbeddedContentDatamodel<TTensor>
     where TTensor : notnull

@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ContextBrowser.Services.Parsing;
 using ContextKit.Model;
 using ExporterKit.Html.Containers;
-using TensorKit.Model.DomainPerAction;
+using TensorKit.Model;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 

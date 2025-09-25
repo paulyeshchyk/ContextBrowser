@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowser.FileManager;
-using ContextBrowser.Infrastructure;
 using ContextBrowser.Model;
 using ContextBrowser.Roslyn;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.CacheManager;
 using LoggerKit;
 using SemanticKit.Model.Options;
 
-namespace ContextBrowser.Services;
+namespace ContextBrowser.Services.Parsing;
 
 // context: parsing, build
 public interface IParsingOrchestrator

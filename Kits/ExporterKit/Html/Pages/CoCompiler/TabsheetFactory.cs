@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ContextBrowser.Samples.HtmlPages;
 using ContextBrowserKit.Extensions;
+using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Html.Containers;
-using HtmlKit.Builders.Core;
+using ExporterKit.Html.Datamodels;
+using HtmlKit.Builders.Page;
+using HtmlKit.Builders.Page.Tabs;
 using HtmlKit.Document;
 using HtmlKit.Matrix;
-using HtmlKit.Model;
 using HtmlKit.Model.Containers;
-using HtmlKit.Options;
-using HtmlKit.Page;
-using HtmlKit.Page.Compiler;
 using TensorKit.Factories;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.CoCompiler;
 

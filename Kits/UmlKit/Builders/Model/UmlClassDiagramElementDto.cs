@@ -1,5 +1,4 @@
-using ContextKit.Model;
-using UmlKit;
+﻿using ContextKit.Model;
 
 namespace UmlKit.Builders.Model;
 

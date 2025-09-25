@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using ContextKit.Model;
-using TensorKit.Model;
 
-namespace HtmlKit.Document.Coverage;
+namespace HtmlKit.Document;
 
 public class HtmlCellStyleBuilder<TTensor> : IHtmlCellStyleBuilder<TTensor>
     where TTensor : notnull

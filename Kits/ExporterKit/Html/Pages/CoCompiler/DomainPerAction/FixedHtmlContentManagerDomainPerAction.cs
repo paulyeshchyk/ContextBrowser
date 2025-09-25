@@ -1,8 +1,8 @@
 ﻿using ContextBrowserKit.Options;
-using HtmlKit.Options;
+using HtmlKit.Helpers;
 using TensorKit.Model;
 
-namespace HtmlKit.Helpers;
+namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 public class FixedHtmlContentManagerDomainPerAction : IHtmlFixedContentManager
 {

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using ContextBrowserKit.Extensions;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 public class UmlActivate : IUmlElement, IUmlDeclarable
 {

@@ -1,13 +1,6 @@
-using System.Collections.Generic;
-using System.Text.Json;
-using ContextBrowserKit.Log;
-using ContextBrowserKit.Log.Options;
-using ContextBrowserKit.Options;
-using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
-using ContextKit.Model.Service;
+﻿using System.Collections.Generic;
 
-namespace ContextBrowser.FileManager;
+namespace ContextKit.Model.CacheManager;
 
 /// <summary>
 /// Упрощенная модель данных для сериализации.

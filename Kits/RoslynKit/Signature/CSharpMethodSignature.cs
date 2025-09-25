@@ -1,5 +1,4 @@
-using System.Text.RegularExpressions;
-using SemanticKit.Model;
+﻿using SemanticKit.Model;
 
 namespace RoslynKit.Signature;
 

@@ -2,9 +2,8 @@
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using UmlKit.Builders;
 using UmlKit.Builders.Model;
-using UmlKit.Model;
+using UmlKit.Builders.Url;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.DiagramGenerator.Managers;

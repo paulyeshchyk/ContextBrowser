@@ -6,7 +6,7 @@ using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using LoggerKit;
 
-namespace ContextKit.Stategies;
+namespace ContextKit.ContextData.Comment.Stategies;
 
 public class ContextStrategy<T> : ICommentParsingStrategy<T>
     where T : ContextInfo

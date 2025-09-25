@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using HtmlKit.Options;
 using TensorKit.Factories;
 using TensorKit.Model;
 
-namespace ExporterKit.Uml;
+namespace ContextKit.Model;
 
 // context: ContextInfo, ContextInfoMatrix, build
 public class ContextInfoFillerEmptyData<TTensor> : IContextInfoFiller<TTensor>

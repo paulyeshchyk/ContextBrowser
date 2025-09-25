@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.Samples.Foo;
+﻿namespace ContextSamples.ContextSamples.S2;
 
 // context: validate, S2
 public class A

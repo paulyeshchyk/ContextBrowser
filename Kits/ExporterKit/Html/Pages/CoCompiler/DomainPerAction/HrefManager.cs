@@ -1,13 +1,10 @@
 ﻿using System;
 using ContextBrowserKit.Options;
-using ContextKit.Model;
 using ExporterKit.Html.Containers;
-using HtmlKit.Matrix;
-using HtmlKit.Options;
+using HtmlKit.Helpers;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
-namespace HtmlKit.Helpers;
+namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 public class HrefManagerMethodList<TDataTensor> : IHrefManager<MethodListTensor<TDataTensor>>
     where TDataTensor : notnull

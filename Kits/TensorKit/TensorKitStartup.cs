@@ -1,4 +1,6 @@
-﻿internal static class TensorKitStartup
+﻿namespace TensorKit;
+
+internal static class TensorKitStartup
 {
     public static void Main(string[] args)
     {

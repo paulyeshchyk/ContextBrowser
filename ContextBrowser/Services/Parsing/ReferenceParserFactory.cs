@@ -1,14 +1,12 @@
-using ContextBrowserKit.Options;
+﻿using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using LoggerKit;
 using RoslynKit.Phases.ContextInfoBuilder;
-using RoslynKit.Phases.Invocations;
 using RoslynKit.Phases.Syntax.Parsers;
-using RoslynKit.Wrappers.Extractor;
 using SemanticKit.Model;
 
-namespace ContextBrowser.Services;
+namespace ContextBrowser.Services.Parsing;
 
 public interface IReferenceParserFactory
 {

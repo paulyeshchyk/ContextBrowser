@@ -1,4 +1,4 @@
-﻿namespace ContextBrowser.ContextSamples.ErrorTransitionTest;
+﻿namespace ContextSamples.ContextSamples.S1;
 
 // context: S1, model
 internal static class Actor

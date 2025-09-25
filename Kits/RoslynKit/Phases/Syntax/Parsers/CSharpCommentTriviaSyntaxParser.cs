@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData.Comment;
 using ContextKit.Model;
-using ContextKit.Stategies;
 using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

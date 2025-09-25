@@ -1,29 +1,14 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using ContextKit.Model.Collector;
-using ExporterKit;
-using ExporterKit.Html;
 using ExporterKit.Infrastucture;
-using HtmlKit;
 using HtmlKit.Document;
-using HtmlKit.Document.Coverage;
-using HtmlKit.Helpers;
-using HtmlKit.Matrix;
-using HtmlKit.Page;
-using HtmlKit.Page.Compiler;
-using HtmlKit.Writer;
 using LoggerKit;
-using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 

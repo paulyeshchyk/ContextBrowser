@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using HtmlKit.Builders.Core;
-using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
-using HtmlKit.Page;
 
-namespace HtmlKit.Builders.Page;
+namespace HtmlKit.Builders.Page.Tabs;
 
 public static class HtmlTabsheetBuilder
 {

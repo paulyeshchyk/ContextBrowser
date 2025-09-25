@@ -1,4 +1,6 @@
-﻿internal static class RoslynKitStartup
+﻿namespace RoslynKit;
+
+internal static class RoslynKitStartup
 {
     public static void Main(string[] args)
     {

@@ -1,7 +1,6 @@
 ﻿using System.IO;
+using ContextBrowserKit.Options;
 using HtmlKit.Matrix;
-using HtmlKit.Options;
-using TensorKit.Model;
 
 namespace HtmlKit.Document;
 

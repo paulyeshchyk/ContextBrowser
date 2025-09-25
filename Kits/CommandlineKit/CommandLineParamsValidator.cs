@@ -17,7 +17,7 @@ public static class CommandLineParamsValidator
         // Находим все свойства, помеченные атрибутом RequiredMemberAttribute
         foreach (var prop in typeof(T).GetProperties())
         {
-            if (prop.GetCustomAttribute<System.Runtime.CompilerServices.RequiredMemberAttribute>() != null)
+            if (prop.GetCustomAttribute<RequiredMemberAttribute>() != null)
             {
                 // Проверяем, что свойство не null
                 // Это будет работать для reference-типов

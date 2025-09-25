@@ -1,5 +1,4 @@
-﻿using ContextBrowserKit.Log;
-using ContextBrowserKit.Options;
+﻿using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using SemanticKit.Model;

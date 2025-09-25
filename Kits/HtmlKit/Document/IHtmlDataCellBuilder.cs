@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
-using ContextKit.Model;
-using HtmlKit.Options;
+﻿using System.IO;
+using ContextBrowserKit.Options;
 
 namespace HtmlKit.Document;
 

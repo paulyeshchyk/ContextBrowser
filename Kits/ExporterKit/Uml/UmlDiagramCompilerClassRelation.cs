@@ -2,23 +2,18 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowser.DiagramFactory.Exporters;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
-using ExporterKit.Uml;
 using LoggerKit;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
-namespace UmlKit.Exporter;
+namespace ExporterKit.Uml;
 
 // context: uml, links, build
 // pattern: Builder

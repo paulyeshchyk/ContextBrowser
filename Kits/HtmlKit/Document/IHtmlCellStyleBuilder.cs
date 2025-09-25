@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ContextKit.Model;
-using TensorKit.Model;
 
 namespace HtmlKit.Document;
 

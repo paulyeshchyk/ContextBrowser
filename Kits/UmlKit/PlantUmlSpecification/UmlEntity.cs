@@ -1,11 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UmlKit.PlantUmlSpecification.Attributes;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 // context: model, uml
 // pattern: Composite leaf

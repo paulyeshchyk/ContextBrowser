@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ContextKit.Model;
-using ExporterKit.Uml.Model;
 using UmlKit.Builders.Model;
 
-namespace UmlKit.Exporter;
+namespace ExporterKit.Uml.Model;
 
 public static class UmlDiagramMaxNamelengthExtractor
 {

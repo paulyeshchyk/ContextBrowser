@@ -1,18 +1,14 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Threading;
+using ContextBrowserKit.Options;
 using ExporterKit.Html.Containers;
-using ExporterKit.Html.Pages.CoCompiler;
 using HtmlKit.Builders.Core;
+using HtmlKit.Builders.Page;
+using HtmlKit.Document;
 using HtmlKit.Helpers;
-using HtmlKit.Model;
-using HtmlKit.Model.Containers;
-using HtmlKit.Options;
-using HtmlKit.Page;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
-namespace HtmlKit.Document;
+namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
 
 public class HtmlDataCellBuilderMethodList<TDataTensor> : IHtmlDataCellBuilder<MethodListTensor<TDataTensor>>
     where TDataTensor : IDomainPerActionTensor

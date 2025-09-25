@@ -7,12 +7,8 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using ExporterKit;
-using ExporterKit.Html;
-using ExporterKit.Infrastucture;
 using HtmlKit.Document;
 using HtmlKit.Matrix;
-using HtmlKit.Options;
 using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
@@ -58,7 +54,7 @@ public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
     }
 
     // context: ContextInfoMatrix, htmlmatrix, read
-    internal List<object> SortList(List<object> list, string emptyValue, UnclassifiedPriorityType priority)
+    internal static List<object> SortList(List<object> list, string emptyValue, UnclassifiedPriorityType priority)
     {
         return priority switch
         {

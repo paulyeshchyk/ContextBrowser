@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
+using HtmlKit.Builders.Page;
+using HtmlKit.Document;
 using HtmlKit.Helpers;
-using HtmlKit.Options;
-using HtmlKit.Page;
-using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
-namespace HtmlKit.Document;
+namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
 
 public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor>
     where TTensor : notnull

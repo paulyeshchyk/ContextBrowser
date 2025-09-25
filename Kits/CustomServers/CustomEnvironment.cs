@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using ContextBrowser.Servers;
-using CustomServers;
+using CustomServers.Servers;
 
-namespace ContextBrowser.Services;
+namespace CustomServers;
 
 public static class CustomEnvironment
 {

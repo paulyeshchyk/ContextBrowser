@@ -1,14 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using ContextKit.Model;
-using ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
-using HtmlKit;
 using HtmlKit.Document;
-using HtmlKit.Document.Coverage;
 using HtmlKit.Helpers;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
 

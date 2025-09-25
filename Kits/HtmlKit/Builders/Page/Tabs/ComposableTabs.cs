@@ -1,12 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HtmlKit.Builders.Core;
-using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
 
-namespace HtmlKit.Page;
+namespace HtmlKit.Builders.Page.Tabs;
 
 /// <summary>
 /// Регистрация одной вкладки: связывает контракт модели (DataModelType),

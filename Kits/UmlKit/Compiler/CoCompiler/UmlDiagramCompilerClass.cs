@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextKit.Model;
-using TensorKit.Model.DomainPerAction;
-using UmlKit;
-using UmlKit.Builders;
-using UmlKit.Compiler;
-using UmlKit.Compiler.CoCompiler;
+using TensorKit.Model;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Compiler.CoCompiler;

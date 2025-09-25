@@ -2,11 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ContextKit.Model;
-using HtmlKit.Options;
-using HtmlKit.Writer;
-using TensorKit.Model;
+using HtmlKit.Document;
 
-namespace HtmlKit.Document;
+namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 public class HtmlCellDataProducerListOfItems<TTensor> : IHtmlCellDataProducer<List<ContextInfo>, TTensor>
     where TTensor : notnull

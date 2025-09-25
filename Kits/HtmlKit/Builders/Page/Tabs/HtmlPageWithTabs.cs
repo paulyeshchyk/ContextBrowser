@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
+﻿using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using HtmlKit;
 using HtmlKit.Builders.Core;
-using HtmlKit.Builders.Page;
-using HtmlKit.Model;
+using HtmlKit.Builders.Page.CoHtmlElementBuilders;
 using HtmlKit.Model.Tabsheet;
-using HtmlKit.Page;
-using Microsoft.VisualBasic;
 
-namespace ExporterKit.Html;
+namespace HtmlKit.Builders.Page.Tabs;
 
 //context: build, html
 public abstract class HtmlPageWithTabsBuilder<DTO, TTensor>

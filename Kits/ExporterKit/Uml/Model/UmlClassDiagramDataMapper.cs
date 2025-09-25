@@ -1,10 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ContextKit.Model;
-using ExporterKit;
-using ExporterKit.Uml;
-using ExporterKit.Uml.Model;
-using UmlKit;
 using UmlKit.Builders.Model;
 
 namespace ExporterKit.Uml.Model;

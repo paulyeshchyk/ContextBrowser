@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ContextBrowser.Servers;
+namespace CustomServers.Servers;
 
 public abstract class CustomServer
 {

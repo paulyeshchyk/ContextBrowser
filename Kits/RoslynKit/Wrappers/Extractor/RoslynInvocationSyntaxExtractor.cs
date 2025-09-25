@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Threading;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Extensions;
-using RoslynKit.Phases.Invocations;
-using RoslynKit.Signature;
+using RoslynKit.Converters;
 using RoslynKit.Wrappers.Meta;
-using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 

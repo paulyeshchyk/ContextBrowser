@@ -1,13 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
-using Microsoft.CodeAnalysis;
 using RoslynKit.Phases.ContextInfoBuilder;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;

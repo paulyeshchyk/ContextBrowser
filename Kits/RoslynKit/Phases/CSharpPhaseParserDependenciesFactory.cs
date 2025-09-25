@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData.Comment;
 using ContextKit.Model;
-using ContextKit.Stategies;
 using LoggerKit;
 using RoslynKit.Phases.ContextInfoBuilder;
-using RoslynKit.Phases.Syntax;
 using RoslynKit.Phases.Syntax.Parsers;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;

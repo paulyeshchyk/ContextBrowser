@@ -1,7 +1,4 @@
-﻿using System;
-using ContextKit.Model.Classifier;
-
-namespace TensorKit.Model.DomainPerAction;
+﻿namespace TensorKit.Model;
 
 public class DomainPerActionDimensionType : ITensorDimensionType
 {

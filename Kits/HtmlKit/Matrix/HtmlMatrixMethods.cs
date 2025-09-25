@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using HtmlKit.Model.Containers;
-using TensorKit.Model.DomainPerAction;
 
 namespace HtmlKit.Matrix;
 

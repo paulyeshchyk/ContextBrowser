@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ContextBrowserKit.Options.Export;
-using ContextKit;
-using ContextKit.Model;
-using ContextKit.Model.Collector;
+﻿using System.Collections.Generic;
 
 namespace ContextKit.Model;
 

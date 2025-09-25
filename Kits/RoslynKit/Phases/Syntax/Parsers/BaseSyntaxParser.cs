@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;

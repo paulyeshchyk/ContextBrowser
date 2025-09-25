@@ -1,14 +1,12 @@
-using ContextBrowser.Infrastructure;
-using ContextBrowser.Model;
-using ContextBrowserKit.Options;
+﻿using ContextBrowserKit.Options;
+using ContextKit.ContextData.Comment;
 using ContextKit.Model;
-using ContextKit.Stategies;
 using LoggerKit;
 using RoslynKit.Phases;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 
-namespace ContextBrowser.Services;
+namespace ContextBrowser.Services.Parsing;
 
 public interface IDeclarationParserFactory
 {

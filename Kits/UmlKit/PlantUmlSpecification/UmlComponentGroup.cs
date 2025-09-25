@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 // context: model, uml
 // pattern: Composite leaf

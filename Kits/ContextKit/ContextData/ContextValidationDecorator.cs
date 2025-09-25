@@ -1,11 +1,11 @@
-﻿using ContextBrowserKit.Log;
-using ContextBrowserKit.Log.Options;
+﻿using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData.Comment;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using LoggerKit;
 
-namespace ContextKit.Stategies;
+namespace ContextKit.ContextData;
 
 // context: roslyn, contextInfo, build
 public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>

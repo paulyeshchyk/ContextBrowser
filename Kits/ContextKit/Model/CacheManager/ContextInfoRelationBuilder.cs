@@ -1,14 +1,10 @@
-using System.Collections.Generic;
-using System.Text.Json;
-using ContextBrowserKit.Log;
+﻿using System.Collections.Generic;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
 using ContextKit.Model.Service;
 using LoggerKit;
 
-namespace ContextBrowser.FileManager;
+namespace ContextKit.Model.CacheManager;
 
 // context: relations, build
 public static class ContextInfoRelationBuilder

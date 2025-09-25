@@ -1,9 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
 
-namespace HtmlKit.Page.Compiler;
+namespace ExporterKit.Html.Pages;
 
 public interface IHtmlPageCompiler
 {

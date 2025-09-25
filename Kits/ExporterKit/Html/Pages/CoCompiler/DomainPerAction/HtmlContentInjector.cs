@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using ContextKit.Model;
+﻿using System.IO;
 using HtmlKit.Builders.Core;
-using HtmlKit.Page;
-using TensorKit.Model;
+using HtmlKit.Builders.Page;
+using HtmlKit.Document;
 
-namespace HtmlKit.Writer;
+namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // pattern: Builder
 public class HtmlContentInjector<TTensor> : IHtmlContentInjector<TTensor>

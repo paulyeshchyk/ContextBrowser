@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Threading;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Extensions;
+using RoslynKit.AWrappers;
+using RoslynKit.Wrappers;
+using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 
-namespace RoslynKit.Wrappers.Syntax;
+namespace RoslynKit.Converters;
 
 public static class CSharpISymbolWrapperConverter
 {

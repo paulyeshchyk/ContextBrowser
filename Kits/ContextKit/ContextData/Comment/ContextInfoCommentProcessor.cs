@@ -2,9 +2,8 @@
 using System.Linq;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 
-namespace ContextKit.Stategies;
+namespace ContextKit.ContextData.Comment;
 
 // context: contextInfo, comment, build
 public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>

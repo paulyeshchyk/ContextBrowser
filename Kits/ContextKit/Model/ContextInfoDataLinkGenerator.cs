@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using ContextBrowserKit.Options;
-using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using ContextKit.Model.Service;
 
-namespace ContextBrowser.DiagramFactory.Exporters;
+namespace ContextKit.Model;
 
 // context: ContextInfo, build
 public class ContextInfoDataLinkGenerator

@@ -1,8 +1,8 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 
-namespace RoslynKit.Extensions;
+namespace RoslynKit.AWrappers;
 
 public class CSharpSignatureBuilder
 {
@@ -59,12 +59,12 @@ public class CSharpSignatureBuilder
 
         if (_includeNamespace && !typeSymbol.ContainingNamespace.IsGlobalNamespace)
         {
-            sb.Append(typeSymbol.ContainingNamespace.ToDisplayString()).Append(".");
+            sb.Append(typeSymbol.ContainingNamespace.ToDisplayString()).Append('.');
         }
 
         if (_includeContainingType && typeSymbol.ContainingType != null)
         {
-            sb.Append(typeSymbol.ContainingType.Name).Append(".");
+            sb.Append(typeSymbol.ContainingType.Name).Append('.');
         }
 
         sb.Append(name);
@@ -84,17 +84,17 @@ public class CSharpSignatureBuilder
 
         if (_includeReturnType)
         {
-            sb.Append(ReturnType).Append(" ");
+            sb.Append(ReturnType).Append(' ');
         }
 
         if (_includeNamespace && !methodSymbol.ContainingNamespace.IsGlobalNamespace)
         {
-            sb.Append(methodSymbol.ContainingNamespace.ToDisplayString()).Append(".");
+            sb.Append(methodSymbol.ContainingNamespace.ToDisplayString()).Append('.');
         }
 
         if (_includeContainingType && methodSymbol.ContainingType != null)
         {
-            sb.Append(methodSymbol.ContainingType.Name).Append(".");
+            sb.Append(methodSymbol.ContainingType.Name).Append('.');
         }
 
         sb.Append(Name);
@@ -106,10 +106,10 @@ public class CSharpSignatureBuilder
 
         if (_includeParameters)
         {
-            sb.Append("(");
+            sb.Append('(');
             sb.Append(string.Join(", ",
                 Parameters.Select(p => $"{p.Type} {p.Name}")));
-            sb.Append(")");
+            sb.Append(')');
         }
 
         return sb.ToString();

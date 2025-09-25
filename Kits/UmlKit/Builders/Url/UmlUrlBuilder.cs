@@ -1,10 +1,9 @@
 ﻿using System;
 using ContextBrowserKit.Extensions;
 using ContextKit.Model;
-using UmlKit;
 using UmlKit.Builders.Model;
 
-namespace UmlKit.Builders;
+namespace UmlKit.Builders.Url;
 
 public static class UmlUrlBuilder
 {

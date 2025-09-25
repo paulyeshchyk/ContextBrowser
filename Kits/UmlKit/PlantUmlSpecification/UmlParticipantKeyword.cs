@@ -1,4 +1,4 @@
-﻿namespace UmlKit.Model;
+﻿namespace UmlKit.PlantUmlSpecification;
 
 public enum UmlParticipantKeyword
 {

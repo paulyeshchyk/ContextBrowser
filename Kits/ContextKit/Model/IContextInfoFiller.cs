@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model.Classifier;
 
 namespace ContextKit.Model;
 

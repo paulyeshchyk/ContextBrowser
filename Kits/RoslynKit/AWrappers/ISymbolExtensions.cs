@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace RoslynKit.Extensions;
+namespace RoslynKit.AWrappers;
 
 public static class ISymbolExtensions
 {

@@ -2,21 +2,14 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Extensions;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using ExporterKit;
-using ExporterKit.Html;
-using ExporterKit.Infrastucture;
-using ExporterKit.Uml;
 using ExporterKit.Uml.DiagramCompileOptions;
 using LoggerKit;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 using UmlKit.Builders;
 using UmlKit.Builders.TransitionFactory;
 using UmlKit.Compiler;
@@ -24,7 +17,7 @@ using UmlKit.Compiler.CoCompiler;
 using UmlKit.DiagramGenerator;
 using UmlKit.DiagramGenerator.Renderer;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
+using UmlKit.PlantUmlSpecification;
 
 namespace ExporterKit.Uml;
 

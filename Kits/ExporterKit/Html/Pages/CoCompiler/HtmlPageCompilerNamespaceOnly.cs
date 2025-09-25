@@ -7,15 +7,13 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using ExporterKit.Html;
-using ExporterKit.Html.Pages.CoCompiler;
-using HtmlKit.Model;
+using HtmlKit.Builders.Page.Tabs;
+using HtmlKit.Builders.Page.Tabs.CoBuilders;
 using HtmlKit.Model.Containers;
 using LoggerKit;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
-namespace HtmlKit.Page.Compiler;
+namespace ExporterKit.Html.Pages.CoCompiler;
 
 public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
     where TDataTensor : IDomainPerActionTensor

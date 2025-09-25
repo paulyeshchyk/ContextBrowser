@@ -1,6 +1,4 @@
-using SemanticKit.Model;
-
-namespace RoslynKit.Phases.Invocations;
+﻿namespace SemanticKit.Model;
 
 public interface ISemanticInvocationResolver
 {

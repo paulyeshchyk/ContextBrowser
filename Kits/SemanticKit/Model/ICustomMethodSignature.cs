@@ -1,6 +1,4 @@
-using System.Text.RegularExpressions;
-
-namespace SemanticKit.Model;
+﻿namespace SemanticKit.Model;
 
 public interface ICustomMethodSignature
 {

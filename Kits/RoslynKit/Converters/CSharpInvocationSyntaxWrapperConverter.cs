@@ -1,12 +1,12 @@
-using ContextKit.Model;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Extensions;
+using RoslynKit.AWrappers;
 using RoslynKit.Signature;
+using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 
-namespace RoslynKit.Wrappers.Syntax;
+namespace RoslynKit.Converters;
 
 public static class CSharpInvocationSyntaxWrapperConverter
 {

@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection.Metadata.Ecma335;
 using HtmlKit.Builders.Core;
-using HtmlKit.Builders.Tag;
-using HtmlKit.Classes;
 
-namespace HtmlKit.Page;
+namespace HtmlKit.Builders.Page.CoHtmlElementBuilders;
 
 public static partial class HtmlBuilderFactory
 {

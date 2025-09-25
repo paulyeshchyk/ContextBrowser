@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowser.Samples.HtmlPages;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using ExporterKit.Html;
-using ExporterKit.Html.Pages.CoCompiler;
-using HtmlKit.Builders.Core;
-using HtmlKit.Model;
+using HtmlKit.Builders.Page.Tabs;
+using HtmlKit.Builders.Page.Tabs.CoBuilders;
 using HtmlKit.Model.Containers;
 using LoggerKit;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
-namespace HtmlKit.Page.Compiler;
+namespace ExporterKit.Html.Pages.CoCompiler;
 
 public class HtmlPageCompilerClassOnly<TDataTensor> : IHtmlPageCompiler
     where TDataTensor : IDomainPerActionTensor

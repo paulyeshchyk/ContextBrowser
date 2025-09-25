@@ -1,4 +1,4 @@
-﻿namespace HtmlKit.Classes;
+﻿namespace HtmlKit.Builders.Classes;
 
 internal static class HtmlTagClasses
 {

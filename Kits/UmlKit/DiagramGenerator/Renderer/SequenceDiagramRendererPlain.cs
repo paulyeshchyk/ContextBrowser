@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ContextBrowserKit;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;
@@ -9,7 +7,6 @@ using UmlKit.Builders;
 using UmlKit.Builders.Model;
 using UmlKit.DiagramGenerator.Managers;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.DiagramGenerator.Renderer;
@@ -87,10 +84,10 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
                 callStack.Push(callee);
             }
         }
-        WipeStack(callStack, diagram);
+        SequenceDiagramRendererPlain<P>.WipeStack(callStack, diagram);
     }
 
-    private void WipeStack(Stack<string> callStack, UmlDiagram<P> diagram)
+    private static void WipeStack(Stack<string> callStack, UmlDiagram<P> diagram)
     {
         while (callStack.Count > 0)
         {
