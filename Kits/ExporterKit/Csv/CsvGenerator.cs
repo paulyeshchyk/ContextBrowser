@@ -52,7 +52,7 @@ public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
             var rows = new List<object> { action };
             foreach (var domain in domains)
             {
-                var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new [] { action, domain }, _keyFactory.Create);
+                var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { action, domain }, _keyFactory.Create);
                 var count = matrix.TryGetValue(contextKey, out var methods) ? methods.Count : 0;
                 rows.Add(count.ToString());
             }

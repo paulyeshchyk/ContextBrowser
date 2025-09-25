@@ -19,14 +19,15 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
     private readonly IHrefManager<TTensor> _hRefManager;
     private readonly IHtmlCellStyleBuilder<TTensor> _cellStyleBuilder;
     private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
+    private readonly IKeyIndexBuilder<ContextInfo> _coverageIndexer;
 
-    private readonly Dictionary<object, ContextInfo>? _indexData;
+    private Dictionary<object, ContextInfo>? _indexData;
 
     public HtmlDataCellBuilderCoverage(
-        IHtmlCellDataProducer<string, TTensor> coverageDataProducer, 
-        IHtmlCellDataProducer<List<ContextInfo>, TTensor> contextInfoListDataProducer, 
-        IHrefManager<TTensor> hRefManager, 
-        IHtmlCellStyleBuilder<TTensor> cellStyleBuilder, 
+        IHtmlCellDataProducer<string, TTensor> coverageDataProducer,
+        IHtmlCellDataProducer<List<ContextInfo>, TTensor> contextInfoListDataProducer,
+        IHrefManager<TTensor> hRefManager,
+        IHtmlCellStyleBuilder<TTensor> cellStyleBuilder,
         IKeyIndexBuilder<ContextInfo> coverageIndexer, IContextInfoDatasetProvider<TTensor> datasetProvider)
     {
         _coverageDataProducer = coverageDataProducer;
@@ -36,11 +37,19 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
         _cellStyleBuilder = cellStyleBuilder;
         _datasetProvider = datasetProvider;
 
-        _indexData = coverageIndexer.GetIndexData();
+        _coverageIndexer = coverageIndexer;
     }
 
     public void BuildDataCell(TextWriter textWriter, TTensor cell, HtmlTableOptions options)
     {
+        if (_indexData == null)
+        {
+            var ds = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
+            var list = ds.GetAll();
+
+            _indexData = _coverageIndexer.Build(list);
+        }
+
         var cellData = _coverageDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();
         var contextList = _contextInfoListDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();
 

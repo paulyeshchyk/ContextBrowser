@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using HtmlKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ExporterKit;
 using ExporterKit.Html;
 using HtmlKit;
+using HtmlKit.Matrix;
 using HtmlKit.Page;
 using HtmlKit.Page.Compiler;
 using TensorKit.Factories;

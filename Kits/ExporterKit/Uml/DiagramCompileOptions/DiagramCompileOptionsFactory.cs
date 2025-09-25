@@ -33,7 +33,7 @@ public static class DiagramCompileOptionsFactory
 
     public static IDiagramCompileOptions DomainSequenceCompileOptions(object domain)
     {
-        var domainStr = (string) domain;
+        var domainStr = (string)domain;
         return new PumlSequenceCompileOptions
             (
                 metaItem: domainStr,

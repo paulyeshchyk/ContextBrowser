@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using HtmlKit.Matrix;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
@@ -12,6 +11,7 @@ using ExporterKit;
 using ExporterKit.Html;
 using ExporterKit.Infrastucture;
 using HtmlKit.Document;
+using HtmlKit.Matrix;
 using HtmlKit.Options;
 using TensorKit.Model;
 

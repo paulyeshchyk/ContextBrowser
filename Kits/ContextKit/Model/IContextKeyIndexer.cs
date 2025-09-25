@@ -11,7 +11,5 @@ namespace ContextKit.Model;
 public interface IKeyIndexBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    void Build(IEnumerable<TContext> contextsList);
-
-    Dictionary<object, TContext>? GetIndexData();
+    Dictionary<object, TContext>? Build(IEnumerable<TContext> contextsList);
 }

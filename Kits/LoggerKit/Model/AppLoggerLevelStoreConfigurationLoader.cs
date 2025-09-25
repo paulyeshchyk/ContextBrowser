@@ -34,9 +34,9 @@ public static class AppLoggerLevelStoreConfigurationLoader
         try
         {
             var config = JsonSerializer.Deserialize<LogConfiguration<TAppLevel, TLogLevel>>(jsonContent, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+            {
+                PropertyNameCaseInsensitive = true
+            });
             return LoadConfiguration(defaultValue, config);
         }
         catch (Exception ex)

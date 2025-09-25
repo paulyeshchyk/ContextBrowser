@@ -63,13 +63,13 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
-        return(contextInfo) => contextInfoDataSet.GetAll()
+        return (contextInfo) => contextInfoDataSet.GetAll()
             .Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
-        return(contextInfo) => contextInfoDataSet.GetAll()
+        return (contextInfo) => contextInfoDataSet.GetAll()
             .Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 

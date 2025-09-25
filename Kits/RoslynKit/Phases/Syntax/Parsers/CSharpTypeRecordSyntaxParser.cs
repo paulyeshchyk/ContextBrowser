@@ -29,7 +29,7 @@ public class CSharpTypeRecordSyntaxParser<TContext> : BaseSyntaxParser<TContext>
         CSharpMethodSyntaxParser<TContext> methodSyntaxParser,
         CSharpCommentTriviaSyntaxParser<TContext> triviaCommentParser,
         SemanticOptions options,
-        IAppLogger<AppLevel>logger) : base(logger)
+        IAppLogger<AppLevel> logger) : base(logger)
     {
         _recordContextInfoBuilder = typeContextInfoBuilder;
         _options = options;

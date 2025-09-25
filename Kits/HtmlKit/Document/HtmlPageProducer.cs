@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using HtmlKit.Matrix;
 using ContextBrowserKit.Options;
 using HtmlKit.Builders.Core;
+using HtmlKit.Matrix;
 using HtmlKit.Options;
 using HtmlKit.Page;
 

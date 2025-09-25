@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,9 +29,11 @@ using SemanticKit.Model.Options;
 namespace RoslynKit.Assembly;
 
 // context: roslyn, build
+// coverage: 50
 public static class RoslynAssemblyFetcher
 {
     // context: roslyn, build
+    // coverage: 20
     public static IEnumerable<MetadataReference> Fetch(AssemblyPathFilterPatterns assemblyPathsFilter, IAppLogger<AppLevel> logger)
     {
         var trustedPlatformPaths = RoslynAssemblyFetcher.FetchTrustedPlatformPaths(logger);

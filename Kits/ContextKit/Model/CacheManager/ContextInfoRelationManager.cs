@@ -30,7 +30,7 @@ public class ContextInfoRelationManager : IContextInfoRelationManager
     // context: relations, build
     public Task<IEnumerable<ContextInfo>> ConvertToContextInfoAsync(List<ContextInfoSerializableModel> serializableModelList, CancellationToken cancellationToken)
     {
-        var contexts = serializableModelList.Select(model => ContextInfoAdapter.Adapt(model)).ToList();
+        var contexts = serializableModelList.Select(ContextInfoAdapter.Adapt).ToList();
 
         var lookupDictionary = contexts.ToDictionary(context => context.FullName);
 

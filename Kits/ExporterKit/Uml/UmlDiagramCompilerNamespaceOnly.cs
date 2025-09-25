@@ -24,7 +24,7 @@ namespace UmlKit.Exporter;
 
 // context: uml, build
 public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
-    where TDataTensor: IDomainPerActionTensor
+    where TDataTensor : IDomainPerActionTensor
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
@@ -94,7 +94,7 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
 
     private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
-        return(nameSpace) => contextInfoDataSet.GetAll()
+        return (nameSpace) => contextInfoDataSet.GetAll()
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
             .Where(c => c.Namespace == nameSpace);
     }
@@ -106,11 +106,11 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
-        return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
+        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
-        return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
+        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 }

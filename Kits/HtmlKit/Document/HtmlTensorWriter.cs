@@ -4,17 +4,17 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using HtmlKit.Matrix;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Helpers;
+using HtmlKit.Matrix;
 using HtmlKit.Options;
 using HtmlKit.Page;
+using LoggerKit;
 using TensorKit.Factories;
 using TensorKit.Model;
-using LoggerKit;
-using ContextBrowserKit.Log.Options;
 
 namespace HtmlKit.Document;
 

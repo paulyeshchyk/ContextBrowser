@@ -1,11 +1,11 @@
 ﻿using System;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
-using HtmlKit.Options;
+using ExporterKit.Html.Containers;
 using HtmlKit.Matrix;
+using HtmlKit.Options;
 using TensorKit.Model;
 using TensorKit.Model.DomainPerAction;
-using ExporterKit.Html.Containers;
 
 namespace HtmlKit.Helpers;
 
