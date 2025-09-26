@@ -52,13 +52,13 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
         var cellData = _coverageDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();
         var contextList = _contextInfoListDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();
 
-        var style = _cellStyleBuilder.BuildCellStyle(cell, contextList, _indexData);
+        var styleValue = _cellStyleBuilder.BuildCellStyleValue(cell, contextList, _indexData);
 
         HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, () =>
         {
             var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, options) } };
-            if (!string.IsNullOrWhiteSpace(style))
-                attrs["style"] = style;
+            if (!string.IsNullOrWhiteSpace(styleValue))
+                attrs["style"] = styleValue;
             HtmlBuilderFactory.A.Cell(textWriter, attrs, cellData, isEncodable: false);
         });
     }
