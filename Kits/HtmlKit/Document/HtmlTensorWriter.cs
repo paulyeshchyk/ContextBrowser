@@ -60,7 +60,7 @@ namespace HtmlKit.Document;
 public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
     where TTensor : ITensor
 {
-    private readonly IHrefManager<TTensor> _hRefManager;
+    private readonly IHtmlHrefManager<TTensor> _hRefManager;
     private readonly IHtmlFixedContentManager _htmlFixedContentManager;
     private readonly IHtmlDataCellBuilder<TTensor> _dataCellBuilder;
     private readonly ITensorFactory<TTensor> _keyFactory;
@@ -69,7 +69,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
 
     public HtmlTensorWriter(
         IHtmlDataCellBuilder<TTensor> dataCellBuilder,
-        IHrefManager<TTensor> hrefManager,
+        IHtmlHrefManager<TTensor> hrefManager,
         ITensorFactory<TTensor> keyFactory,
         ITensorBuilder keyBuilder,
         IHtmlFixedContentManager htmlFixedContentManager,

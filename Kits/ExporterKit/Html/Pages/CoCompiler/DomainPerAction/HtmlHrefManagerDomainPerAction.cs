@@ -6,62 +6,7 @@ using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
-public class HrefManagerMethodList<TDataTensor> : IHrefManager<MethodListTensor<TDataTensor>>
-    where TDataTensor : notnull
-{
-    public string GetHrefCell(MethodListTensor<TDataTensor> cell, HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-
-    public string GetHrefColHeaderSummary(HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-
-    public string GetHrefColSummary(object key, HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-
-    public string GetHRefRow(string key, HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-
-    public string GetHRefRowHeader(object key, HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-
-    public string GetHrefRowHeaderSummary(HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-
-    public string GetHrefRowHeaderSummaryAfterFirst(HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-
-    public string GetHRefRowMeta(object key, HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-
-    public string GetHrefRowSummary(object key, HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-
-    public string GetHrefSummary(HtmlTableOptions _options)
-    {
-        return string.Empty;
-    }
-}
-
-public class HrefManager<TTensor> : IHrefManager<TTensor>
-    where TTensor : IDomainPerActionTensor
+public class HtmlHrefManagerDomainPerAction : IHtmlHrefManager<DomainPerActionTensor>
 {
     private static readonly long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -90,7 +35,7 @@ public class HrefManager<TTensor> : IHrefManager<TTensor>
             ? $"pages\\composite_action_{key}.html?v={TimeStamp}"
             : $"pages\\composite_domain_{key}.html?v={TimeStamp}";
 
-    public string GetHrefCell(TTensor cell, HtmlTableOptions _options) =>
+    public string GetHrefCell(DomainPerActionTensor cell, HtmlTableOptions _options) =>
         $"pages\\composite_{cell.Action}_{cell.Domain}.html?v={TimeStamp}";
 
     public string GetHrefSummary(HtmlTableOptions _options) =>

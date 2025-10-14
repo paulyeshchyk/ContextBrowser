@@ -135,10 +135,10 @@ public static class Program
 
         hab.Services.AddTransient<IHtmlPageIndexProducer<DomainPerActionTensor>, HtmlPageProducerIndex<DomainPerActionTensor>>();
 
-        hab.Services.AddTransient<IHtmlFixedContentManager, FixedHtmlContentManagerDomainPerAction>();
+        hab.Services.AddTransient<IHtmlFixedContentManager, HtmlFixedContentManagerDomainPerAction>();
 
-        hab.Services.AddTransient<IHrefManager<DomainPerActionTensor>, HrefManager<DomainPerActionTensor>>();
-        hab.Services.AddTransient<IHrefManager<MethodListTensor<DomainPerActionTensor>>, HrefManagerMethodList<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IHtmlHrefManager<DomainPerActionTensor>, HtmlHrefManagerDomainPerAction>();
+        hab.Services.AddTransient<IHtmlHrefManager<MethodListTensor<DomainPerActionTensor>>, HtmlHrefManagerMethodList<DomainPerActionTensor>>();
 
         hab.Services.AddTransient<IHtmlCellDataProducer<string, DomainPerActionTensor>, HtmlCellDataProducerDomainPerActionMethodsCount<DomainPerActionTensor>>();
         hab.Services.AddTransient<IHtmlCellDataProducer<List<ContextInfo>, DomainPerActionTensor>, HtmlCellDataProducerListOfItems<DomainPerActionTensor>>();

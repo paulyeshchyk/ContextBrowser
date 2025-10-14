@@ -14,9 +14,9 @@ public class HtmlDataCellBuilderMethodList<TDataTensor> : IHtmlDataCellBuilder<M
     where TDataTensor : IDomainPerActionTensor
 {
     private readonly IHtmlCellDataProducer<string, MethodListTensor<TDataTensor>> _dataProducer;
-    private readonly IHrefManager<MethodListTensor<TDataTensor>> _hRefManager;
+    private readonly IHtmlHrefManager<MethodListTensor<TDataTensor>> _hRefManager;
 
-    public HtmlDataCellBuilderMethodList(IHrefManager<MethodListTensor<TDataTensor>> hRefManager, IHtmlCellDataProducer<string, MethodListTensor<TDataTensor>> dataProducer)
+    public HtmlDataCellBuilderMethodList(IHtmlHrefManager<MethodListTensor<TDataTensor>> hRefManager, IHtmlCellDataProducer<string, MethodListTensor<TDataTensor>> dataProducer)
     {
         _hRefManager = hRefManager;
         _dataProducer = dataProducer;

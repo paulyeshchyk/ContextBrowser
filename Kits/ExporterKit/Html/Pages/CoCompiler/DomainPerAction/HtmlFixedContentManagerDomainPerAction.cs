@@ -4,7 +4,7 @@ using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
-public class FixedHtmlContentManagerDomainPerAction : IHtmlFixedContentManager
+public class HtmlFixedContentManagerDomainPerAction : IHtmlFixedContentManager
 {
     public string TopLeftCell(HtmlTableOptions _options) =>
         _options.Orientation == TensorPermutationType.Standard

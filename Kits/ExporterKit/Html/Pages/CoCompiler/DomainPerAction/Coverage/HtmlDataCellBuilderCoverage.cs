@@ -15,7 +15,7 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
 {
     private readonly IHtmlCellDataProducer<string, TTensor> _coverageDataProducer;
     private readonly IHtmlCellDataProducer<List<ContextInfo>, TTensor> _contextInfoListDataProducer;
-    private readonly IHrefManager<TTensor> _hRefManager;
+    private readonly IHtmlHrefManager<TTensor> _hRefManager;
     private readonly IHtmlCellStyleBuilder<TTensor> _cellStyleBuilder;
     private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
     private readonly IKeyIndexBuilder<ContextInfo> _coverageIndexer;
@@ -25,7 +25,7 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
     public HtmlDataCellBuilderCoverage(
         IHtmlCellDataProducer<string, TTensor> coverageDataProducer,
         IHtmlCellDataProducer<List<ContextInfo>, TTensor> contextInfoListDataProducer,
-        IHrefManager<TTensor> hRefManager,
+        IHtmlHrefManager<TTensor> hRefManager,
         IHtmlCellStyleBuilder<TTensor> cellStyleBuilder,
         IKeyIndexBuilder<ContextInfo> coverageIndexer, IContextInfoDatasetProvider<TTensor> datasetProvider)
     {

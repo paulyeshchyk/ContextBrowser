@@ -2,7 +2,7 @@
 
 namespace HtmlKit.Helpers;
 
-public interface IHrefManager<TTensor>
+public interface IHtmlHrefManager<TTensor>
     where TTensor : notnull
 {
     string GetHrefCell(TTensor cell, HtmlTableOptions _options);
