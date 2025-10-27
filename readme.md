@@ -48,4 +48,57 @@ npx http-server -p 5500 --no-cache
 ```sh
 java -jar plantuml-1.2025.4.jar -picoweb
 ```
+
+### Запуск PlantUml транслятора (Docker)
+
+#### Настройка рабочего окружения (Windows)
+
+Для запуска локального PlantUML сервера, способного обрабатывать большие диаграммы, необходимо использовать **Docker** на базе **WSL 2**.
+
+***
+
+##### 1. Установка WSL 2 (Подсистема Windows для Linux)
+
+1.  **Включите компоненты Windows:** Откройте PowerShell или Командную строку от имени Администратора и выполните следующие команды:
+
+    dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+    dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+
+2.  **Перезагрузите** компьютер.
+3.  **Установите WSL 2 как версию по умолчанию:**
+
+    wsl --set-default-version 2
+
+4.  **Установите дистрибутив Linux** (например, Ubuntu) из Microsoft Store.
+
+***
+
+##### 2. Установка Docker Desktop
+
+1.  Загрузите и установите **Docker Desktop** с официального сайта Docker.
+2.  Во время установки убедитесь, что включена опция **"Use WSL 2 instead of Hyper-V"**.
+3.  Запустите Docker Desktop и убедитесь, что он работает.
+
+##### 3. Запуск PlantUML-транслятора (Docker-сервер)
+
+Используйте эту команду для запуска Docker-контейнера. Параметры установлены для поддержки больших запросов (до 500 МБ), достаточного объема памяти и для обхода ошибок, 
+связанных с размером URI (400 Bad Request: URI is too large) и CORS.
+
+1.Остановка и удаление старого контейнера (для чистоты)
+```sh
+docker stop plantuml-server docker rm plantuml-server
+```
+2. Запуск нового контейнера
+```sh
+docker run -d --name plantuml-server -p 8080:8080 -e JAVA_OPTS="-Xmx2048m -Dorg.eclipse.jetty.server.Request.maxFormContentSize=500000000 -Dorg.eclipse.jetty.server.HttpConfiguration.requestHeaderSize=65536" -e PLANTUML_LIMIT_SIZE=16384 plantuml/plantuml-server:jetty
+```
+| Параметр                     | Назначение                                                                                          |
+|------------------------------|-----------------------------------------------------------------------------------------------------|
+| -p 8080:8080                 | Проброс порта для доступа к серверу.                                                                |
+| maxFormContentSize=500000000 | Устанавливает лимит тела POST-запроса (до 500 МБ) для больших файлов.                               |
+| requestHeaderSize=65536      | Устанавливает лимит на размер заголовков/URI (до 64 КБ) для предотвращения ошибки URI is too large. |
+| -Xmx2048m                    | Увеличивает память Java до 2 ГБ для обработки больших диаграмм.                                     |
+| PLANTUML_LIMIT_SIZE=16384    | Увеличивает лимит на максимальный размер выходной диаграммы (в пикселях).                           |
+***
+
 #### Параметры запуска приложения

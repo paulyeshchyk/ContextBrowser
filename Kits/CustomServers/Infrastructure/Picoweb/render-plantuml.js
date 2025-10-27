@@ -1,4 +1,4 @@
-class RenderPlantUMLElement extends HTMLElement {
+﻿class RenderPlantUMLElement extends HTMLElement {
   constructor() {
     super();
 
@@ -28,7 +28,7 @@ class RenderPlantUMLElement extends HTMLElement {
 
     let diagramPromise;
     if (externalDiagramSource) {
-      // Загрузка контента из внешнего источника
+
       const absoluteUri = new URL(externalDiagramSource, document.location);
       diagramPromise = fetch(absoluteUri)
         .then(response => {
@@ -38,7 +38,6 @@ class RenderPlantUMLElement extends HTMLElement {
           return response.text();
         });
     } else {
-      // Получение контента из тела тега
       const content = Array.from(this.childNodes)
         .map((node) => node.textContent)
         .join("")
@@ -48,25 +47,31 @@ class RenderPlantUMLElement extends HTMLElement {
 
     diagramPromise
       .then(diagramDescription => {
-        // Кодирование содержимого диаграммы в hex
-        const payload = diagramDescription
-          .split("")
-          .map(
-            (char) => `0${char.codePointAt(0).toString(16)}`.slice(-2),
-          )
-          .join("");
+          const cleanedDiagramDescription = diagramDescription.trim();
 
-        // Отправка запроса на PlantUML-сервер с закодированным контентом
-        return fetch(`${plantUmlServerAddress}/${renderMode}/~h${payload}`);
+          if (cleanedDiagramDescription.length === 0) {
+              throw new Error("Diagram content is empty after loading.");
+          }
+
+          const url = `${plantUmlServerAddress}/${renderMode}/`;
+
+          const fetchOptions = {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'text/plain; charset=utf-8'
+              },
+              body: cleanedDiagramDescription
+          };
+
+          return fetch(url, fetchOptions);
       })
       .then(response => {
-        if (!response.ok) {
-          throw new Error(`PlantUML server responded with an error: ${response.statusText}`);
-        }
-        return response;
+          if (!response.ok) {
+              console.warn(`PlantUML Server returned HTTP status ${response.status} (${response.statusText}). Rendering error SVG.`);
+          }
+          return response;
       })
       .then(response => {
-        // Рендеринг результата в зависимости от режима
         switch (renderMode) {
           case "svg":
             this.renderAsSvg(response);

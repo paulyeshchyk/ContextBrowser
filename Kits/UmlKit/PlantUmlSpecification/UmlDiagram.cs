@@ -179,9 +179,9 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
 
     protected virtual void WriteEnd(TextWriter writer)
     {
-        if (IsUmlTagEnabled)
-            writer.Write(SUmlEndTag);
         writer.WriteLine();
+        if (IsUmlTagEnabled)
+            writer.WriteLine(SUmlEndTag);
     }
 
     protected virtual void WriteSeparator(TextWriter writer)

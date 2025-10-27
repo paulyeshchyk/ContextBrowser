@@ -23,8 +23,8 @@ public class UmlMethodBox : IUmlElement
     {
         writer.WriteLine();
         if (!string.IsNullOrWhiteSpace(Stereotype))
-            writer.WriteLine($"    [{Name}] <<{Stereotype}>>");
+            writer.WriteLine($"    \"{Name}\" <<{Stereotype}>>");
         else
-            writer.WriteLine($"    [{Name}]");
+            writer.WriteLine($"    \"{Name}\"");
     }
 }

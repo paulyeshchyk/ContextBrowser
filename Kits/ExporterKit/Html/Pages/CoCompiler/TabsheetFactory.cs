@@ -98,8 +98,9 @@ public static class TabsheetFactory<TDataTensor>
             model: new ActionOnlyMethodListDataModel<TDataTensor>(),
             build: (writer, model, dto) =>
             {
-                var theAction = (string)dto.ContextKey.Action;
-                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{theAction.ToUpper()} -> {dto.ContextKey.Domain}");
+                var titleAction = (string)dto.ContextKey.Action;
+                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Action: <b>{titleAction}</b>", isEncodable: false);
+                HtmlBuilderFactory.Div.Cell(writer, innerHtml: "-");
 
                 var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
@@ -152,8 +153,9 @@ public static class TabsheetFactory<TDataTensor>
             model: new SummaryMethodListDataModel<TDataTensor>(),
             build: (writer, model, dto) =>
             {
-                var theAction = (string)dto.ContextKey.Action;
-                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{theAction.ToUpper()} -> {dto.ContextKey.Domain}");
+                var titleDomain = (string)dto.ContextKey.Domain;
+                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Domain: <b>{titleDomain}</b>", isEncodable: false);
+                HtmlBuilderFactory.Div.Cell(writer, innerHtml: "-");
 
                 var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
@@ -240,8 +242,9 @@ public static class TabsheetFactory<TDataTensor>
             model: new DomainOnlyMethodListDataModel<TDataTensor>(),
             build: (writer, model, dto) =>
             {
-                var theDomain = (string)dto.ContextKey.Domain;
-                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{theDomain.ToUpper()} -> {dto.ContextKey.Domain}");
+                var titleDomain = (string)dto.ContextKey.Domain;
+                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Domain: <b>{titleDomain}</b>", isEncodable: false);
+                HtmlBuilderFactory.Div.Cell(writer, innerHtml: "-");
 
                 var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
@@ -277,8 +280,13 @@ public static class TabsheetFactory<TDataTensor>
             model: new ActionPerDomainMethodListDataModel<TDataTensor>(),
             build: (writer, model, dto) =>
             {
-                var theAction = (string)dto.ContextKey.Action;
-                HtmlBuilderFactory.H1.Cell(writer, innerHtml: $"{theAction.ToUpper()} -> {dto.ContextKey.Domain}");
+                var titleDomain = (string)dto.ContextKey.Domain;
+                var linkDomain = $"/pages/composite_domain_{titleDomain}.html";
+                var titleAction = (string)dto.ContextKey.Action;
+                var linkAction = $"/pages/composite_action_{titleAction}.html";
+                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Domain: <a href=\"{linkDomain}\">{titleDomain}</a>", isEncodable: false);
+                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Action: <a href=\"{linkAction}\">{titleAction}</a>", isEncodable: false);
+                HtmlBuilderFactory.Div.Cell(writer, innerHtml: "-");
 
                 var methodIndexList = model.GetMethodsList(dto).Select((m, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodIndexList, dto);
