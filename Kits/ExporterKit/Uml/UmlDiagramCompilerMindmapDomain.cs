@@ -17,14 +17,13 @@ using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
 
 namespace ExporterKit.Uml;
-
-public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
+public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    public UmlDiagramCompilerMindmap(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerMindmapDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -34,7 +33,7 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
     // context: build, uml
     public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap");
+        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap Domain");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
@@ -106,42 +105,5 @@ public class UmlDiagramCompilerMindmap : IUmlDiagramCompiler
             nextSelector: x => x.InvokedBy,
               createNode: UmlNodeTraverseBuilder.BuildMindNode,
                linkNodes: (child, parent) => child.Parents.Add(parent));
-    }
-}
-
-public static class UmlNodeTraverseBuilder
-{
-    public static UmlNode BuildMindNode(ContextInfo startNode)
-    {
-        // 1. Создание родительской ноды
-        var ownerName = startNode.ClassOwner?.FullName ?? startNode.FullName;
-        var resultNode = new UmlNode(ownerName, alias: null, url: UmlUrlBuilder.BuildClassUrl(ownerName));
-        resultNode.Stylename = "grey";
-
-        // Проверка, есть ли дочерние ноды
-        if (startNode.Domains.Count == 0)
-        {
-            // Если доменов нет, то нода остаётся одна, без дочерних элементов
-            return resultNode;
-        }
-
-        UmlNode? firstChild = null;
-        UmlNode? previousChild = null;
-
-        foreach (var domain in startNode.Domains)
-        {
-            var childNode = new UmlNode(domain, alias: null, UmlUrlBuilder.BuildDomainUrl(domain));
-            childNode.Stylename = "green";
-            resultNode.Children.Add(childNode);
-
-            if (firstChild == null)
-            {
-                firstChild = childNode;
-            }
-
-            previousChild = childNode;
-        }
-
-        return resultNode;
     }
 }

@@ -38,8 +38,8 @@ public class HtmlPageCompilerClassOnly<TDataTensor> : IHtmlPageCompiler
 
         var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerEntityName>>
         {
-            TabsheetFactory<TDataTensor>.ClassesTabRegistration(exportOptions),
-            TabsheetFactory<TDataTensor>.MindmapTabRegistration(exportOptions),
+            TabsheetFactory<TDataTensor>.DomainClassesTabRegistration(exportOptions),
+            TabsheetFactory<TDataTensor>.DomainMindmapTabRegistration(exportOptions),
         };
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerEntityName>(registrations);

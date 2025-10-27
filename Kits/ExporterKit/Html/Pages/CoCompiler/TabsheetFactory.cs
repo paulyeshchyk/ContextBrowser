@@ -20,14 +20,14 @@ namespace ExporterKit.Html.Pages.CoCompiler;
 public static class TabsheetFactory<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> MindmapTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> DomainMindmapTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Mindmap (PUML)
-        return TabRegistration.For<MindmapDatamodel<TDataTensor>, ContextInfoKeyContainerEntityName>(
+        return TabRegistration.For<ClassOnlyMindmapDatamodel<TDataTensor>, ContextInfoKeyContainerEntityName>(
             tabId: "MindmapTab",
             caption: "Mindmap",
             isActive: false,
-            model: new MindmapDatamodel<TDataTensor>(),
+            model: new ClassOnlyMindmapDatamodel<TDataTensor>(),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -37,7 +37,7 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> ClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> DomainClassesTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Классы (PUML)
         return TabRegistration.For<ClassOnlyDatamodel<TDataTensor>, ContextInfoKeyContainerEntityName>(
@@ -172,6 +172,23 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Классы",
             isActive: true,
             model: new DomainSummaryComponentsDatamodel<TDataTensor>(),
+            build: (writer, model, dto) =>
+            {
+                var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
+                pumlBuilder.Start(writer);
+                pumlBuilder.Cell(writer);
+                pumlBuilder.End(writer);
+            });
+    }
+
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> ActionOnlyMindmap(ExportOptions exportOptions)
+    {
+        // Вкладка: Состояния (PUML)
+        return TabRegistration.For<ActionOnlyMindmapDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
+            tabId: "MindmapTab",
+            caption: "Mindmap",
+            isActive: false,
+            model: new ActionOnlyMindmapDatamodel<TDataTensor>(),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -340,15 +357,19 @@ internal class ActionOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTe
 internal class NamespaceOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TTensor>, IPumlEnbeddedInjectionDatamodel<TTensor>
     where TTensor : notnull
 {
+    private const string PumlFilenameTemplate = "namespace_only_{0}.puml";
+
     protected override string GetPumlFileName(TTensor contextKey) => throw new NotImplementedException();
 
-    protected override string GetPumlFileName(string contextKey) => $"namespace_only_{contextKey.AlphanumericOnly()}.puml";
+    protected override string GetPumlFileName(string contextKey) => string.Format(PumlFilenameTemplate, contextKey.AlphanumericOnly());
 }
 
 internal class DomainSummaryComponentsDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    protected override string GetPumlFileName(TDataTensor contextKey) => $"class_{contextKey.Action}_{contextKey.Domain}.puml";
+    private const string PumlFilenameTemplate = "class_{0}_{1}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action, contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -356,7 +377,19 @@ internal class DomainSummaryComponentsDatamodel<TDataTensor> : PumlEmbeddedConte
 internal class DomainOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    protected override string GetPumlFileName(TDataTensor contextKey) => $"state_domain_{contextKey.Domain}.puml";
+    private const string PumlFilenameTemplate = "state_domain_{0}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
+
+    protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
+}
+
+internal class ActionOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
+    where TDataTensor : IDomainPerActionTensor
+{
+    private const string PumlFilenameTemplate = "mindmap_action_{0}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -364,7 +397,9 @@ internal class DomainOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
 internal class DomainOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    protected override string GetPumlFileName(TDataTensor contextKey) => $"mindmap_domain_{contextKey.Domain}.puml";
+    private const string PumlFilenameTemplate = "mindmap_domain_{0}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -372,7 +407,9 @@ internal class DomainOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentData
 internal class DomainOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    protected override string GetPumlFileName(TDataTensor contextKey) => $"sequence_domain_{contextKey.Domain}.puml";
+    private const string PumlFilenameTemplate = "sequence_domain_{0}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -380,7 +417,9 @@ internal class DomainOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDat
 internal class DomainOnlyClassesDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    protected override string GetPumlFileName(TDataTensor contextKey) => $"class_domain_{contextKey.Domain}.puml";
+    private const string PumlFilenameTemplate = "class_domain_{0}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -388,7 +427,9 @@ internal class DomainOnlyClassesDatamodel<TDataTensor> : PumlEmbeddedContentData
 internal class ActionOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    protected override string GetPumlFileName(TDataTensor contextKey) => $"state_action_{contextKey.Action}.puml";
+    private const string PumlFilenameTemplate = "state_action_{0}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -396,7 +437,9 @@ internal class ActionOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
 internal class ActionOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    protected override string GetPumlFileName(TDataTensor contextKey) => $"sequence_action_{contextKey.Action}.puml";
+    private const string PumlFilenameTemplate = "sequence_action_{0}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -404,7 +447,9 @@ internal class ActionOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDat
 internal class ActionOnlyClassesDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    protected override string GetPumlFileName(TDataTensor contextKey) => $"class_action_{contextKey.Action}.puml";
+    private const string PumlFilenameTemplate = "class_action_{0}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -412,7 +457,9 @@ internal class ActionOnlyClassesDatamodel<TDataTensor> : PumlEmbeddedContentData
 internal class ActionSummaryDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    protected override string GetPumlFileName(TDataTensor contextKey) => $"class_{contextKey.Action}_{contextKey.Domain}.puml";
+    private const string PumlFilenameTemplate = "class_{0}_{1}.puml";
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action, contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -420,16 +467,20 @@ internal class ActionSummaryDatamodel<TDataTensor> : PumlEmbeddedContentDatamode
 internal class ClassOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TTensor>, IPumlEnbeddedInjectionDatamodel<TTensor>
     where TTensor : notnull
 {
+    private const string PumlFilenameTemplate = "class_only_{0}.puml";
+
     protected override string GetPumlFileName(TTensor contextKey) => throw new NotImplementedException();
 
-    protected override string GetPumlFileName(string contextKey) => $"class_only_{contextKey.AlphanumericOnly()}.puml";
+    protected override string GetPumlFileName(string contextKey) => string.Format(PumlFilenameTemplate, contextKey.AlphanumericOnly());
 }
 
-internal class MindmapDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
+internal class ClassOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
+    private const string PumlFilenameTemplate = "mindmap_{0}.puml";
+
     protected override string GetPumlFileName(TDataTensor contextKey) => throw new NotImplementedException();
 
-    protected override string GetPumlFileName(string contextKey) => $"mindmap.puml";
+    protected override string GetPumlFileName(string contextKey) => string.Format(PumlFilenameTemplate, contextKey.AlphanumericOnly());
 }
 

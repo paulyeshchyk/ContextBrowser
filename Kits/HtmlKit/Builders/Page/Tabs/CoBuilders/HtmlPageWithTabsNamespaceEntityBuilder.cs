@@ -12,11 +12,13 @@ public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TTensor> : HtmlPageWith
     where TTensor : notnull
 {
     private readonly Func<string, string> _onGetFileName;
+    private readonly Func<string, string> _onGetTitle;
 
-    public HtmlPageWithTabsNamespaceEntityBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName)
+    public HtmlPageWithTabsNamespaceEntityBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName, Func<string, string> onGetTitle)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;
+        _onGetTitle = onGetTitle;
     }
 
     public override Task BuildAsync(CancellationToken cancellationToken)
@@ -33,7 +35,7 @@ public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TTensor> : HtmlPageWith
                 var filtered = entitiesList.Where(e => e.Namespace.Equals(ns));
 
                 var filename = _onGetFileName(ns);
-                var title = $" Namespace {ns}";
+                var title = _onGetTitle(ns);
                 var cellData = new ContextInfoKeyContainerNamespace(
                     contextInfoList: filtered,
                     contextKey: ns);

@@ -167,7 +167,8 @@ public static class Program
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerSequenceDomain>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerStateAction>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerStateDomain>();
-        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmap>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapDomain>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapAction>();
         hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
 
         using var tokenSource = new CancellationTokenSource();

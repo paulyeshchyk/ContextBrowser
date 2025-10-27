@@ -56,7 +56,12 @@ public class HtmlPageCompilerDomainOnly<TDataTensor> : IHtmlPageCompiler
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerTensor<TDataTensor>>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(dataset, tabbedPageBuilder, (cellData) => $"composite_domain_{cellData.ContextKey.Domain}.html");
+        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(
+            contextInfoDataset: dataset,
+            tabbedPageBuilder: tabbedPageBuilder,
+            onGetFileName: (cellData) => $"composite_domain_{cellData.ContextKey.Domain}.html",
+            onGetTitle: (cellData) => $"Domain: {cellData.ContextKey.Domain}"
+            );
         await builder.BuildAsync(cancellationToken);
     }
 }

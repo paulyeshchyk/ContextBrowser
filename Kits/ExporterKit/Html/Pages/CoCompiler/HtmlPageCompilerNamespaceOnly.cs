@@ -45,7 +45,11 @@ public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerNamespace>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var builder = new HtmlPageWithTabsNamespaceEntityBuilder<ContextInfoKeyContainerNamespace, TDataTensor>(dataset, tabbedPageBuilder, (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html");
+        var builder = new HtmlPageWithTabsNamespaceEntityBuilder<ContextInfoKeyContainerNamespace, TDataTensor>(
+            dataset, 
+            tabbedPageBuilder, 
+            (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html",
+            (ns) => $" Namespace {ns}");
         await builder.BuildAsync(cancellationToken);
     }
 }

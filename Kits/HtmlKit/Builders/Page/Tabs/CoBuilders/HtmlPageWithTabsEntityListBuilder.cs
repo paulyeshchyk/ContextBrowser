@@ -13,11 +13,13 @@ public class HtmlPageWithTabsEntityListBuilder<DTO, TTensor> : HtmlPageWithTabsB
     where TTensor : ITensor
 {
     private readonly Func<DTO, string> _onGetFileName;
+    private readonly Func<DTO, string> _onGetTitle;
 
-    public HtmlPageWithTabsEntityListBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<DTO, string> onGetFileName)
+    public HtmlPageWithTabsEntityListBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<DTO, string> onGetFileName, Func<DTO, string> onGetTitle)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;
+        _onGetTitle = onGetTitle;
     }
 
     public override Task BuildAsync(CancellationToken cancellationToken)
@@ -32,7 +34,7 @@ public class HtmlPageWithTabsEntityListBuilder<DTO, TTensor> : HtmlPageWithTabsB
                     contextKey: contextInfoItem.Key);
 
                 var filename = _onGetFileName((DTO)cellData);
-                var title = string.Join(" -> ", cellData.ContextKey.Dimensions);
+                var title = _onGetTitle((DTO)cellData);
 
                 _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
             }

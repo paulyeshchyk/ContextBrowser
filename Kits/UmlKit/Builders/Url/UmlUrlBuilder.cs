@@ -60,4 +60,13 @@ public static class UmlUrlBuilder
             ? null
             : $"composite_domain_{domain}.html?v={timestamp}&t=MindmapTab";//.AlphanumericOnly()
     }
+
+    public static string? BuildActionUrl(string? action)
+    {
+        long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        return string.IsNullOrWhiteSpace(action)
+            ? null
+            : $"composite_action_{action}.html?v={timestamp}&t=MindmapTab";//.AlphanumericOnly()
+    }
 }

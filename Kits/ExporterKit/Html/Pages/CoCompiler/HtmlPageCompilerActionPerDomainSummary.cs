@@ -52,7 +52,12 @@ public class HtmlPageCompilerActionPerDomainSummary<TDataTensor> : IHtmlPageComp
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerTensor<TDataTensor>>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(dataset, tabbedPageBuilder, (_) => $"summary.html");
+        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(
+            dataset, 
+            tabbedPageBuilder, 
+            (_) => $"summary.html",
+            (_) => "summary"
+            );
         await builder.BuildAsync(cancellationToken);
     }
 }

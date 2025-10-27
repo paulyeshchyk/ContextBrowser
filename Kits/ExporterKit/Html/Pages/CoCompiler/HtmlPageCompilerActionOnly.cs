@@ -59,12 +59,18 @@ public class HtmlPageCompilerActionOnly<TDataTensor> : IHtmlPageCompiler
             TabsheetFactory<TDataTensor>.MethodsTabRegistration(_matrixWriter, _keyFactory),
             TabsheetFactory<TDataTensor>.StatesTabRegistration(exportOptions),
             TabsheetFactory<TDataTensor>.SequenceTabRegistration(exportOptions),
+            TabsheetFactory<TDataTensor>.ActionOnlyMindmap(exportOptions),
         };
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerTensor<TDataTensor>>(registrations);
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerTensor<TDataTensor>>(exportOptions, tabsheetDataProvider);
-        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(dataset, tabbedPageBuilder, (cellData) => string.Format(SHtmlFilenameTemplate, cellData.ContextKey.Action));
+        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(
+            contextInfoDataset: dataset,
+            tabbedPageBuilder: tabbedPageBuilder,
+            onGetFileName: (cellData) => string.Format(SHtmlFilenameTemplate, cellData.ContextKey.Action),
+            onGetTitle: (cellData) => string.Format("Action: {0} ", cellData.ContextKey.Action)
+            );
         await builder.BuildAsync(cancellationToken);
     }
 }
