@@ -92,6 +92,27 @@ docker stop plantuml-server docker rm plantuml-server
 ```sh
 docker run -d --name plantuml-server -p 8080:8080 -e JAVA_OPTS="-Xmx2048m -Dorg.eclipse.jetty.server.Request.maxFormContentSize=500000000 -Dorg.eclipse.jetty.server.HttpConfiguration.requestHeaderSize=65536" -e PLANTUML_LIMIT_SIZE=16384 plantuml/plantuml-server:jetty
 ```
+или
+```sh
+ docker run -p 8081:8080 <image_name>
+```
+3. Если порт занят
+mac
+```sh
+# найти PID
+lsof -i :8080
+# убить PID
+ kill <PID>
+```
+
+
+windows
+```sh
+# найти PID
+netstat -ano | findstr :8080
+# убить PID
+taskkill /PID <PID> /F
+```
 | Параметр                     | Назначение                                                                                          |
 |------------------------------|-----------------------------------------------------------------------------------------------------|
 | -p 8080:8080                 | Проброс порта для доступа к серверу.                                                                |
