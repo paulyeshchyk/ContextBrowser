@@ -10,6 +10,7 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using ExporterKit.Infrastucture;
+using ExporterKit.Uml.Exporters;
 using LoggerKit;
 using TensorKit.Model;
 using UmlKit.Builders.Url;
@@ -48,50 +49,21 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
         var namespaces = GetNamespaces(dataset).ToList();
         foreach (var nameSpace in namespaces)
         {
-            Build(diagramBuilderOptions: diagramBuilderOptions,
-                          exportOptions: exportOptions,
-                              nameSpace: nameSpace,
-                                classes: GetClassesForNamespace(dataset),
-                                methods: GetMethods(dataset),
-                             properties: GetProperties(dataset));
+            var classesList = GetClassesForNamespace(dataset)(nameSpace);
+            var methodLists = GetMethods(dataset);
+            var properties = GetProperties(dataset);
+
+            UmlDiagramExporterClassDiagramNamespace.Export(diagramBuilderOptions: diagramBuilderOptions,
+                                                                   exportOptions: exportOptions,
+                                                                       nameSpace: nameSpace,
+                                                                     classesList: classesList);
         }
         return new Dictionary<object, bool> { };
     }
 
-    //context: uml, build
-    internal void Build(string nameSpace, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, Func<string, IEnumerable<IContextInfo>> classes, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties)
-    {
-        var classesList = classes(nameSpace);
-        var maxLength = Math.Max(nameSpace.Length, classesList.Any() ? classesList.Max(ns => ns.Name.Length) : 0);
-
-        var diagramId = $"namespace_only_{nameSpace.AlphanumericOnly()}";
-        var diagramTitle = $"Package diagram -> {nameSpace}";
-
-        var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
-        diagram.SetTitle(diagramTitle);
-        diagram.SetSkinParam("componentStyle", "rectangle");
-        diagram.SetSeparator("none");
-
-        var packageUrl = UmlUrlBuilder.BuildNamespaceUrl(nameSpace);
-        var package = new UmlPackage(nameSpace.PadRight(maxLength), alias: nameSpace.AlphanumericOnly(), url: packageUrl);
-        diagram.Add(package);
-
-        foreach (var contextInfo in classesList)
-        {
-            string? htmlUrl = UmlUrlBuilder.BuildClassUrl(contextInfo);
-            var entityType = ContextInfoExt.ConvertToUmlEntityType(contextInfo.ElementType);
-            var umlClass = new UmlEntity(entityType, contextInfo.Name.PadRight(maxLength), contextInfo.Name.AlphanumericOnly(), url: htmlUrl);
-            package.Add(umlClass);
-        }
-
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
-        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"namespace_only_{nameSpace.AlphanumericOnly()}.puml");
-        diagram.WriteToFile(fileName, writeOptons);
-    }
-
     private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
-        return (nameSpace) => contextInfoDataSet.GetAll()
+        return(nameSpace) => contextInfoDataSet.GetAll()
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
             .Where(c => c.Namespace == nameSpace);
     }
@@ -103,11 +75,11 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
+        return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
+        return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 }

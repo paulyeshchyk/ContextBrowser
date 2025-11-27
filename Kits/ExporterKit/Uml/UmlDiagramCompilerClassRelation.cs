@@ -7,6 +7,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ExporterKit.Uml.Exporters;
 using LoggerKit;
 using TensorKit.Model;
 using UmlKit.Compiler;
@@ -44,26 +45,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
         var linkGenerator = new ContextInfoDataLinkGenerator(_optionsStore);
         var links = linkGenerator.Generate(contextInfoList);
 
-        var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.pumlExtra, "uml.4.links.puml");
-        var diagramId = $"relation_{outputPath}".AlphanumericOnly();
-        var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
-        diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
-        diagram.SetSkinParam("componentStyle", "rectangle");
-
-        foreach (var (from, to) in links)
-        {
-            AddRelation(diagramBuilderOptions, diagram, from, to);
-        }
-
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
-        diagram.WriteToFile(outputPath, writeOptons);
+        UmlDiagramExporter_4_links.Export(exportOptions, diagramBuilderOptions, links);
         return new Dictionary<object, bool>();
-    }
-
-    private static void AddRelation(DiagramBuilderOptions options, UmlDiagramClass diagram, string from, string to)
-    {
-        var arrow = new UmlArrow(flowType: options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync);
-        var relation = new UmlRelation(from, to, arrow);
-        diagram.Add(relation);
     }
 }

@@ -20,6 +20,9 @@ namespace ExporterKit.Html.Pages.CoCompiler;
 public static class TabsheetFactory<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
+    private const string HtmlPathTemplateCompositeDomain = "/pages/composite_domain_{0}.html";
+    private const string HtmlPathTemplateCompositeAction = "/pages/composite_action_{0}.html";
+
     public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> DomainMindmapTabRegistration(ExportOptions exportOptions)
     {
         // Вкладка: Mindmap (PUML)
@@ -298,9 +301,9 @@ public static class TabsheetFactory<TDataTensor>
             build: (writer, model, dto) =>
             {
                 var titleDomain = (string)dto.ContextKey.Domain;
-                var linkDomain = $"/pages/composite_domain_{titleDomain}.html";
+                var linkDomain = string.Format(HtmlPathTemplateCompositeDomain, titleDomain);
                 var titleAction = (string)dto.ContextKey.Action;
-                var linkAction = $"/pages/composite_action_{titleAction}.html";
+                var linkAction = string.Format(HtmlPathTemplateCompositeAction, titleAction);
                 HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Domain: <a href=\"{linkDomain}\">{titleDomain}</a>", isEncodable: false);
                 HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Action: <a href=\"{linkAction}\">{titleAction}</a>", isEncodable: false);
                 HtmlBuilderFactory.Div.Cell(writer, innerHtml: "-");
@@ -477,7 +480,7 @@ internal class ClassOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TTenso
 internal class ClassOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "mindmap_{0}.puml";
+    private const string PumlFilenameTemplate = "mindmap_class_only_{0}.puml";
 
     protected override string GetPumlFileName(TDataTensor contextKey) => throw new NotImplementedException();
 

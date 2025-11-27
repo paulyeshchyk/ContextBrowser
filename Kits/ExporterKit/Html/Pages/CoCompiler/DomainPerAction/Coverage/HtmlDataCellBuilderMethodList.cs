@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ExporterKit.Html.Containers;
 using HtmlKit.Builders.Core;
@@ -36,7 +37,10 @@ public class HtmlDataCellBuilderMethodList<TDataTensor> : IHtmlDataCellBuilder<M
         // Логика отрисовки ячейки
         HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, attributes: attrs, () =>
         {
-            var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, options) } };
+            var methodOwner = cellData.MethodOwner?.Name ?? cellData.Name;
+
+            //var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, options) } };
+            var attrs = new HtmlTagAttributes() { { "href", $"class_only_{methodOwner.AlphanumericOnly()}.html?m={cellData.Name}" } };
             HtmlBuilderFactory.A.Cell(textWriter, attrs, cellData.FullName, isEncodable: false);
         });
     }
