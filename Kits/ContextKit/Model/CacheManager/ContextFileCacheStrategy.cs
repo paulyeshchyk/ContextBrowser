@@ -66,6 +66,15 @@ public class ContextFileCacheStrategy : IFileCacheStrategy
             if (File.Exists(cacheModel.Output))
                 File.Delete(cacheModel.Output);
 
+            var directoryPath = (new FileInfo(cacheModel.Output)).Directory?.FullName;
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
+                throw new Exception($"Wrong directory path for file: {cacheModel.Output}");
+            }
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+
+
             File.Move(tempFilePath, cacheModel.Output);
         }
         catch (Exception ex)
