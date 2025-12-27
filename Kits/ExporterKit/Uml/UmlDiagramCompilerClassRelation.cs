@@ -36,7 +36,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassRelation");
 
-        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();

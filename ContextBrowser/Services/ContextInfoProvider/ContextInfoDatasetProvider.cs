@@ -24,7 +24,7 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
     {
         if (_dataset == null)
         {
-            await BuildDatasetAsync(cancellationToken);
+            await BuildDatasetAsync(cancellationToken).ConfigureAwait(false);
         }
         return _dataset!;
     }
@@ -40,7 +40,7 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
             }
         }
 
-        var contextsList = await GetParsedContextsAsync(cancellationToken);
+        var contextsList = await GetParsedContextsAsync(cancellationToken).ConfigureAwait(false);
         var newDataset = _datasetBuilder.Build(contextsList);
 
         lock (_lock)

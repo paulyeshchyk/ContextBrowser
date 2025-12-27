@@ -45,7 +45,7 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
-        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
         foreach (var element in dataset)
         {
             Build(element, exportOptions, diagramBuilderOptions);

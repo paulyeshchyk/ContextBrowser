@@ -38,7 +38,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassMethodList");
 
-        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
         var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();

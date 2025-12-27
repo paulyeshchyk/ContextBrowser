@@ -51,13 +51,13 @@ public class MainService : IMainService
         ExportPathDirectoryPreparer.Prepare(exportOptions.FilePaths);
 
         //необязательный шаг: принудительная загрузка контента
-        await _datasetProvider.GetDatasetAsync(cancellationToken);
+        await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
         //компиляция диаграмм
-        await _diagramCompilerOrchestrator.CompileAllAsync(cancellationToken);
+        await _diagramCompilerOrchestrator.CompileAllAsync(cancellationToken).ConfigureAwait(false);
 
         // компиляция html
-        await _htmlCompilerOrchestrator.CompileAllAsync(cancellationToken);
+        await _htmlCompilerOrchestrator.CompileAllAsync(cancellationToken).ConfigureAwait(false);
 
         // запуск кастомных html & puml серверов
         _serverStartSignal.Signal();

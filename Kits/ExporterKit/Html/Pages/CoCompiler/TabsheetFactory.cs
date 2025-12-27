@@ -111,7 +111,7 @@ public static class TabsheetFactory<TDataTensor>
                 var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
                 var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
-                await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token);
+                await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token).ConfigureAwait(false);
             });
     }
 

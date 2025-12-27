@@ -32,7 +32,7 @@ public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexPr
     public async Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken)
     {
         using var sw = new StringWriter();
-        await ProduceAsync(sw, matrix, cancellationToken);
+        await ProduceAsync(sw, matrix, cancellationToken).ConfigureAwait(false);
 
         var result = sw.ToString();
         return result;

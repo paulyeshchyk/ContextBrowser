@@ -30,7 +30,7 @@ public class CustomEnvironmentHostedService : IHostedService
             var filePaths = _optionsStore.GetOptions<ExportFilePaths>();
             CustomEnvironment.CopyResources(filePaths.OutputDirectory);
             CustomEnvironment.RunServers(filePaths.OutputDirectory);
-        }, cancellationToken);
+        }, cancellationToken).ConfigureAwait(false);
 
         return Task.CompletedTask;
     }

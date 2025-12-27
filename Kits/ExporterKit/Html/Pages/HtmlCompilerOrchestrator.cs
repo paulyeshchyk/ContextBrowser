@@ -23,7 +23,7 @@ public class HtmlCompilerOrchestrator : IHtmlCompilerOrchestrator
     {
         foreach (var compiler in _compilers)
         {
-            await compiler.CompileAsync(cancellationToken);
+            await compiler.CompileAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

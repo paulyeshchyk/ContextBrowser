@@ -29,7 +29,7 @@ public class ContextInfoDatasetProviderMethodList<TDataTensor> : BaseContextInfo
     {
         if (_dataset == null)
         {
-            await BuildDatasetAsync(cancellationToken);
+            await BuildDatasetAsync(cancellationToken).ConfigureAwait(false);
         }
         return _dataset!;
     }
@@ -44,7 +44,7 @@ public class ContextInfoDatasetProviderMethodList<TDataTensor> : BaseContextInfo
             }
         }
 
-        var contextsList = await GetParsedContextsAsync(cancellationToken);
+        var contextsList = await GetParsedContextsAsync(cancellationToken).ConfigureAwait(false);
 
         // Здесь мы фильтруем и строим датасет специально для списка методов
         var filteredContexts = contextsList

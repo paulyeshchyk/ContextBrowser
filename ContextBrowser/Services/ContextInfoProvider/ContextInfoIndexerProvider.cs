@@ -38,7 +38,7 @@ public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoI
         }
 
         // Маппер не найден, нужно его собрать.
-        var contextsList = await GetParsedContextsAsync(cancellationToken);
+        var contextsList = await GetParsedContextsAsync(cancellationToken).ConfigureAwait(false);
 
         var result = _mapperFactory.GetMapper(mapperType);
         result.Build(contextsList);

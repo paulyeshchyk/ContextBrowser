@@ -55,7 +55,7 @@ public class ParsingOrchestrator : IParsingOrchestrator
         var result = await _contextInfoCacheService.GetOrParseAndCacheAsync(
             ParsingJobAsync,
             _relationManager.ConvertToContextInfoAsync,
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
 
         if (!result.Any())
         {

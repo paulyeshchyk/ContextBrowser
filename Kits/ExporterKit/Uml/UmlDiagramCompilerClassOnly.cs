@@ -44,7 +44,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
-        var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
         var classesOnly = contextInfoDataset.GetAll()
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record) || (c.ElementType == ContextInfoElementType.@interface));

@@ -33,7 +33,7 @@ public abstract class BaseContextInfoProvider
             }
         }
 
-        var contextsList = await _parsingOrchestrant.GetOrchestratedContextsAsync(cancellationToken);
+        var contextsList = await _parsingOrchestrant.GetOrchestratedContextsAsync(cancellationToken).ConfigureAwait(false);
 
         lock (_lock)
         {

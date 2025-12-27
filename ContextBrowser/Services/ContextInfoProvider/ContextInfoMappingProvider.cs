@@ -31,7 +31,7 @@ public class ContextInfoMappingProvider<TTensor> : BaseContextInfoProvider, ICon
             }
         }
 
-        var contextsList = await GetParsedContextsAsync(cancellationToken);
+        var contextsList = await GetParsedContextsAsync(cancellationToken).ConfigureAwait(false);
 
         var result = _mapperFactory.GetMapper(mapperType);
 

@@ -51,7 +51,7 @@ public class ContextInfoCacheService : IContextInfoCacheService
                 return _inMemoryCacheTask.Result;
             }
 
-            var contextsFromFile = await _cacheStrategy.ReadAsync(cacheModel, onRelationCallback, cancellationToken);
+            var contextsFromFile = await _cacheStrategy.ReadAsync(cacheModel, onRelationCallback, cancellationToken).ConfigureAwait(false);
             if (contextsFromFile.Any())
             {
                 _inMemoryCacheTask = Task.FromResult(contextsFromFile);
@@ -78,6 +78,6 @@ public class ContextInfoCacheService : IContextInfoCacheService
         _ = Task.Run(async () =>
         {
             await _cacheStrategy.SaveAsync(parsingResult, cacheModel, cancellationToken).ConfigureAwait(false);
-        }, cancellationToken);
+        }, cancellationToken).ConfigureAwait(false);
     }
 }
