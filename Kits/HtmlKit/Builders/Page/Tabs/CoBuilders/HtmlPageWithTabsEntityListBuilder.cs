@@ -22,22 +22,19 @@ public class HtmlPageWithTabsEntityListBuilder<DTO, TTensor> : HtmlPageWithTabsB
         _onGetTitle = onGetTitle;
     }
 
-    public override Task BuildAsync(CancellationToken cancellationToken)
+    public override async Task BuildAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() =>
+        foreach (var contextInfoItem in _contextInfoDataset)
         {
-            foreach (var contextInfoItem in _contextInfoDataset)
-            {
-                var cellData = new ContextInfoKeyContainerTensor<TTensor>
-                (
-                    contextInfoList: contextInfoItem.Value.Distinct(),
-                    contextKey: contextInfoItem.Key);
+            var cellData = new ContextInfoKeyContainerTensor<TTensor>
+            (
+                contextInfoList: contextInfoItem.Value.Distinct(),
+                contextKey: contextInfoItem.Key);
 
-                var filename = _onGetFileName((DTO)cellData);
-                var title = _onGetTitle((DTO)cellData);
+            var filename = _onGetFileName((DTO)cellData);
+            var title = _onGetTitle((DTO)cellData);
 
-                _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
-            }
-        });
+            await _tabbedPageBuilder.GenerateFileAsync(title, filename, (DTO)cellData, cancellationToken).ConfigureAwait(false);
+        }
     }
 }

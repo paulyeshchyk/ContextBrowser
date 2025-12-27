@@ -1,9 +1,11 @@
 ﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HtmlKit.Builders.Core;
 
 // pattern: Template method
 public interface IHtmlCellBuilder
 {
-    void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true);
+    Task CellAsync(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true, CancellationToken cancellationToken = default);
 }

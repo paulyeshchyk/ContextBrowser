@@ -20,24 +20,21 @@ public class HtmlPageWithTabsEntityBuilder<DTO, TTensor> : HtmlPageWithTabsBuild
         _onGetFileName = onGetFileName;
     }
 
-    public override Task BuildAsync(CancellationToken cancellationToken)
+    public override async Task BuildAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() =>
+        var entitiesList = _contextInfoDataset.GetAll()
+            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.@record) || (c.ElementType == ContextInfoElementType.@interface))
+            .Cast<IContextInfo>();
+
+        foreach (var contextInfoItem in entitiesList)
         {
-            var entitiesList = _contextInfoDataset.GetAll()
-                .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.@record) || (c.ElementType == ContextInfoElementType.@interface))
-                .Cast<IContextInfo>();
+            var filename = _onGetFileName(contextInfoItem.FullName);
+            var title = $" Class {contextInfoItem.FullName}";
+            var cellData = new ContextInfoKeyContainerEntityName(
+                contextInfoList: new List<IContextInfo>() { contextInfoItem },
+                contextKey: contextInfoItem.FullName);
 
-            foreach (var contextInfoItem in entitiesList)
-            {
-                var filename = _onGetFileName(contextInfoItem.FullName);
-                var title = $" Class {contextInfoItem.FullName}";
-                var cellData = new ContextInfoKeyContainerEntityName(
-                    contextInfoList: new List<IContextInfo>() { contextInfoItem },
-                    contextKey: contextInfoItem.FullName);
-
-                _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
-            }
-        });
+            await _tabbedPageBuilder.GenerateFileAsync(title, filename, (DTO)cellData, cancellationToken).ConfigureAwait(false);
+        }
     }
 }

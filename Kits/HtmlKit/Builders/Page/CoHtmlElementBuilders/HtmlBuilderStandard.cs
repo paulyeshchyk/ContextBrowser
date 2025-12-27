@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Builders.Core;
 
 namespace HtmlKit.Builders.Page.CoHtmlElementBuilders;
@@ -14,7 +16,7 @@ public static partial class HtmlBuilderFactory
         }
 
         // Cell метод не всегда применим для произвольных тегов (html, head, body, table)
-        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
+        public override Task CellAsync(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException($"Cell method is not supported for <{Tag}> tag in StandardTagBuilder. Use Start/End instead.");
         }

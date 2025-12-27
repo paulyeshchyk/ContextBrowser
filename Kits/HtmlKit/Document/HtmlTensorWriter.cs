@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using HtmlKit.Builders.Core;
 using HtmlKit.Builders.Page;
@@ -83,174 +85,184 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
         _logger = logger;
     }
 
-    public void Write(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions originalOptions)
+    public async Task WriteAsync(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions originalOptions, CancellationToken cancellationToken)
     {
         //если summary не пришло, то просто говорим, что summary рисовать не нужно
         var options = summary == null ? originalOptions with { SummaryPlacement = SummaryPlacementType.None } : originalOptions;
 
-        HtmlBuilderFactory.Table.With(writer, () =>
+        await HtmlBuilderFactory.Table.WithAsync(writer, async (token) =>
         {
-            WriteHeaderRow(writer, matrix, options);
-            WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterFirst);
-            WriteAllDataRows(writer, matrix, summary, options);
-            WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterLast);
-        });
+            await WriteHeaderRow(writer, matrix, options, cancellationToken).ConfigureAwait(false);
+            await WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterFirst, cancellationToken).ConfigureAwait(false);
+            await WriteAllDataRows(writer, matrix, summary, options, cancellationToken).ConfigureAwait(false);
+            await WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterLast, cancellationToken).ConfigureAwait(false);
+        }, cancellationToken).ConfigureAwait(false);
     }
 
-    protected void WriteHeaderRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options)
+    protected async Task WriteHeaderRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken)
     {
-        HtmlBuilderFactory.HtmlBuilderTableRow.Meta.With(textWriter, () =>
+        await HtmlBuilderFactory.HtmlBuilderTableRow.Meta.WithAsync(textWriter, async (token) =>
         {
-            WriteHeaderLeftCorner(textWriter, options);
-            WriteHeaderSummaryStart(textWriter, options);
-            WriteHeaderCols(textWriter, matrix, options);
-            WriteHeaderSummaryEnd(textWriter, options);
-        });
+            await WriteHeaderLeftCorner(textWriter, options, cancellationToken).ConfigureAwait(false);
+            await WriteHeaderSummaryStart(textWriter, options, cancellationToken).ConfigureAwait(false);
+            await WriteHeaderCols(textWriter, matrix, options, cancellationToken).ConfigureAwait(false);
+            await WriteHeaderSummaryEnd(textWriter, options, cancellationToken).ConfigureAwait(false);
+        }, cancellationToken).ConfigureAwait(false);
     }
 
-    protected void WriteSummaryRowIf(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions options, SummaryPlacementType placement)
+    protected async Task WriteSummaryRowIf(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions options, SummaryPlacementType placement, CancellationToken cancellationToken)
     {
         if (options.SummaryPlacement == placement)
         {
-            WriteSummaryRow(textWriter, matrix, options, summary);
+            await WriteSummaryRow(textWriter, matrix, options, summary, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    protected void WriteAllDataRows(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions options)
+    protected async Task WriteAllDataRows(TextWriter textWriter, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions options, CancellationToken cancellationToken)
     {
         foreach (var row in matrix.rows)
         {
-            WriteDataRow(textWriter, matrix, options, row, summary);
+            await WriteDataRow(textWriter, matrix, options, row, summary, cancellationToken).ConfigureAwait(false);
         }
     }
 
     // Внутренние методы, которые не меняют бизнес-логику, но теперь используют
     // зависимости, переданные в конструкторе.
-    internal void WriteHeaderLeftCorner(TextWriter textWriter, HtmlTableOptions options)
+    internal async Task WriteHeaderLeftCorner(TextWriter textWriter, HtmlTableOptions options, CancellationToken cancellationToken)
     {
-        HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.With(textWriter, () =>
+        await HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.WithAsync(textWriter, (token) =>
         {
             var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) }, { "style", "some_special_cell_class" } };
-            HtmlBuilderFactory.A.Cell(textWriter, attrs, _htmlFixedContentManager.TopLeftCell(options), isEncodable: false);
-        });
+            HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.TopLeftCell(options), isEncodable: false);
+            return Task.CompletedTask;
+        }, cancellationToken).ConfigureAwait(false);
     }
 
-    internal void WriteHeaderSummaryStart(TextWriter textWriter, HtmlTableOptions options)
+    internal async Task WriteHeaderSummaryStart(TextWriter textWriter, HtmlTableOptions options, CancellationToken cancellationToken)
     {
         if (options.SummaryPlacement == SummaryPlacementType.AfterFirst)
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
+            await HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.WithAsync(textWriter, (token) =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefColHeaderSummary(options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, _htmlFixedContentManager.FirstSummaryRow(options), isEncodable: false);
-            });
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.FirstSummaryRow(options), isEncodable: false);
+                return Task.CompletedTask;
+            }, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    internal void WriteHeaderCols(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options)
+    internal async Task WriteHeaderCols(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken)
     {
         foreach (var col in matrix.cols)
         {
             var href = _hRefManager.GetHRefRowMeta(col, options);
-            HtmlBuilderFactory.HtmlBuilderTableCell.ColMeta.With(textWriter, () =>
+            await HtmlBuilderFactory.HtmlBuilderTableCell.ColMeta.WithAsync(textWriter, (token) =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", href }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, $"{col}", isEncodable: false);
-            });
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, $"{col}", isEncodable: false);
+                return Task.CompletedTask;
+            }, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    internal void WriteHeaderSummaryEnd(TextWriter textWriter, HtmlTableOptions options)
+    internal async Task WriteHeaderSummaryEnd(TextWriter textWriter, HtmlTableOptions options, CancellationToken cancellationToken)
     {
         if (options.SummaryPlacement == SummaryPlacementType.AfterLast)
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
+            await HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.WithAsync(textWriter, (token) =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummary(options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, _htmlFixedContentManager.LastSummaryRow(options), isEncodable: false);
-            });
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.LastSummaryRow(options), isEncodable: false);
+                return Task.CompletedTask;
+            }, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    internal void WriteSummaryRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, HtmlMatrixSummary? summary)
+    internal async Task WriteSummaryRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, HtmlMatrixSummary? summary, CancellationToken cancellationToken)
     {
         var total = summary?.ColsSummary?.Values.Sum() ?? 0;
 
-        HtmlBuilderFactory.HtmlBuilderTableRow.Summary.With(textWriter, () =>
+        await HtmlBuilderFactory.HtmlBuilderTableRow.Summary.WithAsync(textWriter, async (token) =>
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.With(textWriter, () =>
+            await HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.WithAsync(textWriter, (token) =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummaryAfterFirst(options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, _htmlFixedContentManager.SummaryRow(options), isEncodable: false);
-            });
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.SummaryRow(options), isEncodable: false);
+                return Task.CompletedTask;
+            }, token).ConfigureAwait(false);
 
             if (options.SummaryPlacement == SummaryPlacementType.AfterFirst)
             {
-                HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.With(textWriter, () =>
+                await HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.WithAsync(textWriter, (token) =>
                 {
                     var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) } };
-                    HtmlBuilderFactory.A.Cell(textWriter, attrs, total.ToString(), isEncodable: false);
-                });
+                    HtmlBuilderFactory.A.CellAsync(textWriter, attrs, total.ToString(), isEncodable: false);
+                    return Task.CompletedTask;
+                }, token).ConfigureAwait(false);
             }
 
             foreach (var col in matrix.cols)
             {
-                HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.With(textWriter, () =>
+                await HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.WithAsync(textWriter, (token) =>
                 {
                     var sum = summary?.ColsSummary?.GetValueOrDefault(col).ToString() ?? string.Empty;
                     var href = _hRefManager.GetHrefColSummary(col, options);
                     var colCellAttrs = new HtmlTagAttributes() { { "href", href } };
-                    HtmlBuilderFactory.A.Cell(textWriter, colCellAttrs, sum, isEncodable: false);
-                });
+                    HtmlBuilderFactory.A.CellAsync(textWriter, colCellAttrs, sum, isEncodable: false);
+                    return Task.CompletedTask;
+                }, token).ConfigureAwait(false);
             }
 
             if (options.SummaryPlacement == SummaryPlacementType.AfterLast)
             {
-                HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.With(textWriter, () =>
+                await HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.WithAsync(textWriter, (token) =>
                 {
                     var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) } };
-                    HtmlBuilderFactory.A.Cell(textWriter, attrs, total.ToString(), isEncodable: false);
-                });
+                    HtmlBuilderFactory.A.CellAsync(textWriter, attrs, total.ToString(), isEncodable: false);
+                    return Task.CompletedTask;
+                }, token).ConfigureAwait(false);
             }
-        });
+        }, cancellationToken).ConfigureAwait(false);
     }
 
-    internal void WriteDataRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, object row, HtmlMatrixSummary? summary)
+    internal async Task WriteDataRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, object row, HtmlMatrixSummary? summary, CancellationToken cancellationToken)
     {
-        HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(textWriter, () =>
+        await HtmlBuilderFactory.HtmlBuilderTableRow.Data.WithAsync(textWriter, async (token) =>
         {
             var attrs = new HtmlTagAttributes();
 
             attrs.Add("class", "cell_row_meta center-aligned");
 
-            HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.With(textWriter, attributes: attrs, () =>
+            await HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.WithAsync(textWriter, attributes: attrs, (token) =>
             {
                 var href = _hRefManager.GetHRefRowHeader(row, options);
                 var attrs = new HtmlTagAttributes() { { "href", href } };
-                HtmlBuilderFactory.A.Cell(textWriter, attrs, $"{row}", isEncodable: false);
-            });
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, $"{row}", isEncodable: false);
+                return Task.CompletedTask;
+            }, token).ConfigureAwait(false);
 
             if (options.SummaryPlacement == SummaryPlacementType.AfterFirst)
-                WriteRowSummaryCell(textWriter, options, row, summary);
+                await WriteRowSummaryCell(textWriter, options, row, summary, token).ConfigureAwait(false);
 
             foreach (var col in matrix.cols)
             {
                 var contextKey = _keyBuilder.BuildTensor(options.Orientation, new[] { row, col }, _keyFactory.Create);
-                _dataCellBuilder.BuildDataCell(textWriter, contextKey, options);
+                await _dataCellBuilder.BuildDataCell(textWriter, contextKey, options, token).ConfigureAwait(false);
             }
 
             if (options.SummaryPlacement == SummaryPlacementType.AfterLast)
-                WriteRowSummaryCell(textWriter, options, row, summary);
-        });
+                await WriteRowSummaryCell(textWriter, options, row, summary, token).ConfigureAwait(false);
+        }, cancellationToken).ConfigureAwait(false);
     }
 
-    internal void WriteRowSummaryCell(TextWriter textWriter, HtmlTableOptions options, object row, HtmlMatrixSummary? summary)
+    internal async Task WriteRowSummaryCell(TextWriter textWriter, HtmlTableOptions options, object row, HtmlMatrixSummary? summary, CancellationToken cancellationToken)
     {
-        HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.With(textWriter, () =>
+        await HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.WithAsync(textWriter, (token) =>
         {
             var rowSum = summary?.RowsSummary?.GetValueOrDefault(row).ToString() ?? string.Empty;
             var attributes = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, options) } };
-            HtmlBuilderFactory.A.Cell(textWriter, attributes, rowSum, isEncodable: false);
-        });
+            HtmlBuilderFactory.A.CellAsync(textWriter, attributes, rowSum, isEncodable: false);
+            return Task.CompletedTask;
+        }, cancellationToken).ConfigureAwait(false);
     }
 }

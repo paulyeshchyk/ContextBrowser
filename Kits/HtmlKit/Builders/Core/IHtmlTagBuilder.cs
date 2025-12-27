@@ -1,11 +1,13 @@
 ﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HtmlKit.Builders.Core;
 
 // pattern: Template method
 public interface IHtmlTagBuilder
 {
-    void Start(TextWriter sb, IHtmlTagAttributes? attrs = null);
+    Task StartAsync(TextWriter sb, IHtmlTagAttributes? attrs = null, CancellationToken cancellationToken = default);
 
-    void End(TextWriter sb);
+    Task EndAsync(TextWriter sb, CancellationToken cancellationToken = default);
 }

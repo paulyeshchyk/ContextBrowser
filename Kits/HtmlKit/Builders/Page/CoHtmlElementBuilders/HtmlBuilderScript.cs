@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Builders.Core;
 
 namespace HtmlKit.Builders.Page.CoHtmlElementBuilders;
@@ -15,13 +17,13 @@ public static partial class HtmlBuilderFactory
         {
         }
 
-        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
+        public override async Task CellAsync(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true, CancellationToken cancellationToken = default)
         {
             var content = !string.IsNullOrWhiteSpace(innerHtml)
                 ? innerHtml
                 : string.Empty;
 
-            WriteContentTag(sb, attributes, content, isEncodable);
+            await WriteContentTagAsync(sb, attributes, content, isEncodable, cancellationToken).ConfigureAwait(false);
         }
     }
 }

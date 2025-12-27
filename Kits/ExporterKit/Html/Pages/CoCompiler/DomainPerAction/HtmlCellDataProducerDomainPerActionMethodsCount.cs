@@ -47,7 +47,7 @@ public class HtmlCellDataProducerDomainPerActionMethodsCount<TTensor> : IHtmlCel
         var cnt = methods?.Count ?? 0;
 
         // вставка вложенного контента
-        var result = _contentInjector.Inject(container, cnt);
+        var result = await _contentInjector.InjectAsync(container, cnt, cancellationToken).ConfigureAwait(false);
         return result;
     }
 }
@@ -72,7 +72,7 @@ public class HtmlCellDataProducerMethodList<TTensor> : IHtmlCellDataProducer<str
         var cnt = methods?.Count ?? 0;
 
         // вставка вложенного контента
-        var result = _contentInjector.Inject(container, cnt);
+        var result = await _contentInjector.InjectAsync(container, cnt, cancellationToken).ConfigureAwait(false);
         return result;
     }
 }

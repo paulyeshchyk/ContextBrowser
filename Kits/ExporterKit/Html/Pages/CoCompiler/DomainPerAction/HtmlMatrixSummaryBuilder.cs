@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextKit.Model;
 using HtmlKit.Matrix;
 using TensorKit.Factories;
@@ -12,40 +13,39 @@ public class HtmlMatrixSummaryBuilder<TTensor> : IHtmlMatrixSummaryBuilder<TTens
     where TTensor : notnull
 {
     private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
-    private readonly IContextInfoDataset<ContextInfo, TTensor> _matrix;
     private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
 
     public HtmlMatrixSummaryBuilder(IContextInfoDatasetProvider<TTensor> datasetProvider, ITensorFactory<TTensor> keyFactory, ITensorBuilder keyBuilder)
     {
         _datasetProvider = datasetProvider;
-        _matrix = datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
     }
 
-    public HtmlMatrixSummary Build(IHtmlMatrix uiMatrix, TensorPermutationType orientation)
+    public async Task<HtmlMatrixSummary> BuildAsync(IHtmlMatrix uiMatrix, TensorPermutationType orientation, CancellationToken cancellationToken)
     {
-        var colsSummary = ColsSummary(uiMatrix, orientation);
-        var rowsSummary = RowsSummary(uiMatrix, orientation);
+        var matrix = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
+        var colsSummary = ColsSummary(matrix, uiMatrix, orientation);
+        var rowsSummary = RowsSummary(matrix, uiMatrix, orientation);
         return new HtmlMatrixSummary(colsSummary: colsSummary, rowsSummary: rowsSummary);
     }
 
-    public Dictionary<object, int> ColsSummary(IHtmlMatrix uiMatrix, TensorPermutationType orientation)
+    private Dictionary<object, int> ColsSummary(IContextInfoDataset<ContextInfo, TTensor> matrix, IHtmlMatrix uiMatrix, TensorPermutationType orientation)
     {
         return uiMatrix.cols.ToDictionary(col => col, domain => uiMatrix.rows.Sum(action =>
         {
             var key = _keyBuilder.BuildTensor(orientation, new[] { action, domain }, _keyFactory.Create);
-            return _matrix.TryGetValue(key, out var methods) ? methods.Count : 0;
+            return matrix.TryGetValue(key, out var methods) ? methods.Count : 0;
         }));
     }
 
-    public Dictionary<object, int> RowsSummary(IHtmlMatrix uiMatrix, TensorPermutationType orientation)
+    private Dictionary<object, int> RowsSummary(IContextInfoDataset<ContextInfo, TTensor> matrix, IHtmlMatrix uiMatrix, TensorPermutationType orientation)
     {
         return uiMatrix.rows.ToDictionary(row => row, action => uiMatrix.cols.Sum(domain =>
         {
             var key = _keyBuilder.BuildTensor(orientation, new[] { action, domain }, _keyFactory.Create);
-            return _matrix.TryGetValue(key, out var methods) ? methods.Count : 0;
+            return matrix.TryGetValue(key, out var methods) ? methods.Count : 0;
         }));
     }
 }

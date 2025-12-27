@@ -21,28 +21,24 @@ public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TTensor> : HtmlPageWith
         _onGetTitle = onGetTitle;
     }
 
-    public override Task BuildAsync(CancellationToken cancellationToken)
+    public override async Task BuildAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() =>
+        var entitiesList = _contextInfoDataset.GetAll()
+            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
+            .Cast<IContextInfo>();
+
+        var namespaces = entitiesList.Select(e => e.Namespace).Distinct();
+        foreach (var ns in namespaces)
         {
-            var entitiesList = _contextInfoDataset.GetAll()
-                .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
-                .Cast<IContextInfo>();
+            var filtered = entitiesList.Where(e => e.Namespace.Equals(ns));
 
-            var namespaces = entitiesList.Select(e => e.Namespace).Distinct();
-            foreach (var ns in namespaces)
-            {
-                var filtered = entitiesList.Where(e => e.Namespace.Equals(ns));
+            var filename = _onGetFileName(ns);
+            var title = _onGetTitle(ns);
+            var cellData = new ContextInfoKeyContainerNamespace(
+                contextInfoList: filtered,
+                contextKey: ns);
 
-                var filename = _onGetFileName(ns);
-                var title = _onGetTitle(ns);
-                var cellData = new ContextInfoKeyContainerNamespace(
-                    contextInfoList: filtered,
-                    contextKey: ns);
-
-                _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
-            }
+            await _tabbedPageBuilder.GenerateFileAsync(title, filename, (DTO)cellData, cancellationToken).ConfigureAwait(false);
         }
-        , cancellationToken);
     }
 }

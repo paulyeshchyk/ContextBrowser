@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextKit.ContextData.Naming;
@@ -27,7 +29,7 @@ public class HtmlDataCellBuilderMethodList<TDataTensor> : IHtmlDataCellBuilder<M
 
     }
 
-    public void BuildDataCell(TextWriter textWriter, MethodListTensor<TDataTensor> cell, HtmlTableOptions options)
+    public async Task BuildDataCell(TextWriter textWriter, MethodListTensor<TDataTensor> cell, HtmlTableOptions options, CancellationToken cancellationToken)
     {
         var model = new ActionPerDomainMethodListDataModel<TDataTensor>(_namingProcessor);
 
@@ -39,14 +41,15 @@ public class HtmlDataCellBuilderMethodList<TDataTensor> : IHtmlDataCellBuilder<M
         attrs.Add("class", "left-aligned");
 
         // Логика отрисовки ячейки
-        HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, attributes: attrs, () =>
+        await HtmlBuilderFactory.HtmlBuilderTableCell.Data.WithAsync(textWriter, attributes: attrs, (token) =>
         {
             var methodOwner = cellData.MethodOwner?.FullName ?? cellData.Name;
 
             //var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, options) } };
             var htmlPage = _namingProcessor.ClassOnlyHtmlFilename(methodOwner);
             var attrs = new HtmlTagAttributes() { { "href", $"{htmlPage}?m={cellData.Name}" } };
-            HtmlBuilderFactory.A.Cell(textWriter, attrs, cellData.FullName, isEncodable: false);
-        });
+            HtmlBuilderFactory.A.CellAsync(textWriter, attrs, cellData.FullName, isEncodable: false);
+            return Task.CompletedTask;
+        }, cancellationToken).ConfigureAwait(false);
     }
 }

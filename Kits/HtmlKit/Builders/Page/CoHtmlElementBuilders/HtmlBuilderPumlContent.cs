@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Builders.Core;
 
 namespace HtmlKit.Builders.Page.CoHtmlElementBuilders;
@@ -20,14 +22,16 @@ public static partial class HtmlBuilderFactory
             RendererMode = string.IsNullOrEmpty(rendererMode) ? "svg" : rendererMode;
         }
 
-        public override void Start(TextWriter sb, IHtmlTagAttributes? attrs = null)
+        public override Task StartAsync(TextWriter sb, IHtmlTagAttributes? attrs = null, CancellationToken cancellationToken = default)
         {
             sb.Write(SRenderPlantumlJs);
+            return Task.CompletedTask;
         }
 
-        public override void End(TextWriter sb)
+        public override Task EndAsync(TextWriter sb, CancellationToken cancellationToken = default)
         {
             // nothing to do
+            return Task.CompletedTask;
         }
     }
 
@@ -41,15 +45,15 @@ public static partial class HtmlBuilderFactory
             Content = content;
         }
 
-        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
+        public override async Task CellAsync(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true, CancellationToken cancellationToken = default)
         {
             var rendererAttributes = new HtmlTagAttributes
-        {
-            { "rendererMode", RendererMode },
-            { "server", Server }
-        };
+            {
+                { "rendererMode", RendererMode },
+                { "server", Server }
+            };
 
-            WriteContentTag(sb, rendererAttributes, Content, isEncodable: false);
+            await WriteContentTagAsync(sb, rendererAttributes, Content, isEncodable: false, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -63,7 +67,7 @@ public static partial class HtmlBuilderFactory
             Src = src;
         }
 
-        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
+        public override async Task CellAsync(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true, CancellationToken cancellationToken = default)
         {
             var rendererAttributes = new HtmlTagAttributes
             {
@@ -72,7 +76,7 @@ public static partial class HtmlBuilderFactory
                 { "src", Src }
             };
 
-            WriteContentTag(sb, rendererAttributes, string.Empty);
+            await WriteContentTagAsync(sb, rendererAttributes, string.Empty, isEncodable: true, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -29,16 +29,13 @@ public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexPr
         _summaryBuilder = summaryBuilder;
     }
 
-    public Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken)
+    public async Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken)
     {
-        return Task.Run(() =>
-        {
-            using var sw = new StringWriter();
-            Produce(sw, matrix);
+        using var sw = new StringWriter();
+        await ProduceAsync(sw, matrix, cancellationToken);
 
-            var result = sw.ToString();
-            return result;
-        }, cancellationToken);
+        var result = sw.ToString();
+        return result;
     }
 
     protected override IEnumerable<string> GetAdditionalScripts()
@@ -47,15 +44,15 @@ public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexPr
         yield return Resources.ScriptAutoFontShrink;
     }
 
-    protected override void WriteContent(TextWriter writer, IHtmlMatrix matrix, HtmlTableOptions options)
+    protected override async Task WriteContentAsync(TextWriter writer, IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken)
     {
         var navigationItem = new BreadcrumbNavigationItem("..\\index.html", "Контекстная матрица");
-        HtmlBuilderFactory.Breadcrumb(navigationItem).Cell(writer);
+        await HtmlBuilderFactory.Breadcrumb(navigationItem).CellAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        HtmlBuilderFactory.P.Cell(writer);
+        await HtmlBuilderFactory.P.CellAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        var summary = _summaryBuilder.Build(matrix, options.Orientation);
+        var summary = await _summaryBuilder.BuildAsync(matrix, options.Orientation, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        _matrixWriter.Write(writer, matrix, summary, options);
+        await _matrixWriter.WriteAsync(writer, matrix, summary, options, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }

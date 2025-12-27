@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HtmlKit.Builders.Core;
 
@@ -23,7 +25,7 @@ public abstract class HtmlBuilder : IHtmlBuilder
         ClassName = className;
     }
 
-    public virtual void Start(TextWriter sb, IHtmlTagAttributes? attrs = null)
+    public virtual Task StartAsync(TextWriter sb, IHtmlTagAttributes? attrs = null, CancellationToken cancellationToken = default)
     {
         var attributes = new HtmlTagAttributes(StringComparer.OrdinalIgnoreCase);
         attributes.Concat(attrs);
@@ -34,9 +36,10 @@ public abstract class HtmlBuilder : IHtmlBuilder
         {
             sb.WriteLine(result);
         }
+        return Task.CompletedTask;
     }
 
-    public virtual void End(TextWriter sb)
+    public virtual Task EndAsync(TextWriter sb, CancellationToken cancellationToken = default)
     {
         var result = XMLTagBuilder.BuildEnd(Tag, IsClosable);
 
@@ -44,9 +47,10 @@ public abstract class HtmlBuilder : IHtmlBuilder
         {
             sb.WriteLine(result);
         }
+        return Task.CompletedTask;
     }
 
-    public virtual void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
+    public virtual async Task CellAsync(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true, CancellationToken cancellationToken = default)
     {
         var content = !string.IsNullOrWhiteSpace(innerHtml)
             ? innerHtml
@@ -55,7 +59,7 @@ public abstract class HtmlBuilder : IHtmlBuilder
         attrs.Concat(attributes);
         attrs.AddIfNotExists("class", ClassName);
 
-        WriteContentTag(sb, attrs, content, isEncodable);
+        await WriteContentTagAsync(sb, attrs, content, isEncodable, cancellationToken).ConfigureAwait(false);
     }
 
     public virtual HtmlBuilder OnClick(string eventScript)
@@ -64,7 +68,7 @@ public abstract class HtmlBuilder : IHtmlBuilder
         return this;
     }
 
-    protected virtual void WriteContentTag(TextWriter sb, IHtmlTagAttributes? attributes, string content = "", bool isEncodable = true)
+    protected virtual Task WriteContentTagAsync(TextWriter sb, IHtmlTagAttributes? attributes, string content = "", bool isEncodable = true, CancellationToken cancellationToken = default)
     {
         var attributesString = attributes?.ToString();
         var contentString = isEncodable
@@ -73,6 +77,7 @@ public abstract class HtmlBuilder : IHtmlBuilder
 
         string text = XMLTagBuilder.Build(Tag, attributes, IsClosable, contentString);
         sb.WriteLine(text);
+        return Task.CompletedTask;
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
@@ -39,27 +40,28 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
         _coverageIndexer = coverageIndexer;
     }
 
-    public void BuildDataCell(TextWriter textWriter, TTensor cell, HtmlTableOptions options)
+    public async Task BuildDataCell(TextWriter textWriter, TTensor cell, HtmlTableOptions options, CancellationToken cancellationToken)
     {
         if (_indexData == null)
         {
-            var ds = _datasetProvider.GetDatasetAsync(CancellationToken.None).GetAwaiter().GetResult();
+            var ds = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
             var list = ds.GetAll();
 
             _indexData = _coverageIndexer.Build(list);
         }
 
-        var cellData = _coverageDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();
-        var contextList = _contextInfoListDataProducer.ProduceDataAsync(cell, CancellationToken.None).GetAwaiter().GetResult();
+        var cellData = await _coverageDataProducer.ProduceDataAsync(cell, cancellationToken).ConfigureAwait(false);
+        var contextList = await _contextInfoListDataProducer.ProduceDataAsync(cell, cancellationToken).ConfigureAwait(false);
 
         var styleValue = _cellStyleBuilder.BuildCellStyleValue(cell, contextList, _indexData);
 
-        HtmlBuilderFactory.HtmlBuilderTableCell.Data.With(textWriter, () =>
+        await HtmlBuilderFactory.HtmlBuilderTableCell.Data.WithAsync(textWriter, (token) =>
         {
             var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, options) } };
             if (!string.IsNullOrWhiteSpace(styleValue))
                 attrs["style"] = styleValue;
-            HtmlBuilderFactory.A.Cell(textWriter, attrs, cellData, isEncodable: false);
-        });
+            HtmlBuilderFactory.A.CellAsync(textWriter, attrs, cellData, isEncodable: false);
+            return Task.CompletedTask;
+        }, cancellationToken).ConfigureAwait(false);
     }
 }

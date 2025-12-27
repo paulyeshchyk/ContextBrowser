@@ -1,7 +1,10 @@
-﻿namespace HtmlKit.Document;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace HtmlKit.Document;
 
 public interface IHtmlContentInjector<TTensor>
     where TTensor : notnull
 {
-    string Inject(TTensor container, int cnt);
+    Task<string> InjectAsync(TTensor container, int cnt, CancellationToken cancellationToken);
 }

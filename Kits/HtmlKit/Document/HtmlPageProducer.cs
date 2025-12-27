@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using HtmlKit.Builders.Core;
 using HtmlKit.Builders.Page;
@@ -19,32 +21,32 @@ public abstract class HtmlPageProducer
         _optionsStore = optionsStore;
     }
 
-    protected void Produce(TextWriter writer, IHtmlMatrix matrix)
+    protected async Task ProduceAsync(TextWriter writer, IHtmlMatrix matrix, CancellationToken cancellationToken)
     {
         var options = _optionsStore.GetOptions<HtmlTableOptions>();
 
-        HtmlBuilderFactory.Html.With(writer, () =>
+        await HtmlBuilderFactory.Html.WithAsync(writer, async (token) =>
         {
-            HtmlBuilderFactory.Head.With(writer, () =>
+            await HtmlBuilderFactory.Head.WithAsync(writer, async (token) =>
             {
                 var attrs = new HtmlTagAttributes() { { "charset", "UTF-8" } };
-                HtmlBuilderFactory.Meta.Cell(writer, attributes: attrs, isEncodable: false);
-                HtmlBuilderFactory.Title.Cell(writer, innerHtml: Title);
-                HtmlBuilderFactory.Style.Cell(writer, innerHtml: Resources.HtmlProducerContentStyle, isEncodable: false);
+                await HtmlBuilderFactory.Meta.CellAsync(writer, attributes: attrs, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                await HtmlBuilderFactory.Title.CellAsync(writer, innerHtml: Title, cancellationToken: token).ConfigureAwait(false);
+                await HtmlBuilderFactory.Style.CellAsync(writer, innerHtml: Resources.HtmlProducerContentStyle, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
 
                 foreach (var script in GetScripts())
-                    HtmlBuilderFactory.Script.Cell(writer, innerHtml: script, isEncodable: false);
+                    await HtmlBuilderFactory.Script.CellAsync(writer, innerHtml: script, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
 
                 foreach (var script in GetAdditionalScripts())
-                    HtmlBuilderFactory.Script.Cell(writer, innerHtml: script, isEncodable: false);
+                    await HtmlBuilderFactory.Script.CellAsync(writer, innerHtml: script, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
 
-                HtmlBuilderFactory.Body.With(writer, () =>
+                await HtmlBuilderFactory.Body.WithAsync(writer, async (token) =>
                 {
-                    HtmlBuilderFactory.H1.Cell(writer, innerHtml: Title);
-                    WriteContent(writer, matrix, options);
-                });
-            });
-        });
+                    await HtmlBuilderFactory.H1.CellAsync(writer, innerHtml: Title, cancellationToken: token).ConfigureAwait(false);
+                    await WriteContentAsync(writer, matrix, options, cancellationToken: token).ConfigureAwait(false);
+                }, token).ConfigureAwait(false);
+            }, token).ConfigureAwait(false);
+        }, cancellationToken).ConfigureAwait(false);
     }
 
     protected abstract IEnumerable<string> GetAdditionalScripts();
@@ -54,5 +56,5 @@ public abstract class HtmlPageProducer
         yield return Resources.HtmlProducerContentStyleScript;
     }
 
-    protected abstract void WriteContent(TextWriter sb, IHtmlMatrix matrix, HtmlTableOptions options);
+    protected abstract Task WriteContentAsync(TextWriter sb, IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken);
 }

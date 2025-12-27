@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Builders.Core;
 
 namespace HtmlKit.Builders.Page.CoHtmlElementBuilders;
@@ -12,7 +14,7 @@ public static partial class HtmlBuilderFactory
         {
         }
 
-        protected override void WriteContentTag(TextWriter sb, IHtmlTagAttributes? attributes, string? content = "", bool isEncodable = true)
+        protected override Task WriteContentTagAsync(TextWriter sb, IHtmlTagAttributes? attributes, string? content = "", bool isEncodable = true, CancellationToken cancellationToken = default)
         {
             var innerAttrs = new HtmlTagAttributes() { { "onClick", _onClickEvent } };
             innerAttrs.Concat(attributes);
@@ -22,6 +24,7 @@ public static partial class HtmlBuilderFactory
                 ? WebUtility.HtmlEncode(content)
                 : string.IsNullOrEmpty(content) ? string.Empty : content;
             sb.WriteLine($"<{Tag} {attributesString}>{theContent}</{Tag}>");
+            return Task.CompletedTask;
         }
     }
 }

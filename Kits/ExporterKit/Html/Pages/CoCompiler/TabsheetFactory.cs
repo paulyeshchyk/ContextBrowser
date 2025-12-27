@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -32,12 +34,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Mindmap",
             isActive: false,
             model: new ClassOnlyMindmapDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -49,12 +51,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Общая",
             isActive: true,
             model: new ClassOnlyDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -66,12 +68,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Общая",
             isActive: true,
             model: new NamespaceOnlyDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -83,12 +85,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Классы",
             isActive: true,
             model: new ActionOnlyClassesDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -100,16 +102,16 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Методы",
             isActive: false,
             model: new ActionOnlyMethodListDataModel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var titleAction = (string)dto.ContextKey.Action;
-                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Action: <b>{titleAction}</b>", isEncodable: false);
-                HtmlBuilderFactory.Div.Cell(writer, innerHtml: "-");
+                await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Action: <b>{titleAction}</b>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: "-", cancellationToken: token).ConfigureAwait(false);
 
                 var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
                 var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
-                matrixWriter.Write(writer, methodsMatrix, null, options);
+                await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token);
             });
     }
 
@@ -121,12 +123,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Состояния",
             isActive: false,
             model: new ActionOnlyStatesDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -138,12 +140,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Последовательности",
             isActive: false,
             model: new ActionOnlySequenceDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -155,16 +157,16 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Методы",
             isActive: false,
             model: new SummaryMethodListDataModel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var titleDomain = (string)dto.ContextKey.Domain;
-                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Domain: <b>{titleDomain}</b>", isEncodable: false);
-                HtmlBuilderFactory.Div.Cell(writer, innerHtml: "-");
+                await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Domain: <b>{titleDomain}</b>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: "-", cancellationToken: token).ConfigureAwait(false);
 
                 var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
                 var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
-                matrixWriter.Write(writer, methodsMatrix, null, options);
+                await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token).ConfigureAwait(false);
             });
     }
 
@@ -176,12 +178,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Классы",
             isActive: true,
             model: new DomainSummaryComponentsDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -193,12 +195,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Mindmap",
             isActive: false,
             model: new ActionOnlyMindmapDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -210,12 +212,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Mindmap",
             isActive: false,
             model: new DomainOnlyMindmapDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -227,12 +229,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Состояния",
             isActive: false,
             model: new DomainOnlyStatesDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -244,12 +246,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Последовательности",
             isActive: false,
             model: new DomainOnlySequenceDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -261,16 +263,16 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Методы",
             isActive: false,
             model: new DomainOnlyMethodListDataModel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var titleDomain = (string)dto.ContextKey.Domain;
-                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Domain: <b>{titleDomain}</b>", isEncodable: false);
-                HtmlBuilderFactory.Div.Cell(writer, innerHtml: "-");
+                await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Domain: <b>{titleDomain}</b>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: "-", cancellationToken: token).ConfigureAwait(false);
 
                 var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
                 var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
-                matrixWriter.Write(writer, methodsMatrix, null, options);
+                await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token).ConfigureAwait(false);
             });
     }
 
@@ -282,12 +284,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Классы",
             isActive: true,
             model: new DomainOnlyClassesDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlBuilder.Start(writer);
-                pumlBuilder.Cell(writer);
-                pumlBuilder.End(writer);
+                await pumlBuilder.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlBuilder.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 
@@ -299,20 +301,20 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Методы",
             isActive: false,
             model: new ActionPerDomainMethodListDataModel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var titleDomain = (string)dto.ContextKey.Domain;
                 var linkDomain = string.Format(HtmlPathTemplateCompositeDomain, titleDomain);
                 var titleAction = (string)dto.ContextKey.Action;
                 var linkAction = string.Format(HtmlPathTemplateCompositeAction, titleAction);
-                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Domain: <a href=\"{linkDomain}\">{titleDomain}</a>", isEncodable: false);
-                HtmlBuilderFactory.Div.Cell(writer, innerHtml: $"Action: <a href=\"{linkAction}\">{titleAction}</a>", isEncodable: false);
-                HtmlBuilderFactory.Div.Cell(writer, innerHtml: "-");
+                await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Domain: <a href=\"{linkDomain}\">{titleDomain}</a>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Action: <a href=\"{linkAction}\">{titleAction}</a>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: "-", cancellationToken: token).ConfigureAwait(false);
 
                 var methodIndexList = model.GetMethodsList(dto).Select((m, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodIndexList, dto);
                 var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
-                matrixWriter.Write(writer, methodsMatrix, null, options);
+                await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token).ConfigureAwait(false);
             });
     }
 
@@ -324,12 +326,12 @@ public static class TabsheetFactory<TDataTensor>
             caption: "Классы",
             isActive: true,
             model: new ActionSummaryDatamodel<TDataTensor>(namingProcessor),
-            build: (writer, model, dto) =>
+            build: async (writer, model, dto, token) =>
             {
                 var pumlInjection = model.GetPumlBuilder(dto.ContextKey, exportOptions);
-                pumlInjection.Start(writer);
-                pumlInjection.Cell(writer);
-                pumlInjection.End(writer);
+                await pumlInjection.StartAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlInjection.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
+                await pumlInjection.EndAsync(writer, cancellationToken: token).ConfigureAwait(false);
             });
     }
 }
