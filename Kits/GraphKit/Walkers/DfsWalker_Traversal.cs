@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ContextKit.ContextData.Naming;
 
 namespace GraphKit.Walkers;
 
@@ -17,14 +18,14 @@ namespace GraphKit.Walkers;
 /// Для глубины ~40–200 это не проблема.
 /// Но если когда-нибудь прилетит граф на 10 000 уровней вглубь словим StackOverflowException.
 ///
-/// ### Решение: 
+/// ### Решение:
 /// сделать итеративный обход через Stack<(item, node, state)>.
 ///
 /// ## Циклы помечаются только через IsCycle
 /// В текущей версии цикл не разрывается автоматически — нода создаётся и помечается IsCycle.
 /// Для визуализации нормально, но, если потом кто-то начнёт без проверки IsCycle снова обходить Children, можно опять уйти в бесконечный цикл.
 ///
-/// ### Рекомендация 
+/// ### Рекомендация
 /// при IsCycle == true не добавлять детей вообще, иначе кто-то может забыть фильтровать.
 ///
 /// ## Свойство IsCycle делается через Reflection
@@ -45,8 +46,9 @@ public static class DfsWalker_Traversal
     public static List<TNode> Run<TItem, TNode>(
         IEnumerable<TItem> startItems,
         Func<TItem, IEnumerable<TItem>> nextSelector,
-        Func<TItem, TNode> createNode,
-        Action<TNode, TNode> linkNodes)
+        Func<TItem, INamingProcessor, TNode> createNode,
+        Action<TNode, TNode> linkNodes,
+        INamingProcessor namingProcessor)
         where TNode : class
     {
         var results = new List<TNode>();
@@ -54,7 +56,7 @@ public static class DfsWalker_Traversal
 
         foreach (var item in startItems)
         {
-            var node = TraverseInternal(item, nextSelector, createNode, linkNodes, visited);
+            var node = TraverseInternal(item, nextSelector, createNode, linkNodes, visited, namingProcessor);
             if (node != null)
                 results.Add(node);
         }
@@ -65,15 +67,16 @@ public static class DfsWalker_Traversal
     private static TNode? TraverseInternal<TItem, TNode>(
         TItem current,
         Func<TItem, IEnumerable<TItem>> nextSelector,
-        Func<TItem, TNode> createNode,
+        Func<TItem, INamingProcessor, TNode> createNode,
         Action<TNode, TNode> linkNodes,
-        HashSet<TItem> visited)
+        HashSet<TItem> visited,
+        INamingProcessor namingProcessor)
         where TNode : class
     {
         if (!visited.Add(current))
         {
             // нашли цикл -> создаём ноду и помечаем её как IsCycle (если поддерживает)
-            var cycleNode = createNode(current);
+            var cycleNode = createNode(current, namingProcessor);
             var prop = typeof(TNode).GetProperty("IsCycle");
             if (prop != null && prop.PropertyType == typeof(bool))
                 prop.SetValue(cycleNode, true);
@@ -81,11 +84,11 @@ public static class DfsWalker_Traversal
             return cycleNode;
         }
 
-        var node = createNode(current);
+        var node = createNode(current, namingProcessor);
 
         foreach (var childItem in nextSelector(current))
         {
-            var childNode = TraverseInternal(childItem, nextSelector, createNode, linkNodes, visited);
+            var childNode = TraverseInternal(childItem, nextSelector, createNode, linkNodes, visited, namingProcessor);
             if (childNode != null)
                 linkNodes(node, childNode);
         }

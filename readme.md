@@ -11,7 +11,7 @@
 
 ## Благодарности
 
-Качество кода обеспечивалось сервисами 
+Качество кода обеспечивалось сервисами
 - [Google Geminy](https:\\gemini.google.com)
 - [OpenAI Chat GPT](https:\\chatgpt.com)
 
@@ -81,7 +81,7 @@ java -jar plantuml-1.2025.4.jar -picoweb
 
 ##### 3. Запуск PlantUML-транслятора (Docker-сервер)
 
-Используйте эту команду для запуска Docker-контейнера. Параметры установлены для поддержки больших запросов (до 500 МБ), достаточного объема памяти и для обхода ошибок, 
+Используйте эту команду для запуска Docker-контейнера. Параметры установлены для поддержки больших запросов (до 500 МБ), достаточного объема памяти и для обхода ошибок,
 связанных с размером URI (400 Bad Request: URI is too large) и CORS.
 
 1.Остановка и удаление старого контейнера (для чистоты)
@@ -90,11 +90,11 @@ docker stop plantuml-server docker rm plantuml-server
 ```
 2. Запуск нового контейнера
 ```sh
-docker run -d --name plantuml-server -p 8080:8080 -e JAVA_OPTS="-Xmx2048m -Dorg.eclipse.jetty.server.Request.maxFormContentSize=500000000 -Dorg.eclipse.jetty.server.HttpConfiguration.requestHeaderSize=65536" -e PLANTUML_LIMIT_SIZE=16384 plantuml/plantuml-server:jetty
+docker run -d --name plantuml-server -p 8081:8080 -e JAVA_OPTS="-Xmx2048m -Dorg.eclipse.jetty.server.Request.maxFormContentSize=500000000 -Dorg.eclipse.jetty.server.HttpConfiguration.requestHeaderSize=65536" -e PLANTUML_LIMIT_SIZE=16384 plantuml/plantuml-server:jetty
 ```
 или
 ```sh
- docker run -p 8081:8080 <image_name>
+ docker run -p 8081:8080 plantuml/plantuml-server:jetty
 ```
 3. Если порт занят
 mac

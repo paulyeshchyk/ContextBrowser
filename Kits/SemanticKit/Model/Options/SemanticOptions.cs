@@ -59,6 +59,7 @@ public record SemanticOptions
 }
 
 // parsing: error
+// context: model, semantic
 public record CodeParsingOptions
 {
     public SemanticOptions SemanticOptions { get; set; }

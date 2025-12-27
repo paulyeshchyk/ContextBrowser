@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit;
 using ExporterKit.Infrastucture;
@@ -17,7 +18,7 @@ namespace ExporterKit.Uml.Exporters;
 public class UmlDiagramExporterClassDiagramNamespace
 {
     //context: uml, build
-    public static void Export(string nameSpace, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, IEnumerable<IContextInfo> classesList)
+    public static void Export(string nameSpace, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IEnumerable<IContextInfo> classesList)
     {
         var maxLength = Math.Max(nameSpace.Length, classesList.Any() ? classesList.Max(ns => ns.Name.Length) : 0);
 
@@ -35,7 +36,7 @@ public class UmlDiagramExporterClassDiagramNamespace
 
         foreach (var contextInfo in classesList)
         {
-            string? htmlUrl = UmlUrlBuilder.BuildClassUrl(contextInfo);
+            string? htmlUrl = namingProcessor.ClassOnlyHtmlFilename(contextInfo.FullName);
             var entityType = contextInfo.ElementType.ConvertToUmlEntityType();
             var umlClass = new UmlEntity(entityType, contextInfo.Name.PadRight(maxLength), contextInfo.Name.AlphanumericOnly(), url: htmlUrl);
             package.Add(umlClass);

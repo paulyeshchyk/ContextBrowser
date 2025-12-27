@@ -4,6 +4,7 @@ using System.Linq;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit.Html.Containers;
 using ExporterKit.Html.Datamodels;
@@ -23,14 +24,14 @@ public static class TabsheetFactory<TDataTensor>
     private const string HtmlPathTemplateCompositeDomain = "/pages/composite_domain_{0}.html";
     private const string HtmlPathTemplateCompositeAction = "/pages/composite_action_{0}.html";
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> DomainMindmapTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> DomainMindmapTabRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Mindmap (PUML)
         return TabRegistration.For<ClassOnlyMindmapDatamodel<TDataTensor>, ContextInfoKeyContainerEntityName>(
             tabId: "MindmapTab",
             caption: "Mindmap",
             isActive: false,
-            model: new ClassOnlyMindmapDatamodel<TDataTensor>(),
+            model: new ClassOnlyMindmapDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -40,14 +41,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> DomainClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> DomainClassesTabRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Классы (PUML)
         return TabRegistration.For<ClassOnlyDatamodel<TDataTensor>, ContextInfoKeyContainerEntityName>(
             tabId: "ClassesTab",
             caption: "Общая",
             isActive: true,
-            model: new ClassOnlyDatamodel<TDataTensor>(),
+            model: new ClassOnlyDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -57,14 +58,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerNamespace> NamespaceTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerNamespace> NamespaceTabRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Классы (PUML)
         return TabRegistration.For<NamespaceOnlyDatamodel<TDataTensor>, ContextInfoKeyContainerNamespace>(
             tabId: "NamespacesTab",
             caption: "Общая",
             isActive: true,
-            model: new NamespaceOnlyDatamodel<TDataTensor>(),
+            model: new NamespaceOnlyDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -74,14 +75,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> ActionOnlyClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> ActionOnlyClassesTabRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Классы (PUML)
         return TabRegistration.For<ActionOnlyClassesDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
-            model: new ActionOnlyClassesDatamodel<TDataTensor>(),
+            model: new ActionOnlyClassesDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -91,14 +92,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> MethodsTabRegistration(IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> MethodsTabRegistration(IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory, INamingProcessor namingProcessor)
     {
         // Вкладка: Методы
         return TabRegistration.For<ActionOnlyMethodListDataModel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
-            model: new ActionOnlyMethodListDataModel<TDataTensor>(),
+            model: new ActionOnlyMethodListDataModel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var titleAction = (string)dto.ContextKey.Action;
@@ -112,14 +113,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> StatesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> StatesTabRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Состояния (PUML)
         return TabRegistration.For<ActionOnlyStatesDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "StatesTab",
             caption: "Состояния",
             isActive: false,
-            model: new ActionOnlyStatesDatamodel<TDataTensor>(),
+            model: new ActionOnlyStatesDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -129,14 +130,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> SequenceTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> SequenceTabRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Компоненты (PUML)
         return TabRegistration.For<ActionOnlySequenceDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "SequenceTab",
             caption: "Последовательности",
             isActive: false,
-            model: new ActionOnlySequenceDatamodel<TDataTensor>(),
+            model: new ActionOnlySequenceDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -146,14 +147,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyMethodsTabRegistration(IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyMethodsTabRegistration(IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory, INamingProcessor namingProcessor)
     {
         // Вкладка: Методы
         return TabRegistration.For<SummaryMethodListDataModel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
-            model: new SummaryMethodListDataModel<TDataTensor>(),
+            model: new SummaryMethodListDataModel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var titleDomain = (string)dto.ContextKey.Domain;
@@ -167,14 +168,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyClassesTabRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Классы (PUML)
         return TabRegistration.For<DomainSummaryComponentsDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
-            model: new DomainSummaryComponentsDatamodel<TDataTensor>(),
+            model: new DomainSummaryComponentsDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -184,14 +185,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> ActionOnlyMindmap(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> ActionOnlyMindmap(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Состояния (PUML)
         return TabRegistration.For<ActionOnlyMindmapDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "MindmapTab",
             caption: "Mindmap",
             isActive: false,
-            model: new ActionOnlyMindmapDatamodel<TDataTensor>(),
+            model: new ActionOnlyMindmapDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -201,14 +202,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyMindmap(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyMindmap(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Состояния (PUML)
         return TabRegistration.For<DomainOnlyMindmapDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "MindmapTab",
             caption: "Mindmap",
             isActive: false,
-            model: new DomainOnlyMindmapDatamodel<TDataTensor>(),
+            model: new DomainOnlyMindmapDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -218,14 +219,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyStates(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyStates(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Состояния (PUML)
         return TabRegistration.For<DomainOnlyStatesDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "StatesTab",
             caption: "Состояния",
             isActive: false,
-            model: new DomainOnlyStatesDatamodel<TDataTensor>(),
+            model: new DomainOnlyStatesDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -235,14 +236,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlySequence(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlySequence(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Компоненты (PUML)
         return TabRegistration.For<DomainOnlySequenceDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "SequenceTab",
             caption: "Последовательности",
             isActive: false,
-            model: new DomainOnlySequenceDatamodel<TDataTensor>(),
+            model: new DomainOnlySequenceDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -252,14 +253,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyMethodsTabsheetRegistration(IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyMethodsTabsheetRegistration(IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory, INamingProcessor namingProcessor)
     {
         // Вкладка: Методы
         return TabRegistration.For<DomainOnlyMethodListDataModel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
-            model: new DomainOnlyMethodListDataModel<TDataTensor>(),
+            model: new DomainOnlyMethodListDataModel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var titleDomain = (string)dto.ContextKey.Domain;
@@ -273,14 +274,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyClassesTabsheetRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> DomainOnlyClassesTabsheetRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Классы (PUML)
         return TabRegistration.For<DomainOnlyClassesDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
-            model: new DomainOnlyClassesDatamodel<TDataTensor>(),
+            model: new DomainOnlyClassesDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlBuilder = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -290,14 +291,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> ActionPerDomainMethodsTabRegistration(IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> ActionPerDomainMethodsTabRegistration(IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory, INamingProcessor namingProcessor)
     {
         // Вкладка: Методы
         return TabRegistration.For<ActionPerDomainMethodListDataModel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "MethodsTab",
             caption: "Методы",
             isActive: false,
-            model: new ActionPerDomainMethodListDataModel<TDataTensor>(),
+            model: new ActionPerDomainMethodListDataModel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var titleDomain = (string)dto.ContextKey.Domain;
@@ -315,14 +316,14 @@ public static class TabsheetFactory<TDataTensor>
             });
     }
 
-    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> ActionPerDomainClassesTabRegistration(ExportOptions exportOptions)
+    public static IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>> ActionPerDomainClassesTabRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Классы (PUML)
         return TabRegistration.For<ActionSummaryDatamodel<TDataTensor>, ContextInfoKeyContainerTensor<TDataTensor>>(
             tabId: "ClassesTab",
             caption: "Классы",
             isActive: true,
-            model: new ActionSummaryDatamodel<TDataTensor>(),
+            model: new ActionSummaryDatamodel<TDataTensor>(namingProcessor),
             build: (writer, model, dto) =>
             {
                 var pumlInjection = model.GetPumlBuilder(dto.ContextKey, exportOptions);
@@ -336,24 +337,56 @@ public static class TabsheetFactory<TDataTensor>
 internal class SummaryMethodListDataModel<TDataTensor> : IMethodListDatamodel<TDataTensor>
     where TDataTensor : notnull
 {
+    private readonly INamingProcessor _namingProcessor;
+
+    public SummaryMethodListDataModel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+
     public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TDataTensor> dto) => dto.ContextInfoList;
 }
 
 internal class ActionPerDomainMethodListDataModel<TTensor> : IMethodListDatamodel<TTensor>
     where TTensor : notnull
 {
+    private readonly INamingProcessor _namingProcessor;
+
+    public ActionPerDomainMethodListDataModel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+
     public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList;
 }
 
 internal class DomainOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTensor>
     where TTensor : notnull
 {
+    private readonly INamingProcessor _namingProcessor;
+
+    public DomainOnlyMethodListDataModel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+
     public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList;
 }
 
 internal class ActionOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTensor>
     where TTensor : notnull
 {
+    private readonly INamingProcessor _namingProcessor;
+
+    public ActionOnlyMethodListDataModel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+
     public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList;
 }
 
@@ -361,6 +394,13 @@ internal class NamespaceOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TT
     where TTensor : notnull
 {
     private const string PumlFilenameTemplate = "namespace_only_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
+
+    public NamespaceOnlyDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
 
     protected override string GetPumlFileName(TTensor contextKey) => throw new NotImplementedException();
 
@@ -370,9 +410,14 @@ internal class NamespaceOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TT
 internal class DomainSummaryComponentsDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "class_{0}_{1}.puml";
+    private readonly INamingProcessor _namingProcessor;
 
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action, contextKey.Domain);
+    public DomainSummaryComponentsDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.ClassActionDomainPumlFilename(contextKey.Action, contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -381,6 +426,13 @@ internal class DomainOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
     where TDataTensor : IDomainPerActionTensor
 {
     private const string PumlFilenameTemplate = "state_domain_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
+
+    public DomainOnlyStatesDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
 
     protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
 
@@ -390,9 +442,14 @@ internal class DomainOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
 internal class ActionOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "mindmap_action_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
 
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
+    public ActionOnlyMindmapDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.MindmapActionPumlFilename(contextKey.Action);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -400,9 +457,14 @@ internal class ActionOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentData
 internal class DomainOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "mindmap_domain_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
 
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
+    public DomainOnlyMindmapDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.MindmapDomainPumlFilename(contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -411,6 +473,13 @@ internal class DomainOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDat
     where TDataTensor : IDomainPerActionTensor
 {
     private const string PumlFilenameTemplate = "sequence_domain_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
+
+    public DomainOnlySequenceDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
 
     protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
 
@@ -420,9 +489,14 @@ internal class DomainOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDat
 internal class DomainOnlyClassesDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "class_domain_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
 
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
+    public DomainOnlyClassesDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.ClassDomainPumlFilename(contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -431,6 +505,13 @@ internal class ActionOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
     where TDataTensor : IDomainPerActionTensor
 {
     private const string PumlFilenameTemplate = "state_action_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
+
+    public ActionOnlyStatesDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
 
     protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
 
@@ -441,6 +522,13 @@ internal class ActionOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDat
     where TDataTensor : IDomainPerActionTensor
 {
     private const string PumlFilenameTemplate = "sequence_action_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
+
+    public ActionOnlySequenceDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
 
     protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
 
@@ -450,9 +538,14 @@ internal class ActionOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDat
 internal class ActionOnlyClassesDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "class_action_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
 
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
+    public ActionOnlyClassesDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.ClassActionPumlFilename(contextKey.Action);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -460,9 +553,14 @@ internal class ActionOnlyClassesDatamodel<TDataTensor> : PumlEmbeddedContentData
 internal class ActionSummaryDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "class_{0}_{1}.puml";
+    private readonly INamingProcessor _namingProcessor;
 
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action, contextKey.Domain);
+    public ActionSummaryDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.ClassActionDomainPumlFilename(contextKey.Action, contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -470,20 +568,30 @@ internal class ActionSummaryDatamodel<TDataTensor> : PumlEmbeddedContentDatamode
 internal class ClassOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TTensor>, IPumlEnbeddedInjectionDatamodel<TTensor>
     where TTensor : notnull
 {
-    private const string PumlFilenameTemplate = "class_only_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
+
+    public ClassOnlyDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
 
     protected override string GetPumlFileName(TTensor contextKey) => throw new NotImplementedException();
 
-    protected override string GetPumlFileName(string contextKey) => string.Format(PumlFilenameTemplate, contextKey.AlphanumericOnly());
+    protected override string GetPumlFileName(string contextKey) => _namingProcessor.ClassOnlyPumlFilename(contextKey.AlphanumericOnly());
 }
 
 internal class ClassOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "mindmap_class_only_{0}.puml";
+    private readonly INamingProcessor _namingProcessor;
+
+    public ClassOnlyMindmapDatamodel(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
 
     protected override string GetPumlFileName(TDataTensor contextKey) => throw new NotImplementedException();
 
-    protected override string GetPumlFileName(string contextKey) => string.Format(PumlFilenameTemplate, contextKey.AlphanumericOnly());
+    protected override string GetPumlFileName(string contextKey) => _namingProcessor.MindmapClassOnlyPumlFilename(contextKey.AlphanumericOnly());
 }
 

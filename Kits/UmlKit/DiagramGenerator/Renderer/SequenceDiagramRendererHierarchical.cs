@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData.Naming;
 using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.Model;
@@ -16,12 +17,15 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
     private readonly IUmlTransitionFactory<P> _factory;
     private readonly DiagramBuilderOptions _options;
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly INamingProcessor _namingProcessor;
 
-    public SequenceDiagramRendererHierarchical(IAppLogger<AppLevel> logger, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory)
+    public SequenceDiagramRendererHierarchical(IAppLogger<AppLevel> logger, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory, INamingProcessor namingProcessor)
     {
         _factory = factory;
         _options = options;
         _logger = logger;
+        _namingProcessor = namingProcessor;
+
     }
 
     // Этот метод будет публичным, и именно его вы будете вызывать
@@ -71,7 +75,7 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
 
             // Логика рендеринга для текущего перехода
             var ctx = new RenderContext<P>(transition, diagram, _options, activationStack, _logger);
-            SequenceParticipantsManager.AddParticipants(ctx, defaultKeywords);
+            SequenceParticipantsManager.AddParticipants(ctx, defaultKeywords, _namingProcessor);
 
             // Рендеринг вызовов
             SequenceActivationManager.RenderActivateCallee(ctx);

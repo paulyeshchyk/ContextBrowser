@@ -5,6 +5,7 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit.Html.Containers;
 using ExporterKit.Infrastucture;
@@ -29,6 +30,7 @@ public class HtmlPageCompilerActionOnly<TDataTensor> : IHtmlPageCompiler
     private readonly IAppOptionsStore _optionsStore;
     private readonly IHtmlTensorWriter<MethodListTensor<TDataTensor>> _matrixWriter;
     private readonly ITensorFactory<MethodListTensor<TDataTensor>> _keyFactory;
+    private readonly INamingProcessor _namingProcessor;
 
     public HtmlPageCompilerActionOnly(
         IAppLogger<AppLevel> logger,
@@ -36,7 +38,8 @@ public class HtmlPageCompilerActionOnly<TDataTensor> : IHtmlPageCompiler
         IContextInfoDatasetProvider<TDataTensor> datasetProvider,
         IAppOptionsStore optionsStore,
         IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter,
-        ITensorFactory<MethodListTensor<TDataTensor>> keyFactory)
+        ITensorFactory<MethodListTensor<TDataTensor>> keyFactory,
+        INamingProcessor namingProcessor)
     {
         _logger = logger;
         _contextInfoMapperContainer = contextInfoMapperContainer;
@@ -44,6 +47,8 @@ public class HtmlPageCompilerActionOnly<TDataTensor> : IHtmlPageCompiler
         _optionsStore = optionsStore;
         _matrixWriter = matrixWriter;
         _keyFactory = keyFactory;
+        _namingProcessor = namingProcessor;
+
     }
 
     // context: contextInfo, build, html
@@ -55,11 +60,11 @@ public class HtmlPageCompilerActionOnly<TDataTensor> : IHtmlPageCompiler
 
         var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>>>
         {
-            TabsheetFactory<TDataTensor>.ActionOnlyClassesTabRegistration(exportOptions),
-            TabsheetFactory<TDataTensor>.MethodsTabRegistration(_matrixWriter, _keyFactory),
-            TabsheetFactory<TDataTensor>.StatesTabRegistration(exportOptions),
-            TabsheetFactory<TDataTensor>.SequenceTabRegistration(exportOptions),
-            TabsheetFactory<TDataTensor>.ActionOnlyMindmap(exportOptions),
+            TabsheetFactory<TDataTensor>.ActionOnlyClassesTabRegistration(exportOptions, _namingProcessor),
+            TabsheetFactory<TDataTensor>.MethodsTabRegistration(_matrixWriter, _keyFactory, _namingProcessor),
+            TabsheetFactory<TDataTensor>.StatesTabRegistration(exportOptions, _namingProcessor),
+            TabsheetFactory<TDataTensor>.SequenceTabRegistration(exportOptions, _namingProcessor),
+            TabsheetFactory<TDataTensor>.ActionOnlyMindmap(exportOptions, _namingProcessor),
         };
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);

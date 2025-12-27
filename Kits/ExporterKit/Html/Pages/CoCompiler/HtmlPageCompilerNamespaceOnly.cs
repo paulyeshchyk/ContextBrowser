@@ -6,6 +6,7 @@ using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using HtmlKit.Builders.Page.Tabs;
 using HtmlKit.Builders.Page.Tabs.CoBuilders;
@@ -21,12 +22,15 @@ public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
+    private readonly INamingProcessor _namingProcessor;
 
-    public HtmlPageCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public HtmlPageCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
+        _namingProcessor = namingProcessor;
+
     }
 
     // context: contextInfo, build, html
@@ -38,7 +42,7 @@ public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
 
         var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerNamespace>>
         {
-            TabsheetFactory<TDataTensor>.NamespaceTabRegistration(exportOptions),
+            TabsheetFactory<TDataTensor>.NamespaceTabRegistration(exportOptions, _namingProcessor),
         };
 
         var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerNamespace>(registrations);
@@ -46,8 +50,8 @@ public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         var builder = new HtmlPageWithTabsNamespaceEntityBuilder<ContextInfoKeyContainerNamespace, TDataTensor>(
-            dataset, 
-            tabbedPageBuilder, 
+            dataset,
+            tabbedPageBuilder,
             (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html",
             (ns) => $" Namespace {ns}");
         await builder.BuildAsync(cancellationToken);

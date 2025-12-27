@@ -7,6 +7,7 @@ using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using ExporterKit.Infrastucture;
@@ -25,12 +26,14 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
+    private readonly INamingProcessor _namingProcessor;
 
-    public UmlDiagramCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
+        _namingProcessor = namingProcessor;
     }
 
     public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
@@ -72,10 +75,12 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     //context: uml, build, heatmap, directory
     internal void Build(IContextInfo contextInfo, ExportOptions exportOptions, DiagramBuilderOptions options, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties)
     {
-        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"class_only_{contextInfo.FullName.AlphanumericOnly()}.puml");
+        var fullName = $"{contextInfo.FullName.AlphanumericOnly()}";
+        var pumlFileName = _namingProcessor.ClassOnlyPumlFilename(fullName);
+        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, pumlFileName);
 
-        var diagramId = $"class_only_{contextInfo.FullName.AlphanumericOnly()}";
-        var diagramTitle = $"Class diagram -> {contextInfo.Name}";
+        var diagramId = _namingProcessor.ClassOnlyDiagramId(fullName);
+        var diagramTitle = _namingProcessor.ClassOnlyDiagramTitle(contextInfo.Name);
 
         var diagram = new UmlDiagramClass(options, diagramId: diagramId);
         diagram.SetTitle(diagramTitle);
@@ -93,14 +98,14 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         var classMethods = methods(contextInfo);
         foreach (var element in classMethods)
         {
-            var umlMethod = new UmlMethod(element.Name + "()", Visibility: UmlMemberVisibility.@public, url: null);
+            var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
             umlClass.Add(umlMethod);
         }
 
         var classProperties = properties(contextInfo);
         foreach (var element in classProperties)
         {
-            var umlMethod = new UmlMethod(element.Name + "()", Visibility: UmlMemberVisibility.@public, url: null);
+            var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
             umlClass.Add(umlMethod);
         }
 

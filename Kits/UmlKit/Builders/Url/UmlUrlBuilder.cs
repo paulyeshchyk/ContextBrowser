@@ -1,5 +1,6 @@
 ﻿using System;
 using ContextBrowserKit.Extensions;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using UmlKit.Builders.Model;
 
@@ -7,7 +8,7 @@ namespace UmlKit.Builders.Url;
 
 public static class UmlUrlBuilder
 {
-    public static string? BuildContextInfoUrl(IContextInfo? contextInfo)
+    public static string? BuildContextInfoUrl(IContextInfo? contextInfo, INamingProcessor _namingProcessor)
     {
         if (contextInfo == null)
         {
@@ -18,31 +19,12 @@ public static class UmlUrlBuilder
             || (contextInfo.ElementType == ContextInfoElementType.record)
             || (contextInfo.ElementType == ContextInfoElementType.@struct))
         {
-            return BuildClassUrl(contextInfo);
+            return _namingProcessor.ClassOnlyHtmlFilename(contextInfo.FullName);
         }
         else
         {
             return null;
         }
-    }
-
-    public static string BuildClassUrl(string? fullName)
-    {
-        if (string.IsNullOrWhiteSpace(fullName))
-            return string.Empty;
-        return $"class_only_{fullName.AlphanumericOnly()}.html";
-    }
-
-    public static string BuildClassUrl(IContextInfo contextInfo)
-    {
-        return $"class_only_{contextInfo.FullName.AlphanumericOnly()}.html";
-    }
-
-    public static string? BuildClassUrl(UmlClassDiagramElementDto? dto)
-    {
-        return dto == null
-            ? null
-            : $"class_only_{dto.FullName.AlphanumericOnly()}.html";
     }
 
     public static string? BuildNamespaceUrl(string? nameSpace)

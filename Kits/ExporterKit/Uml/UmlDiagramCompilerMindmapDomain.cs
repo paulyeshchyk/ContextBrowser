@@ -6,6 +6,7 @@ using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using ExporterKit.Uml.Exporters;
@@ -24,12 +25,14 @@ public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
+    private readonly INamingProcessor _namingProcessor;
 
-    public UmlDiagramCompilerMindmapDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerMindmapDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
+        _namingProcessor = namingProcessor;
     }
 
     // context: build, uml
@@ -47,7 +50,7 @@ public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
 
         foreach (var domain in distinctDomains)
         {
-            UmlDiagramExporterMindMapDomain.Export(dataset, exportOptions, diagramBuilderOptions, domain);
+            UmlDiagramExporterMindMapDomain.Export(dataset, exportOptions, diagramBuilderOptions, domain, _namingProcessor);
         }
 
         return new Dictionary<object, bool>();

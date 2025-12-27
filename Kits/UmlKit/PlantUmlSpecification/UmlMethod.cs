@@ -10,10 +10,10 @@ public class UmlMethod : IUmlElement
     public readonly string? Url;
     public readonly UmlMemberVisibility Visibility;
 
-    public UmlMethod(string text, UmlMemberVisibility Visibility, string? url)
+    public UmlMethod(string text, UmlMemberVisibility visibility, string? url)
     {
         Text = text;
-        this.Visibility = Visibility;
+        Visibility = visibility;
         Url = url;
     }
 

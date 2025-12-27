@@ -9,6 +9,7 @@ using ContextBrowser.Services.ContextInfoProvider;
 using ContextBrowser.Services.Parsing;
 using ContextBrowserKit.Options;
 using ContextKit.ContextData.Comment;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ContextKit.Model.CacheManager;
 using ContextKit.Model.Collector;
@@ -62,6 +63,9 @@ public static class Program
             var defaultDependencies = new Dictionary<AppLevel, AppLevel>();
             return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultCW, dependencies: defaultDependencies);
         });
+
+
+        hab.Services.AddSingleton<INamingProcessor, NamingProcessor>();
 
         // --- Службы, связанные с ContextInfo и анализом кода ---
 

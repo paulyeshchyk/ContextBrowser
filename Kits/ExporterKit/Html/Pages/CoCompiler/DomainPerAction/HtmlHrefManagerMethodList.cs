@@ -1,5 +1,6 @@
 ﻿using System;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData.Naming;
 using ExporterKit.Html.Containers;
 using HtmlKit.Helpers;
 
@@ -9,9 +10,19 @@ public class HtmlHrefManagerMethodList<TDataTensor> : IHtmlHrefManager<MethodLis
     where TDataTensor : notnull
 {
     private static readonly long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    private readonly INamingProcessor _namingProcessor;
 
-    public string GetHrefCell(MethodListTensor<TDataTensor> cell, HtmlTableOptions _options) =>
-        $"class_only_{cell.DomainPerActionTensorContainer.ContextKey}.html?v={TimeStamp}";
+    public HtmlHrefManagerMethodList(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+
+    public string GetHrefCell(MethodListTensor<TDataTensor> cell, HtmlTableOptions _options)
+    {
+        var htmlFilename = _namingProcessor.ClassOnlyHtmlFilename(cell.DomainPerActionTensorContainer.ContextKey.ToString());
+        return $"{htmlFilename}?v={TimeStamp}";
+    }
 
     public string GetHrefColHeaderSummary(HtmlTableOptions _options)
     {

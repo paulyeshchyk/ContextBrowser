@@ -39,6 +39,7 @@ public class AppOptions
     };
 
     [CommandLineArgument("roslyn-options", "The source code path.")]
+    // context: model, appoptions
     public CodeParsingOptions ParsingOptions { get; set; } = new(
 
         semanticOptions: new(
@@ -102,11 +103,11 @@ public class AppOptions
         filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
-                 cacheModel: new CacheJsonModel(renewCache: false,
+                 cacheModel: new CacheJsonModel(renewCache: true,
                                                      input: ".//cache//roslyn.json",
                                                     output: ".//cache//roslyn.json")),
         webPaths: new ExportWebPaths(
-            outputDirectory: "http://localhost:8081",
+            outputDirectory: "http://localhost:5500",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
                  cacheModel: new CacheJsonModel(renewCache: true,
                                                      input: ".//cache//roslyn.json",
@@ -121,7 +122,7 @@ public class AppOptions
                                         diagramType: DiagramBuilderKeys.Transition,
                                          activation: new DiagramActivationOptions(useActivation: true, useActivationCall: true),
                                   transitionOptions: new DiagramTransitionOptions(useCall: true, useDone: true),
-                                   invocationOption: new DiagramInvocationOption(useInvocation: true, useReturn: true),
+                                   invocationOption: new DiagramInvocationOption(useInvocation: true, useReturn: false),
                                          indication: new DiagramIndicationOption(useAsync: true));
 
     [CommandLineArgument("context-classifier", "Определение контекста представления")]
