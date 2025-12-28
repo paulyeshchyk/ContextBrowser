@@ -3,6 +3,7 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using SemanticKit.Model;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.Invocations.Lookup;
 

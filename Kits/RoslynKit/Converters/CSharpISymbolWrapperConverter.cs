@@ -35,11 +35,11 @@ public static class CSharpISymbolWrapperConverter
 
         if (symbol is ISymbol isymbol)
         {
-            wrapper.SetIdentifier(isymbol.GetFullMemberName(includeParams: true));
+            wrapper.SetIdentifier(isymbol.BuildFullMemberName());
             wrapper.SetNamespace(isymbol.GetNamespaceOrGlobal());
-            wrapper.SetName(isymbol.GetNameAndClassOwnerName());
-            wrapper.SetFullName(isymbol.GetFullMemberName(includeParams: true));
-            wrapper.SetShortName(isymbol.GetShortName());
+            wrapper.SetName(isymbol.BuildNameAndClassOwnerName());
+            wrapper.SetFullName(isymbol.BuildFullMemberName());
+            wrapper.SetShortName(isymbol.BuildShortName());
         }
         else
         {

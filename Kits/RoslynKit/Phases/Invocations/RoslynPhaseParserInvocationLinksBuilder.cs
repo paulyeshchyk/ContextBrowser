@@ -8,6 +8,7 @@ using RoslynKit.Phases.Invocations.Lookup;
 using RoslynKit.Wrappers.LookupHandler;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.Invocations;
 

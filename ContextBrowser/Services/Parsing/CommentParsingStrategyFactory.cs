@@ -28,10 +28,7 @@ public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFa
         return new List<ICommentParsingStrategy<TContext>>()
         {
             new CoverageStrategy<TContext>(),
-            new ContextValidationDecorator<TContext>(
-                _classifier,
-                new ContextStrategy<TContext>(_optionsStore, _logger),
-                _logger),
+            new ContextValidationDecorator<TContext>(_classifier,  new ContextStrategy<TContext>(_optionsStore, _logger), _logger),
         };
     }
 }

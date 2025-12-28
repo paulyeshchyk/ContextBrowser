@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowser.Model;
-using ContextBrowser.Roslyn;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.CacheManager;
 using LoggerKit;
 using SemanticKit.Model.Options;
+using SemanticKit.Parsers.File;
 
 namespace ContextBrowser.Services.Parsing;
 
@@ -81,7 +80,7 @@ public class ParsingOrchestrator : IParsingOrchestrator
                 { 1, referenceFileParser }
             };
 
-        var parserChain = new ParserChain(fileParsers);
-        return _codeParseService.Parse(parserChain, token);
+        var parserChain = new FileParserPipeline(fileParsers);
+        return _codeParseService.ParseAsync(parserChain, token);
     }
 }

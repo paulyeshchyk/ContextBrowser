@@ -8,6 +8,7 @@ using RoslynKit.Converters;
 using RoslynKit.Wrappers.Meta;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Wrappers.Extractor;
 

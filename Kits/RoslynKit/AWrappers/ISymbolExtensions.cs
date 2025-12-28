@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 
 namespace RoslynKit.AWrappers;
@@ -26,69 +27,6 @@ public static class ISymbolExtensions
         return string.Join(".", parts);
     }
 
-    public static string GetShortName(this ISymbol symbol)
-    {
-        // старое поведение: только имя без параметров, без возврата
-        var builder = new CSharpSignatureBuilder()
-            .IncludeGenerics(false)
-            .IncludeParameters(false)
-            .IncludeReturnType(false)
-            .IncludeNamespace(false)
-            .IncludeContainingType(false);
-
-        return builder.Build(symbol);
-    }
-
-    public static string GetNameAndClassOwnerName(this ISymbol symbol)
-    {
-        var builder = new CSharpSignatureBuilder()
-            .IncludeGenerics(false)
-            .IncludeParameters(false)
-            .IncludeReturnType(false)
-            .IncludeNamespace(false)
-            .IncludeContainingType(true);
-
-        return builder.Build(symbol);
-    }
-
-    public static string GetNameAndParams(this ISymbol symbol)
-    {
-        var builder = new CSharpSignatureBuilder()
-            .IncludeGenerics(false)
-            .IncludeParameters(true)
-            .IncludeReturnType(true)
-            .IncludeNamespace(false)
-            .IncludeContainingType(false);
-
-        return builder.Build(symbol);
-    }
-
-    public static string GetFullMemberName(this ISymbol symbol, bool includeParams)
-    {
-        // имя метода с с нэймспейс с типом + параметры (опционально), возврат включён
-        var builder = new CSharpSignatureBuilder()
-            .IncludeGenerics(true)
-            .IncludeParameters(includeParams)
-            .IncludeReturnType(true)
-            .IncludeNamespace(true)
-            .IncludeContainingType(true);
-
-        return builder.Build(symbol);
-    }
-
-    public static string GetQualifiedName(this ISymbol symbol)
-    {
-        // максимально подробное имя без namespace, с return type, с params, с generics
-        var builder = new CSharpSignatureBuilder()
-            .IncludeGenerics(true)
-            .IncludeParameters(true)
-            .IncludeReturnType(true)
-            .IncludeNamespace(false)
-            .IncludeContainingType(false);
-
-        return builder.Build(symbol);
-    }
-
     public static TypeDetailDto GetTypeDetails(this ITypeSymbol typeSymbol)
     {
         var name = typeSymbol.Name;
@@ -102,7 +40,7 @@ public static class ISymbolExtensions
         return (name, Enumerable.Empty<string>());
     }
 
-    public static MethodDetailDto  GetMethodDetails(this IMethodSymbol methodSymbol)
+    public static MethodDetailDto GetMethodDetails(this IMethodSymbol methodSymbol)
     {
         var returnType = methodSymbol.ReturnsVoid ? "void" : methodSymbol.ReturnType.ToDisplayString();
         var name = methodSymbol.Name;

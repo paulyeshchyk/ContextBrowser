@@ -25,18 +25,3 @@ public class CSharpTypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TCon
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@class;
 }
-
-public class CSharpTypeSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<MemberDeclarationSyntax>, ISymbolInfo
-{
-    private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<MemberDeclarationSyntax>();
-
-    public override string Identifier => _syntaxNode.GetIdentifier();
-
-    public override string Namespace => _syntaxNode.GetNamespaceOrGlobal();
-
-    public override string GetFullName() => $"{Namespace}.{GetName()}";
-
-    public override string GetName() => _syntaxNode.GetIdentifier();
-
-    public override string GetShortName() => GetName();
-}

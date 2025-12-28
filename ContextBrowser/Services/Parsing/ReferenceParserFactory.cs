@@ -3,6 +3,7 @@ using ContextKit.Model;
 using ContextKit.Model.Collector;
 using LoggerKit;
 using RoslynKit.Phases.ContextInfoBuilder;
+using RoslynKit.Phases.Invocations.Parser;
 using RoslynKit.Phases.Syntax.Parsers;
 using SemanticKit.Model;
 

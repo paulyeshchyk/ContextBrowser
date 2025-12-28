@@ -18,18 +18,3 @@ public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TCo
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@enum;
 }
-
-public class CSharpEnumSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<EnumDeclarationSyntax>
-{
-    private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<EnumDeclarationSyntax>();
-
-    public override string Identifier => _syntaxNode.GetIdentifier();
-
-    public override string Namespace => _syntaxNode.GetNamespaceOrGlobal();
-
-    public override string GetName() => _syntaxNode.GetIdentifier();
-
-    public override string GetFullName() => $"{Namespace}.{GetName()}";
-
-    public override string GetShortName() => _syntaxNode.GetIdentifier();
-}

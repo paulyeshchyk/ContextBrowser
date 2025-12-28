@@ -4,14 +4,14 @@
 internal static class Actor
 {
     // context: S1, model
-    public static void Action1()
+    public static void Action1(string actionName)
     {
         Transition.Add();
     }
 
     // context: S1, model
-    public static void Action2()
+    public static bool Action2(string actionName)
     {
-        Transition.Remove();
+        return Transition.Remove();
     }
 }

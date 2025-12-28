@@ -1,4 +1,5 @@
 ﻿using ContextKit.Model;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace SemanticKit.Model;
 
