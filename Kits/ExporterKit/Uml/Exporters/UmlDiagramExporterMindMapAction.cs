@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options.Export;
@@ -19,7 +20,7 @@ public class UmlDiagramExporterMindMapAction
 {
   public static void Export(IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, string action, INamingProcessor namingProcessor)
   {
-    var fileName = namingProcessor.MindmapDomainPumlFilename(action);
+    var fileName = namingProcessor.MindmapActionPumlFilename(action);
     var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, fileName);
     var diagramId = namingProcessor.MindmapActionDiagramId(outputPath);
 
@@ -33,10 +34,10 @@ public class UmlDiagramExporterMindMapAction
     var node = new UmlNode(action, alias: null, url: UmlUrlBuilder.BuildActionUrl(action));
     node.Stylename = "selected";
 
-    IEnumerable<UmlNode> parentsForAction = GetParentsForAction(action, dataset, namingProcessor);
+    IEnumerable<UmlNode> parentsForAction = GetParentsForAction(action, dataset, namingProcessor, (item) => item.ElementType != ContextInfoElementType.method);
     node.Parents.AddRange(parentsForAction);
 
-    IEnumerable<UmlNode> childrenAction = GetChildrenForAction(action, dataset, namingProcessor);
+    IEnumerable<UmlNode> childrenAction = GetChildrenForAction(action, dataset, namingProcessor, (item) => item.ElementType != ContextInfoElementType.method);
     node.Children.AddRange(childrenAction);
 
     diagram.Add(node);
@@ -51,16 +52,17 @@ public class UmlDiagramExporterMindMapAction
   /// <param name="action">Домен, для которого ищутся дети.</param>
   /// <param name="dataset">Набор данных о контексте.</param>
   /// <returns>Коллекция узлов UmlNode, представляющих дочерние домены.</returns>
-  private static IEnumerable<UmlNode> GetChildrenForAction(string action, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor)
+  private static IEnumerable<UmlNode> GetChildrenForAction(string action, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, Func<ContextInfo, bool> filter)
   {
-    var startNodes = dataset.GetAll().Where(e => e.Action == action);
+    var startNodes = dataset.GetAll().Where(e => e.Action == action).DistinctBy(e => e.Identifier);
 
     return DfsWalker_Traversal.Run(
           startItems: startNodes,
         nextSelector: x => new HashSet<ContextInfo>(x.References.Union(x.Owns)),
           createNode: UmlNodeTraverseBuilder.BuildMindNode,
            linkNodes: (parent, child) => parent.Children.Add(child),
-     namingProcessor: namingProcessor);
+     namingProcessor: namingProcessor,
+              filter: filter);
   }
 
   /// <summary>
@@ -69,15 +71,16 @@ public class UmlDiagramExporterMindMapAction
   /// <param name="action">Домен, для которого ищутся родители.</param>
   /// <param name="dataset">Набор данных о контексте.</param>
   /// <returns>Коллекция узлов UmlNode, представляющих родительские домены.</returns>
-  private static IEnumerable<UmlNode> GetParentsForAction(string action, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor)
+  private static IEnumerable<UmlNode> GetParentsForAction(string action, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, Func<ContextInfo, bool> filter)
   {
-    var startNodes = dataset.GetAll().Where(e => e.Action == action);
+    var startNodes = dataset.GetAll().Where(e => e.Action == action).DistinctBy(e => e.Identifier);
 
     return DfsWalker_Traversal.Run(
           startItems: startNodes,
         nextSelector: x => x.InvokedBy,
           createNode: UmlNodeTraverseBuilder.BuildMindNode,
            linkNodes: (child, parent) => child.Parents.Add(parent),
-           namingProcessor: namingProcessor);
+     namingProcessor: namingProcessor,
+              filter: filter);
   }
 }

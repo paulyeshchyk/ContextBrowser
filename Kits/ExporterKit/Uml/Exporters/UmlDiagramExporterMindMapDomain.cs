@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options.Export;
@@ -33,10 +34,10 @@ public class UmlDiagramExporterMindMapDomain
     var node = new UmlNode(domain, alias: null, url: UmlUrlBuilder.BuildDomainUrl(domain));
     node.Stylename = "selected";
 
-    IEnumerable<UmlNode> parentsForDomain = GetParentsForDomain(domain, dataset, namingProcessor);
+    IEnumerable<UmlNode> parentsForDomain = GetParentsForDomain(domain, dataset, namingProcessor, (item) => item.ElementType != ContextInfoElementType.method);
     node.Parents.AddRange(parentsForDomain);
 
-    IEnumerable<UmlNode> childrenDomain = GetChildrenForDomain(domain, dataset, namingProcessor);
+    IEnumerable<UmlNode> childrenDomain = GetChildrenForDomain(domain, dataset, namingProcessor, (item) => item.ElementType != ContextInfoElementType.method);
     node.Children.AddRange(childrenDomain);
 
     diagram.Add(node);
@@ -51,16 +52,17 @@ public class UmlDiagramExporterMindMapDomain
   /// <param name="domain">Домен, для которого ищутся дети.</param>
   /// <param name="dataset">Набор данных о контексте.</param>
   /// <returns>Коллекция узлов UmlNode, представляющих дочерние домены.</returns>
-  private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor)
+  private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, Func<ContextInfo, bool> filter)
   {
-    var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain));
+    var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain)).DistinctBy(e => e.Identifier);
 
     return DfsWalker_Traversal.Run(
           startItems: startNodes,
         nextSelector: x => new HashSet<ContextInfo>(x.References.Union(x.Owns)),
           createNode: UmlNodeTraverseBuilder.BuildMindNode,
            linkNodes: (parent, child) => parent.Children.Add(child),
-     namingProcessor: namingProcessor);
+     namingProcessor: namingProcessor,
+              filter: filter);
   }
 
   /// <summary>
@@ -69,15 +71,16 @@ public class UmlDiagramExporterMindMapDomain
   /// <param name="domain">Домен, для которого ищутся родители.</param>
   /// <param name="dataset">Набор данных о контексте.</param>
   /// <returns>Коллекция узлов UmlNode, представляющих родительские домены.</returns>
-  private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor)
+  private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, Func<ContextInfo, bool> filter)
   {
-    var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain));
+    var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain)).DistinctBy(e => e.Identifier);
 
     return DfsWalker_Traversal.Run(
           startItems: startNodes,
         nextSelector: x => x.InvokedBy,
           createNode: UmlNodeTraverseBuilder.BuildMindNode,
            linkNodes: (child, parent) => child.Parents.Add(parent),
-     namingProcessor: namingProcessor);
+     namingProcessor: namingProcessor,
+              filter: filter);
   }
 }

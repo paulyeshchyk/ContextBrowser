@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ContextKit.ContextData.Naming;
 
 namespace GraphKit.Walkers;
@@ -48,13 +49,14 @@ public static class DfsWalker_Traversal
         Func<TItem, IEnumerable<TItem>> nextSelector,
         Func<TItem, INamingProcessor, TNode> createNode,
         Action<TNode, TNode> linkNodes,
-        INamingProcessor namingProcessor)
+        INamingProcessor namingProcessor,
+        Func<TItem, bool> filter)
         where TNode : class
     {
         var results = new List<TNode>();
         var visited = new HashSet<TItem>();
 
-        foreach (var item in startItems)
+        foreach (var item in startItems.Where(filter))
         {
             var node = TraverseInternal(item, nextSelector, createNode, linkNodes, visited, namingProcessor);
             if (node != null)

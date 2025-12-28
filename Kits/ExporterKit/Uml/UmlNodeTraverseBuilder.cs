@@ -10,7 +10,7 @@ public static class UmlNodeTraverseBuilder
     public static UmlNode BuildMindNode(ContextInfo startNode, INamingProcessor namingProcessor)
     {
         // 1. Создание родительской ноды
-        var ownerName = startNode.ClassOwner?.FullName ?? startNode.FullName;
+        var ownerName = startNode.FullName;//startNode.ClassOwner?.FullName ?? startNode.FullName;
         var resultNode = new UmlNode(ownerName, alias: null, url: namingProcessor.ClassOnlyHtmlFilename(ownerName));
         resultNode.Stylename = "grey";
 
