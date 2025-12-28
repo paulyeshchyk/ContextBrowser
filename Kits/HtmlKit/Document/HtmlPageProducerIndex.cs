@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,7 +47,8 @@ public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexPr
 
     protected override async Task WriteContentAsync(TextWriter writer, IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken)
     {
-        var navigationItem = new BreadcrumbNavigationItem("..\\index.html", "Контекстная матрица");
+        long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var navigationItem = new BreadcrumbNavigationItem($"..\\index.html?v={TimeStamp}", "Контекстная матрица");
         await HtmlBuilderFactory.Breadcrumb(navigationItem).CellAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         await HtmlBuilderFactory.P.CellAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);

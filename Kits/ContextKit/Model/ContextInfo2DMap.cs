@@ -19,6 +19,12 @@ public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
     private readonly IAppOptionsStore _optionsStore;
     private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
 
+    // context: ContextInfoMatrix, read
+    public IEnumerable<object> GetCols() => _data!.Select(k => k.Key.Domain);
+
+    // context: ContextInfoMatrix, read
+    public IEnumerable<object> GetRows() => _data!.Select(k => k.Key.Action);
+
     public ContextInfo2DMap(ITensorFactory<TTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore optionsStore)
     {
         _keyFactory = keyFactory;
@@ -32,6 +38,27 @@ public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
         return _data;
     }
 
+    private record ContextPair(ContextInfo Context, string Action, string Domain);
+
+    private IEnumerable<ContextPair> GetContextPairs(
+        ContextInfo context,
+        IWordRoleClassifier wordClassifier,
+        IEmptyDimensionClassifier emptyClassifier)
+    {
+        // Извлекаем и подготавливаем действия
+        var actions = context.Contexts.Where(ctx => wordClassifier.IsVerb(ctx, _FakeDimensionClassifier)).ToList();
+        var effectiveActions = actions.Any() ? actions : new List<string> { emptyClassifier.EmptyAction };
+
+        // Извлекаем и подготавливаем домены
+        var domains = context.Contexts.Where(ctx => wordClassifier.IsNoun(ctx, _FakeDimensionClassifier)).ToList();
+        var effectiveDomains = domains.Any() ? domains : new List<string> { emptyClassifier.EmptyDomain };
+
+        // Декартово произведение (Action x Domain)
+        return effectiveActions.SelectMany(action =>
+            effectiveDomains.Select(domain =>
+                new ContextPair(context, action, domain)));
+    }
+
     // context: ContextInfoMatrix, build
     public Task BuildAsync(IEnumerable<ContextInfo> contextsList, CancellationToken cancellationToken)
     {
@@ -41,23 +68,26 @@ public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
             var emptyClassifier = _optionsStore.GetOptions<IEmptyDimensionClassifier>();
 
             _data = contextsList
-                        .Where(c => !string.IsNullOrWhiteSpace(c.Name) && c.Contexts.Any())
-                        .GroupBy(c =>
-                        {
-                            var action = c.Contexts.FirstOrDefault(c => wordClassifier.IsVerb(c, _FakeDimensionClassifier)) ?? emptyClassifier.EmptyAction;
-                            var domain = c.Contexts.FirstOrDefault(c => wordClassifier.IsNoun(c, _FakeDimensionClassifier)) ?? emptyClassifier.EmptyDomain;
-                            var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { action, domain }, _keyFactory.Create);
-                            return contextKey;
-                        })
-                        .ToDictionary(
-                            g => (TTensor)g.Key,
-                            g => g.ToList());
+                .Where(c => !string.IsNullOrWhiteSpace(c.Name) && c.Contexts.Any())
+
+                // 1. Разворачивание
+                .SelectMany(c => GetContextPairs(c, wordClassifier, emptyClassifier))
+
+                // 2. Группировка
+                .GroupBy(pair =>
+                {
+                    // Формирование TTensor ключа
+                    var contextKey = _keyBuilder.BuildTensor(
+                        TensorPermutationType.Standard,
+                        new[] { pair.Action, pair.Domain },
+                        _keyFactory.Create);
+                    return contextKey;
+                })
+
+                // 3. Агрегация
+                .ToDictionary(
+                    g => (TTensor)g.Key,
+                    g => g.Select(pair => pair.Context).ToList());
         }, cancellationToken);
     }
-
-    // context: ContextInfoMatrix, read
-    public IEnumerable<object> GetCols() => _data!.Select(k => k.Key.Domain);
-
-    // context: ContextInfoMatrix, read
-    public IEnumerable<object> GetRows() => _data!.Select(k => k.Key.Action);
 }
