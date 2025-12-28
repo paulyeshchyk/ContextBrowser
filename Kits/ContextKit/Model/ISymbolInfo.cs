@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace ContextKit.Model;
+﻿namespace ContextKit.Model;
 
 public interface ISymbolInfo
 {

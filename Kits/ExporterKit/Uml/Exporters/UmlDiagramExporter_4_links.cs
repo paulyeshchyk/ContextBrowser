@@ -24,7 +24,7 @@ public class UmlDiagramExporter_4_links
             AddRelation(diagramBuilderOptions, diagram, from, to);
         }
 
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
         diagram.WriteToFile(outputPath, writeOptons);
     }
 

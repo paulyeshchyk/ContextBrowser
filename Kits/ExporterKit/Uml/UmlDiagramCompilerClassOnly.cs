@@ -57,7 +57,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
                       methods: GetMethods(contextInfoDataset),
                    properties: GetProperties(contextInfoDataset));
         }
-        return new Dictionary<object, bool> { };
+        return new Dictionary<object, bool>();
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
@@ -109,7 +109,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
             umlClass.Add(umlMethod);
         }
 
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
         diagram.WriteToFile(fileName, writeOptons);
     }
 }

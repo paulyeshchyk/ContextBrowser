@@ -42,7 +42,7 @@ public class UmlDiagramExporterMindMapDomain
 
     diagram.Add(node);
 
-    var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+    var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
     diagram.WriteToFile(outputPath, writeOptons);
   }
 

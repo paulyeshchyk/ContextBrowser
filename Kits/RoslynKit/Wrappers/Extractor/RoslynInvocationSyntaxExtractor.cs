@@ -12,7 +12,7 @@ using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Wrappers.Extractor;
 
-//context: roslyn, builder
+//context: roslyn, read
 public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
 {
     private readonly IAppLogger<AppLevel> _logger;

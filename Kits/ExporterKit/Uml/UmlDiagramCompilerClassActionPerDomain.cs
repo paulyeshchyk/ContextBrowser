@@ -50,7 +50,7 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
         {
             Build(element, exportOptions, diagramBuilderOptions);
         }
-        return new Dictionary<object, bool> { };
+        return new Dictionary<object, bool>();
     }
 
     //context: uml, build, heatmap, directory
@@ -72,11 +72,11 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
         diagram.SetSeparator("none");
 
         // Группируем по Namespace, затем по ClassOwnerFullName
-        var allElements = UmlClassDiagramDataMapper.Map(contextInfoList);
+        var allElements = UmlClassDiagramDataMapper.Map(contextInfoList).ToList();
 
         int maxLength = UmlDiagramMaxNamelengthExtractor.Extract(allElements, new() { UmlDiagramMaxNamelengthExtractorType.@namespace, UmlDiagramMaxNamelengthExtractorType.@entity, UmlDiagramMaxNamelengthExtractorType.@method });
 
-        var namespaces = allElements.GroupBy(e => e.Namespace);
+        var namespaces = allElements.GroupBy(e => e.Namespace).ToList();
 
         foreach (var nsGroup in namespaces)
         {
@@ -106,7 +106,7 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
         }
         diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(g => g.Key.AlphanumericOnly())));
 
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: maxLength) { };
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: maxLength);
 
         diagram.WriteToFile(fileName, writeOptons);
     }

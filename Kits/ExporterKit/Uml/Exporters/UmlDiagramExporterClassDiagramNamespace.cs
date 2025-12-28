@@ -42,7 +42,7 @@ public class UmlDiagramExporterClassDiagramNamespace
             package.Add(umlClass);
         }
 
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
         var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"namespace_only_{nameSpace.AlphanumericOnly()}.puml");
         diagram.WriteToFile(fileName, writeOptons);
     }

@@ -3,12 +3,12 @@ using System.Linq;
 using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 
-namespace RoslynKit.Wrappers.Syntax;
+namespace RoslynKit.Model.SyntaxNodeWrapper;
 
 public abstract class CSharpSyntaxNodeWrapper<S> : ISyntaxNodeWrapper
-    where S : notnull, SyntaxNode
+    where S : SyntaxNode
 {
-    private S? _syntaxNode = null;
+    private S? _syntaxNode;
 
     public int SpanStart => GetCoSyntax<S>().Span.Start;
 
@@ -20,7 +20,7 @@ public abstract class CSharpSyntaxNodeWrapper<S> : ISyntaxNodeWrapper
         return GetCoSyntax<S>()
             .DescendantNodes()
             .OfType<T>()
-            .OrderBy(c => (c as SyntaxNode)?.SpanStart ?? -1) ?? Enumerable.Empty<T>().OrderBy(t => -1);
+            .OrderBy(c => (c as SyntaxNode)?.SpanStart ?? -1);
     }
 
     public abstract string Identifier { get; }
@@ -46,10 +46,8 @@ public abstract class CSharpSyntaxNodeWrapper<S> : ISyntaxNodeWrapper
 
     public S1 GetCoSyntax<S1>()
     {
-        if (_syntaxNode is not S1 coSyntax)
-        {
-            throw new Exception($"incorrect syntax was set: expected{typeof(S)}");
-        }
-        return coSyntax;
+        return _syntaxNode is S1 coSyntax
+            ? coSyntax
+            : throw new Exception($"incorrect syntax was set: expected{typeof(S1)}");
     }
 }

@@ -2,13 +2,14 @@ using System;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using RoslynKit.AWrappers;
 
-namespace RoslynKit.AWrappers;
+namespace RoslynKit.Signature.SignatureBuilder;
 
 // context: roslyn, signature, build
-internal class CSharpSignatureBuilderMethod : SignatureBuilder
+internal class CSharpSignatureBuilderMethodSymbol : SignatureBuilder
 {
-    public CSharpSignatureBuilderMethod(SignatureBuilder sb) : base(sb)
+    public CSharpSignatureBuilderMethodSymbol(SignatureBuilder sb) : base(sb)
     {
 
     }
@@ -22,29 +23,29 @@ internal class CSharpSignatureBuilderMethod : SignatureBuilder
         var methodDetailDto = methodSymbol.GetMethodDetails();
         var sb = new StringBuilder();
 
-        if (_includeReturnType)
+        if (IncludeReturnType)
         {
             sb.Append(methodDetailDto.ReturnType).Append(' ');
         }
 
-        if (_includeNamespace && !methodSymbol.ContainingNamespace.IsGlobalNamespace)
+        if (IncludeNamespace && !methodSymbol.ContainingNamespace.IsGlobalNamespace)
         {
             sb.Append(methodSymbol.ContainingNamespace.ToDisplayString()).Append('.');
         }
 
-        if (_includeContainingType && methodSymbol.ContainingType != null)
+        if (IncludeContainingType && methodSymbol.ContainingType != null)
         {
             sb.Append(methodSymbol.ContainingType.Name).Append('.');
         }
 
         sb.Append(methodDetailDto.Name);
 
-        if (_includeGenerics && methodDetailDto.GenericParameters.Any())
+        if (IncludeGenerics && methodDetailDto.GenericParameters.Any())
         {
             sb.Append($"<{string.Join(", ", methodDetailDto.GenericParameters)}>");
         }
 
-        if (_includeParameters)
+        if (IncludeParameters)
         {
             sb.Append('(');
             sb.Append(string.Join(", ", methodDetailDto.Parameters.Select(p => $"{p.Type} {p.Name}")));

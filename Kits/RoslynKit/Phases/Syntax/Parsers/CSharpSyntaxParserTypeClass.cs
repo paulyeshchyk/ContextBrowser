@@ -16,6 +16,8 @@ namespace RoslynKit.Phases.Syntax.Parsers;
 public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
+    private const string SErrorNotClassDeclarationSyntax = "Syntax ({0}) is not ClassDeclarationSyntax";
+    private const string SErrorNullTypeContext = "Syntax \"{0}\" was not resolved in {1}";
     private readonly CSharpTypeContextInfoBulder<TContext> _typeContextInfoBuilder;
     private readonly CSharpSyntaxParserCommentTrivia<TContext> _triviaCommentParser;
     private readonly CSharpSyntaxParserMethod<TContext> _methodSyntaxParser;
@@ -42,20 +44,20 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
     {
         if (syntax is not ClassDeclarationSyntax typeSyntax)
         {
-            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax ({nameof(syntax)}) is not ClassDeclarationSyntax");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, string.Format(SErrorNotClassDeclarationSyntax, nameof(syntax)));
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - type syntax");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - type syntax");
 
         var symbol = CSharpSymbolLoader.LoadSymbol(typeSyntax, model, _logger, cancellationToken);
 
         var typeContext = _typeContextInfoBuilder.BuildContextInfo(parent, typeSyntax, model, cancellationToken);
         if (typeContext == null)
         {
-            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{typeSyntax}\" was not resolved in {typeSyntax.GetNamespaceOrGlobal()}");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, string.Format(SErrorNullTypeContext, typeSyntax, typeSyntax.GetNamespaceOrGlobal()));
             return;
         }
 

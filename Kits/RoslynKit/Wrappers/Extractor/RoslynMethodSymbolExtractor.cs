@@ -8,10 +8,11 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Wrappers.Extractor;
 
+// context: roslyn, read
 internal static class RoslynMethodSymbolExtractor
 {
     // context: roslyn, read
-    internal static IMethodSymbol? GetMethodSymbol(IInvocationNodeWrapper invocation, ISemanticModelWrapper semanticModel, IAppLogger<AppLevel> logger, CancellationToken cancellationToken)
+    internal static IMethodSymbol? GetMethodSymbol(IInvocationNodeWrapper invocation, ISemanticModelWrapper semanticModel, IAppLogger<AppLevel>? logger, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 

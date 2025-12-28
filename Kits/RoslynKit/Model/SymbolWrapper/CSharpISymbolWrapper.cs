@@ -1,20 +1,18 @@
 ﻿using System;
 using ContextKit.Model;
 
-namespace RoslynKit.Wrappers.Syntax;
+namespace RoslynKit.Model.SymbolWrapper;
 
 public class CSharpISymbolWrapper : ISymbolInfo
 {
-    private string _identifier = string.Empty;
-    private string _namespace = string.Empty;
     private string _name = string.Empty;
     private string _fullname = string.Empty;
     private string _shortName = string.Empty;
-    private object? _syntax = null;
+    private object? _syntax;
 
-    public string Identifier => _identifier;
+    public string Identifier { get; private set; } = string.Empty;
 
-    public string Namespace => _namespace;
+    public string Namespace { get; private set; } = string.Empty;
 
     public string GetName() => _name;
 
@@ -26,12 +24,12 @@ public class CSharpISymbolWrapper : ISymbolInfo
 
     public void SetIdentifier(string identifier)
     {
-        _identifier = identifier;
+        Identifier = identifier;
     }
 
     public void SetNamespace(string nameSpace)
     {
-        _namespace = nameSpace;
+        Namespace = nameSpace;
     }
 
     public void SetName(string name)

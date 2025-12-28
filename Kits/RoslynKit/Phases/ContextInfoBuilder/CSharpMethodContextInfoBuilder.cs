@@ -2,7 +2,7 @@
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.AWrappers;
+using RoslynKit.Model.SyntaxNodeWrapper;
 using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 

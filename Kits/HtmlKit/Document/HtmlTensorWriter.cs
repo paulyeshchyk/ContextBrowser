@@ -26,14 +26,14 @@ namespace HtmlKit.Document;
 /// === Как это работает ===
 /// 1. В конструктор HtmlMatrixWriter передаются все необходимые
 ///    компоненты:
-///    - IHtmlDataCellBuilder<TKey>: отвечает за отрисовку содержимого
+///    - IHtmlDataCellBuilder&lt;TKey&gt;: отвечает за отрисовку содержимого
 ///      каждой ячейки, используя специфичные для TKey данные.
-///    - DomainPerActionKeyFactory<TKey>: фабрика, которая знает, как создать
+///    - DomainPerActionKeyFactory&lt;Key&gt;: фабрика, которая знает, как создать
 ///      объект TKey из двух строк.
 ///    - DomainPerActionKeyBuilder: строитель, который определяет порядок
 ///      параметров для TKey в зависимости от ориентации матрицы.
 ///
-/// 2. Класс IHtmlMatrixWriter<TKey> использует эти зависимости для
+/// 2. Класс IHtmlMatrixWriter&lt;TKey&gt; использует эти зависимости для
 ///    построения таблицы единообразно для любого TKey.
 ///
 /// === Регистрация сервисов ===
@@ -42,19 +42,19 @@ namespace HtmlKit.Document;
 ///
 /// Пример для базового ключа ContextKey:
 ///
-/// hab.Services.AddTransient<IHtmlMatrixWriter, HtmlMatrixWriter<ContextKey>>();
-/// hab.Services.AddTransient<DomainPerActionKeyFactory<ContextKey>>(provider =>
-///     new ContextKeyFactory<ContextKey>((r, c) => new ContextKey(r, c)));
-/// hab.Services.AddTransient<IHtmlDataCellBuilder<ContextKey>, HtmlDataCellBuilder<ContextKey>>();
-/// hab.Services.AddTransient<DomainPerActionKeyBuilder, TensorBuilder>();
+/// hab.Services.AddTransient&lt;IHtmlMatrixWriter, HtmlMatrixWriter&lt;ContextKey&gt;&gt;();
+/// hab.Services.AddTransient&lt;DomainPerActionKeyFactory&lt;ContextKey&gt;&gt;(provider =>
+///     new ContextKeyFactory&lt;ContextKey&gt;((r, c) => new ContextKey(r, c)));
+/// hab.Services.AddTransient&lt;IHtmlDataCellBuilder&lt;ContextKey&gt;, HtmlDataCellBuilder&lt;ContextKey&gt;&gt;();
+/// hab.Services.AddTransient&lt;DomainPerActionKeyBuilder, TensorBuilder&gt;();
 ///
 /// Пример для кастомного ключа DimensionKey:
 ///
-/// hab.Services.AddTransient<IHtmlMatrixWriter, HtmlMatrixWriter<DimensionKey>>();
-/// hab.Services.AddTransient<DomainPerActionKeyFactory<DimensionKey>>(provider =>
-///     new ContextKeyFactory<DimensionKey>((r, c) => new DimensionKey(r, c)));
-/// hab.Services.AddTransient<IHtmlDataCellBuilder<DimensionKey>, HtmlDataCellBuilder<DimensionKey>>();
-/// hab.Services.AddTransient<DomainPerActionKeyBuilder, TensorBuilder>();
+/// hab.Services.AddTransient&lt;IHtmlMatrixWriter, HtmlMatrixWriter&lt;DimensionKey&gt;&gt;();
+/// hab.Services.AddTransient&lt;DomainPerActionKeyFactory&lt;DimensionKey&gt;&gt;(provider =>
+///     new ContextKeyFactory&lt;DimensionKey&gt;((r, c) => new DimensionKey(r, c)));
+/// hab.Services.AddTransient&lt;IHtmlDataCellBuilder&lt;DimensionKey&gt;, HtmlDataCellBuilder&lt;DimensionKey&gt;&gt;();
+/// hab.Services.AddTransient&lt;DomainPerActionKeyBuilder, TensorBuilder&gt;();
 ///
 /// </summary>
 /// <typeparam name="TTensor">Тип ключа для ячейки матрицы. Должен иметь конструктор с двумя строковыми параметрами.</typeparam>
@@ -92,10 +92,10 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
 
         await HtmlBuilderFactory.Table.WithAsync(writer, async (token) =>
         {
-            await WriteHeaderRow(writer, matrix, options, cancellationToken).ConfigureAwait(false);
-            await WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterFirst, cancellationToken).ConfigureAwait(false);
-            await WriteAllDataRows(writer, matrix, summary, options, cancellationToken).ConfigureAwait(false);
-            await WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterLast, cancellationToken).ConfigureAwait(false);
+            await WriteHeaderRow(writer, matrix, options, token).ConfigureAwait(false);
+            await WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterFirst, token).ConfigureAwait(false);
+            await WriteAllDataRows(writer, matrix, summary, options, token).ConfigureAwait(false);
+            await WriteSummaryRowIf(writer, matrix, summary, options, SummaryPlacementType.AfterLast, token).ConfigureAwait(false);
         }, cancellationToken).ConfigureAwait(false);
     }
 
@@ -103,10 +103,10 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
     {
         await HtmlBuilderFactory.HtmlBuilderTableRow.Meta.WithAsync(textWriter, async (token) =>
         {
-            await WriteHeaderLeftCorner(textWriter, options, cancellationToken).ConfigureAwait(false);
-            await WriteHeaderSummaryStart(textWriter, options, cancellationToken).ConfigureAwait(false);
-            await WriteHeaderCols(textWriter, matrix, options, cancellationToken).ConfigureAwait(false);
-            await WriteHeaderSummaryEnd(textWriter, options, cancellationToken).ConfigureAwait(false);
+            await WriteHeaderLeftCorner(textWriter, options, token).ConfigureAwait(false);
+            await WriteHeaderSummaryStart(textWriter, options, token).ConfigureAwait(false);
+            await WriteHeaderCols(textWriter, matrix, options, token).ConfigureAwait(false);
+            await WriteHeaderSummaryEnd(textWriter, options, token).ConfigureAwait(false);
         }, cancellationToken).ConfigureAwait(false);
     }
 
@@ -133,7 +133,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
         await HtmlBuilderFactory.HtmlBuilderTableCell.ActionDomain.WithAsync(textWriter, (token) =>
         {
             var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) }, { "style", "some_special_cell_class" } };
-            HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.TopLeftCell(options), isEncodable: false);
+            HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.TopLeftCell(options), isEncodable: false, cancellationToken: token);
             return Task.CompletedTask;
         }, cancellationToken).ConfigureAwait(false);
     }
@@ -145,7 +145,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
             await HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.WithAsync(textWriter, (token) =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefColHeaderSummary(options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.FirstSummaryRow(options), isEncodable: false);
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.FirstSummaryRow(options), isEncodable: false, cancellationToken: token);
                 return Task.CompletedTask;
             }, cancellationToken).ConfigureAwait(false);
         }
@@ -159,7 +159,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
             await HtmlBuilderFactory.HtmlBuilderTableCell.ColMeta.WithAsync(textWriter, (token) =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", href }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, $"{col}", isEncodable: false);
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, $"{col}", isEncodable: false, cancellationToken: token);
                 return Task.CompletedTask;
             }, cancellationToken).ConfigureAwait(false);
         }
@@ -172,7 +172,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
             await HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.WithAsync(textWriter, (token) =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummary(options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.LastSummaryRow(options), isEncodable: false);
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.LastSummaryRow(options), isEncodable: false, cancellationToken: token);
                 return Task.CompletedTask;
             }, cancellationToken).ConfigureAwait(false);
         }
@@ -180,45 +180,45 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
 
     internal async Task WriteSummaryRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, HtmlMatrixSummary? summary, CancellationToken cancellationToken)
     {
-        var total = summary?.ColsSummary?.Values.Sum() ?? 0;
+        var total = summary?.ColsSummary.Values.Sum() ?? 0;
 
         await HtmlBuilderFactory.HtmlBuilderTableRow.Summary.WithAsync(textWriter, async (token) =>
         {
-            await HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.WithAsync(textWriter, (token) =>
+            await HtmlBuilderFactory.HtmlBuilderTableCell.SummaryCaption.WithAsync(textWriter, (atoken) =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowHeaderSummaryAfterFirst(options) }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.SummaryRow(options), isEncodable: false);
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, _htmlFixedContentManager.SummaryRow(options), isEncodable: false, cancellationToken: atoken);
                 return Task.CompletedTask;
             }, token).ConfigureAwait(false);
 
             if (options.SummaryPlacement == SummaryPlacementType.AfterFirst)
             {
-                await HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.WithAsync(textWriter, (token) =>
+                await HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.WithAsync(textWriter, (atoken) =>
                 {
                     var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) } };
-                    HtmlBuilderFactory.A.CellAsync(textWriter, attrs, total.ToString(), isEncodable: false);
+                    HtmlBuilderFactory.A.CellAsync(textWriter, attrs, total.ToString(), isEncodable: false, cancellationToken: atoken);
                     return Task.CompletedTask;
                 }, token).ConfigureAwait(false);
             }
 
             foreach (var col in matrix.cols)
             {
-                await HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.WithAsync(textWriter, (token) =>
+                await HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.WithAsync(textWriter, (atoken) =>
                 {
-                    var sum = summary?.ColsSummary?.GetValueOrDefault(col).ToString() ?? string.Empty;
+                    var sum = summary?.ColsSummary.GetValueOrDefault(col).ToString() ?? string.Empty;
                     var href = _hRefManager.GetHrefColSummary(col, options);
-                    var colCellAttrs = new HtmlTagAttributes() { { "href", href } };
-                    HtmlBuilderFactory.A.CellAsync(textWriter, colCellAttrs, sum, isEncodable: false);
+                    var tagAttrs = new HtmlTagAttributes() { { "href", href } };
+                    HtmlBuilderFactory.A.CellAsync(textWriter, tagAttrs, sum, isEncodable: false, cancellationToken: atoken);
                     return Task.CompletedTask;
                 }, token).ConfigureAwait(false);
             }
 
             if (options.SummaryPlacement == SummaryPlacementType.AfterLast)
             {
-                await HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.WithAsync(textWriter, (token) =>
+                await HtmlBuilderFactory.HtmlBuilderTableCell.TotalSummary.WithAsync(textWriter, (atoken) =>
                 {
                     var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefSummary(options) } };
-                    HtmlBuilderFactory.A.CellAsync(textWriter, attrs, total.ToString(), isEncodable: false);
+                    HtmlBuilderFactory.A.CellAsync(textWriter, attrs, total.ToString(), isEncodable: false, cancellationToken: atoken);
                     return Task.CompletedTask;
                 }, token).ConfigureAwait(false);
             }
@@ -229,15 +229,13 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
     {
         await HtmlBuilderFactory.HtmlBuilderTableRow.Data.WithAsync(textWriter, async (token) =>
         {
-            var attrs = new HtmlTagAttributes();
+            var attrs = new HtmlTagAttributes { { "class", "cell_row_meta center-aligned" } };
 
-            attrs.Add("class", "cell_row_meta center-aligned");
-
-            await HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.WithAsync(textWriter, attributes: attrs, (token) =>
+            await HtmlBuilderFactory.HtmlBuilderTableCell.RowMeta.WithAsync(textWriter, attributes: attrs, (atoken) =>
             {
                 var href = _hRefManager.GetHRefRowHeader(row, options);
-                var attrs = new HtmlTagAttributes() { { "href", href } };
-                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, $"{row}", isEncodable: false);
+                var metaattrs = new HtmlTagAttributes() { { "href", href } };
+                HtmlBuilderFactory.A.CellAsync(textWriter, metaattrs, $"{row}", isEncodable: false, cancellationToken: atoken);
                 return Task.CompletedTask;
             }, token).ConfigureAwait(false);
 
@@ -259,9 +257,9 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
     {
         await HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.WithAsync(textWriter, (token) =>
         {
-            var rowSum = summary?.RowsSummary?.GetValueOrDefault(row).ToString() ?? string.Empty;
-            var attributes = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, options) } };
-            HtmlBuilderFactory.A.CellAsync(textWriter, attributes, rowSum, isEncodable: false);
+            var rowSum = summary?.RowsSummary.GetValueOrDefault(row).ToString() ?? string.Empty;
+            var tagAttrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, options) } };
+            HtmlBuilderFactory.A.CellAsync(textWriter, tagAttrs, rowSum, isEncodable: false, cancellationToken: token);
             return Task.CompletedTask;
         }, cancellationToken).ConfigureAwait(false);
     }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -104,13 +102,13 @@ public static class TabsheetFactory<TDataTensor>
             model: new ActionOnlyMethodListDataModel<TDataTensor>(namingProcessor),
             build: async (writer, model, dto, token) =>
             {
-                var titleAction = (string)dto.ContextKey.Action;
+                var titleAction = dto.ContextKey.Action;
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Action: <b>{titleAction}</b>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: "-", cancellationToken: token).ConfigureAwait(false);
 
-                var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
-                IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
-                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
+                var methodIndexies = model.GetMethodsList(dto).Select((_, index) => index);
+                IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodIndexies, dto);
+                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard);
                 await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token).ConfigureAwait(false);
             });
     }
@@ -159,13 +157,13 @@ public static class TabsheetFactory<TDataTensor>
             model: new SummaryMethodListDataModel<TDataTensor>(namingProcessor),
             build: async (writer, model, dto, token) =>
             {
-                var titleDomain = (string)dto.ContextKey.Domain;
+                var titleDomain = dto.ContextKey.Domain;
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Domain: <b>{titleDomain}</b>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: "-", cancellationToken: token).ConfigureAwait(false);
 
-                var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
+                var methodNames = model.GetMethodsList(dto).Select((_, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
-                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
+                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard);
                 await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token).ConfigureAwait(false);
             });
     }
@@ -265,13 +263,13 @@ public static class TabsheetFactory<TDataTensor>
             model: new DomainOnlyMethodListDataModel<TDataTensor>(namingProcessor),
             build: async (writer, model, dto, token) =>
             {
-                var titleDomain = (string)dto.ContextKey.Domain;
+                var titleDomain = dto.ContextKey.Domain;
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Domain: <b>{titleDomain}</b>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: "-", cancellationToken: token).ConfigureAwait(false);
 
-                var methodNames = model.GetMethodsList(dto).Select((m, index) => index);
+                var methodNames = model.GetMethodsList(dto).Select((_, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodNames, dto);
-                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
+                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard);
                 await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token).ConfigureAwait(false);
             });
     }
@@ -303,17 +301,17 @@ public static class TabsheetFactory<TDataTensor>
             model: new ActionPerDomainMethodListDataModel<TDataTensor>(namingProcessor),
             build: async (writer, model, dto, token) =>
             {
-                var titleDomain = (string)dto.ContextKey.Domain;
+                var titleDomain = dto.ContextKey.Domain;
                 var linkDomain = string.Format(HtmlPathTemplateCompositeDomain, titleDomain);
-                var titleAction = (string)dto.ContextKey.Action;
+                var titleAction = dto.ContextKey.Action;
                 var linkAction = string.Format(HtmlPathTemplateCompositeAction, titleAction);
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Domain: <a href=\"{linkDomain}\">{titleDomain}</a>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Action: <a href=\"{linkAction}\">{titleAction}</a>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: "-", cancellationToken: token).ConfigureAwait(false);
 
-                var methodIndexList = model.GetMethodsList(dto).Select((m, index) => index);
+                var methodIndexList = model.GetMethodsList(dto).Select((_, index) => index);
                 IHtmlMatrix methodsMatrix = new HtmlMatrixMethods<TDataTensor>(methodIndexList, dto);
-                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard) { };
+                var options = new HtmlTableOptions(summaryPlacement: SummaryPlacementType.None, orientation: TensorPermutationType.Standard);
                 await matrixWriter.WriteAsync(writer, methodsMatrix, null, options, token).ConfigureAwait(false);
             });
     }
@@ -346,8 +344,7 @@ internal class SummaryMethodListDataModel<TDataTensor> : IMethodListDatamodel<TD
         _namingProcessor = namingProcessor;
     }
 
-
-    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TDataTensor> dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TDataTensor> dto) => dto.ContextInfoList.Where(c => c.ElementType == ContextInfoElementType.method);
 }
 
 internal class ActionPerDomainMethodListDataModel<TTensor> : IMethodListDatamodel<TTensor>
@@ -361,7 +358,7 @@ internal class ActionPerDomainMethodListDataModel<TTensor> : IMethodListDatamode
     }
 
 
-    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList.Where(c => c.ElementType == ContextInfoElementType.method);
 }
 
 internal class DomainOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTensor>
@@ -375,7 +372,7 @@ internal class DomainOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTe
     }
 
 
-    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList.Where(c => c.ElementType == ContextInfoElementType.method);
 }
 
 internal class ActionOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTensor>
@@ -389,7 +386,7 @@ internal class ActionOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTe
     }
 
 
-    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList;
+    public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList.Where((c => c.ElementType == ContextInfoElementType.method));
 }
 
 internal class NamespaceOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TTensor>, IPumlEnbeddedInjectionDatamodel<TTensor>
@@ -434,7 +431,6 @@ internal class DomainOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
     {
         _namingProcessor = namingProcessor;
     }
-
 
     protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
 
@@ -513,7 +509,6 @@ internal class ActionOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
     {
         _namingProcessor = namingProcessor;
     }
-
 
     protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
 

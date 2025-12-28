@@ -1,9 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
 using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 
-namespace RoslynKit.AWrappers;
+namespace RoslynKit.Signature.SignatureBuilder;
 
 // context: roslyn, signature, build
 public static class CSharpSignatureBuilderFactoryExtensions

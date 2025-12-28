@@ -3,21 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using ExporterKit.Infrastucture;
 using ExporterKit.Uml.Exporters;
 using LoggerKit;
 using TensorKit.Model;
-using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
-using UmlKit.PlantUmlSpecification;
 
 namespace ExporterKit.Uml;
 
@@ -63,7 +59,7 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
                                                                  namingProcessor: _namingProcessor,
                                                                      classesList: classesList);
         }
-        return new Dictionary<object, bool> { };
+        return new Dictionary<object, bool>();
     }
 
     private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)

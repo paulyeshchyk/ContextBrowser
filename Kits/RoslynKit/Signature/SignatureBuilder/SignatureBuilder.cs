@@ -1,67 +1,63 @@
-using System;
-using System.Linq;
-using System.Text;
 using Microsoft.CodeAnalysis;
 
-namespace RoslynKit.AWrappers;
+namespace RoslynKit.Signature.SignatureBuilder;
 
 // context: signature, build
 public abstract class SignatureBuilder
 {
-    public bool _includeGenerics = true;
-    public bool _includeParameters = true;
-    public bool _includeReturnType = true;
-    public bool _includeNamespace = false;
-    public bool _includeContainingType = true;
-    public bool _qualifyTypes = true;
+    public bool IncludeGenerics;
+    public bool IncludeParameters;
+    public bool IncludeReturnType;
+    public bool IncludeNamespace;
+    public bool IncludeContainingType;
+    public bool QualifyTypes;
 
-    public SignatureBuilder()
+    protected SignatureBuilder()
     {
-
     }
 
-    public SignatureBuilder(SignatureBuilder source)
+    protected SignatureBuilder(SignatureBuilder source)
     {
-        _includeContainingType = source._includeContainingType;
-        _includeParameters = source._includeParameters;
-        _includeReturnType = source._includeReturnType;
-        _includeGenerics = source._includeGenerics;
-        _qualifyTypes = source._qualifyTypes;
+        IncludeContainingType = source.IncludeContainingType;
+        IncludeParameters = source.IncludeParameters;
+        IncludeReturnType = source.IncludeReturnType;
+        IncludeGenerics = source.IncludeGenerics;
+        QualifyTypes = source.QualifyTypes;
     }
 
-    public SignatureBuilder IncludeGenerics(bool value)
+    public SignatureBuilder SetIncludeGenerics(bool value)
     {
-        _includeGenerics = value;
+        IncludeGenerics = value;
         return this;
     }
 
-    public SignatureBuilder IncludeParameters(bool value)
+    public SignatureBuilder SetIncludeParameters(bool value)
     {
-        _includeParameters = value;
+        IncludeParameters = value;
         return this;
     }
 
-    public SignatureBuilder IncludeReturnType(bool value)
+    public SignatureBuilder SetIncludeReturnType(bool value)
     {
-        _includeReturnType = value;
+        IncludeReturnType = value;
         return this;
     }
 
-    public SignatureBuilder IncludeNamespace(bool value)
+    public SignatureBuilder SetIncludeNamespace(bool value)
     {
-        _includeNamespace = value;
+        IncludeNamespace = value;
         return this;
     }
 
-    public SignatureBuilder IncludeContainingType(bool value)
+    public SignatureBuilder SetIncludeContainingType(bool value)
     {
-        _includeContainingType = value;
+        IncludeContainingType = value;
         return this;
     }
 
     public SignatureBuilder SetTypeQualification(bool value)
     {
-        _qualifyTypes = value;
+        QualifyTypes = value;
         return this;
     }
 

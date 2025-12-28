@@ -1,10 +1,8 @@
-﻿using System;
-using ContextBrowserKit.Options;
+﻿using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.AWrappers;
-using RoslynKit.Wrappers.Syntax;
+using RoslynKit.Model.SyntaxNodeWrapper;
 using SemanticKit.Model;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;

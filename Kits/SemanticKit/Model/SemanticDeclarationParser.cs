@@ -62,7 +62,7 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - {tree.FilePath}", LogLevelNode.Start);
 
-        var availableSyntaxies = tree.GetAvailableSyntaxies(options, cancellationToken);
+        var availableSyntaxies = tree.GetAvailableSyntaxies(options, cancellationToken).ToList();
 
         if (availableSyntaxies.Any())
         {

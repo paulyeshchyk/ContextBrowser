@@ -3,11 +3,11 @@ using System.Threading;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
+using RoslynKit.Model.SymbolWrapper;
+using RoslynKit.Signature.SignatureBuilder;
 using RoslynKit.Wrappers;
-using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 
 namespace RoslynKit.Converters;
@@ -33,13 +33,13 @@ public static class CSharpISymbolWrapperConverter
         var wrapper = new CSharpISymbolWrapper();
         var symbol = CSharpSymbolLoader.LoadSymbol(syntax, semanticModel, logger, cancellationToken);
 
-        if (symbol is ISymbol isymbol)
+        if (symbol != null)
         {
-            wrapper.SetIdentifier(isymbol.BuildFullMemberName());
-            wrapper.SetNamespace(isymbol.GetNamespaceOrGlobal());
-            wrapper.SetName(isymbol.BuildNameAndClassOwnerName());
-            wrapper.SetFullName(isymbol.BuildFullMemberName());
-            wrapper.SetShortName(isymbol.BuildShortName());
+            wrapper.SetIdentifier(symbol.BuildFullMemberName());
+            wrapper.SetNamespace(symbol.GetNamespaceOrGlobal());
+            wrapper.SetName(symbol.BuildNameAndClassOwnerName());
+            wrapper.SetFullName(symbol.BuildFullMemberName());
+            wrapper.SetShortName(symbol.BuildShortName());
         }
         else
         {

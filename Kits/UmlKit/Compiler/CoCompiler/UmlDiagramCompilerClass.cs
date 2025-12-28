@@ -39,7 +39,7 @@ public class UmlDiagramCompilerClass<TDataTensor>
             AddPackage(_linkGenerator, diagram, item.Key, count);
         }
 
-        var writeOptions = new UmlWriteOptions(alignMaxWidth: -1) { };
+        var writeOptions = new UmlWriteOptions(alignMaxWidth: -1);
         diagram.WriteToFile(_outputPath, writeOptions);
     }
 

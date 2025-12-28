@@ -32,7 +32,7 @@ public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexPr
 
     public async Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken)
     {
-        using var sw = new StringWriter();
+        await using var sw = new StringWriter();
         await ProduceAsync(sw, matrix, cancellationToken).ConfigureAwait(false);
 
         var result = sw.ToString();
@@ -47,8 +47,8 @@ public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexPr
 
     protected override async Task WriteContentAsync(TextWriter writer, IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken)
     {
-        long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        var navigationItem = new BreadcrumbNavigationItem($"..\\index.html?v={TimeStamp}", "Контекстная матрица");
+        long timeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var navigationItem = new BreadcrumbNavigationItem($"..\\index.html?v={timeStamp}", "Контекстная матрица");
         await HtmlBuilderFactory.Breadcrumb(navigationItem).CellAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         await HtmlBuilderFactory.P.CellAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);

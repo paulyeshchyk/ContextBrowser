@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using ContextKit.Model;
-using RoslynKit.Phases.Invocations.Parser;
-using RoslynKit.Phases.Syntax.Parsers;
 using SemanticKit.Model.Options;
 using SemanticKit.Parsers.File;
 

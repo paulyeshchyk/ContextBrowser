@@ -6,7 +6,7 @@ namespace UmlKit.PlantUmlSpecification;
 
 public class UmlStyleDiagramMindmap : IUmlElement, IUmlElementCollection
 {
-    public SortedList<int, IUmlElement> Elements { get; private set; } = new SortedList<int, IUmlElement>() { };
+    public SortedList<int, IUmlElement> Elements { get; private set; } = new SortedList<int, IUmlElement>();
 
     public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {

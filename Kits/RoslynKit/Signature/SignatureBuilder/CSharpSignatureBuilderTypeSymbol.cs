@@ -2,13 +2,14 @@ using System;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using RoslynKit.AWrappers;
 
-namespace RoslynKit.AWrappers;
+namespace RoslynKit.Signature.SignatureBuilder;
 
 // context: roslyn, signature, build
-internal class CSharpSignatureBuilderType : SignatureBuilder
+internal class CSharpSignatureBuilderTypeSymbol : SignatureBuilder
 {
-    public CSharpSignatureBuilderType(SignatureBuilder sb) : base(sb)
+    public CSharpSignatureBuilderTypeSymbol(SignatureBuilder sb) : base(sb)
     {
 
     }
@@ -22,19 +23,19 @@ internal class CSharpSignatureBuilderType : SignatureBuilder
         var typeDetailDto = typeSymbol.GetTypeDetails();
         var sb = new StringBuilder();
 
-        if (_includeNamespace && !typeSymbol.ContainingNamespace.IsGlobalNamespace)
+        if (IncludeNamespace && !typeSymbol.ContainingNamespace.IsGlobalNamespace)
         {
             sb.Append(typeSymbol.ContainingNamespace.ToDisplayString()).Append('.');
         }
 
-        if (_includeContainingType && typeSymbol.ContainingType != null)
+        if (IncludeContainingType && typeSymbol.ContainingType != null)
         {
             sb.Append(typeSymbol.ContainingType.Name).Append('.');
         }
 
         sb.Append(typeDetailDto.Name);
 
-        if (_includeGenerics && typeDetailDto.GenericParameters.Any())
+        if (IncludeGenerics && typeDetailDto.GenericParameters.Any())
         {
             sb.Append($"<{string.Join(", ", typeDetailDto.GenericParameters)}>");
         }
