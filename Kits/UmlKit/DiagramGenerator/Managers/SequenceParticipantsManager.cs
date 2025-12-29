@@ -2,16 +2,16 @@
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using UmlKit.Builders;
+using ContextKit.ContextData.Naming;
 using UmlKit.Builders.Model;
-using UmlKit.Model;
+using UmlKit.Builders.Url;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.DiagramGenerator.Managers;
 
 public static partial class SequenceParticipantsManager
 {
-    internal static void AddParticipants<T>(RenderContext<T> ctx, UmlParticipantKeywordsSet defaultKeywords)
+    internal static void AddParticipants<T>(RenderContext<T> ctx, UmlParticipantKeywordsSet defaultKeywords, INamingProcessor namingProcessor)
         where T : IUmlParticipant
     {
         ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"Adding participants for context: {ctx.RunContext}", LogLevelNode.Start);
@@ -19,9 +19,9 @@ public static partial class SequenceParticipantsManager
         var callerName = ctx.Transition.CallerClassName.AlphanumericOnly();
         var calleeName = ctx.Transition.CalleeClassName.AlphanumericOnly();
 
-        var callerUrl = UmlUrlBuilder.BuildClassUrl(ctx.Transition.CallerId);
-        var calleeUrl = UmlUrlBuilder.BuildClassUrl(ctx.Transition.CalleeId);
-        var runContextUrl = UmlUrlBuilder.BuildClassUrl(ctx.RunContext);
+        var callerUrl = namingProcessor.ClassOnlyHtmlFilename(ctx.Transition.CallerId);
+        var calleeUrl = namingProcessor.ClassOnlyHtmlFilename(ctx.Transition.CalleeId);
+        var runContextUrl = namingProcessor.ClassOnlyHtmlFilename(ctx.RunContext);
 
         var runContextName = ctx.RunContext?.AlphanumericOnly();
 

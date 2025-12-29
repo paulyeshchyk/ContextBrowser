@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using ContextBrowserKit.Extensions;
+﻿using System.Collections.Generic;
 
 namespace SemanticKit.Model.Options;
 
@@ -62,6 +59,7 @@ public record SemanticOptions
 }
 
 // parsing: error
+// context: model, semantic
 public record CodeParsingOptions
 {
     public SemanticOptions SemanticOptions { get; set; }

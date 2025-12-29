@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 
-namespace ContextBrowser.Servers;
+namespace CustomServers.Servers;
 
 public class MacOsServer : CustomServer
 {

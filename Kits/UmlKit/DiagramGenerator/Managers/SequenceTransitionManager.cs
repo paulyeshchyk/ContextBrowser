@@ -1,7 +1,6 @@
 ﻿using UmlKit.Builders;
 using UmlKit.Infrastructure.Options;
 using UmlKit.Infrastructure.Options.Indication;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.DiagramGenerator.Managers;

@@ -1,9 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using ContextBrowser;
-using ContextBrowser.FileManager;
-using ContextKit.Model;
-using ContextKit.Model.Factory;
+using ContextKit.Model.CacheManager;
 
 namespace ContextKit.Model.Factory;
 
@@ -12,7 +9,7 @@ public static class ContextInfoSerializableModelAdapter
     // context: roslyncache, convert
     public static List<ContextInfoSerializableModel> Adapt(List<ContextInfo> contextsList)
     {
-        return contextsList.Select(c => Adapt(c)).ToList();
+        return contextsList.Select(Adapt).ToList();
     }
 
     // context: roslyncache, convert

@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HtmlKit.Builders.Core;
 
@@ -8,33 +9,33 @@ namespace HtmlKit.Builders.Core;
 // pattern note: weak
 public static class HtmlBuilderExtensions
 {
-    public static void With(this IHtmlBuilder builder, TextWriter sb, Action<TextWriter>? body = default)
+    public static async Task WithAsync(this IHtmlBuilder builder, TextWriter sb, Func<TextWriter, CancellationToken, Task>? body = default, CancellationToken cancellationToken = default)
     {
-        builder.Start(sb);
+        await builder.StartAsync(sb, cancellationToken: cancellationToken).ConfigureAwait(false);
         if (body != default)
         {
-            body(sb);
+            await body(sb, cancellationToken).ConfigureAwait(false);
         }
-        builder.End(sb);
+        await builder.EndAsync(sb, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    public static void With(this IHtmlTagBuilder builder, TextWriter sb, Action? body = default)
+    public static async Task WithAsync(this IHtmlTagBuilder builder, TextWriter sb, Func<CancellationToken, Task>? body = default, CancellationToken cancellationToken = default)
     {
-        builder.Start(sb);
+        await builder.StartAsync(sb, cancellationToken: cancellationToken).ConfigureAwait(false);
         if (body != default)
         {
-            body();
+            await body(cancellationToken).ConfigureAwait(false);
         }
-        builder.End(sb);
+        await builder.EndAsync(sb, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    public static void With(this IHtmlBuilder builder, TextWriter writer, IHtmlTagAttributes? attributes, Action? body = default)
+    public static async Task WithAsync(this IHtmlBuilder builder, TextWriter writer, IHtmlTagAttributes? attributes, Func<CancellationToken, Task>? body = default, CancellationToken cancellationToken = default)
     {
-        builder.Start(writer, attributes);
+        await builder.StartAsync(writer, attributes, cancellationToken: cancellationToken).ConfigureAwait(false);
         if (body != default)
         {
-            body();
+            await body(cancellationToken).ConfigureAwait(false);
         }
-        builder.End(writer);
+        await builder.EndAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }

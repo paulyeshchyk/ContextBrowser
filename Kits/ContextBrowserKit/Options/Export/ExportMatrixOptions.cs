@@ -1,6 +1,4 @@
-﻿using HtmlKit.Options;
-
-namespace ContextBrowserKit.Options.Export;
+﻿namespace ContextBrowserKit.Options.Export;
 
 public record ExportMatrixOptions
 {

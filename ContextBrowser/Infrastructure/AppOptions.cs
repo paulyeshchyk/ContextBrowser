@@ -4,10 +4,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextBrowserKit.Options.Import;
-using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using HtmlKit.Matrix;
-using HtmlKit.Options;
 using LoggerKit.Model;
 using SemanticKit.Model.Options;
 using TensorKit.Model;
@@ -42,6 +39,7 @@ public class AppOptions
     };
 
     [CommandLineArgument("roslyn-options", "The source code path.")]
+    // context: model, appoptions
     public CodeParsingOptions ParsingOptions { get; set; } = new(
 
         semanticOptions: new(
@@ -105,7 +103,7 @@ public class AppOptions
         filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
-                 cacheModel: new CacheJsonModel(renewCache: false,
+                 cacheModel: new CacheJsonModel(renewCache: true,
                                                      input: ".//cache//roslyn.json",
                                                     output: ".//cache//roslyn.json")),
         webPaths: new ExportWebPaths(
@@ -124,7 +122,7 @@ public class AppOptions
                                         diagramType: DiagramBuilderKeys.Transition,
                                          activation: new DiagramActivationOptions(useActivation: true, useActivationCall: true),
                                   transitionOptions: new DiagramTransitionOptions(useCall: true, useDone: true),
-                                   invocationOption: new DiagramInvocationOption(useInvocation: true, useReturn: true),
+                                   invocationOption: new DiagramInvocationOption(useInvocation: true, useReturn: false),
                                          indication: new DiagramIndicationOption(useAsync: true));
 
     [CommandLineArgument("context-classifier", "Определение контекста представления")]

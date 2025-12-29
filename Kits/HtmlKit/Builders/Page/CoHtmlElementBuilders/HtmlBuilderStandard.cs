@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection.Metadata.Ecma335;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Builders.Core;
-using HtmlKit.Builders.Tag;
-using HtmlKit.Classes;
 
-namespace HtmlKit.Page;
+namespace HtmlKit.Builders.Page.CoHtmlElementBuilders;
 
 public static partial class HtmlBuilderFactory
 {
@@ -20,7 +16,7 @@ public static partial class HtmlBuilderFactory
         }
 
         // Cell метод не всегда применим для произвольных тегов (html, head, body, table)
-        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
+        public override Task CellAsync(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException($"Cell method is not supported for <{Tag}> tag in StandardTagBuilder. Use Start/End instead.");
         }

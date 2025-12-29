@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using ContextKit.Model;
-using HtmlKit.Builders.Core;
-using HtmlKit.Page;
-using TensorKit.Model;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
-namespace HtmlKit.Writer;
+namespace HtmlKit.Document;
 
 public interface IHtmlContentInjector<TTensor>
     where TTensor : notnull
 {
-    string Inject(TTensor container, int cnt);
+    Task<string> InjectAsync(TTensor container, int cnt, CancellationToken cancellationToken);
 }

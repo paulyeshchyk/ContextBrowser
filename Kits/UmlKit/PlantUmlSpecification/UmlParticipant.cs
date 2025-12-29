@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ContextBrowserKit.Extensions;
-using UmlKit.Extensions;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 public class UmlParticipant : IUmlParticipant
 {

@@ -3,23 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowser.Infrastructure;
-using ContextBrowser.Model;
-using ContextBrowser.Roslyn;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Import;
 using ContextKit.Model;
 using LoggerKit;
 using SemanticKit.Model.Options;
+using SemanticKit.Parsers.File;
 
-namespace ContextBrowser.Services;
+namespace ContextBrowser.Services.Parsing;
 
 // context: parsing, build
 public interface ICodeParseService
 {
     // context: parsing, build
-    Task<IEnumerable<ContextInfo>> Parse(IContextParser<ContextInfo> contextParser, CancellationToken cancellationToken);
+    Task<IEnumerable<ContextInfo>> ParseAsync(IFileParserPipeline<ContextInfo> pipeline, CancellationToken cancellationToken);
 }
 
 // context: parsing, build
@@ -35,7 +33,7 @@ public class CodeParseService : ICodeParseService
     }
 
     // context: parsing, build
-    public Task<IEnumerable<ContextInfo>> Parse(IContextParser<ContextInfo> contextParser, CancellationToken cancellationToken)
+    public Task<IEnumerable<ContextInfo>> ParseAsync(IFileParserPipeline<ContextInfo> pipeline, CancellationToken cancellationToken)
     {
         var importOptions = _optionsStore.GetOptions<ImportOptions>();
         var parsingOptions = _optionsStore.GetOptions<CodeParsingOptions>();
@@ -47,6 +45,6 @@ public class CodeParseService : ICodeParseService
         {
             throw new Exception("No files to parse");
         }
-        return contextParser.ParseAsync(filtered, parsingOptions.SemanticOptions, cancellationToken);
+        return pipeline.ParseAsync(filtered, parsingOptions.SemanticOptions, cancellationToken);
     }
 }

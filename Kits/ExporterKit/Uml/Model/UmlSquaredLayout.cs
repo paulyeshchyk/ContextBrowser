@@ -1,10 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ExporterKit;
-using ExporterKit.Uml;
-using ExporterKit.Uml.Model;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
 namespace ExporterKit.Uml.Model;
@@ -14,7 +10,7 @@ public static class UmlSquaredLayout
     public static IEnumerable<IUmlElement> Build(IEnumerable<string> allElements, int? columns = null, int? rows = null)
     {
         var elements = allElements.ToList();
-        int elementCount = elements.Count();
+        int elementCount = elements.Count;
 
         // 1. Определение размеров сетки
         if (!columns.HasValue && !rows.HasValue)

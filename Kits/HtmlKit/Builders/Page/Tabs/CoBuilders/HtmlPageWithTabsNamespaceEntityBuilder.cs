@@ -1,56 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using HtmlKit.Builders.Core;
-using HtmlKit.Builders.Page;
-using HtmlKit.Model;
 using HtmlKit.Model.Containers;
-using HtmlKit.Model.Tabsheet;
-using HtmlKit.Page;
-using TensorKit.Model;
 
-namespace ExporterKit.Html;
+namespace HtmlKit.Builders.Page.Tabs.CoBuilders;
 
 public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TTensor> : HtmlPageWithTabsBuilder<DTO, TTensor>
     where DTO : ContextInfoKeyContainerNamespace
     where TTensor : notnull
 {
     private readonly Func<string, string> _onGetFileName;
+    private readonly Func<string, string> _onGetTitle;
 
-    public HtmlPageWithTabsNamespaceEntityBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName)
+    public HtmlPageWithTabsNamespaceEntityBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName, Func<string, string> onGetTitle)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;
+        _onGetTitle = onGetTitle;
     }
 
-    public override Task BuildAsync(CancellationToken cancellationToken)
+    public override async Task BuildAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() =>
+        var entitiesList = _contextInfoDataset.GetAll()
+            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
+            .Cast<IContextInfo>();
+
+        var namespaces = entitiesList.Select(e => e.Namespace).Distinct();
+        foreach (var ns in namespaces)
         {
-            var entitiesList = _contextInfoDataset.GetAll()
-                .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
-                .Cast<IContextInfo>();
+            var filtered = entitiesList.Where(e => e.Namespace.Equals(ns));
 
-            var namespaces = entitiesList.Select(e => e.Namespace).Distinct();
-            foreach (var ns in namespaces)
-            {
-                var filtered = entitiesList.Where(e => e.Namespace.Equals(ns));
+            var filename = _onGetFileName(ns);
+            var title = _onGetTitle(ns);
+            var cellData = new ContextInfoKeyContainerNamespace(
+                contextInfoList: filtered,
+                contextKey: ns);
 
-                var filename = _onGetFileName(ns);
-                var title = $" Namespace {ns}";
-                var cellData = new ContextInfoKeyContainerNamespace(
-                    contextInfoList: filtered,
-                    contextKey: ns);
-
-                _tabbedPageBuilder.GenerateFile(title, filename, (DTO)cellData);
-            }
+            await _tabbedPageBuilder.GenerateFileAsync(title, filename, (DTO)cellData, cancellationToken).ConfigureAwait(false);
         }
-        , cancellationToken);
     }
 }

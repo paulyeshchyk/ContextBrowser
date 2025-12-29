@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using ContextBrowserKit.Extensions;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;

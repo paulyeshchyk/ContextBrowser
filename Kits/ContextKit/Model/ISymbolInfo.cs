@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace ContextKit.Model;
+﻿namespace ContextKit.Model;
 
 public interface ISymbolInfo
 {
@@ -15,26 +13,6 @@ public interface ISymbolInfo
     string GetFullName();
 
     S GetCoSyntax<S>();
-
-    void SetSyntax(object syntax);
-}
-
-public interface ISyntaxNodeWrapper : ISpanInfo
-{
-    IOrderedEnumerable<T> DescendantSyntaxNodes<T>()
-        where T : class;
-
-    string Identifier { get; }
-
-    string Namespace { get; }
-
-    string GetShortName();
-
-    string GetName();
-
-    string GetFullName();
-
-    object GetSyntax();
 
     void SetSyntax(object syntax);
 }

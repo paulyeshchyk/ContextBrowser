@@ -1,10 +1,9 @@
-﻿using ContextBrowserKit.Log;
-using ContextBrowserKit.Options;
+﻿using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Extensions;
-using RoslynKit.Wrappers;
+using RoslynKit.AWrappers;
+using RoslynKit.Model.SyntaxNodeWrapper;
 using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 
@@ -26,19 +25,4 @@ public class CSharpTypeContextInfoBulder<TContext> : BaseContextInfoBuilder<TCon
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@class;
-}
-
-public class CSharpTypeSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<MemberDeclarationSyntax>, ISymbolInfo
-{
-    private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<MemberDeclarationSyntax>();
-
-    public override string Identifier => _syntaxNode.GetIdentifier();
-
-    public override string Namespace => _syntaxNode.GetNamespaceOrGlobal();
-
-    public override string GetFullName() => $"{Namespace}.{GetName()}";
-
-    public override string GetName() => _syntaxNode.GetIdentifier();
-
-    public override string GetShortName() => GetName();
 }

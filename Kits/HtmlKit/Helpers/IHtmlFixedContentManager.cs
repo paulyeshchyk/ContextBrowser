@@ -1,5 +1,4 @@
 ﻿using ContextBrowserKit.Options;
-using HtmlKit.Options;
 
 namespace HtmlKit.Helpers;
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ContextBrowser.Services.Parsing;
 using ContextBrowserKit.Options;
-using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
 
@@ -38,7 +38,7 @@ public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoI
         }
 
         // Маппер не найден, нужно его собрать.
-        var contextsList = await GetParsedContextsAsync(cancellationToken);
+        var contextsList = await GetParsedContextsAsync(cancellationToken).ConfigureAwait(false);
 
         var result = _mapperFactory.GetMapper(mapperType);
         result.Build(contextsList);

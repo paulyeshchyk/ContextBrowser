@@ -1,9 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UmlKit.PlantUmlSpecification.Attributes;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 public class UmlMethod : IUmlElement
 {
@@ -11,10 +10,10 @@ public class UmlMethod : IUmlElement
     public readonly string? Url;
     public readonly UmlMemberVisibility Visibility;
 
-    public UmlMethod(string text, UmlMemberVisibility Visibility, string? url)
+    public UmlMethod(string text, UmlMemberVisibility visibility, string? url)
     {
         Text = text;
-        this.Visibility = Visibility;
+        Visibility = visibility;
         Url = url;
     }
 

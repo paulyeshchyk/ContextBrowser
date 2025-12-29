@@ -1,6 +1,6 @@
 ﻿using ContextKit.Model;
 
-namespace ContextKit.Stategies;
+namespace ContextKit.ContextData.Comment.Stategies;
 
 public class CoverageStrategy<T> : ICommentParsingStrategy<T>
     where T : ContextInfo

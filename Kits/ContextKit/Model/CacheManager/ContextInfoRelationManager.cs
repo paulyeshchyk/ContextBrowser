@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Options;
-using ContextKit.Model;
 using ContextKit.Model.Factory;
 using LoggerKit;
 
-namespace ContextBrowser.FileManager;
+namespace ContextKit.Model.CacheManager;
 
 // context: relations, build
 public interface IContextInfoRelationManager
@@ -30,7 +28,7 @@ public class ContextInfoRelationManager : IContextInfoRelationManager
     // context: relations, build
     public Task<IEnumerable<ContextInfo>> ConvertToContextInfoAsync(List<ContextInfoSerializableModel> serializableModelList, CancellationToken cancellationToken)
     {
-        var contexts = serializableModelList.Select(model => ContextInfoAdapter.Adapt(model)).ToList();
+        var contexts = serializableModelList.Select(ContextInfoAdapter.Adapt).ToList();
 
         var lookupDictionary = contexts.ToDictionary(context => context.FullName);
 

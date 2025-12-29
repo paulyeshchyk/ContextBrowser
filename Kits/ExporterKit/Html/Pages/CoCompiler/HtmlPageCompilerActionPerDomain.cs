@@ -1,45 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowser.Samples.HtmlPages;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
-using ExporterKit.Html;
 using ExporterKit.Html.Containers;
-using ExporterKit.Html.Pages.CoCompiler;
-using HtmlKit.Builders.Core;
+using HtmlKit.Builders.Page.Tabs;
+using HtmlKit.Builders.Page.Tabs.CoBuilders;
 using HtmlKit.Document;
-using HtmlKit.Model;
 using HtmlKit.Model.Containers;
-using HtmlKit.Page;
 using LoggerKit;
 using TensorKit.Factories;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
-namespace HtmlKit.Page.Compiler;
+namespace ExporterKit.Html.Pages.CoCompiler;
 
-public class HtmlPageCompilerActionPerDomain : IHtmlPageCompiler
+public class HtmlPageCompilerActionPerDomain<TDataTensor> : IHtmlPageCompiler
+    where TDataTensor : IDomainPerActionTensor
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
+    private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
 
-    private readonly IHtmlTensorWriter<MethodListTensor> _matrixWriter;
-    private readonly ITensorFactory<MethodListTensor> _keyFactory;
+    private readonly IHtmlTensorWriter<MethodListTensor<TDataTensor>> _matrixWriter;
+    private readonly ITensorFactory<MethodListTensor<TDataTensor>> _keyFactory;
+    private readonly INamingProcessor _namingProcessor;
 
-    public HtmlPageCompilerActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, IHtmlTensorWriter<MethodListTensor> matrixWriter, ITensorFactory<MethodListTensor> keyFactory)
+    public HtmlPageCompilerActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore, IHtmlTensorWriter<MethodListTensor<TDataTensor>> matrixWriter, ITensorFactory<MethodListTensor<TDataTensor>> keyFactory, INamingProcessor namingProcessor)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
         _matrixWriter = matrixWriter;
         _keyFactory = keyFactory;
+        _namingProcessor = namingProcessor;
     }
 
     // context: html, build
@@ -49,17 +45,22 @@ public class HtmlPageCompilerActionPerDomain : IHtmlPageCompiler
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
-        var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerTensor<DomainPerActionTensor>>>
+        var registrations = new List<IHtmlTabRegistration<ContextInfoKeyContainerTensor<TDataTensor>>>
         {
-            TabsheetFactory.ActionPerDomainClassesTabRegistration(exportOptions),
-            TabsheetFactory.ActionPerDomainMethodsTabRegistration(_matrixWriter, _keyFactory),
+            TabsheetFactory<TDataTensor>.ActionPerDomainClassesTabRegistration(exportOptions, _namingProcessor),
+            TabsheetFactory<TDataTensor>.ActionPerDomainMethodsTabRegistration(_matrixWriter, _keyFactory, _namingProcessor),
         };
 
-        var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerTensor<DomainPerActionTensor>>(registrations);
-        var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerTensor<DomainPerActionTensor>>(exportOptions, tabsheetDataProvider);
-        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        var tabsheetDataProvider = new ComposableTabsheetDataProvider<ContextInfoKeyContainerTensor<TDataTensor>>(registrations);
+        var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerTensor<TDataTensor>>(exportOptions, tabsheetDataProvider);
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
-        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<DomainPerActionTensor>, DomainPerActionTensor>(dataset, tabbedPageBuilder, (cellData) => $"composite_{cellData.ContextKey.Action}_{cellData.ContextKey.Domain}.html");
-        await builder.BuildAsync(cancellationToken);
+        var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(
+            contextInfoDataset: dataset,
+            tabbedPageBuilder: tabbedPageBuilder,
+            onGetFileName: (cellData) => $"composite_{cellData.ContextKey.Action}_{cellData.ContextKey.Domain}.html",
+            onGetTitle: (cellData) => $"Domain: {cellData.ContextKey.Domain}; Action: {cellData.ContextKey.Action}"
+            );
+        await builder.BuildAsync(cancellationToken).ConfigureAwait(false);
     }
 }

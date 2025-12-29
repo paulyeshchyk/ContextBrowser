@@ -1,12 +1,8 @@
-﻿using System;
-using ContextBrowserKit.Log;
-using ContextBrowserKit.Options;
+﻿using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Extensions;
-using RoslynKit.Wrappers;
-using RoslynKit.Wrappers.Syntax;
+using RoslynKit.Model.SyntaxNodeWrapper;
 using SemanticKit.Model;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
@@ -20,19 +16,4 @@ public class CSharpDelegateContextInfoBuilder<TContext> : BaseContextInfoBuilder
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@delegate;
-}
-
-public class CSharpDelegateSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<DelegateDeclarationSyntax>, ISymbolInfo
-{
-    private DelegateDeclarationSyntax? _syntaxNode => GetCoSyntax<DelegateDeclarationSyntax>();
-
-    public override string Identifier => _syntaxNode?.GetIdentifier() ?? throw new ArgumentException(nameof(_syntaxNode));
-
-    public override string Namespace => _syntaxNode?.GetNamespaceOrGlobal() ?? throw new ArgumentException(nameof(_syntaxNode));
-
-    public override string GetFullName() => $"{Namespace}.{GetName()}";
-
-    public override string GetName() => _syntaxNode?.GetIdentifier() ?? throw new ArgumentException(nameof(_syntaxNode));
-
-    public override string GetShortName() => GetName();
 }

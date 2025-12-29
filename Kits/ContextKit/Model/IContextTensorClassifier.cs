@@ -1,3 +1,1 @@
-﻿using System.Collections.Generic;
-
-namespace ContextKit.Model;
+﻿namespace ContextKit.Model;

@@ -1,58 +1,61 @@
-using ContextKit.Model;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Extensions;
+using RoslynKit.AWrappers;
 using RoslynKit.Signature;
+using RoslynKit.Signature.SignatureBuilder;
+using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
+using SemanticKit.Model.Signature;
+using SemanticKit.Model.SyntaxWrapper;
 
-namespace RoslynKit.Wrappers.Syntax;
+namespace RoslynKit.Converters;
 
 public static class CSharpInvocationSyntaxWrapperConverter
 {
     public static CSharpInvocationSyntaxWrapper FromSymbols(ISymbol symbol, ExpressionSyntax syntax)
     {
-        var wrapper = new CSharpInvocationSyntaxWrapper();
+        var wrapper = new CSharpInvocationSyntaxWrapper()
+        {
+            ShortName = symbol.BuildShortName(),
+            FullName = symbol.BuildFullMemberName(),
+            Name = symbol.BuildNameAndClassOwnerName(),
+            Namespace = symbol.GetNamespaceOrGlobal(),
+            Identifier = symbol.BuildFullMemberName(),
 
-        wrapper.ShortName = symbol.GetShortName();
-        wrapper.FullName = symbol.GetFullMemberName(includeParams: true);
-        wrapper.Name = symbol.GetNameAndClassOwnerName();
-        wrapper.Namespace = symbol.GetNamespaceOrGlobal();
-        wrapper.Identifier = symbol.GetFullMemberName(includeParams: true);
-
-        wrapper.SpanStart = syntax.Span.Start;
-        wrapper.SpanEnd = syntax.Span.End;
-        wrapper.IsValid = symbol is IMethodSymbol;
-
+            SpanStart = syntax.Span.Start,
+            SpanEnd = syntax.Span.End,
+            IsValid = symbol is IMethodSymbol
+        };
         return wrapper;
     }
 
     public static CSharpInvocationSyntaxWrapper FromSignature(
-        CSharpMethodSignature signature,
+        SignatureDefault signature,
         bool isPartial,
         int spanStart,
         int spanEnd)
     {
-        var wrapper = new CSharpInvocationSyntaxWrapper();
-
-        wrapper.IsPartial = isPartial;
-        wrapper.FullName = signature.GetFullName();
-        wrapper.Identifier = signature.GetIdentifier();
-        wrapper.ShortName = signature.GetShortName();
-        wrapper.Name = signature.GetMethodName();
-        wrapper.Namespace = signature.GetNamespace();
-        wrapper.SpanStart = spanStart;
-        wrapper.SpanEnd = spanEnd;
-        wrapper.IsValid = true;
-        wrapper.Signature = new CSharpMethodSignature
-        (
-            ResultType: signature.ResultType,
-            Namespace: signature.Namespace,
-            ClassName: signature.ClassName,
-            MethodName: signature.MethodName,
-            Arguments: signature.Arguments,
-            Raw: signature.Raw);
-
+        var wrapper = new CSharpInvocationSyntaxWrapper()
+        {
+            IsPartial = isPartial,
+            FullName = signature.GetFullName(),
+            Identifier = signature.GetIdentifier(),
+            ShortName = signature.GetShortName(),
+            Name = signature.GetMethodName(),
+            Namespace = signature.GetNamespace(),
+            SpanStart = spanStart,
+            SpanEnd = spanEnd,
+            IsValid = true,
+            Signature = new SignatureDefault
+                (ResultType: signature.ResultType,
+                    Namespace: signature.Namespace,
+                    ClassName: signature.ClassName,
+                    MethodName: signature.MethodName,
+                    Arguments: signature.Arguments,
+                    Raw: signature.Raw
+                )
+        };
         return wrapper;
     }
 
@@ -64,7 +67,7 @@ public static class CSharpInvocationSyntaxWrapperConverter
         if (string.IsNullOrEmpty(raw))
             return default;
 
-        var signature = SignatureUtils.Parse(raw);
+        var signature = CSharpSignatureUtils.Parse(raw);
 
         return new CSharpInvocationSyntaxWrapper()
         {

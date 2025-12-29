@@ -1,9 +1,9 @@
-﻿using ContextBrowserKit.Log;
-using ContextBrowserKit.Log.Options;
+﻿using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using SemanticKit.Model;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.Invocations.Lookup;
 

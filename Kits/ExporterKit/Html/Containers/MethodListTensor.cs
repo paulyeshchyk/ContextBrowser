@@ -1,18 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-using HtmlKit.Model.Containers;
+﻿using HtmlKit.Model.Containers;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Html.Containers;
 
-public interface IMethodListTensor : ITensor
+public interface IMethodListTensor<TDataTensor> : ITensor
+    where TDataTensor : notnull
 {
     int MethodIndex { get; }
 
-    ContextInfoKeyContainerTensor<DomainPerActionTensor> DomainPerActionTensorContainer { get; }
+    ContextInfoKeyContainerTensor<TDataTensor> DomainPerActionTensorContainer { get; }
 }
 
-public record MethodListTensor : TensorBase, IMethodListTensor
+public record MethodListTensor<TDataTensor> : TensorBase, IMethodListTensor<TDataTensor>
+    where TDataTensor : notnull
 {
     public override int Rank => 2;
 
@@ -22,9 +22,9 @@ public record MethodListTensor : TensorBase, IMethodListTensor
         init => _dimensions[0] = value;
     }
 
-    public ContextInfoKeyContainerTensor<DomainPerActionTensor> DomainPerActionTensorContainer
+    public ContextInfoKeyContainerTensor<TDataTensor> DomainPerActionTensorContainer
     {
-        get => (ContextInfoKeyContainerTensor<DomainPerActionTensor>)this[1];
+        get => (ContextInfoKeyContainerTensor<TDataTensor>)this[1];
         init => _dimensions[1] = value;
     }
 

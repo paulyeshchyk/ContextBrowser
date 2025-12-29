@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using ContextBrowser.Servers;
-using CustomServers;
+using CustomServers.Servers;
 
-namespace ContextBrowser.Services;
+namespace CustomServers;
 
 public static class CustomEnvironment
 {
-    private const string SPlantumlJarFilename = "plantuml-1.2025.4.jar";
+    private const string SPlantumlJarFilename = "plantuml-1.2025.9.jar";
     private const string SFaviconFilename = "favicon.ico";
     private const string SRenderPlantumlJsFilename = "render-plantuml.js";
     private const int SLocalHttpServerPort = 5500;

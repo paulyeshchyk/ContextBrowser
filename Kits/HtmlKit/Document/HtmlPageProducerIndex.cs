@@ -1,33 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using HtmlKit.Matrix;
 using ContextBrowserKit.Options;
-using ContextKit.Model;
-using ContextKit.Model.Collector;
-using ExporterKit.Html;
-using HtmlKit.Builders.Core;
-using HtmlKit.Helpers;
-using HtmlKit.Options;
-using HtmlKit.Page;
-using HtmlKit.Writer;
-using TensorKit.Model;
+using HtmlKit.Builders.Page.CoHtmlElementBuilders;
+using HtmlKit.Matrix;
+using HtmlBuilderFactory = HtmlKit.Builders.Page.HtmlBuilderFactory;
 
 namespace HtmlKit.Document;
 
 //context: htmlmatrix, model
 public interface IHtmlPageIndexProducer<TTensor>
-    where TTensor : ITensor
+    where TTensor : notnull
 {
     Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken);
 }
 
 //context: htmlmatrix, model
 public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexProducer<TTensor>
-    where TTensor : ITensor
+    where TTensor : notnull
 {
     private readonly IHtmlTensorWriter<TTensor> _matrixWriter;
     private readonly IHtmlMatrixSummaryBuilder<TTensor> _summaryBuilder;
@@ -38,16 +30,13 @@ public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexPr
         _summaryBuilder = summaryBuilder;
     }
 
-    public Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken)
+    public async Task<string> ProduceAsync(IHtmlMatrix matrix, CancellationToken cancellationToken)
     {
-        return Task.Run(() =>
-        {
-            using var sw = new StringWriter();
-            Produce(sw, matrix);
+        await using var sw = new StringWriter();
+        await ProduceAsync(sw, matrix, cancellationToken).ConfigureAwait(false);
 
-            var result = sw.ToString();
-            return result;
-        }, cancellationToken);
+        var result = sw.ToString();
+        return result;
     }
 
     protected override IEnumerable<string> GetAdditionalScripts()
@@ -56,15 +45,16 @@ public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexPr
         yield return Resources.ScriptAutoFontShrink;
     }
 
-    protected override void WriteContent(TextWriter writer, IHtmlMatrix matrix, HtmlTableOptions options)
+    protected override async Task WriteContentAsync(TextWriter writer, IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken)
     {
-        var navigationItem = new BreadcrumbNavigationItem("..\\index.html", "Контекстная матрица");
-        HtmlBuilderFactory.Breadcrumb(navigationItem).Cell(writer);
+        long timeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var navigationItem = new BreadcrumbNavigationItem($"..\\index.html?v={timeStamp}", "Контекстная матрица");
+        await HtmlBuilderFactory.Breadcrumb(navigationItem).CellAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        HtmlBuilderFactory.P.Cell(writer);
+        await HtmlBuilderFactory.P.CellAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        var summary = _summaryBuilder.Build(matrix, options.Orientation);
+        var summary = await _summaryBuilder.BuildAsync(matrix, options.Orientation, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        _matrixWriter.Write(writer, matrix, summary, options);
+        await _matrixWriter.WriteAsync(writer, matrix, summary, options, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ContextKit.Model;
 using SemanticKit.Model.Options;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace SemanticKit.Model;
 

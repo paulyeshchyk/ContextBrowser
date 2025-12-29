@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using ExporterKit.Infrastucture;
-using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
-using UmlKit.Builders;
+using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
-namespace UmlKit.Exporter;
+namespace ExporterKit.Uml;
 
 // context: uml, build
 public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
@@ -29,12 +26,14 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
+    private readonly INamingProcessor _namingProcessor;
 
-    public UmlDiagramCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
+        _namingProcessor = namingProcessor;
     }
 
     public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
@@ -45,7 +44,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
-        var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
         var classesOnly = contextInfoDataset.GetAll()
             .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record) || (c.ElementType == ContextInfoElementType.@interface));
@@ -58,28 +57,30 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
                       methods: GetMethods(contextInfoDataset),
                    properties: GetProperties(contextInfoDataset));
         }
-        return new Dictionary<object, bool> { };
+        return new Dictionary<object, bool>();
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
-        return(contextInfo) => contextInfoDataSet.GetAll()
+        return (contextInfo) => contextInfoDataSet.GetAll()
             .Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
-        return(contextInfo) => contextInfoDataSet.GetAll()
+        return (contextInfo) => contextInfoDataSet.GetAll()
             .Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 
     //context: uml, build, heatmap, directory
     internal void Build(IContextInfo contextInfo, ExportOptions exportOptions, DiagramBuilderOptions options, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties)
     {
-        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"class_only_{contextInfo.FullName.AlphanumericOnly()}.puml");
+        var fullName = $"{contextInfo.FullName.AlphanumericOnly()}";
+        var pumlFileName = _namingProcessor.ClassOnlyPumlFilename(fullName);
+        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, pumlFileName);
 
-        var diagramId = $"class_only_{contextInfo.FullName.AlphanumericOnly()}";
-        var diagramTitle = $"Class diagram -> {contextInfo.Name}";
+        var diagramId = _namingProcessor.ClassOnlyDiagramId(fullName);
+        var diagramTitle = _namingProcessor.ClassOnlyDiagramTitle(contextInfo.Name);
 
         var diagram = new UmlDiagramClass(options, diagramId: diagramId);
         diagram.SetTitle(diagramTitle);
@@ -97,18 +98,18 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         var classMethods = methods(contextInfo);
         foreach (var element in classMethods)
         {
-            var umlMethod = new UmlMethod(element.Name + "()", Visibility: UmlMemberVisibility.@public, url: null);
+            var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
             umlClass.Add(umlMethod);
         }
 
         var classProperties = properties(contextInfo);
         foreach (var element in classProperties)
         {
-            var umlMethod = new UmlMethod(element.Name + "()", Visibility: UmlMemberVisibility.@public, url: null);
+            var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
             umlClass.Add(umlMethod);
         }
 
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
         diagram.WriteToFile(fileName, writeOptons);
     }
 }

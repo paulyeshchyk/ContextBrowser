@@ -1,23 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextKit.Model;
-using TensorKit.Model.DomainPerAction;
-using UmlKit;
-using UmlKit.Builders;
-using UmlKit.Compiler;
-using UmlKit.Compiler.CoCompiler;
+using TensorKit.Model;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Compiler.CoCompiler;
 
-public class UmlDiagramCompilerClass
+public class UmlDiagramCompilerClass<TDataTensor>
+    where TDataTensor : IDomainPerActionTensor
 {
     private readonly DiagramBuilderOptions _options;
     private readonly string _outputPath;
@@ -30,7 +21,7 @@ public class UmlDiagramCompilerClass
         _linkGenerator = linkGenerator;
     }
 
-    public void Build(IContextInfoDataset<ContextInfo, DomainPerActionTensor> matrix)
+    public void Build(IContextInfoDataset<ContextInfo, TDataTensor> matrix)
     {
         var diagramId = $"actionPerDomain_{_outputPath}".AlphanumericOnly();
 
@@ -48,11 +39,11 @@ public class UmlDiagramCompilerClass
             AddPackage(_linkGenerator, diagram, item.Key, count);
         }
 
-        var writeOptions = new UmlWriteOptions(alignMaxWidth: -1) { };
+        var writeOptions = new UmlWriteOptions(alignMaxWidth: -1);
         diagram.WriteToFile(_outputPath, writeOptions);
     }
 
-    private static void AddPackage(Func<string, string, string> linkGenerator, UmlDiagramClass diagram, DomainPerActionTensor cell, int count)
+    private static void AddPackage(Func<string, string, string> linkGenerator, UmlDiagramClass diagram, TDataTensor cell, int count)
     {
         var packageId = $"{cell.Action}_{cell.Domain}";
         var label = $"{packageId}\\nMethods: {count}";

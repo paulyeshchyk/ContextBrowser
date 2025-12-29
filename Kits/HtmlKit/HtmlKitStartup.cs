@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿namespace HtmlKit;
 
 internal static class HtmlKitStartup
 {

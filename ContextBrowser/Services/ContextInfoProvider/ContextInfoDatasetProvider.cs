@@ -1,11 +1,7 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowser.Infrastructure;
-using ContextBrowserKit.Options;
-using ContextBrowserKit.Options.Export;
+using ContextBrowser.Services.Parsing;
 using ContextKit.Model;
-using TensorKit.Model.DomainPerAction;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
@@ -18,10 +14,7 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
 
     private readonly object _lock = new object();
 
-    public ContextInfoDatasetProvider(
-        IAppOptionsStore optionsStore,
-        IParsingOrchestrator parsingOrchestrant,
-        IContextInfoDatasetBuilder<TTensor> datasetBuilder)
+    public ContextInfoDatasetProvider(IParsingOrchestrator parsingOrchestrant, IContextInfoDatasetBuilder<TTensor> datasetBuilder)
         : base(parsingOrchestrant)
     {
         _datasetBuilder = datasetBuilder;
@@ -31,7 +24,7 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
     {
         if (_dataset == null)
         {
-            await BuildDatasetAsync(cancellationToken);
+            await BuildDatasetAsync(cancellationToken).ConfigureAwait(false);
         }
         return _dataset!;
     }
@@ -47,7 +40,7 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
             }
         }
 
-        var contextsList = await GetParsedContextsAsync(cancellationToken);
+        var contextsList = await GetParsedContextsAsync(cancellationToken).ConfigureAwait(false);
         var newDataset = _datasetBuilder.Build(contextsList);
 
         lock (_lock)

@@ -2,11 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Options;
-using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
-using HtmlKit.Page.Compiler;
 
-namespace ContextBrowser.Services;
+namespace ExporterKit.Html.Pages;
 
 public interface IHtmlCompilerOrchestrator
 {
@@ -26,7 +23,7 @@ public class HtmlCompilerOrchestrator : IHtmlCompilerOrchestrator
     {
         foreach (var compiler in _compilers)
         {
-            await compiler.CompileAsync(cancellationToken);
+            await compiler.CompileAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

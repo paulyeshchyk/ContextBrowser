@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ContextKit.Stategies;
+namespace ContextKit.ContextData.Comment.Stategies;
 
 public static class CommentWithKeywordParser
 {

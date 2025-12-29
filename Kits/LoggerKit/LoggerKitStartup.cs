@@ -1,4 +1,6 @@
-﻿internal static class LoggerKitStartup
+﻿namespace LoggerKit;
+
+internal static class LoggerKitStartup
 {
     public static void Main(string[] args)
     {

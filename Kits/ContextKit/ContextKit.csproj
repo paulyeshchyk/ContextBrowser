@@ -19,5 +19,8 @@
 		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
 		<ProjectReference Include="..\TensorKit\TensorKit.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="ContextData/Naming/" />
+	</ItemGroup>
 
 </Project>

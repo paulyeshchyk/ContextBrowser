@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace ContextBrowser.Samples.SampleMultifile;
+namespace ContextSamples.ContextSamples.S5;
 
 // context: S5, read
 public class BrokenContextReader

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ContextBrowser.Samples.Orchestra;
+namespace ContextSamples.ContextSamples.S3;
 
 // context: create, S3
 public class FlowOrchestrator

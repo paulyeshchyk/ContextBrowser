@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ContextBrowserKit.Options.Export;
-using ContextKit;
-using ContextKit.Model;
-using ContextKit.Model.Collector;
+﻿using System.Collections.Generic;
 
 namespace ContextKit.Model;
 
 public interface IKeyIndexBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    void Build(IEnumerable<TContext> contextsList);
-
-    Dictionary<object, TContext>? GetIndexData();
+    Dictionary<object, TContext>? Build(IEnumerable<TContext> contextsList);
 }

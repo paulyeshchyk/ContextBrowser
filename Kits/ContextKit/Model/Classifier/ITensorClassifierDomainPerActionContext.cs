@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ContextKit;
-using ContextKit.Model;
-using ContextKit.Model.Classifier;
-using TensorKit.Model.DomainPerAction;
+using TensorKit.Model;
 
 namespace ContextKit.Model.Classifier;
 

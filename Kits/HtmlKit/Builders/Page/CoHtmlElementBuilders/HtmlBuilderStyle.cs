@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection.Metadata.Ecma335;
+﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Builders.Core;
-using HtmlKit.Builders.Tag;
-using HtmlKit.Classes;
 
-namespace HtmlKit.Page;
+namespace HtmlKit.Builders.Page.CoHtmlElementBuilders;
 
 public static partial class HtmlBuilderFactory
 {
@@ -20,10 +15,11 @@ public static partial class HtmlBuilderFactory
         {
         }
 
-        public override void Cell(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true)
+        public override Task CellAsync(TextWriter sb, IHtmlTagAttributes? attributes = null, string? innerHtml = "", bool isEncodable = true, CancellationToken cancellationToken = default)
         {
             if (!string.IsNullOrWhiteSpace(innerHtml))
                 sb.WriteLine($"<style>\n{innerHtml}\n</style>");
+            return Task.CompletedTask;
         }
     }
 }

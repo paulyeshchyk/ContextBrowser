@@ -1,29 +1,28 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Builders.Core;
-using HtmlKit.Model;
 using HtmlKit.Model.Tabsheet;
-using HtmlKit.Page;
 
-namespace HtmlKit.Builders.Page;
+namespace HtmlKit.Builders.Page.Tabs;
 
 public static class HtmlTabsheetBuilder
 {
-    public static void Build<DTO>(StreamWriter writer, IHtmlTabsheetDataProvider<DTO> tabsDataProvider, DTO cellData)
+    public static async Task BuildAsync<DTO>(StreamWriter writer, IHtmlTabsheetDataProvider<DTO> tabsDataProvider, DTO cellData, CancellationToken cancellationToken)
     {
         var tabAttributes = new HtmlTagAttributes() { { "class", "tabs" } };
 
         // Build the tab buttons first
-        HtmlBuilderFactory.Div.With(writer, tabAttributes, () =>
+        await HtmlBuilderFactory.Div.WithAsync(writer, tabAttributes, async (token) =>
         {
             foreach (var sheet in tabsDataProvider.Tabsheets)
             {
                 var className = sheet.TabInfo.IsActive ? "tab-button active" : "tab-button";
                 var attributes = new HtmlTagAttributes() { { "class", className } };
-                HtmlBuilderFactory.Button.OnClick($"showTab('{sheet.TabInfo.Info.TabId}', this)").Cell(writer, attributes: attributes, sheet.TabInfo.Info.Caption);
+                var cellBuilder = HtmlBuilderFactory.Button.OnClick($"showTab('{sheet.TabInfo.Info.TabId}', this)");
+                await cellBuilder.CellAsync(writer, attributes: attributes, sheet.TabInfo.Info.Caption).ConfigureAwait(false);
             }
-        });
+        }, cancellationToken).ConfigureAwait(false);
 
         // Then build the content for each tab
         foreach (var sheet in tabsDataProvider.Tabsheets)
@@ -34,11 +33,11 @@ public static class HtmlTabsheetBuilder
                 { "id", sheet.TabInfo.Info.TabId }
                 };
 
-            HtmlBuilderFactory.Div.With(writer, sheetAttributes, () =>
+            await HtmlBuilderFactory.Div.WithAsync(writer, sheetAttributes, async (token) =>
             {
                 // The ContentGenerator now receives all the data it needs via the DTO.
-                sheet.TabInfo.BuildHtmlTab(writer, tabsDataProvider, cellData);
-            });
+                await sheet.TabInfo.BuildHtmlTab(writer, tabsDataProvider, cellData, token).ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
         }
     }
 }

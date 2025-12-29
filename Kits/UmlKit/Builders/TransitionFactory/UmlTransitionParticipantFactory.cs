@@ -1,4 +1,4 @@
-﻿using UmlKit.Model;
+﻿using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Builders.TransitionFactory;
 

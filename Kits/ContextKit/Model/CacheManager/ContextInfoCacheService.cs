@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
-using ContextKit.Model.Factory;
 using LoggerKit;
 
-namespace ContextBrowser.FileManager;
+namespace ContextKit.Model.CacheManager;
 
 /// <summary>
 /// Управляет сохранением и чтением списка объектов ContextInfo
@@ -55,7 +51,7 @@ public class ContextInfoCacheService : IContextInfoCacheService
                 return _inMemoryCacheTask.Result;
             }
 
-            var contextsFromFile = await _cacheStrategy.ReadAsync(cacheModel, onRelationCallback, cancellationToken);
+            var contextsFromFile = await _cacheStrategy.ReadAsync(cacheModel, onRelationCallback, cancellationToken).ConfigureAwait(false);
             if (contextsFromFile.Any())
             {
                 _inMemoryCacheTask = Task.FromResult(contextsFromFile);
@@ -82,6 +78,6 @@ public class ContextInfoCacheService : IContextInfoCacheService
         _ = Task.Run(async () =>
         {
             await _cacheStrategy.SaveAsync(parsingResult, cacheModel, cancellationToken).ConfigureAwait(false);
-        }, cancellationToken);
+        }, cancellationToken).ConfigureAwait(false);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UmlKit.Extensions;
+namespace ContextBrowserKit.Extensions;
 
 public static class EnumExts
 {

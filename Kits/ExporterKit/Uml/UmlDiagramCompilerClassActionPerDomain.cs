@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,34 +6,35 @@ using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using ExporterKit.Uml;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
-using UmlKit.Builders;
+using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
-namespace UmlKit.Exporter;
+namespace ExporterKit.Uml;
 
 // context: uml, build
 // pattern: Builder
-public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
+public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCompiler
+    where TDataTensor : IDomainPerActionTensor
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
+    private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
+    private readonly INamingProcessor _namingProcessor;
 
-    public UmlDiagramCompilerClassActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerClassActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
+        _namingProcessor = namingProcessor;
     }
 
     public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
@@ -45,23 +45,25 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
-        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
         foreach (var element in dataset)
         {
             Build(element, exportOptions, diagramBuilderOptions);
         }
-        return new Dictionary<object, bool> { };
+        return new Dictionary<object, bool>();
     }
 
     //context: uml, build, heatmap, directory
-    internal void Build(KeyValuePair<DomainPerActionTensor, List<ContextInfo>> cell, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    internal void Build(KeyValuePair<TDataTensor, List<ContextInfo>> cell, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
     {
         var contextInfoKey = cell.Key;
         var contextInfoList = cell.Value.Distinct().ToList();
-        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"class_{contextInfoKey.Action}_{contextInfoKey.Domain}.puml");
 
-        var diagramId = $"class_{contextInfoKey.Action}_{contextInfoKey.Domain}".AlphanumericOnly();
-        var diagramTitle = $"{contextInfoKey.Action} -> {contextInfoKey.Domain}";
+        var pumlClass = _namingProcessor.ClassActionDomainPumlFilename(contextInfoKey.Action, contextInfoKey.Domain);
+        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, pumlClass);
+
+        var diagramId = _namingProcessor.ClassActionDomainDiagramId(contextInfoKey.Action, contextInfoKey.Domain).AlphanumericOnly();
+        var diagramTitle = _namingProcessor.ClassActionDomainDiagramTitle(contextInfoKey.Action, contextInfoKey.Domain);
 
         var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
         diagram.SetTitle(diagramTitle);
@@ -70,11 +72,11 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         diagram.SetSeparator("none");
 
         // Группируем по Namespace, затем по ClassOwnerFullName
-        var allElements = UmlClassDiagramDataMapper.Map(contextInfoList);
+        var allElements = UmlClassDiagramDataMapper.Map(contextInfoList).ToList();
 
         int maxLength = UmlDiagramMaxNamelengthExtractor.Extract(allElements, new() { UmlDiagramMaxNamelengthExtractorType.@namespace, UmlDiagramMaxNamelengthExtractorType.@entity, UmlDiagramMaxNamelengthExtractorType.@method });
 
-        var namespaces = allElements.GroupBy(e => e.Namespace);
+        var namespaces = allElements.GroupBy(e => e.Namespace).ToList();
 
         foreach (var nsGroup in namespaces)
         {
@@ -88,14 +90,14 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
             {
                 foreach (var cls in classGroup)
                 {
-                    var htmlUrl = UmlUrlBuilder.BuildClassUrl(cls);
+                    var htmlUrl = _namingProcessor.ClassOnlyHtmlFilename(cls.FullName);
                     var umlClass = new UmlEntity(UmlEntityType.@class, classGroup.Key.PadRight(maxLength), classGroup.Key.AlphanumericOnly(), url: htmlUrl);
                     package.Add(umlClass);
 
                     foreach (var element in classGroup)
                     {
                         string? url = null;//UmlUrlBuilder.BuildUrl(element);
-                        var umlMethod = new UmlMethod(element.ContextInfo.Name + "()".PadRight(maxLength), Visibility: UmlMemberVisibility.@public, url: url);
+                        var umlMethod = new UmlMethod(element.ContextInfo.Name + "()".PadRight(maxLength), visibility: UmlMemberVisibility.@public, url: url);
                         umlClass.Add(umlMethod);
                     }
                 }
@@ -104,7 +106,7 @@ public class UmlDiagramCompilerClassActionPerDomain : IUmlDiagramCompiler
         }
         diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(g => g.Key.AlphanumericOnly())));
 
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: maxLength) { };
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: maxLength);
 
         diagram.WriteToFile(fileName, writeOptons);
     }

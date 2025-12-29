@@ -1,37 +1,25 @@
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Reflection.Metadata;
-using System.Runtime;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
-using System.Runtime.Serialization;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Filters;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.Extensions.Hosting;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Assembly;
 
 // context: roslyn, build
+// coverage: 50
 public static class RoslynAssemblyFetcher
 {
     // context: roslyn, build
+    // coverage: 20
     public static IEnumerable<MetadataReference> Fetch(AssemblyPathFilterPatterns assemblyPathsFilter, IAppLogger<AppLevel> logger)
     {
         var trustedPlatformPaths = RoslynAssemblyFetcher.FetchTrustedPlatformPaths(logger);

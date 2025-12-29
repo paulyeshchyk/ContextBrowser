@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,16 +9,14 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using ContextKit.Model.Service;
-using ExporterKit.Uml;
+using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
-namespace UmlKit.Exporter;
+namespace ExporterKit.Uml;
 
 // context: uml, links, build
 // pattern: Builder
@@ -42,7 +38,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassMethodList");
 
-        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
         var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
@@ -75,7 +71,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
             }
         }
 
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
         diagram.WriteToFile(outputPath, writeOptons);
 
         return new Dictionary<object, bool>();

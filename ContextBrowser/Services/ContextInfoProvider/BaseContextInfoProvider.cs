@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowser;
-using ContextBrowser.Services;
-using ContextBrowser.Services.ContextInfoProvider;
-using ContextBrowserKit.Options;
+using ContextBrowser.Services.Parsing;
 using ContextKit.Model;
 
-namespace ContextKit.Model;
+namespace ContextBrowser.Services.ContextInfoProvider;
 
 // Абстрактный базовый класс для провайдеров, которым нужен список контекстов.
 public abstract class BaseContextInfoProvider
@@ -37,7 +33,7 @@ public abstract class BaseContextInfoProvider
             }
         }
 
-        var contextsList = await _parsingOrchestrant.GetOrchestratedContextsAsync(cancellationToken);
+        var contextsList = await _parsingOrchestrant.GetOrchestratedContextsAsync(cancellationToken).ConfigureAwait(false);
 
         lock (_lock)
         {

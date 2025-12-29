@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
 
-namespace ContextBrowser.FileManager;
+namespace ContextKit.Model.CacheManager;
 
 // Новый интерфейс для работы с файлами
 public interface IFileCacheStrategy

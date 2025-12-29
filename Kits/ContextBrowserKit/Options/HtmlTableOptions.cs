@@ -1,7 +1,6 @@
-﻿using ContextBrowserKit.Options;
-using TensorKit.Model;
+﻿using TensorKit.Model;
 
-namespace HtmlKit.Options;
+namespace ContextBrowserKit.Options;
 
 // pattern: Configuration
 // parsing: error

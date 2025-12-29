@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using ContextKit.Model;
+﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Builders.Core;
-using HtmlKit.Page;
-using TensorKit.Model;
+using HtmlKit.Builders.Page;
+using HtmlKit.Document;
 
-namespace HtmlKit.Writer;
+namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 
 // pattern: Builder
 public class HtmlContentInjector<TTensor> : IHtmlContentInjector<TTensor>
     where TTensor : notnull
 {
-    public string Inject(TTensor container, int cnt)
+    public async Task<string> InjectAsync(TTensor container, int cnt, CancellationToken cancellationToken)
     {
         if (cnt == 0)
         {
@@ -21,19 +21,20 @@ public class HtmlContentInjector<TTensor> : IHtmlContentInjector<TTensor>
         using var sw = new StringWriter();
 
         var attributes = new HtmlTagAttributes() { { "class", "embedded-table" } };
-        HtmlBuilderFactory.Table.With(sw, attributes, () =>
+        await HtmlBuilderFactory.Table.WithAsync(sw, attributes, async (token) =>
         {
-            WriteRow(sw, cnt.ToString());
-        });
+            await WriteRowAsync(sw, cnt.ToString(), token).ConfigureAwait(false);
+        }, cancellationToken).ConfigureAwait(false);
 
         return sw.ToString();
     }
 
-    private static void WriteRow(TextWriter writer, string label)
+    private static async Task WriteRowAsync(TextWriter writer, string label, CancellationToken cancellationToken)
     {
-        HtmlBuilderFactory.HtmlBuilderTableRow.Data.With(writer, () =>
+        await HtmlBuilderFactory.HtmlBuilderTableRow.Data.WithAsync(writer, (token) =>
         {
-            HtmlBuilderFactory.HtmlBuilderTableCell.Data.Cell(writer, innerHtml: label, isEncodable: false);
-        });
+            HtmlBuilderFactory.HtmlBuilderTableCell.Data.CellAsync(writer, innerHtml: label, isEncodable: false);
+            return Task.CompletedTask;
+        }, cancellationToken).ConfigureAwait(false);
     }
 }

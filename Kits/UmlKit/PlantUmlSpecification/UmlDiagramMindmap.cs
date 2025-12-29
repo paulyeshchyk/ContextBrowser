@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 
 namespace UmlKit.PlantUmlSpecification;
 

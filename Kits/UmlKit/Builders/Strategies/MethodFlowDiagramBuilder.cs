@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using UmlKit.Builders.Model;
 
 namespace UmlKit.Builders.Strategies;

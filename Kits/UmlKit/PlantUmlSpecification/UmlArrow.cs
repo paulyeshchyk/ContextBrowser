@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 public class UmlArrow : IUmlElement
 {
@@ -55,6 +55,7 @@ public static class UmlArrowDirectionExt
         {
             UmlArrowDirection.ToLeft => "<",
             UmlArrowDirection.ToRight => ">",
+            UmlArrowDirection.None => throw new NotImplementedException(),
             _ => throw new NotImplementedException()
         };
         return data;

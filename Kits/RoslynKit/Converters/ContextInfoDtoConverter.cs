@@ -1,12 +1,7 @@
-using System;
-using ContextBrowserKit.Log;
-using ContextBrowserKit.Log.Options;
-using ContextBrowserKit.Options;
+﻿using System;
 using ContextKit.Model;
-using RoslynKit.Wrappers.Syntax;
-using SemanticKit.Model;
 
-namespace RoslynKit.Phases.ContextInfoBuilder;
+namespace RoslynKit.Converters;
 
 public static class ContextInfoDtoConverter
 {

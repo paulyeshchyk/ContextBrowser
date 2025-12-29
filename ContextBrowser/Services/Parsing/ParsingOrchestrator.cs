@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowser.FileManager;
-using ContextBrowser.Infrastructure;
-using ContextBrowser.Model;
-using ContextBrowser.Roslyn;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.CacheManager;
 using LoggerKit;
 using SemanticKit.Model.Options;
+using SemanticKit.Parsers.File;
 
-namespace ContextBrowser.Services;
+namespace ContextBrowser.Services.Parsing;
 
 // context: parsing, build
 public interface IParsingOrchestrator
@@ -58,14 +54,16 @@ public class ParsingOrchestrator : IParsingOrchestrator
         var result = await _contextInfoCacheService.GetOrParseAndCacheAsync(
             ParsingJobAsync,
             _relationManager.ConvertToContextInfoAsync,
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
 
-        if (!result.Any())
+        IEnumerable<ContextInfo> orchestratedContextsAsync = result.ToList();
+        if (orchestratedContextsAsync.Any())
         {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, "Context list is empty");
-            return Enumerable.Empty<ContextInfo>();
+            return orchestratedContextsAsync;
         }
-        return result;
+
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, "Context list is empty");
+        return Enumerable.Empty<ContextInfo>();
     }
 
     // context: parsing, build
@@ -84,7 +82,7 @@ public class ParsingOrchestrator : IParsingOrchestrator
                 { 1, referenceFileParser }
             };
 
-        var parserChain = new ParserChain(fileParsers);
-        return _codeParseService.Parse(parserChain, token);
+        var parserChain = new FileParserPipeline(fileParsers);
+        return _codeParseService.ParseAsync(parserChain, token);
     }
 }

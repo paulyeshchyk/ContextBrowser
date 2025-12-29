@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ContextBrowserKit;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData.Naming;
 using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.Model;
 using UmlKit.DiagramGenerator.Managers;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.DiagramGenerator.Renderer;
@@ -20,12 +18,15 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
     private readonly IAppLogger<AppLevel> _logger;
     private readonly DiagramBuilderOptions _options;
     private readonly IUmlTransitionFactory<P> _factory;
+    private readonly INamingProcessor _namingProcessor;
 
-    public SequenceDiagramRendererPlain(IAppLogger<AppLevel> logger, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory)
+    public SequenceDiagramRendererPlain(IAppLogger<AppLevel> logger, DiagramBuilderOptions options, IUmlTransitionFactory<P> factory, INamingProcessor namingProcessor)
     {
         _logger = logger;
         _options = options;
         _factory = factory;
+        _namingProcessor = namingProcessor;
+
     }
 
     public void Render(UmlDiagram<P> diagram, GrouppedSortedTransitionList? allTransitions)
@@ -63,7 +64,7 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
                 _logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, $"Callee is empty for transition {ctx.Caller}.{ctx.CallerMethod} -> ??.{ctx.CalleeMethod}");
                 continue;
             }
-            SequenceParticipantsManager.AddParticipants(ctx, defaultKeywords);
+            SequenceParticipantsManager.AddParticipants(ctx, defaultKeywords, _namingProcessor);
 
             // 2. Затем переходы
             if (!callStack.Any() || callStack.Peek() != caller)
@@ -87,10 +88,10 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
                 callStack.Push(callee);
             }
         }
-        WipeStack(callStack, diagram);
+        SequenceDiagramRendererPlain<P>.WipeStack(callStack, diagram);
     }
 
-    private void WipeStack(Stack<string> callStack, UmlDiagram<P> diagram)
+    private static void WipeStack(Stack<string> callStack, UmlDiagram<P> diagram)
     {
         while (callStack.Count > 0)
         {

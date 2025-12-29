@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 using ContextKit.Model;
-using UmlKit.Model;
+using UmlKit.PlantUmlSpecification;
 
 namespace ExporterKit.Infrastucture;
 

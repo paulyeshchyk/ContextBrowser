@@ -1,12 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HtmlKit.Builders.Core;
-using HtmlKit.Model;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Model.Tabsheet;
 
-namespace HtmlKit.Page;
+namespace HtmlKit.Builders.Page.Tabs;
 
 /// <summary>
 /// Регистрация одной вкладки: связывает контракт модели (DataModelType),
@@ -40,7 +40,7 @@ public static class TabRegistration
         string caption,
         bool isActive,
         TContract model,
-        Action<TextWriter, TContract, DTO> build)
+        Func<TextWriter, TContract, DTO, CancellationToken, Task> build)
         where TContract : IHtmlTabsheetDataModel
     {
         if (string.IsNullOrWhiteSpace(tabId))
@@ -55,10 +55,10 @@ public static class TabRegistration
         var htmlTab = new HtmlTabsheetTabInfo<DTO>
         (
             info: tabsheetTabInfo,
-            buildHtmlTab: (writer, tabsheetProvider, dto) =>
+            buildHtmlTab: async (writer, tabsheetProvider, dto, token) =>
             {
                 var resolved = tabsheetProvider.GetTabsheetDataModel<TContract>();
-                build(writer, (TContract)resolved, dto);
+                await build(writer, (TContract)resolved, dto, token).ConfigureAwait(false);
             },
             isActive: isActive);
 

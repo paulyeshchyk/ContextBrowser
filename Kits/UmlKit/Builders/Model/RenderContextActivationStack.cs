@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;

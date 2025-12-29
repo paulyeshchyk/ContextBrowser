@@ -1,4 +1,4 @@
-﻿namespace ContextKit.Stategies;
+﻿namespace ContextKit.ContextData.Comment;
 
 public interface ICommentParsingStrategy<T>
 {

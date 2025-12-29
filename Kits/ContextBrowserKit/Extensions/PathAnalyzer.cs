@@ -23,6 +23,7 @@ public class PathAnalyzer
         PlainText // Не является путем в файловой системе или не существует
     }
 
+    // coverage: 100
     // context: file, directory, read
     public static string[] GetFilePaths(string[] paths, string searchPattern, OnWriteLog? onWriteLog = null)
     {

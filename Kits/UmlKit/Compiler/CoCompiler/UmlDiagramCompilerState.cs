@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using ContextBrowser;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -9,10 +7,8 @@ using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using LoggerKit;
 using UmlKit.Builders;
-using UmlKit.Compiler.CoCompiler;
 using UmlKit.DiagramGenerator;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Compiler.CoCompiler;
@@ -93,7 +89,7 @@ public abstract class UmlDiagramCompilerState
         if (rendered)
         {
             // Если рендеринг успешен, записываем диаграмму в файл
-            var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+            var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
             var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, diagramFileName);
             diagram.WriteToFile(path, writeOptons);
         }

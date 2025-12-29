@@ -1,8 +1,6 @@
-﻿using ContextBrowserKit.Log;
-using ContextBrowserKit.Options;
+﻿using ContextBrowserKit.Options;
 using LoggerKit;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Builders.Model;

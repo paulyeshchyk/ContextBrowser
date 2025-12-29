@@ -1,19 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using ContextBrowser;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.TransitionFactory;
-using UmlKit.Compiler.CoCompiler;
 using UmlKit.DiagramGenerator;
 using UmlKit.DiagramGenerator.Renderer;
 using UmlKit.Infrastructure.Options;
-using UmlKit.Model;
 using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Compiler.CoCompiler;
@@ -29,6 +27,7 @@ public class UmlDiagramCompilerSequence
     private readonly IAppLogger<AppLevel> _logger;
     private readonly DiagramBuilderOptions _options;
     private readonly IContextDiagramBuilder _diagramBuilder;
+    private readonly INamingProcessor _namingProcessor;
 
     /// <summary>
     /// Создает новый экземпляр компилятора.
@@ -43,13 +42,16 @@ public class UmlDiagramCompilerSequence
         ITensorClassifierDomainPerActionContext classifier,
         ExportOptions exportOptions,
         DiagramBuilderOptions options,
-        IContextDiagramBuilder diagramBuilder)
+        IContextDiagramBuilder diagramBuilder,
+        INamingProcessor namingProcessor)
     {
         _classifier = classifier;
         _exportOptions = exportOptions;
         _logger = logger;
         _options = options;
         _diagramBuilder = diagramBuilder;
+        _namingProcessor = namingProcessor;
+
     }
 
     /// <summary>
@@ -73,13 +75,13 @@ public class UmlDiagramCompilerSequence
         var transitions = _diagramBuilder.Build(metaItem, fetchType, contextItems);
 
         var factory = new UmlTransitionParticipantFactory();
-        var renderer = new SequenceDiagramRendererPlain<UmlParticipant>(_logger, _options, factory);
+        var renderer = new SequenceDiagramRendererPlain<UmlParticipant>(_logger, _options, factory, _namingProcessor);
         var generator = new SequenceDiagramGenerator<UmlParticipant>(renderer, _options, _logger, factory);
         var result = generator.Generate(diagram, transitions, metaItem);
 
         if (result)
         {
-            var writeOptons = new UmlWriteOptions(alignMaxWidth: -1) { };
+            var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
             var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, outputFileName);
             diagram.WriteToFile(path, writeOptons);
         }

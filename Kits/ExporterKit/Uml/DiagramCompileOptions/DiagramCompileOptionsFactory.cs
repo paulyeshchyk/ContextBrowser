@@ -1,6 +1,4 @@
 ﻿using ContextBrowserKit.Extensions;
-using ExporterKit;
-using ExporterKit.Uml.DiagramCompileOptions;
 using UmlKit.Builders;
 
 namespace ExporterKit.Uml.DiagramCompileOptions;
@@ -33,7 +31,7 @@ public static class DiagramCompileOptionsFactory
 
     public static IDiagramCompileOptions DomainSequenceCompileOptions(object domain)
     {
-        var domainStr = (string) domain;
+        var domainStr = (string)domain;
         return new PumlSequenceCompileOptions
             (
                 metaItem: domainStr,

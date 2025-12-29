@@ -1,5 +1,4 @@
-﻿using ContextBrowserKit.Log;
-using ContextBrowserKit.Log.Options;
+﻿using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Service;
@@ -9,6 +8,7 @@ using RoslynKit.Phases.Invocations.Lookup;
 using RoslynKit.Wrappers.LookupHandler;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.Invocations;
 

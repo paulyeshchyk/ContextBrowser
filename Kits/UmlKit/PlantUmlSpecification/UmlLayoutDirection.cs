@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.IO;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 public class UmlLayoutDirection : IUmlElement, IUmlWritable
 {

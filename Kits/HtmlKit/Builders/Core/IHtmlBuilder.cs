@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace HtmlKit.Builders.Core;
+﻿namespace HtmlKit.Builders.Core;
 
 // using IHtmlTagAttributes = Dictionary<string, string>;
 

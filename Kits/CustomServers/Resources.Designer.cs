@@ -83,6 +83,16 @@ namespace CustomServers {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] plantuml_1_2025_9 {
+            get {
+                object obj = ResourceManager.GetObject("plantuml_1_2025_9", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] render_plantuml {
             get {
                 object obj = ResourceManager.GetObject("render_plantuml", resourceCulture);

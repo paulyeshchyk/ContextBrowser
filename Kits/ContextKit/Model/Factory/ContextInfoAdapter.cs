@@ -1,14 +1,4 @@
-using System.Text.Json;
-using ContextBrowser;
-using ContextBrowser.FileManager;
-using ContextBrowserKit.Log;
-using ContextBrowserKit.Log.Options;
-using ContextBrowserKit.Options;
-using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
-using ContextKit.Model.Factory;
-using ContextKit.Model.Service;
-using LoggerKit;
+﻿using ContextKit.Model.CacheManager;
 
 namespace ContextKit.Model.Factory;
 
@@ -31,7 +21,6 @@ public static class ContextInfoAdapter
                  action: model.Action,
                 domains: model.Domains,
              dimensions: model.Dimensions)
-        {
-        };
+        ;
     }
 }

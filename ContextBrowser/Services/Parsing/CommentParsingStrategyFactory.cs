@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData;
+using ContextKit.ContextData.Comment;
+using ContextKit.ContextData.Comment.Stategies;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using ContextKit.Stategies;
 using LoggerKit;
 
-namespace ContextBrowser.Services;
+namespace ContextBrowser.Services.Parsing;
 
 public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFactory<TContext>
     where TContext : ContextInfo
@@ -26,10 +28,7 @@ public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFa
         return new List<ICommentParsingStrategy<TContext>>()
         {
             new CoverageStrategy<TContext>(),
-            new ContextValidationDecorator<TContext>(
-                _classifier,
-                new ContextStrategy<TContext>(_optionsStore, _logger),
-                _logger),
+            new ContextValidationDecorator<TContext>(_classifier,  new ContextStrategy<TContext>(_optionsStore, _logger), _logger),
         };
     }
 }

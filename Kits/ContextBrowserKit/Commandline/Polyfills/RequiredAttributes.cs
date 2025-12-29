@@ -1,6 +1,8 @@
-﻿#if !NET7_0_OR_GREATER
+﻿using System;
 
-namespace System.Runtime.CompilerServices
+#if !NET7_0_OR_GREATER
+
+namespace ContextBrowserKit.Commandline.Polyfills
 {
     //namespace System.Runtime.CompilerServices
 

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
-using HtmlKit.Model;
 using HtmlKit.Model.Containers;
 using HtmlKit.Model.Tabsheet;
-using TensorKit.Model;
 
-namespace ContextBrowser.Samples.HtmlPages;
+namespace ExporterKit.Html.Datamodels;
 
 public interface IPumlEnbeddedInjectionDatamodel<TTensor> : IHtmlTabsheetDataModel
     where TTensor : notnull
@@ -20,7 +16,7 @@ public interface IPumlEnbeddedInjectionDatamodel<TTensor> : IHtmlTabsheetDataMod
 }
 
 public interface IMethodListDatamodel<TTensor> : IHtmlTabsheetDataModel
-    where TTensor : ITensor
+    where TTensor : notnull
 {
     IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto);
 }

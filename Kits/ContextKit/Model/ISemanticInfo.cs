@@ -4,11 +4,11 @@ public interface ISemanticInfo
 {
     string Identifier { get; }
 
-    string Name { get; set; }
+    string Name { get; }
 
-    string FullName { get; set; }
+    string FullName { get; }
 
-    string ShortName { get; set; }
+    string ShortName { get; }
 
-    string Namespace { get; set; }
+    string Namespace { get; }
 }

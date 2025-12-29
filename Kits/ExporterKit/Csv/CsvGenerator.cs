@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ContextBrowserKit.Options;
-using ContextKit.Model;
 using ContextKit.Model.Classifier;
-using HtmlKit.Options;
 using TensorKit.Factories;
 using TensorKit.Model;
-using TensorKit.Model.DomainPerAction;
 
 namespace ExporterKit.Csv;
 
 // context: heatmap, build
 // pattern: Builder
-public class CsvGenerator : ICsvGenerator
+public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
+    where TDataTensor : IDomainPerActionTensor
 {
-    private readonly ITensorFactory<DomainPerActionTensor> _keyFactory;
+    private readonly ITensorFactory<TDataTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
     private readonly IWordRoleClassifier _wordRoleClassifier;
     private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
 
-    public CsvGenerator(ITensorFactory<DomainPerActionTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
+    public CsvGenerator(ITensorFactory<TDataTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
@@ -30,7 +27,7 @@ public class CsvGenerator : ICsvGenerator
     }
 
     //context: build, csv, heatmap
-    public void GenerateHeatmap(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<DomainPerActionTensor, List<object>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
+    public void GenerateHeatmap(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<TDataTensor, List<object>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 
@@ -51,7 +48,7 @@ public class CsvGenerator : ICsvGenerator
             var rows = new List<object> { action };
             foreach (var domain in domains)
             {
-                var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new [] { action, domain }, _keyFactory.Create);
+                var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { action, domain }, _keyFactory.Create);
                 var count = matrix.TryGetValue(contextKey, out var methods) ? methods.Count : 0;
                 rows.Add(count.ToString());
             }

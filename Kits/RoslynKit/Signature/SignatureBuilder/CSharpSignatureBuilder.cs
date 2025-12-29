@@ -1,0 +1,25 @@
+﻿using Microsoft.CodeAnalysis;
+
+namespace RoslynKit.Signature.SignatureBuilder;
+
+// context: roslyn, signature, build
+public class CSharpSignatureBuilder : SignatureBuilder
+{
+    public CSharpSignatureBuilder()
+    {
+    }
+
+    public CSharpSignatureBuilder(SignatureBuilder source) : base(source)
+    {
+    }
+
+    public override string Build(ISymbol symbol)
+    {
+        return symbol switch
+        {
+            IMethodSymbol methodSymbol => new CSharpSignatureBuilderMethodSymbol(this).Build(methodSymbol),
+            ITypeSymbol typeSymbol => new CSharpSignatureBuilderTypeSymbol(this).Build(typeSymbol),
+            _ => new CSharpSignatureBuilderDefault(this).Build(symbol)
+        };
+    }
+}

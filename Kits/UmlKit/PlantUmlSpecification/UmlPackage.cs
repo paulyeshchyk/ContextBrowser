@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using UmlKit.PlantUmlSpecification.Attributes;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 // context: model, uml
 // pattern: Composite leaf
@@ -43,8 +43,7 @@ public class UmlPackage : IUmlElement, IUmlDeclarable, IUmlElementCollection
     public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
         writer.WriteLine();
-        writer.WriteLine($"{Declaration} {GetUrl()}");
-        writer.WriteLine("{");
+        writer.WriteLine($"{Declaration} {GetUrl()} {{");
         foreach (var element in Elements.OrderBy(e => e.Key).Select(e => e.Value))
             element.WriteTo(writer, writeOptions);
         writer.WriteLine("}");

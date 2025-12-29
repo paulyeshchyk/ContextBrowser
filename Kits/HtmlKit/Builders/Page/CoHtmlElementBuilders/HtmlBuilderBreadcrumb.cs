@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection.Metadata.Ecma335;
+﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlKit.Builders.Core;
-using HtmlKit.Builders.Tag;
-using HtmlKit.Classes;
 
-namespace HtmlKit.Page;
+namespace HtmlKit.Builders.Page.CoHtmlElementBuilders;
 
 public static partial class HtmlBuilderFactory
 {
-    private class HtmlBuilderBreadcrumb : HtmlBuilder
+    public class HtmlBuilderBreadcrumb : HtmlBuilder
     {
         private readonly BreadcrumbNavigationItem InitialNavigationItem;
 
@@ -21,25 +16,25 @@ public static partial class HtmlBuilderFactory
             InitialNavigationItem = initialNavigationItem;
         }
 
-        protected override void WriteContentTag(TextWriter writer, IHtmlTagAttributes? attributes, string content = "", bool isEncodable = true)
+        protected override async Task WriteContentTagAsync(TextWriter writer, IHtmlTagAttributes? attributes, string content = "", bool isEncodable = true, CancellationToken cancellationToken = default)
         {
             //Отрисовываем панель
-            HtmlBuilderFactory.Div.With(writer, new HtmlTagAttributes { { "id", "nav-panel" } });
+            await Page.HtmlBuilderFactory.Div.WithAsync(writer, new HtmlTagAttributes { { "id", "nav-panel" } }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             //Строим контейнер для навигационных ссылок
-            BuildPageData(writer, InitialNavigationItem.Url, InitialNavigationItem.Name);
+            await BuildPageData(writer, InitialNavigationItem.Url, InitialNavigationItem.Name, cancellationToken).ConfigureAwait(false);
 
             // располагаем скрипт только здесь и нигде иначе
-            HtmlBuilderFactory.Script.Cell(writer, innerHtml: Resources.JsBreadcrumbScript, isEncodable: false);
+            await Page.HtmlBuilderFactory.Script.CellAsync(writer, innerHtml: Resources.JsBreadcrumbScript, isEncodable: false, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        public void BuildPageData(TextWriter writer, string pageUrl, string pageName)
+        public async Task BuildPageData(TextWriter writer, string pageUrl, string pageName, CancellationToken cancellationToken)
         {
             var jsonString = System.Text.Json.JsonSerializer.Serialize(InitialNavigationItem);
 
-            HtmlBuilderFactory.Div.Cell(writer,
+            await Page.HtmlBuilderFactory.Div.CellAsync(writer,
                 attributes: new HtmlTagAttributes { { "id", "page-data" }, { "style", "display:none;" } },
-                innerHtml: jsonString);
+                innerHtml: jsonString, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

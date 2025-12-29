@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using CustomServers;
 using Microsoft.Extensions.Hosting;
 
 namespace ContextBrowser.Services;
@@ -29,7 +30,7 @@ public class CustomEnvironmentHostedService : IHostedService
             var filePaths = _optionsStore.GetOptions<ExportFilePaths>();
             CustomEnvironment.CopyResources(filePaths.OutputDirectory);
             CustomEnvironment.RunServers(filePaths.OutputDirectory);
-        }, cancellationToken);
+        }, cancellationToken).ConfigureAwait(false);
 
         return Task.CompletedTask;
     }

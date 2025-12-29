@@ -1,4 +1,4 @@
-﻿namespace ContextKit.Model.Classifier;
+﻿namespace TensorKit.Model;
 
 public interface ITensorDimensionType
 {

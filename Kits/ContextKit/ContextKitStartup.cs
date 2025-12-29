@@ -1,4 +1,6 @@
-﻿internal static class ContextKitStartup
+﻿namespace ContextKit;
+
+internal static class ContextKitStartup
 {
     public static void Main(string[] args)
     {

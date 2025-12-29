@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace UmlKit.Model;
+namespace UmlKit.PlantUmlSpecification;
 
 // context: model, uml
 // pattern: Composite leaf
@@ -23,8 +23,8 @@ public class UmlMethodBox : IUmlElement
     {
         writer.WriteLine();
         if (!string.IsNullOrWhiteSpace(Stereotype))
-            writer.WriteLine($"    [{Name}] <<{Stereotype}>>");
+            writer.WriteLine($"    \"{Name}\" <<{Stereotype}>>");
         else
-            writer.WriteLine($"    [{Name}]");
+            writer.WriteLine($"    \"{Name}\"");
     }
 }

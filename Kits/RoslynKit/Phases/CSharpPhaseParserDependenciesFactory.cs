@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using ContextBrowserKit.Log;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData.Comment;
 using ContextKit.Model;
-using ContextKit.Stategies;
 using LoggerKit;
 using RoslynKit.Phases.ContextInfoBuilder;
-using RoslynKit.Phases.Syntax;
 using RoslynKit.Phases.Syntax.Parsers;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
@@ -43,14 +41,14 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
         // 1. Создаем билдеры контекстов и другие вспомогательные классы
         var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _logger);
         var methodContextInfoBuilder = new CSharpMethodContextInfoBuilder<TContext>(_collector, _factory, _logger);
-        var triviaCommentParser = new CSharpCommentTriviaSyntaxParser<TContext>(_commentProcessor, _logger);
+        var triviaCommentParser = new CSharpSyntaxParserCommentTrivia<TContext>(_commentProcessor, _logger);
         var delegateContextInfoBuilder = new CSharpDelegateContextInfoBuilder<TContext>(_collector, _factory, _logger);
         var interfaceContextInfoBuilder = new CSharpInterfaceContextInfoBuilder<TContext>(_collector, _factory, _logger);
         var propertyContextInfoBuilder = new CSharpPropertyContextInfoBuilder<TContext>(_collector, _factory, _logger);
         var recordContextInfoBuilder = new CSharpRecordContextInfoBuilder<TContext>(_collector, _factory, _logger);
         var enumContextInfoBuilder = new CSharpEnumContextInfoBuilder<TContext>(_collector, _factory, _logger);
 
-        var propertyDeclarationParser = new CSharpTypePropertyParser<TContext>(
+        var propertyDeclarationParser = new CSharpSyntaxParserTypeProperty<TContext>(
             _collector,
             propertyContextInfoBuilder,
             triviaCommentParser,
@@ -60,19 +58,19 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
             interfaceContextInfoBuilder,
             _logger);
 
-        var enumDeclarationParser = new CSharpEnumSyntaxParser<TContext>(_logger);
-        var delegateDeclarationParser = new CSharpDelegateSyntaxParser<TContext>(delegateContextInfoBuilder, triviaCommentParser, _logger);
+        var enumDeclarationParser = new CSharpSyntaxParserEnum<TContext>(_logger);
+        var delegateDeclarationParser = new CSharpSyntaxParserDelegate<TContext>(delegateContextInfoBuilder, triviaCommentParser, _logger);
 
-        var methodSyntaxParser = new CSharpMethodSyntaxParser<TContext>(methodContextInfoBuilder, triviaCommentParser, _logger);
+        var methodSyntaxParser = new CSharpSyntaxParserMethod<TContext>(methodContextInfoBuilder, triviaCommentParser, _logger);
 
-        var interfaceDeclarationParser = new CSharpInterfaceSyntaxParser<TContext>(
+        var interfaceDeclarationParser = new CSharpSyntaxParserInterface<TContext>(
             interfaceContextInfoBuilder,
             propertyDeclarationParser,
             methodSyntaxParser,
             triviaCommentParser,
             _logger);
 
-        var typeDeclarationParser = new CSharpTypeClassSyntaxParser<TContext>(
+        var typeDeclarationParser = new CSharpSyntaxParserTypeClass<TContext>(
             _collector,
             typeContextInfoBuilder,
             propertyDeclarationParser,
@@ -81,7 +79,7 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
             options,
             _logger);
 
-        var recordDeclarationParser = new CSharpTypeRecordSyntaxParser<TContext>(
+        var recordDeclarationParser = new CSharpSyntaxParserTypeRecord<TContext>(
             _collector,
             recordContextInfoBuilder,
             propertyDeclarationParser,

@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
 using ContextKit.Model.Factory;
 using LoggerKit;
 
-namespace ContextBrowser.FileManager;
+namespace ContextKit.Model.CacheManager;
 
 // Новая реализация, которая инкапсулирует всю файловую логику
 public class ContextFileCacheStrategy : IFileCacheStrategy
@@ -36,7 +35,7 @@ public class ContextFileCacheStrategy : IFileCacheStrategy
 
         try
         {
-            var fileContent = await File.ReadAllTextAsync(cacheModel.Input, cancellationToken);
+            var fileContent = await File.ReadAllTextAsync(cacheModel.Input, cancellationToken).ConfigureAwait(false);
             if (string.IsNullOrEmpty(fileContent))
                 return Enumerable.Empty<ContextInfo>();
 
@@ -45,7 +44,7 @@ public class ContextFileCacheStrategy : IFileCacheStrategy
                 return Enumerable.Empty<ContextInfo>();
 
             _appLogger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "Returning data from file cache.");
-            return await onRelationCallback(serializableList, cancellationToken);
+            return await onRelationCallback(serializableList, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -62,10 +61,19 @@ public class ContextFileCacheStrategy : IFileCacheStrategy
         {
             var serializableList = ContextInfoSerializableModelAdapter.Adapt(contexts.ToList());
             var json = JsonSerializer.Serialize(serializableList, _jsonOptions);
-            await File.WriteAllTextAsync(tempFilePath, json, cancellationToken);
+            await File.WriteAllTextAsync(tempFilePath, json, cancellationToken).ConfigureAwait(false);
 
             if (File.Exists(cacheModel.Output))
                 File.Delete(cacheModel.Output);
+
+            var directoryPath = (new FileInfo(cacheModel.Output)).Directory?.FullName;
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
+                throw new Exception($"Wrong directory path for file: {cacheModel.Output}");
+            }
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+
 
             File.Move(tempFilePath, cacheModel.Output);
         }
