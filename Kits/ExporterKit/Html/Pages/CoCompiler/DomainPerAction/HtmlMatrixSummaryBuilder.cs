@@ -33,18 +33,18 @@ public class HtmlMatrixSummaryBuilder<TTensor> : IHtmlMatrixSummaryBuilder<TTens
 
     private Dictionary<object, int> ColsSummary(IContextInfoDataset<ContextInfo, TTensor> matrix, IHtmlMatrix uiMatrix, TensorPermutationType orientation)
     {
-        return uiMatrix.cols.ToDictionary(col => col, domain => uiMatrix.rows.Sum(action =>
+        return uiMatrix.cols.DistinctBy(c => c.LabeledData).ToDictionary(col => col.LabeledData, domain => uiMatrix.rows.Sum(action =>
         {
-            var key = _keyBuilder.BuildTensor(orientation, new[] { action, domain }, _keyFactory.Create);
+            var key = _keyBuilder.BuildTensor(orientation, new[] { action.LabeledData, domain.LabeledData }, _keyFactory.Create);
             return matrix.TryGetValue(key, out var methods) ? methods.Count : 0;
         }));
     }
 
     private Dictionary<object, int> RowsSummary(IContextInfoDataset<ContextInfo, TTensor> matrix, IHtmlMatrix uiMatrix, TensorPermutationType orientation)
     {
-        return uiMatrix.rows.ToDictionary(row => row, action => uiMatrix.cols.Sum(domain =>
+        return uiMatrix.rows.DistinctBy(r => r.LabeledData).ToDictionary(row => row.LabeledData, action => uiMatrix.cols.Sum(domain =>
         {
-            var key = _keyBuilder.BuildTensor(orientation, new[] { action, domain }, _keyFactory.Create);
+            var key = _keyBuilder.BuildTensor(orientation, new[] { action.LabeledData, domain.LabeledData }, _keyFactory.Create);
             return matrix.TryGetValue(key, out var methods) ? methods.Count : 0;
         }));
     }

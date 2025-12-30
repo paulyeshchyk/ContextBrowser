@@ -6,17 +6,10 @@ using LoggerKit;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Syntax.Parsers;
 using SemanticKit.Model;
-using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases;
 
-public interface ISemanticSyntaxRouterBuilder<TContext>
-    where TContext : IContextWithReferences<TContext>
-{
-    ISemanticSyntaxRouter<TContext> CreateRouter(SemanticOptions options);
-}
-
-public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRouterBuilder<TContext>
+public class RoslynSemanticSyntaxRouterBuilder<TContext> : ISemanticSyntaxRouterBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private readonly IContextCollector<TContext> _collector;
@@ -24,7 +17,7 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
     private readonly IContextInfoCommentProcessor<TContext> _commentProcessor;
     private readonly IAppLogger<AppLevel> _logger;
 
-    public CSharpPhaseParserDependenciesFactory(
+    public RoslynSemanticSyntaxRouterBuilder(
         IContextCollector<TContext> collector,
         IContextFactory<TContext> factory,
         IContextInfoCommentProcessor<TContext> commentProcessor,
@@ -36,7 +29,7 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
         _logger = logger;
     }
 
-    public ISemanticSyntaxRouter<TContext> CreateRouter(SemanticOptions options)
+    public ISemanticSyntaxRouter<TContext> CreateRouter()
     {
         // 1. Создаем билдеры контекстов и другие вспомогательные классы
         var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _logger);
@@ -76,7 +69,6 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
             propertyDeclarationParser,
             methodSyntaxParser,
             triviaCommentParser,
-            options,
             _logger);
 
         var recordDeclarationParser = new CSharpSyntaxParserTypeRecord<TContext>(
@@ -85,7 +77,6 @@ public class CSharpPhaseParserDependenciesFactory<TContext> : ISemanticSyntaxRou
             propertyDeclarationParser,
             methodSyntaxParser,
             triviaCommentParser,
-            options,
             _logger);
 
         // 4. Собираем все парсеры в список для роутера

@@ -37,10 +37,7 @@ public class ContextInfoDataset<TContext, TTensor> : IContextInfoDataset<TContex
     // context: ContextInfoMatrix, read
     public IEnumerator<KeyValuePair<TTensor, List<TContext>>> GetEnumerator()
     {
-        foreach (var entry in Data)
-        {
-            yield return entry;
-        }
+        return ((IEnumerable<KeyValuePair<TTensor, List<TContext>>>)Data).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

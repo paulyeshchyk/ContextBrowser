@@ -19,13 +19,25 @@ public record DomainPerActionTensor : TensorBase, IDomainPerActionTensor
 
     public string Action
     {
-        get => (string)this[DomainPerActionDimensionType.Action];
+        get
+        {
+            var obj = this[DomainPerActionDimensionType.Action];
+            if (obj is string v)
+                return v;
+            return obj.ToString() ?? string.Empty;
+        }
         init => _dimensions[DomainPerActionDimensionType.Action] = value;
     }
 
     public string Domain
     {
-        get => (string)this[DomainPerActionDimensionType.Domain];
+        get
+        {
+            var obj = this[DomainPerActionDimensionType.Domain];
+            if (obj is string v)
+                return v;
+            return obj.ToString() ?? string.Empty;
+        }
         init => _dimensions[DomainPerActionDimensionType.Domain] = value;
     }
 

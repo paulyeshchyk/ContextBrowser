@@ -27,6 +27,8 @@ public class RoslynCompilationBuilder : ICompilationBuilder
     // context: roslyn, build
     public SemanticCompilationMap BuildCompilationMap(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken = default)
     {
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Build compilation map", LogLevelNode.Start);
+
         // 1. Читаем все файлы и создаём деревья с путями
         var syntaxTrees = codeFiles
             .Select(filePath => CSharpSyntaxTree.ParseText(PsoudoCodeInject(options, filePath), path: filePath, cancellationToken: cancellationToken))
@@ -38,6 +40,8 @@ public class RoslynCompilationBuilder : ICompilationBuilder
 
         // 3. Формируем модель для каждого дерева
         var result = BuildSemanticCompilationMap(syntaxTrees, compilation);
+
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Build compilation map", LogLevelNode.End);
 
         return result;
     }

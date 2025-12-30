@@ -10,7 +10,7 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
 {
     private readonly IContextInfoDatasetBuilder<TTensor> _datasetBuilder;
 
-    private IContextInfoDataset<ContextInfo, TTensor>? _dataset;
+    private Task<IContextInfoDataset<ContextInfo, TTensor>>? _datasetTask;
 
     private readonly object _lock = new object();
 
@@ -22,30 +22,29 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
 
     public async Task<IContextInfoDataset<ContextInfo, TTensor>> GetDatasetAsync(CancellationToken cancellationToken)
     {
-        if (_dataset == null)
+        // Первая проверка без лока, для быстрого выхода
+        if (_datasetTask != null)
         {
-            await BuildDatasetAsync(cancellationToken).ConfigureAwait(false);
+            // Возвращаем результат существующей задачи
+            return await _datasetTask.ConfigureAwait(false);
         }
-        return _dataset!;
+
+        // Если задача не инициализирована, используем lock
+        lock (_lock)
+        {
+            // Если задача все еще null, создаем и запускаем задачу инициализации.
+            // Task.Run гарантирует, что работа GetParsedContextsAsync и Build
+            // выполняется вне текущего потока и НЕ блокирует его.
+            _datasetTask ??= BuildDatasetTaskAsync(cancellationToken);
+        }
+
+        // Ожидаем завершения созданной или существующей задачи.
+        return await _datasetTask.ConfigureAwait(false);
     }
 
-    // Приватный метод для однократной сборки датасета.
-    internal async Task BuildDatasetAsync(CancellationToken cancellationToken)
+    internal async Task<IContextInfoDataset<ContextInfo, TTensor>> BuildDatasetTaskAsync(CancellationToken cancellationToken)
     {
-        lock (_lock)
-        {
-            if (_dataset != null)
-            {
-                return;
-            }
-        }
-
         var contextsList = await GetParsedContextsAsync(cancellationToken).ConfigureAwait(false);
-        var newDataset = _datasetBuilder.Build(contextsList);
-
-        lock (_lock)
-        {
-            _dataset = newDataset;
-        }
+        return _datasetBuilder.Build(contextsList, cancellationToken);
     }
 }

@@ -34,7 +34,7 @@ public static class CommandLineHelpProducer
     }
 
     // context: commandline, build
-    public static string GenerateHelpText<T>(string argumentPrefix, string? specificParamName = null)
+    public static string GenerateHelpText<T>(string argumentPrefix, string? specificParamName)
     {
         var helpText = new StringBuilder();
 
@@ -78,13 +78,15 @@ public static class CommandLineHelpProducer
         foreach (var prop in allProperties)
         {
             var argAttr = prop.GetCustomAttribute<CommandLineArgumentAttribute>();
-            if (argAttr != null)
+            if (argAttr == null)
             {
-                var isRequired = prop.GetCustomAttribute<RequiredMemberAttribute>() != null;
-                var requiredMarker = isRequired ? " (обязательный)" : string.Empty;
-
-                helpText.AppendLine($"  {argumentPrefix}{argAttr.Name}{requiredMarker}: {argAttr.Description}");
+                continue;
             }
+
+            var isRequired = prop.GetCustomAttribute<RequiredMemberAttribute>() != null;
+            var requiredMarker = isRequired ? " (обязательный)" : string.Empty;
+
+            helpText.AppendLine($"  {argumentPrefix}{argAttr.Name}{requiredMarker}: {argAttr.Description}");
         }
         return helpText.ToString();
     }

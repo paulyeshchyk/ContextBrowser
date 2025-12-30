@@ -62,10 +62,12 @@ public record SemanticOptions
 // context: model, semantic
 public record CodeParsingOptions
 {
+    public string SemanticLanguage { get; set; }
     public SemanticOptions SemanticOptions { get; set; }
 
-    public CodeParsingOptions(SemanticOptions semanticOptions)
+    public CodeParsingOptions(SemanticOptions semanticOptions, string semanticLanguage)
     {
         SemanticOptions = semanticOptions;
+        SemanticLanguage = semanticLanguage;
     }
 }

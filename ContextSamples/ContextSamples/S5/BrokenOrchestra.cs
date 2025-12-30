@@ -13,7 +13,7 @@ public class BrokenOrchestra
         return !string.IsNullOrWhiteSpace(raw);
     }
 
-    //context: read, S5.1
+    // context: read, S5.1
     public void Test()
     {
         var data = Reader.ReadFile();

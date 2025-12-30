@@ -19,6 +19,12 @@ public interface INamingProcessor
     string ClassOnlyDiagramId(string? className);
     string ClassOnlyDiagramTitle(string? className);
 
+    string CompositeDomainPageLink(string? domain);
+    string CompositeActionPageLink(string? action);
+
+    string NamespaceOnlyDiagramId(string? nameSpace);
+    string NamespaceOnlyPumlFilename(string? nameSpace);
+
     string MindmapClassOnlyPumlFilename(string? className);
 
     string MindmapActionPumlFilename(string? action);

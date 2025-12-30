@@ -21,9 +21,6 @@ namespace ExporterKit.Html.Pages.CoCompiler;
 public static class TabsheetFactory<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string HtmlPathTemplateCompositeDomain = "/pages/composite_domain_{0}.html";
-    private const string HtmlPathTemplateCompositeAction = "/pages/composite_action_{0}.html";
-
     public static IHtmlTabRegistration<ContextInfoKeyContainerEntityName> DomainMindmapTabRegistration(ExportOptions exportOptions, INamingProcessor namingProcessor)
     {
         // Вкладка: Mindmap (PUML)
@@ -302,9 +299,9 @@ public static class TabsheetFactory<TDataTensor>
             build: async (writer, model, dto, token) =>
             {
                 var titleDomain = dto.ContextKey.Domain;
-                var linkDomain = string.Format(HtmlPathTemplateCompositeDomain, titleDomain);
+                var linkDomain = namingProcessor.CompositeDomainPageLink(titleDomain);
                 var titleAction = dto.ContextKey.Action;
-                var linkAction = string.Format(HtmlPathTemplateCompositeAction, titleAction);
+                var linkAction = namingProcessor.CompositeActionPageLink(titleAction);
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Domain: <a href=\"{linkDomain}\">{titleDomain}</a>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: $"Action: <a href=\"{linkAction}\">{titleAction}</a>", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
                 await HtmlBuilderFactory.Div.CellAsync(writer, innerHtml: "-", cancellationToken: token).ConfigureAwait(false);

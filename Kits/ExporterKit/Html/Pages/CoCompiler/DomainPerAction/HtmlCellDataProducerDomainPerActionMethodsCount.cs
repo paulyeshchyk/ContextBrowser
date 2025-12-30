@@ -44,7 +44,7 @@ public class HtmlCellDataProducerDomainPerActionMethodsCount<TTensor> : IHtmlCel
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
         dataset.TryGetValue(container, out var methods);
-        var cnt = methods?.Count ?? 0;
+        var cnt = methods.Count;
 
         // вставка вложенного контента
         var result = await _contentInjector.InjectAsync(container, cnt, cancellationToken).ConfigureAwait(false);
@@ -69,7 +69,7 @@ public class HtmlCellDataProducerMethodList<TTensor> : IHtmlCellDataProducer<str
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
         dataset.TryGetValue(container, out var methods);
-        var cnt = methods?.Count ?? 0;
+        var cnt = methods.Count;
 
         // вставка вложенного контента
         var result = await _contentInjector.InjectAsync(container, cnt, cancellationToken).ConfigureAwait(false);

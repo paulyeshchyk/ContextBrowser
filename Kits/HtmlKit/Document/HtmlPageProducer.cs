@@ -25,27 +25,27 @@ public abstract class HtmlPageProducer
     {
         var options = _optionsStore.GetOptions<HtmlTableOptions>();
 
-        await HtmlBuilderFactory.Html.WithAsync(writer, async (token) =>
+        await HtmlBuilderFactory.Html.WithAsync(writer, async (ctoken) =>
         {
-            await HtmlBuilderFactory.Head.WithAsync(writer, async (token) =>
+            await HtmlBuilderFactory.Head.WithAsync(writer, async (btoken) =>
             {
                 var attrs = new HtmlTagAttributes() { { "charset", "UTF-8" } };
-                await HtmlBuilderFactory.Meta.CellAsync(writer, attributes: attrs, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
-                await HtmlBuilderFactory.Title.CellAsync(writer, innerHtml: Title, cancellationToken: token).ConfigureAwait(false);
-                await HtmlBuilderFactory.Style.CellAsync(writer, innerHtml: Resources.HtmlProducerContentStyle, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                await HtmlBuilderFactory.Meta.CellAsync(writer, attributes: attrs, isEncodable: false, cancellationToken: btoken).ConfigureAwait(false);
+                await HtmlBuilderFactory.Title.CellAsync(writer, innerHtml: Title, cancellationToken: btoken).ConfigureAwait(false);
+                await HtmlBuilderFactory.Style.CellAsync(writer, innerHtml: Resources.HtmlProducerContentStyle, isEncodable: false, cancellationToken: btoken).ConfigureAwait(false);
 
                 foreach (var script in GetScripts())
-                    await HtmlBuilderFactory.Script.CellAsync(writer, innerHtml: script, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                    await HtmlBuilderFactory.Script.CellAsync(writer, innerHtml: script, isEncodable: false, cancellationToken: btoken).ConfigureAwait(false);
 
                 foreach (var script in GetAdditionalScripts())
-                    await HtmlBuilderFactory.Script.CellAsync(writer, innerHtml: script, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                    await HtmlBuilderFactory.Script.CellAsync(writer, innerHtml: script, isEncodable: false, cancellationToken: btoken).ConfigureAwait(false);
 
-                await HtmlBuilderFactory.Body.WithAsync(writer, async (token) =>
+                await HtmlBuilderFactory.Body.WithAsync(writer, async (atoken) =>
                 {
-                    await HtmlBuilderFactory.H1.CellAsync(writer, innerHtml: Title, cancellationToken: token).ConfigureAwait(false);
-                    await WriteContentAsync(writer, matrix, options, cancellationToken: token).ConfigureAwait(false);
-                }, token).ConfigureAwait(false);
-            }, token).ConfigureAwait(false);
+                    await HtmlBuilderFactory.H1.CellAsync(writer, innerHtml: Title, cancellationToken: atoken).ConfigureAwait(false);
+                    await WriteContentAsync(writer, matrix, options, cancellationToken: atoken).ConfigureAwait(false);
+                }, btoken).ConfigureAwait(false);
+            }, ctoken).ConfigureAwait(false);
         }, cancellationToken).ConfigureAwait(false);
     }
 

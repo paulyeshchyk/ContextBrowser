@@ -1,6 +1,6 @@
 ﻿using System;
 using ContextBrowserKit.Options;
-using ExporterKit.Html.Containers;
+using ContextKit.Model;
 using HtmlKit.Helpers;
 using TensorKit.Model;
 
@@ -10,30 +10,30 @@ public class HtmlHrefManagerDomainPerAction : IHtmlHrefManager<DomainPerActionTe
 {
     private static readonly long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-    public string GetHrefColSummary(object key, HtmlTableOptions _options) =>
+    public string GetHrefColSummary(ILabeledValue key, HtmlTableOptions _options) =>
         _options.Orientation == TensorPermutationType.Standard
-            ? $"pages\\composite_domain_{key}.html?v={TimeStamp}"
-            : $"pages\\composite_action_{key}.html?v={TimeStamp}";
+            ? $"pages\\composite_domain_{key.LabeledData}.html?v={TimeStamp}"
+            : $"pages\\composite_action_{key.LabeledData}.html?v={TimeStamp}";
 
-    public string GetHrefRowSummary(object key, HtmlTableOptions _options) =>
+    public string GetHrefRowSummary(ILabeledValue key, HtmlTableOptions _options) =>
         _options.Orientation == TensorPermutationType.Standard
-            ? $"pages\\composite_action_{key}.html?v={TimeStamp}"
-            : $"pages\\composite_domain_{key}.html?v={TimeStamp}";
+            ? $"pages\\composite_action_{key.LabeledData}.html?v={TimeStamp}"
+            : $"pages\\composite_domain_{key.LabeledData}.html?v={TimeStamp}";
 
-    public string GetHRefRow(string key, HtmlTableOptions _options) =>
+    public string GetHRefRow(ILabeledValue key, HtmlTableOptions _options) =>
         _options.Orientation == TensorPermutationType.Standard
-            ? $"pages\\composite_action_{key}.html?v={TimeStamp}"
-            : $"pages\\composite_domain_{key}.html?v={TimeStamp}";
+            ? $"pages\\composite_action_{key.LabeledData}.html?v={TimeStamp}"
+            : $"pages\\composite_domain_{key.LabeledData}.html?v={TimeStamp}";
 
-    public string GetHRefRowMeta(object key, HtmlTableOptions _options) =>
+    public string GetHRefRowMeta(ILabeledValue key, HtmlTableOptions _options) =>
         _options.Orientation == TensorPermutationType.Standard
-            ? $"pages\\composite_domain_{key}.html?v={TimeStamp}"
-            : $"pages\\composite_action_{key}.html?v={TimeStamp}";
+            ? $"pages\\composite_domain_{key.LabeledData}.html?v={TimeStamp}"
+            : $"pages\\composite_action_{key.LabeledData}.html?v={TimeStamp}";
 
-    public string GetHRefRowHeader(object key, HtmlTableOptions _options) =>
+    public string GetHRefRowHeader(ILabeledValue key, HtmlTableOptions _options) =>
         _options.Orientation == TensorPermutationType.Standard
-            ? $"pages\\composite_action_{key}.html?v={TimeStamp}"
-            : $"pages\\composite_domain_{key}.html?v={TimeStamp}";
+            ? $"pages\\composite_action_{key.LabeledData}.html?v={TimeStamp}"
+            : $"pages\\composite_domain_{key.LabeledData}.html?v={TimeStamp}";
 
     public string GetHrefCell(DomainPerActionTensor cell, HtmlTableOptions _options) =>
         $"pages\\composite_{cell.Action}_{cell.Domain}.html?v={TimeStamp}";

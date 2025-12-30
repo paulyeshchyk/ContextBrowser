@@ -15,14 +15,14 @@ public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
 {
     private readonly ITensorFactory<TDataTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
-    private readonly IWordRoleClassifier _wordRoleClassifier;
+    private readonly IContextClassifier _wordRoleClassifier;
     private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
 
     public CsvGenerator(ITensorFactory<TDataTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
-        _wordRoleClassifier = appOptionsStore.GetOptions<IWordRoleClassifier>();
+        _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier>();
         _emptyDimensionClassifier = appOptionsStore.GetOptions<IEmptyDimensionClassifier>();
     }
 

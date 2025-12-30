@@ -4,7 +4,6 @@ using ContextKit.Model.Collector;
 using LoggerKit;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Invocations.Parser;
-using RoslynKit.Phases.Syntax.Parsers;
 using SemanticKit.Model;
 
 namespace ContextBrowser.Services.Parsing;
@@ -14,7 +13,7 @@ public interface IReferenceParserFactory
     RoslynInvocationParser<ContextInfo> Create();
 }
 
-public class ReferenceParserFactory : IReferenceParserFactory
+public class RolsynReferenceParserFactory : IReferenceParserFactory
 {
     private readonly ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> _semanticModelStorage;
     private readonly ISyntaxTreeWrapperBuilder _syntaxTreeWrapperBuilder;
@@ -23,7 +22,7 @@ public class ReferenceParserFactory : IReferenceParserFactory
     private readonly IContextCollector<ContextInfo> _contextInfoCollector;
     private readonly IInvocationSyntaxResolver _invocationSyntaxExtractor;
 
-    public ReferenceParserFactory(
+    public RolsynReferenceParserFactory(
         ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> semanticModelStorage,
         ISyntaxTreeWrapperBuilder syntaxTreeWrapperBuilder,
         IAppLogger<AppLevel> appLogger,

@@ -1,13 +1,14 @@
 ﻿using ContextBrowserKit.Extensions;
+using ContextKit.Model;
 using UmlKit.Builders;
 
 namespace ExporterKit.Uml.DiagramCompileOptions;
 
 public static class DiagramCompileOptionsFactory
 {
-    public static IDiagramCompileOptions ActionStateOptions(object action)
+    public static IDiagramCompileOptions ActionStateOptions(ILabeledValue action)
     {
-        var actionStr = (string)action;
+        var actionStr = (string)action.LabeledData;
         return new PumlStateCompileOptions
             (
                 metaItem: actionStr,
@@ -17,9 +18,9 @@ public static class DiagramCompileOptionsFactory
                 outputFileName: $"state_action_{action}.puml");
     }
 
-    public static IDiagramCompileOptions DomainStateCompileOptions(object domain)
+    public static IDiagramCompileOptions DomainStateCompileOptions(ILabeledValue domain)
     {
-        var domainStr = (string)domain;
+        var domainStr = (string)domain.LabeledData;
         return new PumlStateCompileOptions
             (
                 metaItem: domainStr,
@@ -29,9 +30,9 @@ public static class DiagramCompileOptionsFactory
                 outputFileName: $"state_domain_{domain}.puml");
     }
 
-    public static IDiagramCompileOptions DomainSequenceCompileOptions(object domain)
+    public static IDiagramCompileOptions DomainSequenceCompileOptions(ILabeledValue domain)
     {
-        var domainStr = (string)domain;
+        var domainStr = (string)domain.LabeledData;
         return new PumlSequenceCompileOptions
             (
                 metaItem: domainStr,
@@ -41,9 +42,9 @@ public static class DiagramCompileOptionsFactory
                 outputFileName: $"sequence_domain_{domain}.puml");
     }
 
-    public static IDiagramCompileOptions ActionSequenceCompileOptions(object action)
+    public static IDiagramCompileOptions ActionSequenceCompileOptions(ILabeledValue action)
     {
-        var actionStr = (string)action;
+        var actionStr = (string)action.LabeledData;
         return new PumlSequenceCompileOptions
             (
                 metaItem: actionStr,

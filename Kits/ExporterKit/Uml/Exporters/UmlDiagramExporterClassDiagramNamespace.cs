@@ -5,10 +5,7 @@ using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
-using ExporterKit;
 using ExporterKit.Infrastucture;
-using ExporterKit.Uml;
-using ExporterKit.Uml.Exporters;
 using UmlKit.Builders.Url;
 using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
@@ -22,8 +19,8 @@ public class UmlDiagramExporterClassDiagramNamespace
     {
         var maxLength = Math.Max(nameSpace.Length, classesList.Any() ? classesList.Max(ns => ns.Name.Length) : 0);
 
-        var diagramId = $"namespace_only_{nameSpace.AlphanumericOnly()}";
-        var diagramTitle = $"Package diagram -> {nameSpace}";
+        var diagramId = namingProcessor.NamespaceOnlyDiagramId(nameSpace);
+        var diagramTitle = string.Format("Package diagram -> {0}", nameSpace);
 
         var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
         diagram.SetTitle(diagramTitle);
@@ -36,14 +33,15 @@ public class UmlDiagramExporterClassDiagramNamespace
 
         foreach (var contextInfo in classesList)
         {
-            string? htmlUrl = namingProcessor.ClassOnlyHtmlFilename(contextInfo.FullName);
+            var htmlUrl = namingProcessor.ClassOnlyHtmlFilename(contextInfo.FullName);
             var entityType = contextInfo.ElementType.ConvertToUmlEntityType();
             var umlClass = new UmlEntity(entityType, contextInfo.Name.PadRight(maxLength), contextInfo.Name.AlphanumericOnly(), url: htmlUrl);
             package.Add(umlClass);
         }
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
-        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, $"namespace_only_{nameSpace.AlphanumericOnly()}.puml");
+        var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, namingProcessor.NamespaceOnlyPumlFilename(nameSpace));
+
         diagram.WriteToFile(fileName, writeOptons);
     }
 }

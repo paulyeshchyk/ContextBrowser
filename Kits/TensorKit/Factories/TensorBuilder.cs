@@ -40,15 +40,15 @@ public class TensorBuilder : ITensorBuilder
     }
 
     /// <summary>
-    /// TransposedPermutation<br>
-    /// rank 2: new int[] { 1, 0 }<br>
-    /// rank 3: new int[] { 2, 1, 0 }<br>
-    /// rank 4: new int[] { 3, 2, 1, 0 }<br>
+    /// TransposedPermutation<br/>
+    /// rank 2: new int[] { 1, 0 }<br/>
+    /// rank 3: new int[] { 2, 1, 0 }<br/>
+    /// rank 4: new int[] { 3, 2, 1, 0 }<br/>
     ///
-    /// StandardPermutation<br>
-    /// rank 2: new int[] { 0, 1 }<br>
-    /// rank 3: new int[] { 0, 1, 2 }<br>
-    /// rank 4: new int[] { 0, 1, 2, 3 }<br>
+    /// StandardPermutation<br/>
+    /// rank 2: new int[] { 0, 1 }<br/>
+    /// rank 3: new int[] { 0, 1, 2 }<br/>
+    /// rank 4: new int[] { 0, 1, 2, 3 }<br/>
     /// </summary>
     /// <param name="inputDimensions"></param>
     /// <param name="permutationType"></param>
@@ -61,7 +61,7 @@ public class TensorBuilder : ITensorBuilder
         {
             TensorPermutationType.Standard => Enumerable.Range(0, rank).ToArray(),
             TensorPermutationType.Transposed => Enumerable.Range(0, rank).Reverse().ToArray(),
-            _ => throw new ArgumentOutOfRangeException(nameof(permutationType), $"The provided permutation type is not supported.")
+            _ => throw new ArgumentOutOfRangeException(nameof(permutationType), "The provided permutation type is not supported.")
         };
     }
 }

@@ -6,7 +6,7 @@ namespace TensorKit.Factories;
 /// Фабрика для создания многомерных тензор-ключей.
 /// </summary>
 /// <typeparam name="TKey">Тип тензор-ключа, который будет создан.</typeparam>
-public interface ITensorFactory<TKey>
+public interface ITensorFactory<out TKey>
 {
     /// <summary>
     /// Создает новый ключ на основе массива строковых измерений.

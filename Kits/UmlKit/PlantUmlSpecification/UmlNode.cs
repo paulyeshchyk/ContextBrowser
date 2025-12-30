@@ -79,12 +79,14 @@ public class UmlNode : IUmlParticipant
         if (Url != null)
         {
             // [[http://www.google.com Поисковая_система]]
-            list.Add($"[[{data.Url} {data.Name.AlphanumericOnly()}]]");
+#warning do check .AlphanumericOnly()
+            list.Add($"[[{data.Url} {data.Name}]]");
         }
         else
         {
             // Поисковая_система
-            list.Add($"{data.Name.AlphanumericOnly()}");
+#warning do check .AlphanumericOnly()
+            list.Add($"{data.Name}");
         }
 
         // style: <<brown>>

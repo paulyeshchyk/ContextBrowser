@@ -11,13 +11,13 @@ internal static class CSharpSignatureUtils
         // ищем первую точку после namespace
         var regex = new Regex(@"\b([A-Z][a-zA-Z0-9_]+)\.");
         var nsMatch = regex.Match(input);
-        if (nsMatch == null || !nsMatch.Success)
+        if (!nsMatch.Success)
         {
             // предположим, что это функция, напр, nameof()
             return new SignatureDefault(
                 ResultType: "void",
                 Namespace: "FakeNs",
-                ClassName: "FakeClass",
+                ClassName: "FakeClass1",
                 MethodName: input,
                 Arguments: string.Empty,
                 Raw: input);
@@ -75,9 +75,9 @@ internal static class CSharpSignatureUtils
             var m2 = Regex.Match(input, p2, RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
             return new SignatureDefault(
                         ResultType: "void",
-                        Namespace: (m2.Success) ? m2.Groups[1].Value : "FakeNs",
-                        ClassName: "FakeClass",
-                        MethodName: (m2.Success) ? m2.Groups[2].Value : "FakeMeth",
+                        Namespace: (m2.Success) ? m2.Groups[1].Value : "Unknown namespace",
+                        ClassName: "Unknown class",
+                        MethodName: (m2.Success) ? m2.Groups[2].Value : "Unknown method",
                         Arguments: string.Empty,
                         Raw: input);
         }
@@ -94,8 +94,6 @@ internal static class CSharpSignatureUtils
 
 public static class CSharpMethodSignatureExtensions
 {
-    public static SignatureDefault FakeCSharpMethodSignature() => new(ResultType: "void", Namespace: "FakeNamespace", ClassName: "FakeClass", MethodName: "FakeMethod", Arguments: string.Empty, Raw: $"void FakeNamespace.FakeClass.FakeMethod()");
-
     public static string GetFullName(this ISignature signature)
     {
         return $"{signature.Raw}";

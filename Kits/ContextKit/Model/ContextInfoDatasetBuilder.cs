@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -23,9 +24,11 @@ public class ContextInfoDatasetBuilder<TTensor> : IContextInfoDatasetBuilder<TTe
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public IContextInfoDataset<ContextInfo, TTensor> Build(IEnumerable<ContextInfo> contextsList)
+    public IContextInfoDataset<ContextInfo, TTensor> Build(IEnumerable<ContextInfo> contextsList, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "--- ContextMatrixBuilder.Build ---");
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         var exportOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
 

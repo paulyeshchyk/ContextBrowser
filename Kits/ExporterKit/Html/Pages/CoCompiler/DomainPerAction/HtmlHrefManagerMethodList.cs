@@ -1,6 +1,7 @@
 ﻿using System;
 using ContextBrowserKit.Options;
 using ContextKit.ContextData.Naming;
+using ContextKit.Model;
 using ExporterKit.Html.Containers;
 using HtmlKit.Helpers;
 
@@ -29,17 +30,17 @@ public class HtmlHrefManagerMethodList<TDataTensor> : IHtmlHrefManager<MethodLis
         return string.Empty;
     }
 
-    public string GetHrefColSummary(object key, HtmlTableOptions _options)
+    public string GetHrefColSummary(ILabeledValue key, HtmlTableOptions _options)
     {
         return string.Empty;
     }
 
-    public string GetHRefRow(string key, HtmlTableOptions _options)
+    public string GetHRefRow(ILabeledValue key, HtmlTableOptions _options)
     {
         return string.Empty;
     }
 
-    public string GetHRefRowHeader(object key, HtmlTableOptions _options)
+    public string GetHRefRowHeader(ILabeledValue key, HtmlTableOptions _options)
     {
         return string.Empty;
     }
@@ -54,12 +55,12 @@ public class HtmlHrefManagerMethodList<TDataTensor> : IHtmlHrefManager<MethodLis
         return string.Empty;
     }
 
-    public string GetHRefRowMeta(object key, HtmlTableOptions _options)
+    public string GetHRefRowMeta(ILabeledValue key, HtmlTableOptions _options)
     {
         return string.Empty;
     }
 
-    public string GetHrefRowSummary(object key, HtmlTableOptions _options)
+    public string GetHrefRowSummary(ILabeledValue key, HtmlTableOptions _options)
     {
         return string.Empty;
     }

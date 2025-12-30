@@ -1,4 +1,5 @@
 ﻿using ContextBrowserKit.Options;
+using ContextKit.Model;
 
 namespace HtmlKit.Helpers;
 
@@ -7,17 +8,17 @@ public interface IHtmlHrefManager<TTensor>
 {
     string GetHrefCell(TTensor cell, HtmlTableOptions _options);
 
-    string GetHrefColSummary(object key, HtmlTableOptions _options);
+    string GetHrefColSummary(ILabeledValue key, HtmlTableOptions _options);
 
-    string GetHRefRow(string key, HtmlTableOptions _options);
+    string GetHRefRow(ILabeledValue key, HtmlTableOptions _options);
 
-    string GetHRefRowHeader(object key, HtmlTableOptions _options);
+    string GetHRefRowHeader(ILabeledValue key, HtmlTableOptions _options);
 
     string GetHrefRowHeaderSummary(HtmlTableOptions _options);
 
-    string GetHRefRowMeta(object key, HtmlTableOptions _options);
+    string GetHRefRowMeta(ILabeledValue key, HtmlTableOptions _options);
 
-    string GetHrefRowSummary(object key, HtmlTableOptions _options);
+    string GetHrefRowSummary(ILabeledValue key, HtmlTableOptions _options);
 
     string GetHrefSummary(HtmlTableOptions _options);
 

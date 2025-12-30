@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model.Classifier;
-using TensorKit.Factories;
-using TensorKit.Model;
 
 namespace ContextKit.Model;
 
@@ -12,64 +8,42 @@ namespace ContextKit.Model;
 public class ContextInfoFiller<TTensor> : IContextInfoFiller<TTensor>
     where TTensor : notnull
 {
-    private readonly ITensorFactory<TTensor> _keyFactory;
-    private readonly ITensorBuilder _keyBuilder;
-    private readonly IWordRoleClassifier _wordRoleClassifier;
-    private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
-    private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
+    private readonly IEnumerable<IWordTensorBuildStrategy<TTensor>> _strategies;
+    private readonly IContextElementExtractor _contextElementExtractor;
 
     public int Order { get; } = int.MinValue;
 
-    public ContextInfoFiller(ITensorFactory<TTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
+    public ContextInfoFiller(IEnumerable<IWordTensorBuildStrategy<TTensor>> strategies, IContextElementExtractor contextElementExtractor)
     {
-        _keyFactory = keyFactory;
-        _keyBuilder = keyBuilder;
-        _wordRoleClassifier = appOptionsStore.GetOptions<IWordRoleClassifier>();
-        _emptyDimensionClassifier = appOptionsStore.GetOptions<IEmptyDimensionClassifier>();
-        _FakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
+
+        // СОРТИРОВКА: Сортируем стратегии по приоритету (чем меньше число, тем раньше она будет обработана)
+        _strategies = strategies.OrderBy(s => s.Priority).ToList();
+
+        _contextElementExtractor = contextElementExtractor;
+
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public void Fill(IContextInfoDataset<ContextInfo, TTensor> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions _matrixOptions)
+    public void Fill(IContextInfoDataset<ContextInfo, TTensor> contextInfoData, List<ContextInfo> elements,
+        ExportMatrixOptions matrixOptions)
     {
-        bool includeUnclassified = _matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
-
         foreach (var item in elements)
         {
-            var verbs = item.Contexts.Where(c => _wordRoleClassifier.IsVerb(c, _FakeDimensionClassifier)).Distinct().ToList();
-            var nouns = item.Contexts.Where(c => _wordRoleClassifier.IsNoun(c, _FakeDimensionClassifier)).Distinct().ToList();
+            var elementGroups = _contextElementExtractor.Extract(item);
 
-            if (verbs.Any() && nouns.Any())
+            foreach (var strategy in _strategies)
             {
-                foreach (var row in verbs)
+                //если стратегия НЕ может обработать контексты, пропускаем
+                //иначе, делаем обработку ТОЛЬКО этой страгией
+                if (!strategy.CanHandle(elementGroups, matrixOptions))
                 {
-                    foreach (var col in nouns)
-                    {
-                        var key = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { row, col }, _keyFactory.Create);
-                        contextInfoData.Add(item, key);
-                    }
+                    continue;
                 }
-            }
-            else if (verbs.Any())
-            {
-                foreach (var row in verbs)
-                {
-                    var key = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { row, _emptyDimensionClassifier.EmptyDomain }, _keyFactory.Create);
+
+                var keys = strategy.BuildTensors(elementGroups);
+                foreach (var key in keys)
                     contextInfoData.Add(item, key);
-                }
-            }
-            else if (nouns.Any() && includeUnclassified)
-            {
-                foreach (var col in nouns)
-                {
-                    var key = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { _emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain }, _keyFactory.Create);
-                    contextInfoData.Add(item, key);
-                }
-            }
-            else if (includeUnclassified)
-            {
-                var key = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { _emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain }, _keyFactory.Create);
-                contextInfoData.Add(item, key);
+                break;
             }
         }
     }

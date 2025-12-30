@@ -11,13 +11,13 @@ namespace ContextKit.Model;
 public class ContextInfoDataLinkGenerator
 {
     private readonly ITensorClassifierDomainPerActionContext _contextClassifier;
-    private readonly IWordRoleClassifier _wordRoleClassifier;
+    private readonly IContextClassifier _wordRoleClassifier;
     private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
 
     public ContextInfoDataLinkGenerator(IAppOptionsStore appOptionsStore)
     {
         _contextClassifier = appOptionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
-        _wordRoleClassifier = appOptionsStore.GetOptions<IWordRoleClassifier>();
+        _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier>();
         _FakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
     }
 

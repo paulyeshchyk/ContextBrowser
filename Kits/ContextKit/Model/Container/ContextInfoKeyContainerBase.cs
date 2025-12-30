@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ContextKit.Model.Container;
 
@@ -13,4 +14,16 @@ public abstract class ContextInfoKeyContainerBase<Key> : IContextInfoKeyContaine
         ContextKey = contextKey;
         ContextInfoList = contextInfoList;
     }
+    public override int GetHashCode()
+    {
+        int hash = 17;
+        foreach (var element in ContextInfoList)
+        {
+            hash = hash * 31 + element.GetHashCode();
+        }
+
+        hash = hash * 31 + ContextKey.GetHashCode();
+        return hash;
+    }
+
 }

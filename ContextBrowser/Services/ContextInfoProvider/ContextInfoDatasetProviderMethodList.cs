@@ -51,7 +51,7 @@ public class ContextInfoDatasetProviderMethodList<TDataTensor> : BaseContextInfo
             .Where(c => c.ElementType == ContextInfoElementType.@method)
             .ToList();
 
-        var newDataset = _datasetBuilder.Build(filteredContexts);
+        var newDataset = _datasetBuilder.Build(filteredContexts, cancellationToken);
 
         lock (_lock)
         {

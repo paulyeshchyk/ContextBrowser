@@ -16,13 +16,13 @@ public record DomainPerActionContextTensorClassifier : ITensorClassifierDomainPe
 {
     public IEnumerable<string> MetaItems { get; }
 
-    public IWordRoleClassifier WordRoleClassifier { get; }
+    public IContextClassifier WordRoleClassifier { get; }
 
     public IEmptyDimensionClassifier EmptyDimensionClassifier { get; }
 
     public IFakeDimensionClassifier FakeDimensionClassifier { get; }
 
-    public DomainPerActionContextTensorClassifier(string[] metaItems, IWordRoleClassifier wordRoleClassifier, IEmptyDimensionClassifier emptyDimensionClassifier, IFakeDimensionClassifier fakeDimensionClassifier)
+    public DomainPerActionContextTensorClassifier(string[] metaItems, IContextClassifier wordRoleClassifier, IEmptyDimensionClassifier emptyDimensionClassifier, IFakeDimensionClassifier fakeDimensionClassifier)
     {
         MetaItems = new List<string>(metaItems);
         WordRoleClassifier = wordRoleClassifier;

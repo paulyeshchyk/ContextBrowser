@@ -31,7 +31,7 @@ public class UmlState : IUmlParticipant
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_raw);
+        return _raw.GetHashCode();
     }
 
     public override bool Equals(object? obj)

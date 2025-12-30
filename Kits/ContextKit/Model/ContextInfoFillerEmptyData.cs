@@ -14,7 +14,7 @@ public class ContextInfoFillerEmptyData<TTensor> : IContextInfoFiller<TTensor>
 {
     private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
-    private readonly IWordRoleClassifier _wordRoleClassifier;
+    private readonly IContextClassifier _wordRoleClassifier;
     private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
     private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
 
@@ -22,7 +22,7 @@ public class ContextInfoFillerEmptyData<TTensor> : IContextInfoFiller<TTensor>
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
-        _wordRoleClassifier = appOptionsStore.GetOptions<IWordRoleClassifier>();
+        _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier>();
         _emptyDimensionClassifier = appOptionsStore.GetOptions<IEmptyDimensionClassifier>();
         _FakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
     }

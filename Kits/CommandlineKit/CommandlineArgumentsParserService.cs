@@ -8,8 +8,10 @@ public interface ICommandlineArgumentsParserService
     T? Parse<T>(string[] args);
 }
 
+// context: commandline, build
 public class CommandlineArgumentsParserService : ICommandlineArgumentsParserService
 {
+    // context: commandline, build
     public T? Parse<T>(string[] args)
     {
         var parser = new CommandLineParser();
@@ -19,12 +21,14 @@ public class CommandlineArgumentsParserService : ICommandlineArgumentsParserServ
             Console.WriteLine(errorMessage);
             return default;
         }
-        if (options == null)
+
+        if (options != null)
         {
-            Console.WriteLine("Что-то пошло не так))");
-            Console.WriteLine(CommandLineHelpProducer.GenerateHelpText<T>(CommandLineDefaults.SArgumentPrefix));
-            return default;
+            return options;
         }
-        return options;
+
+        Console.WriteLine("Что-то пошло не так))");
+        Console.WriteLine(CommandLineHelpProducer.GenerateHelpText<T>(CommandLineDefaults.SArgumentPrefix));
+        return default;
     }
 }

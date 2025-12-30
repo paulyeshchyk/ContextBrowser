@@ -41,7 +41,7 @@ public class AppOptions
     [CommandLineArgument("roslyn-options", "The source code path.")]
     // context: model, appoptions
     public CodeParsingOptions ParsingOptions { get; set; } = new(
-
+        semanticLanguage: "csharp",
         semanticOptions: new(
             semanticFilters: new(
                 trustedFilters: new(included: string.Empty, excluded: string.Empty),
@@ -130,9 +130,7 @@ public class AppOptions
         emptyDimensionClassifier: new EmptyDimensionClassifierDomainPerAction(emptyAction: "EmptyAction", emptyDomain: "EmptyDomain"),
          fakeDimensionClassifier: new FakeDimensionClassifierDomainPerAction(fakeAction: "_fakeAction", fakeDomain: "_fakeDomain"),
                        metaItems: new[] { "Action;Domain;Elements" },
-              wordRoleClassifier: new WordRoleClassifier(
+              wordRoleClassifier: new ContextClassifier(
                  standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" }
-             ))
-    {
-    };
+             ));
 }

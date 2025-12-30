@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Options;
+using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Builders.Page;
 using HtmlKit.Helpers;
@@ -21,40 +22,40 @@ namespace HtmlKit.Document;
 /// необходимые зависимости. Он не содержит логики создания ключей или
 /// отображения данных; вместо этого, он использует принцип композиции
 /// и внедрение зависимостей (Dependency Injection) для делегирования
-/// этих задач специализированным сервисам.
-///
-/// === Как это работает ===
-/// 1. В конструктор HtmlMatrixWriter передаются все необходимые
-///    компоненты:
-///    - IHtmlDataCellBuilder&lt;TKey&gt;: отвечает за отрисовку содержимого
-///      каждой ячейки, используя специфичные для TKey данные.
-///    - DomainPerActionKeyFactory&lt;Key&gt;: фабрика, которая знает, как создать
-///      объект TKey из двух строк.
-///    - DomainPerActionKeyBuilder: строитель, который определяет порядок
-///      параметров для TKey в зависимости от ориентации матрицы.
-///
-/// 2. Класс IHtmlMatrixWriter&lt;TKey&gt; использует эти зависимости для
-///    построения таблицы единообразно для любого TKey.
-///
-/// === Регистрация сервисов ===
-/// Чтобы использовать HtmlMatrixWriter, необходимо зарегистрировать
-/// все его зависимости в DI-контейнере.
-///
-/// Пример для базового ключа ContextKey:
-///
-/// hab.Services.AddTransient&lt;IHtmlMatrixWriter, HtmlMatrixWriter&lt;ContextKey&gt;&gt;();
-/// hab.Services.AddTransient&lt;DomainPerActionKeyFactory&lt;ContextKey&gt;&gt;(provider =>
-///     new ContextKeyFactory&lt;ContextKey&gt;((r, c) => new ContextKey(r, c)));
-/// hab.Services.AddTransient&lt;IHtmlDataCellBuilder&lt;ContextKey&gt;, HtmlDataCellBuilder&lt;ContextKey&gt;&gt;();
-/// hab.Services.AddTransient&lt;DomainPerActionKeyBuilder, TensorBuilder&gt;();
-///
-/// Пример для кастомного ключа DimensionKey:
-///
-/// hab.Services.AddTransient&lt;IHtmlMatrixWriter, HtmlMatrixWriter&lt;DimensionKey&gt;&gt;();
-/// hab.Services.AddTransient&lt;DomainPerActionKeyFactory&lt;DimensionKey&gt;&gt;(provider =>
-///     new ContextKeyFactory&lt;DimensionKey&gt;((r, c) => new DimensionKey(r, c)));
-/// hab.Services.AddTransient&lt;IHtmlDataCellBuilder&lt;DimensionKey&gt;, HtmlDataCellBuilder&lt;DimensionKey&gt;&gt;();
-/// hab.Services.AddTransient&lt;DomainPerActionKeyBuilder, TensorBuilder&gt;();
+/// этих задач специализированным сервисам.<br/>
+///<br/>
+/// === Как это работает ===<br/>
+/// 1. В конструктор HtmlMatrixWriter передаются все необходимые<br/>
+///    компоненты:<br/>
+///    - IHtmlDataCellBuilder&lt;TKey&gt;: отвечает за отрисовку содержимого<br/>
+///      каждой ячейки, используя специфичные для TKey данные.<br/>
+///    - DomainPerActionKeyFactory&lt;Key&gt;: фабрика, которая знает, как создать<br/>
+///      объект TKey из двух строк.<br/>
+///    - DomainPerActionKeyBuilder: строитель, который определяет порядок<br/>
+///      параметров для TKey в зависимости от ориентации матрицы.<br/>
+///<br/>
+/// 2. Класс IHtmlMatrixWriter&lt;TKey&gt; использует эти зависимости для<br/>
+///    построения таблицы единообразно для любого TKey.<br/>
+///<br/>
+/// === Регистрация сервисов ===<br/>
+/// Чтобы использовать HtmlMatrixWriter, необходимо зарегистрировать<br/>
+/// все его зависимости в DI-контейнере.<br/>
+///<br/>
+/// Пример для базового ключа ContextKey:<br/>
+///<br/>
+/// hab.Services.AddTransient&lt;IHtmlMatrixWriter, HtmlMatrixWriter&lt;ContextKey&gt;&gt;();<br/>
+/// hab.Services.AddTransient&lt;DomainPerActionKeyFactory&lt;ContextKey&gt;&gt;(provider =><br/>
+///     new ContextKeyFactory&lt;ContextKey&gt;((r, c) => new ContextKey(r, c)));<br/>
+/// hab.Services.AddTransient&lt;IHtmlDataCellBuilder&lt;ContextKey&gt;, HtmlDataCellBuilder&lt;ContextKey&gt;&gt;();<br/>
+/// hab.Services.AddTransient&lt;DomainPerActionKeyBuilder, TensorBuilder&gt;();<br/>
+///<br/>
+/// Пример для кастомного ключа DimensionKey:<br/>
+///<br/>
+/// hab.Services.AddTransient&lt;IHtmlMatrixWriter, HtmlMatrixWriter&lt;DimensionKey&gt;&gt;();<br/>
+/// hab.Services.AddTransient&lt;DomainPerActionKeyFactory&lt;DimensionKey&gt;&gt;(provider =><br/>
+///     new ContextKeyFactory&lt;DimensionKey&gt;((r, c) => new DimensionKey(r, c)));<br/>
+/// hab.Services.AddTransient&lt;IHtmlDataCellBuilder&lt;DimensionKey&gt;, HtmlDataCellBuilder&lt;DimensionKey&gt;&gt;();<br/>
+/// hab.Services.AddTransient&lt;DomainPerActionKeyBuilder, TensorBuilder&gt;();<br/>
 ///
 /// </summary>
 /// <typeparam name="TTensor">Тип ключа для ячейки матрицы. Должен иметь конструктор с двумя строковыми параметрами.</typeparam>
@@ -159,7 +160,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
             await HtmlBuilderFactory.HtmlBuilderTableCell.ColMeta.WithAsync(textWriter, (token) =>
             {
                 var attrs = new HtmlTagAttributes() { { "href", href }, { "style", "some_special_cell_class" } };
-                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, $"{col}", isEncodable: false, cancellationToken: token);
+                HtmlBuilderFactory.A.CellAsync(textWriter, attrs, col.LabeledCaption, isEncodable: false, cancellationToken: token);
                 return Task.CompletedTask;
             }, cancellationToken).ConfigureAwait(false);
         }
@@ -205,7 +206,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
             {
                 await HtmlBuilderFactory.HtmlBuilderTableCell.ColSummary.WithAsync(textWriter, (atoken) =>
                 {
-                    var sum = summary?.ColsSummary.GetValueOrDefault(col).ToString() ?? string.Empty;
+                    var sum = summary?.ColsSummary.GetValueOrDefault(col.LabeledData).ToString() ?? string.Empty;
                     var href = _hRefManager.GetHrefColSummary(col, options);
                     var tagAttrs = new HtmlTagAttributes() { { "href", href } };
                     HtmlBuilderFactory.A.CellAsync(textWriter, tagAttrs, sum, isEncodable: false, cancellationToken: atoken);
@@ -225,7 +226,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
         }, cancellationToken).ConfigureAwait(false);
     }
 
-    internal async Task WriteDataRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, object row, HtmlMatrixSummary? summary, CancellationToken cancellationToken)
+    internal async Task WriteDataRow(TextWriter textWriter, IHtmlMatrix matrix, HtmlTableOptions options, ILabeledValue row, HtmlMatrixSummary? summary, CancellationToken cancellationToken)
     {
         await HtmlBuilderFactory.HtmlBuilderTableRow.Data.WithAsync(textWriter, async (token) =>
         {
@@ -244,7 +245,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
 
             foreach (var col in matrix.cols)
             {
-                var contextKey = _keyBuilder.BuildTensor(options.Orientation, new[] { row, col }, _keyFactory.Create);
+                var contextKey = _keyBuilder.BuildTensor(options.Orientation, new[] { row.LabeledData, col.LabeledData }, _keyFactory.Create);
                 await _dataCellBuilder.BuildDataCell(textWriter, contextKey, options, token).ConfigureAwait(false);
             }
 
@@ -253,11 +254,11 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
         }, cancellationToken).ConfigureAwait(false);
     }
 
-    internal async Task WriteRowSummaryCell(TextWriter textWriter, HtmlTableOptions options, object row, HtmlMatrixSummary? summary, CancellationToken cancellationToken)
+    internal async Task WriteRowSummaryCell(TextWriter textWriter, HtmlTableOptions options, ILabeledValue row, HtmlMatrixSummary? summary, CancellationToken cancellationToken)
     {
         await HtmlBuilderFactory.HtmlBuilderTableCell.RowSummary.WithAsync(textWriter, (token) =>
         {
-            var rowSum = summary?.RowsSummary.GetValueOrDefault(row).ToString() ?? string.Empty;
+            var rowSum = summary?.RowsSummary.GetValueOrDefault(row.LabeledData).ToString() ?? string.Empty;
             var tagAttrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefRowSummary(row, options) } };
             HtmlBuilderFactory.A.CellAsync(textWriter, tagAttrs, rowSum, isEncodable: false, cancellationToken: token);
             return Task.CompletedTask;

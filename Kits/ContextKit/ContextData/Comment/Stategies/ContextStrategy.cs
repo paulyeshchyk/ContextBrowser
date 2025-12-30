@@ -8,22 +8,24 @@ using LoggerKit;
 
 namespace ContextKit.ContextData.Comment.Stategies;
 
+// context: contextinfo, build
 public class ContextStrategy<T> : ICommentParsingStrategy<T>
     where T : ContextInfo
 {
     public static string Keyword => "context";
 
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IWordRoleClassifier _wordRoleClassifier;
+    private readonly IContextClassifier _contextClassifier;
     private readonly IFakeDimensionClassifier _fakeDimensionClassifier;
 
     public ContextStrategy(IAppOptionsStore appOptionsStore, IAppLogger<AppLevel> logger)
     {
-        _wordRoleClassifier = appOptionsStore.GetOptions<IWordRoleClassifier>();
+        _contextClassifier = appOptionsStore.GetOptions<IContextClassifier>();
         _fakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
         _logger = logger;
     }
 
+    // context: contextinfo, build
     public void Execute(T? container, string comment)
     {
         var content = CommentWithKeywordParser.ExtractContent(Keyword, comment);
@@ -32,19 +34,20 @@ public class ContextStrategy<T> : ICommentParsingStrategy<T>
         {
             return;
         }
-        if (!(container != null && container is not null))
+        if (container == null)
         {
             _logger.WriteLog(AppLevel.R_Comments, LogLevel.Err, "Comment container is null");
             return;
         }
 
         var tags = content.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                          .Select(t => t.Trim().ToLowerInvariant());
+                          .Select(t => t.Trim().ToLowerInvariant())
+                          .ToList();
 
-        var actions = tags.Where(t => _wordRoleClassifier.IsVerb(t, _fakeDimensionClassifier)).ToList();
+        var actions = tags.Where(t => _contextClassifier.IsVerb(t, _fakeDimensionClassifier)).ToList();
         container.Action = string.Join(";", actions);
 
-        var domains = tags.Where(t => _wordRoleClassifier.IsNoun(t, _fakeDimensionClassifier)).ToList();
+        var domains = tags.Where(t => _contextClassifier.IsNoun(t, _fakeDimensionClassifier)).ToList();
         foreach (var domain in domains)
         {
             container.Domains.Add(domain.ToLower());

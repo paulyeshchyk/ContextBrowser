@@ -7,7 +7,7 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.CacheManager;
 using LoggerKit;
-using SemanticKit.Model.Options;
+using SemanticKit.Model;
 using SemanticKit.Parsers.File;
 
 namespace ContextBrowser.Services.Parsing;
@@ -16,7 +16,7 @@ namespace ContextBrowser.Services.Parsing;
 public interface IParsingOrchestrator
 {
     // context: parsing, build
-    Task<IEnumerable<ContextInfo>> GetOrchestratedContextsAsync(CancellationToken cancellationToken);
+    Task<IEnumerable<ContextInfo>> ParseAsync(CancellationToken cancellationToken);
 }
 
 // context: parsing, build
@@ -24,32 +24,29 @@ public class ParsingOrchestrator : IParsingOrchestrator
 {
     private readonly IContextInfoCacheService _contextInfoCacheService;
     private readonly ICodeParseService _codeParseService;
-    private readonly IDeclarationParserFactory _declarationParserFactory;
     private readonly IReferenceParserFactory _referenceParserFactory;
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoRelationManager _relationManager;
-    private readonly IAppOptionsStore _optionsStore;
+    private readonly ISemanticDeclarationParser<ContextInfo> _declarationParser;
 
     public ParsingOrchestrator(
         IContextInfoCacheService contextInfoCacheService,
         ICodeParseService codeParseService,
-        IDeclarationParserFactory declarationParserFactory,
         IReferenceParserFactory referenceParserFactory,
         IContextInfoRelationManager relationManager,
-        IAppOptionsStore optionsStore,
-        IAppLogger<AppLevel> logger)
+        IAppLogger<AppLevel> logger,
+        ISemanticDeclarationParser<ContextInfo> declarationParser)
     {
         _contextInfoCacheService = contextInfoCacheService;
         _codeParseService = codeParseService;
-        _declarationParserFactory = declarationParserFactory;
         _referenceParserFactory = referenceParserFactory;
         _relationManager = relationManager;
         _logger = logger;
-        _optionsStore = optionsStore;
+        _declarationParser = declarationParser;
     }
 
     // context: parsing, build
-    public async Task<IEnumerable<ContextInfo>> GetOrchestratedContextsAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ContextInfo>> ParseAsync(CancellationToken cancellationToken)
     {
         var result = await _contextInfoCacheService.GetOrParseAndCacheAsync(
             ParsingJobAsync,
@@ -69,12 +66,9 @@ public class ParsingOrchestrator : IParsingOrchestrator
     // context: parsing, build
     internal Task<IEnumerable<ContextInfo>> ParsingJobAsync(CancellationToken token)
     {
-        var parsingOptions = _optionsStore.GetOptions<CodeParsingOptions>();
-
-        var declarationParser = _declarationParserFactory.Create(parsingOptions.SemanticOptions);
         var referenceParser = _referenceParserFactory.Create();
 
-        var declarationFileParser = new SemanticDeclarationFileParser(declarationParser);
+        var declarationFileParser = new SemanticDeclarationFileParser(_declarationParser);
         var referenceFileParser = new ReferenceFileParser(referenceParser);
 
         var fileParsers = new SortedList<int, IFileParser> {

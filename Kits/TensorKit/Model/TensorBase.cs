@@ -48,10 +48,7 @@ public abstract record TensorBase : ITensor
         int hash = 17;
         foreach (var element in _dimensions)
         {
-            if (element != null)
-            {
-                hash = hash * 31 + element.GetHashCode();
-            }
+            hash = hash * 31 + element.GetHashCode();
         }
         return hash;
     }

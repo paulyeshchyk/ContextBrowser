@@ -15,19 +15,25 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
 {
     protected readonly ISemanticTreeModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper> _semanticModelBuilder;
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly ISemanticSyntaxRouter<TContext> _router;
     private readonly IContextCollector<TContext> _collector;
+
+    private readonly IAppOptionsStore _optionsStore;
+
+    private readonly ISemanticSyntaxRouterBuilderRegistry<TContext> _semanticSyntaxRouterBuilderRegistry;
 
     public SemanticDeclarationParser(
         ISemanticTreeModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper> modelBuilder,
         IAppLogger<AppLevel> logger,
-        ISemanticSyntaxRouter<TContext> router,
-        IContextCollector<TContext> collector)
+        IContextCollector<TContext> collector,
+        ISemanticSyntaxRouterBuilderRegistry<TContext> semanticSyntaxRouterBuilderRegistry,
+        IAppOptionsStore optionsStore)
     {
         _semanticModelBuilder = modelBuilder;
         _logger = logger;
-        _router = router;
         _collector = collector;
+        _semanticSyntaxRouterBuilderRegistry = semanticSyntaxRouterBuilderRegistry;
+        _optionsStore = optionsStore;
+
     }
 
     // context: semantic, build
@@ -35,12 +41,20 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1", LogLevelNode.Start);
+        // выбираем язык
+        var semanticLanguage = _optionsStore.GetOptions<CodeParsingOptions>().SemanticLanguage;
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Selecting language - {semanticLanguage}");
+
+        // создаём весь инструментарий парсинга выбранного языка
+        var semanticRouterBuilder = _semanticSyntaxRouterBuilderRegistry.GetRouterBuilder(semanticLanguage);
+        var semanticRouter = semanticRouterBuilder.CreateRouter();
+
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Parsing files", LogLevelNode.Start);
 
         var compilationMap = _semanticModelBuilder.BuildCompilationMap(codeFiles, options, cancellationToken);
         foreach (var mapItem in compilationMap)
         {
-            ParseDeclarations(options, mapItem, cancellationToken);
+            ParseDeclarations(semanticRouter, options, mapItem, cancellationToken);
         }
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
@@ -53,14 +67,14 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
     {
     }
 
-    private void ParseDeclarations(SemanticOptions options, CompilationMap mapItem, CancellationToken cancellationToken)
+    private void ParseDeclarations(ISemanticSyntaxRouter<TContext> _router, SemanticOptions options, CompilationMap mapItem, CancellationToken cancellationToken)
     {
         var tree = mapItem.SyntaxTree;
         var model = mapItem.SemanticModel;
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - {tree.FilePath}", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Phase 1: Parsing declarations - {tree.FilePath}", LogLevelNode.Start);
 
         var availableSyntaxies = tree.GetAvailableSyntaxies(options, cancellationToken).ToList();
 

@@ -16,7 +16,6 @@ public class CSharpSyntaxParserTypeRecord<TContext> : SyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     private readonly CSharpRecordContextInfoBuilder<TContext> _recordContextInfoBuilder;
-    private readonly SemanticOptions _options;
     private readonly CSharpSyntaxParserCommentTrivia<TContext> _triviaCommentParser;
     private readonly CSharpSyntaxParserTypeProperty<TContext> _propertyDeclarationParser;
     private readonly CSharpSyntaxParserMethod<TContext> _methodSyntaxParser;
@@ -27,11 +26,9 @@ public class CSharpSyntaxParserTypeRecord<TContext> : SyntaxParser<TContext>
         CSharpSyntaxParserTypeProperty<TContext> propertyDeclarationParser,
         CSharpSyntaxParserMethod<TContext> methodSyntaxParser,
         CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
-        SemanticOptions options,
         IAppLogger<AppLevel> logger) : base(logger)
     {
         _recordContextInfoBuilder = typeContextInfoBuilder;
-        _options = options;
         _triviaCommentParser = triviaCommentParser;
         _propertyDeclarationParser = propertyDeclarationParser;
         _methodSyntaxParser = methodSyntaxParser;

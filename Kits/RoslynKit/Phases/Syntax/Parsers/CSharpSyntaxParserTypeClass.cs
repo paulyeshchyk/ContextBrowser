@@ -29,7 +29,6 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
         CSharpSyntaxParserTypeProperty<TContext> propertyDeclarationParser,
         CSharpSyntaxParserMethod<TContext> methodSyntaxParser,
         CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
-        SemanticOptions options,
         IAppLogger<AppLevel> logger) : base(logger)
     {
         _typeContextInfoBuilder = typeContextInfoBuilder;

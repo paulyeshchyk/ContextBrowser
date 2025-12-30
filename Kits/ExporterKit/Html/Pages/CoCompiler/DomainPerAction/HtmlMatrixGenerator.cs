@@ -54,14 +54,14 @@ public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
     }
 
     // context: ContextInfoMatrix, htmlmatrix, read
-    internal static List<object> SortList(List<object> list, string emptyValue, UnclassifiedPriorityType priority)
+    internal static List<ILabeledValue> SortList(List<ILabeledValue> list, string emptyValue, UnclassifiedPriorityType priority)
     {
         return priority switch
         {
-            UnclassifiedPriorityType.Highest => list.OrderBy(v => !v.Equals(emptyValue)).ThenBy(v => v).ToList(),
-            UnclassifiedPriorityType.Lowest => list.OrderBy(v => v.Equals(emptyValue)).ThenBy(v => v).ToList(),
-            UnclassifiedPriorityType.None => list.OrderBy(v => v).ToList(),
-            _ => list.OrderBy(v => v).ToList()
+            UnclassifiedPriorityType.Highest => list.OrderBy(v => !v.LabeledData.Equals(emptyValue)).ThenBy(v => v.LabeledData).ToList(),
+            UnclassifiedPriorityType.Lowest => list.OrderBy(v => v.LabeledData.Equals(emptyValue)).ThenBy(v => v.LabeledData).ToList(),
+            UnclassifiedPriorityType.None => list.OrderBy(v => v.LabeledData).ToList(),
+            _ => list.OrderBy(v => v.LabeledData).ToList()
         };
     }
 }

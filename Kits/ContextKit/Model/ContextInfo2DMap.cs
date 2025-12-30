@@ -20,10 +20,10 @@ public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
     private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
 
     // context: ContextInfoMatrix, read
-    public IEnumerable<object> GetCols() => _data!.Select(k => k.Key.Domain);
+    public IEnumerable<ILabeledValue> GetCols() => _data!.Select(k => new StringColumnWrapper(k.Key.Domain, k.Key.Domain));
 
     // context: ContextInfoMatrix, read
-    public IEnumerable<object> GetRows() => _data!.Select(k => k.Key.Action);
+    public IEnumerable<ILabeledValue> GetRows() => _data!.Select(k => new StringColumnWrapper(k.Key.Action, k.Key.Action));
 
     public ContextInfo2DMap(ITensorFactory<TTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore optionsStore)
     {
@@ -42,7 +42,7 @@ public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
 
     private IEnumerable<ContextPair> GetContextPairs(
         ContextInfo context,
-        IWordRoleClassifier wordClassifier,
+        IContextClassifier wordClassifier,
         IEmptyDimensionClassifier emptyClassifier)
     {
         // Извлекаем и подготавливаем действия
@@ -64,7 +64,7 @@ public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
     {
         return Task.Run(() =>
         {
-            var wordClassifier = _optionsStore.GetOptions<IWordRoleClassifier>();
+            var wordClassifier = _optionsStore.GetOptions<IContextClassifier>();
             var emptyClassifier = _optionsStore.GetOptions<IEmptyDimensionClassifier>();
 
             _data = contextsList
@@ -79,14 +79,14 @@ public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
                     // Формирование TTensor ключа
                     var contextKey = _keyBuilder.BuildTensor(
                         TensorPermutationType.Standard,
-                        new[] { pair.Action, pair.Domain },
+                        new object[] { pair.Action, pair.Domain },
                         _keyFactory.Create);
                     return contextKey;
                 })
 
                 // 3. Агрегация
                 .ToDictionary(
-                    g => (TTensor)g.Key,
+                    g => g.Key,
                     g => g.Select(pair => pair.Context).ToList());
         }, cancellationToken);
     }

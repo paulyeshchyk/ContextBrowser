@@ -1,6 +1,4 @@
-﻿using ContextBrowser.ContextKit.Model;
-using ContextBrowser.ContextKit.Parser;
-using ContextBrowser.SourceKit.Roslyn;
+﻿using System;
 using System.Reflection;
 
 namespace ContextBrowser.graph.Tests;
@@ -158,7 +156,7 @@ public class RoslynCodeParserTests
     public static string? GetTestAssemblyLocation()
     {
         // Проверяем, был ли путь уже установлен в AssemblyInitialize
-        if(string.IsNullOrEmpty(_testAssemblyDirectory))
+        if (string.IsNullOrEmpty(_testAssemblyDirectory))
         {
             // Если вызывается до AssemblyInitialize или вне тестового контекста,
             // можно попробовать получить путь к текущей выполняющейся сборке.

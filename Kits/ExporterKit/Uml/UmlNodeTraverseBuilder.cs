@@ -10,8 +10,18 @@ public static class UmlNodeTraverseBuilder
     public static UmlNode BuildMindNode(ContextInfo startNode, INamingProcessor namingProcessor)
     {
         // 1. Создание родительской ноды
-        var ownerName = startNode.FullName;//startNode.ClassOwner?.FullName ?? startNode.FullName;
-        var resultNode = new UmlNode(ownerName, alias: null, url: namingProcessor.ClassOnlyHtmlFilename(ownerName));
+        string ownerName;
+        if (startNode.ClassOwner == null)
+        {
+            ownerName = string.Format("{0}", startNode.ShortName);
+        }
+        else
+        {
+            ownerName = string.Format("{0}.{1}", startNode.ClassOwner.ShortName, startNode.ShortName);//startNode.ClassOwner?.FullName ?? startNode.FullName;
+        }
+
+
+        var resultNode = new UmlNode(ownerName, alias: null, url: namingProcessor.ClassOnlyHtmlFilename(startNode.ClassOwner?.FullName));
         resultNode.Stylename = "grey";
 
         // Проверка, есть ли дочерние ноды

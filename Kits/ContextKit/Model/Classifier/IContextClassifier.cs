@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ContextKit.Model.Classifier;
 
-public interface IWordRoleClassifier
+public interface IContextClassifier
 {
     /// <summary>
     /// Список предопределённых действий, определёющий есть у описания домен(ы) и действие, или нет.<br/>
@@ -24,6 +24,7 @@ public interface IWordRoleClassifier
     /// Определяет, является ли переданный контекст действием<br/>
     /// </summary>
     /// <param name="theWord"></param>
+    /// <param name="fakeDimensionClassifier"></param>
     /// <returns></returns>
     bool IsVerb(string theWord, IFakeDimensionClassifier fakeDimensionClassifier);
 
@@ -31,6 +32,7 @@ public interface IWordRoleClassifier
     /// Определяет, является ли переданный контекст доменом<br/>
     /// </summary>
     /// <param name="theWord"></param>
+    /// <param name="fakeDimensionClassifier"></param>
     /// <returns></returns>
     bool IsNoun(string theWord, IFakeDimensionClassifier fakeDimensionClassifier);
 
@@ -52,15 +54,16 @@ public interface IWordRoleClassifier
     /// Список предопределённых действий см: ContextBrowser.ContextKit.Parser.ContextClassifier.StandardActions
     /// </summary>
     /// <param name="info"></param>
+    /// <param name="fakeDimensionClassifier"></param>
     /// <returns></returns>
     bool HasAllDimensionsFilled(ContextInfo info, IFakeDimensionClassifier fakeDimensionClassifier);
 }
 
-public record WordRoleClassifier : IWordRoleClassifier
+public record ContextClassifier : IContextClassifier
 {
     public IEnumerable<string> StandardActions { get; }
 
-    public WordRoleClassifier(string[] standardActions)
+    public ContextClassifier(string[] standardActions)
     {
         StandardActions = standardActions;
     }
@@ -70,30 +73,27 @@ public record WordRoleClassifier : IWordRoleClassifier
         return verbs.Union(StandardActions).ToList();
     }
 
-    public bool IsNoun(string theWord, IFakeDimensionClassifier FakeDimensionClassifier)
+    public bool IsNoun(string theWord, IFakeDimensionClassifier fakeDimensionClassifier)
     {
-        return !IsVerb(theWord, FakeDimensionClassifier);
+        // Сначала проверяем, является ли оно специальным "фейковым" доменом
+        // Затем проверяем,  не является ли действием
+        return theWord.Equals(fakeDimensionClassifier.FakeDomain, StringComparison.OrdinalIgnoreCase) || !IsVerb(theWord, fakeDimensionClassifier);
     }
 
-    public bool IsVerb(string theWord, IFakeDimensionClassifier FakeDimensionClassifier)
+    public bool IsVerb(string theWord, IFakeDimensionClassifier fakeDimensionClassifier)
     {
-        // Сначала проверяем, есть ли слово в основном списке
-        if (StandardActions.Contains(theWord))
-        {
-            return true;
-        }
-
-        // Затем проверяем, не является ли оно специальным "фейковым" действием
-        return theWord.Equals(FakeDimensionClassifier.FakeAction, StringComparison.OrdinalIgnoreCase);
+        // Сначала проверяем, является ли оно специальным "фейковым" действием
+        // Затем проверяем, есть ли слово в основном списке
+        return theWord.Equals(fakeDimensionClassifier.FakeAction, StringComparison.OrdinalIgnoreCase) || StandardActions.Contains(theWord);
     }
 
-    public bool HasAllDimensionsFilled(ContextInfo info, IFakeDimensionClassifier FakeDimensionClassifier)
+    public bool HasAllDimensionsFilled(ContextInfo info, IFakeDimensionClassifier fakeDimensionClassifier)
     {
-        if (info.Contexts == null)
+        if (!info.Contexts.Any())
             return false;
 
-        var hasVerb = info.Contexts.Any(c => IsVerb(c, FakeDimensionClassifier));
-        var hasNoun = info.Contexts.Any(c => IsNoun(c, FakeDimensionClassifier));
+        var hasVerb = info.Contexts.Any(c => IsVerb(c, fakeDimensionClassifier));
+        var hasNoun = info.Contexts.Any(c => IsNoun(c, fakeDimensionClassifier));
 
         return hasVerb && hasNoun;
     }

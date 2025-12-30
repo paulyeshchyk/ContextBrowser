@@ -21,6 +21,9 @@ public class NamingProcessor : INamingProcessor
     public string ClassOnlyDiagramId(string? className) => string.Format("class_only_{0}", className);
     public string ClassOnlyDiagramTitle(string? className) => $"Class diagram -> {className}";
 
+    public string CompositeDomainPageLink(string? domain) => string.Format("/pages/composite_domain_{0}.html", domain);
+    public string CompositeActionPageLink(string? action) => string.Format("/pages/composite_action_{0}.html", action);
+
     public string MindmapClassOnlyPumlFilename(string? className) => string.Format("mindmap_class_only_{0}.puml", className);
 
     public string MindmapActionPumlFilename(string? action) => string.Format("mindmap_action_{0}.puml", action?.AlphanumericOnly());
@@ -29,4 +32,7 @@ public class NamingProcessor : INamingProcessor
     public string MindmapDomainPumlFilename(string? domain) => string.Format("mindmap_domain_{0}.puml", domain?.AlphanumericOnly());
     public string MindmapDomainDiagramId(string? domain) => string.Format("mindmap_domain_{0}", domain?.AlphanumericOnly());
 
+    public string NamespaceOnlyDiagramId(string? nameSpace) => string.Format("namespace_only_{0}", nameSpace?.AlphanumericOnly());
+
+    public string NamespaceOnlyPumlFilename(string? nameSpace) => string.Format("namespace_only_{0}.puml", nameSpace?.AlphanumericOnly());
 }

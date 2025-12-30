@@ -48,7 +48,7 @@ public class MainService : IMainService
     {
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
-        ExportPathDirectoryPreparer.Prepare(exportOptions.FilePaths);
+        exportOptions.FilePaths.Prepare();
 
         //необязательный шаг: принудительная загрузка контента
         await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);

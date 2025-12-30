@@ -14,6 +14,7 @@ using ContextKit.Model;
 using ContextKit.Model.CacheManager;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
+using ContextKit.Model.WordTensorBuildStrategy;
 using ExporterKit.Csv;
 using ExporterKit.Html.Containers;
 using ExporterKit.Html.Pages;
@@ -30,6 +31,7 @@ using LoggerKit.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RoslynKit.Assembly;
+using RoslynKit.Phases;
 using RoslynKit.Phases.Invocations;
 using RoslynKit.Tree;
 using RoslynKit.Wrappers.Extractor;
@@ -56,12 +58,12 @@ public static class Program
         hab.Services.AddSingleton<IAppOptionsStore, AppSettingsStore>();
         hab.Services.AddSingleton<ICommandlineArgumentsParserService, CommandlineArgumentsParserService>();
         hab.Services.AddSingleton<IMainService, MainService>();
-        hab.Services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(provider =>
+        hab.Services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(_ =>
         {
             var defaultLogLevels = new AppLoggerLevelStore<AppLevel>();
-            var defaultCW = new ConsoleLogWriter();
+            var defaultConsoleWriter = new ConsoleLogWriter();
             var defaultDependencies = new Dictionary<AppLevel, AppLevel>();
-            return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultCW, dependencies: defaultDependencies);
+            return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultConsoleWriter, dependencies: defaultDependencies);
         });
 
 
@@ -82,19 +84,13 @@ public static class Program
         hab.Services.AddTransient<IContextInfoRelationManager, ContextInfoRelationManager>();
         hab.Services.AddSingleton<IKeyIndexBuilder<ContextInfo>, HtmlMatrixIndexerByNameWithClassOwnerName<ContextInfo, DomainPerActionTensor>>();
         hab.Services.AddSingleton<IContextInfoIndexerFactory, ContextInfoFlatMapperFactory>();
-        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>>>(provider =>
-        {
-            return new Dictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>> { { GlobalMapperKeys.NameClassName, provider.GetRequiredService<IKeyIndexBuilder<ContextInfo>>() } };
-        });
-        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, DomainPerActionTensor>>>(provider =>
-        {
-            return new Dictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, DomainPerActionTensor>> { { GlobalMapperKeys.DomainPerAction, provider.GetRequiredService<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>>() } };
-        });
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>>>(provider => new Dictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>> { { GlobalMapperKeys.NameClassName, provider.GetRequiredService<IKeyIndexBuilder<ContextInfo>>() } });
+        hab.Services.AddSingleton<IDictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, DomainPerActionTensor>>>(provider => new Dictionary<MapperKeyBase, IContextInfo2DMap<ContextInfo, DomainPerActionTensor>> { { GlobalMapperKeys.DomainPerAction, provider.GetRequiredService<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>>() } });
 
         hab.Services.AddTransient<ITensorBuilder, TensorBuilder>();
 
-        hab.Services.AddTransient<ITensorFactory<DomainPerActionTensor>>(provider => new TensorFactory<DomainPerActionTensor>(dimensions => new DomainPerActionTensor(dimensions)));
-        hab.Services.AddTransient<ITensorFactory<MethodListTensor<DomainPerActionTensor>>>(provider => new TensorFactory<MethodListTensor<DomainPerActionTensor>>(dimensions => new MethodListTensor<DomainPerActionTensor>(dimensions)));
+        hab.Services.AddTransient<ITensorFactory<DomainPerActionTensor>>(_ => new TensorFactory<DomainPerActionTensor>(dimensions => new DomainPerActionTensor(dimensions)));
+        hab.Services.AddTransient<ITensorFactory<MethodListTensor<DomainPerActionTensor>>>(_ => new TensorFactory<MethodListTensor<DomainPerActionTensor>>(dimensions => new MethodListTensor<DomainPerActionTensor>(dimensions)));
 
         hab.Services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFiller<DomainPerActionTensor>>();
         hab.Services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFillerEmptyData<DomainPerActionTensor>>();
@@ -102,17 +98,35 @@ public static class Program
         hab.Services.AddSingleton<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>, ContextInfo2DMap<DomainPerActionTensor>>();
         hab.Services.AddTransient<IContextInfoMapperFactory<DomainPerActionTensor>, ContextInfoMapperFactory<DomainPerActionTensor>>();
 
-        hab.Services.AddSingleton<ICompilationBuilder, RoslynCompilationBuilder>();
+        // --- Code parsing
         hab.Services.AddTransient<ICodeParseService, CodeParseService>();
-        hab.Services.AddSingleton<ISemanticInvocationResolver, RoslynInvocationSemanticResolver>();
-        hab.Services.AddSingleton<IInvocationSyntaxResolver, RoslynInvocationSyntaxExtractor>();
-        hab.Services.AddTransient<IReferenceParserFactory, ReferenceParserFactory>();
-        hab.Services.AddTransient<IDeclarationParserFactory, DeclarationParserFactory>();
         hab.Services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
+        hab.Services.AddTransient<ISemanticDeclarationParser<ContextInfo>, SemanticDeclarationParser<ContextInfo>>();
+
+        // --- language selector
+        // использует RoslynSemanticSyntaxRouterBuilder
+        // будет использовать AngularSemanticSyntaxRouterBuilder
+        hab.Services.AddTransient<ISemanticSyntaxRouterBuilderRegistry<ContextInfo>, SemanticSyntaxRouterBuilderRegistry<ContextInfo>>();
+
+        // --- Roslyn ---
+        hab.Services.AddTransient<ICompilationBuilder, RoslynCompilationBuilder>();
+        hab.Services.AddTransient<ISemanticInvocationResolver, RoslynInvocationSemanticResolver>();
+        hab.Services.AddTransient<IInvocationSyntaxResolver, RoslynInvocationSyntaxExtractor>();
+        hab.Services.AddTransient<IReferenceParserFactory, RolsynReferenceParserFactory>();
+
+        hab.Services.AddTransient<ISemanticSyntaxRouterBuilder<ContextInfo>, RoslynSemanticSyntaxRouterBuilder<ContextInfo>>();
+
+        // ---
 
         hab.Services.AddSingleton<IContextInfoCommentProcessor<ContextInfo>, ContextInfoCommentProcessor<ContextInfo>>();
         hab.Services.AddTransient(typeof(IContextInfoCommentProcessor<>), typeof(ContextInfoCommentProcessor<>));
         hab.Services.AddTransient(typeof(ICommentParsingStrategyFactory<>), typeof(CommentParsingStrategyFactory<>));
+
+        hab.Services.AddTransient<IContextElementExtractor, ContextElementExtractor>();
+        hab.Services.AddTransient<IWordTensorBuildStrategy<DomainPerActionTensor>, WordTensorBuildStrategyVerbNoun<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IWordTensorBuildStrategy<DomainPerActionTensor>, WordTensorBuildStrategyVerbOnly<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IWordTensorBuildStrategy<DomainPerActionTensor>, WordTensorBuildStrategyNounOnly<DomainPerActionTensor>>();
+        hab.Services.AddTransient<IWordTensorBuildStrategy<DomainPerActionTensor>, WordTensorBuildStrategyUnclassified<DomainPerActionTensor>>();
 
         // --- Службы, связанные с генерацией HTML ---
 
@@ -173,19 +187,19 @@ public static class Program
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerStateDomain>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapDomain>();
         hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapAction>();
+        hab.Services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapClassOnly>();
         hab.Services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
 
-        using var tokenSource = new CancellationTokenSource();
+        var tokenSource = new CancellationTokenSource();
 
         var host = hab.Build();
 
         var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
-        Console.CancelKeyPress += (sender, e) =>
+        Console.CancelKeyPress += (_, e) =>
         {
             Console.WriteLine("Прервано по требованию");
             e.Cancel = true;
             lifetime.StopApplication();
-            tokenSource.Cancel();
         };
 
         var parser = host.Services.GetRequiredService<ICommandlineArgumentsParserService>();
@@ -203,7 +217,7 @@ public static class Program
 
         var mainService = host.Services.GetRequiredService<IMainService>();
 
-        await host.StartAsync();
+        await host.StartAsync(tokenSource.Token).ConfigureAwait(false);
 
         try
         {
@@ -212,14 +226,16 @@ public static class Program
         catch (OperationCanceledException)
         {
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Console.WriteLine(e);
             throw;
         }
         finally
         {
             lifetime.StopApplication();
-            await host.WaitForShutdownAsync();
+            await host.WaitForShutdownAsync(tokenSource.Token).ConfigureAwait(false);
+            tokenSource.Dispose();
         }
     }
 }
@@ -236,12 +252,9 @@ public class ContextInfoMapperFactory<TTensor> : IContextInfoMapperFactory<TTens
 
     public IContextInfo2DMap<ContextInfo, TTensor> GetMapper(MapperKeyBase type)
     {
-        if (_mappers.TryGetValue(type, out var mapper))
-        {
-            return mapper;
-        }
-
-        throw new NotImplementedException($"Mapper for type {type} is not registered.");
+        return _mappers.TryGetValue(type, out var mapper)
+            ? mapper
+            : throw new NotImplementedException($"Mapper for type {type} is not registered.");
     }
 }
 
@@ -256,11 +269,8 @@ public class ContextInfoFlatMapperFactory : IContextInfoIndexerFactory
 
     public IKeyIndexBuilder<ContextInfo> GetMapper(MapperKeyBase type)
     {
-        if (_mappers.TryGetValue(type, out var mapper))
-        {
-            return mapper;
-        }
-
-        throw new NotImplementedException($"Mapper for type {type} is not registered.");
+        return _mappers.TryGetValue(type, out var mapper)
+            ? mapper
+            : throw new NotImplementedException($"Mapper for type {type} is not registered.");
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,14 +16,14 @@ using UmlKit.Infrastructure.Options;
 
 namespace ExporterKit.Uml;
 
-public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
+public class UmlDiagramCompilerMindmapClassOnly : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
     private readonly INamingProcessor _namingProcessor;
 
-    public UmlDiagramCompilerMindmapDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
+    public UmlDiagramCompilerMindmapClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -34,7 +34,7 @@ public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
     // context: build, uml
     public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap Domain");
+        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap Action");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
@@ -42,11 +42,11 @@ public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         var elements = dataset.GetAll();
-        var distinctDomains = elements.SelectMany(e => e.Domains).Distinct();
+        var distinctClasses = elements.Where(e => e.ElementType == ContextInfoElementType.@class).Distinct();
 
-        foreach (var domain in distinctDomains)
+        foreach (var classItem in distinctClasses)
         {
-            UmlDiagramExporterMindMapDomain.Export(dataset, exportOptions, diagramBuilderOptions, domain, _namingProcessor);
+            UmlDiagramExporterMindMapClassOnly.Export(dataset, exportOptions, diagramBuilderOptions, classItem, _namingProcessor);
         }
 
         return new Dictionary<object, bool>();

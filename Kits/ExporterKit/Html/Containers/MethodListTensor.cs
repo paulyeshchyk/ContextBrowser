@@ -1,4 +1,7 @@
-﻿using HtmlKit.Model.Containers;
+﻿using System;
+using ContextKit.Model;
+using HtmlKit.Matrix;
+using HtmlKit.Model.Containers;
 using TensorKit.Model;
 
 namespace ExporterKit.Html.Containers;
@@ -18,14 +21,38 @@ public record MethodListTensor<TDataTensor> : TensorBase, IMethodListTensor<TDat
 
     public int MethodIndex
     {
-        get => (int)this[0];
-        init => _dimensions[0] = value;
+        get
+        {
+            if (this[0] is ILabeledValue l)
+            {
+                return l.LabeledData switch
+                {
+                    int li => li,
+                    string ls => int.Parse(ls),
+                    _ => throw new Exception("LabeladValue.Data is unknown")
+                };
+            }
+            else if (this[0] is string s)
+            {
+                return int.Parse(s);
+            }
+            else if (this[0] is int i)
+            {
+                return i;
+            }
+            else
+            {
+                throw new Exception("Unknown data");
+            }
+        }
     }
 
     public ContextInfoKeyContainerTensor<TDataTensor> DomainPerActionTensorContainer
     {
-        get => (ContextInfoKeyContainerTensor<TDataTensor>)this[1];
-        init => _dimensions[1] = value;
+        get
+        {
+            return (ContextInfoKeyContainerTensor<TDataTensor>)this[1];
+        }
     }
 
     public MethodListTensor(params object[] dimensions) : base(dimensions) { }
