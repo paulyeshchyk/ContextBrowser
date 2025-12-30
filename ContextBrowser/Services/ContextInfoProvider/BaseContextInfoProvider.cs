@@ -40,6 +40,6 @@ public abstract class BaseContextInfoProvider
             _contextsList = contextsList;
         }
 
-        return _contextsList!;
+        return _contextsList;
     }
 }

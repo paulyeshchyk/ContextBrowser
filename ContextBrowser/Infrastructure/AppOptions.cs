@@ -17,8 +17,10 @@ namespace ContextBrowser.Infrastructure;
 // context: model, appoptions
 public class AppOptions
 {
-    [CommandLineArgument("log-config", "JSON configuration for log levels.")]
+    [CommandLineArgument("app-execution-mode", "Application ExecutionMode")]
+    public AppExecutionMode ExecutionMode { get; set; } = AppExecutionMode.Console;
 
+    [CommandLineArgument("log-config", "JSON configuration for log levels.")]
     // context: build, appoptions
     public LogConfiguration<AppLevel, LogLevel> LogConfiguration { get; set; } = new()
     {
@@ -103,7 +105,7 @@ public class AppOptions
         filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
-                 cacheModel: new CacheJsonModel(renewCache: true,
+                 cacheModel: new CacheJsonModel(renewCache: false,
                                                      input: ".//cache//roslyn.json",
                                                     output: ".//cache//roslyn.json")),
         webPaths: new ExportWebPaths(
