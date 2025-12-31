@@ -8,7 +8,7 @@ using TensorKit.Model;
 
 namespace ExporterKit.Csv;
 
-// context: heatmap, build
+// context: heatmap, build, csv
 // pattern: Builder
 public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
     where TDataTensor : IDomainPerActionTensor

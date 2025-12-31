@@ -1,6 +1,5 @@
 ﻿using System;
 using ContextKit.Model;
-using HtmlKit.Matrix;
 using HtmlKit.Model.Containers;
 using TensorKit.Model;
 
@@ -23,27 +22,18 @@ public record MethodListTensor<TDataTensor> : TensorBase, IMethodListTensor<TDat
     {
         get
         {
-            if (this[0] is ILabeledValue l)
+            return this[0] switch
             {
-                return l.LabeledData switch
+                ILabeledValue l => l.LabeledData switch
                 {
                     int li => li,
                     string ls => int.Parse(ls),
                     _ => throw new Exception("LabeladValue.Data is unknown")
-                };
-            }
-            else if (this[0] is string s)
-            {
-                return int.Parse(s);
-            }
-            else if (this[0] is int i)
-            {
-                return i;
-            }
-            else
-            {
-                throw new Exception("Unknown data");
-            }
+                },
+                string s => int.Parse(s),
+                int i => i,
+                _ => throw new Exception("Unknown data"),
+            };
         }
     }
 

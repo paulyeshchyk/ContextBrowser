@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 namespace ContextBrowser.Infrastructure;
 
+// context: app, execute
 internal static class WebAppRunner
 {
     public static async Task Run(string[] args, AppOptions options)

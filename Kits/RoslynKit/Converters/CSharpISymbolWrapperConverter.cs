@@ -33,26 +33,22 @@ public static class CSharpISymbolWrapperConverter
         var wrapper = new CSharpISymbolWrapper();
         var symbol = CSharpSymbolLoader.LoadSymbol(syntax, semanticModel, logger, cancellationToken);
 
-        if (symbol != null)
+#warning refactor this
+        if (symbol == null)
+        {
+            wrapper.SetIdentifier(syntaxWrapper.Identifier);
+            wrapper.SetNamespace(syntaxWrapper.Namespace);
+            wrapper.SetName(syntaxWrapper.GetName());
+            wrapper.SetFullName(syntaxWrapper.GetFullName());
+            wrapper.SetShortName(syntaxWrapper.GetShortName());
+        }
+        else
         {
             wrapper.SetIdentifier(symbol.BuildFullMemberName());
             wrapper.SetNamespace(symbol.GetNamespaceOrGlobal());
             wrapper.SetName(symbol.BuildNameAndClassOwnerName());
             wrapper.SetFullName(symbol.BuildFullMemberName());
             wrapper.SetShortName(symbol.BuildShortName());
-        }
-        else
-        {
-            if (symbol != null)
-            {
-                throw new InvalidOperationException($"Symbol is not an ISymbol ({symbol.GetType().Name}).");
-            }
-
-            wrapper.SetIdentifier(syntaxWrapper.Identifier);
-            wrapper.SetNamespace(syntaxWrapper.Namespace);
-            wrapper.SetName(syntaxWrapper.GetName());
-            wrapper.SetFullName(syntaxWrapper.GetFullName());
-            wrapper.SetShortName(syntaxWrapper.GetShortName());
         }
         wrapper.SetSyntax(syntaxWrapper.GetSyntax());
         return wrapper;

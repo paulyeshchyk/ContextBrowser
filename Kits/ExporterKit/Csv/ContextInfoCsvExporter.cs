@@ -6,6 +6,7 @@ using TensorKit.Model;
 
 namespace ExporterKit.Csv;
 
+// context: build, csv, matrix
 public static class ContextInfoCsvExporter<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {

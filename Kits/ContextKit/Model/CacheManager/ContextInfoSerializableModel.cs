@@ -6,7 +6,7 @@ namespace ContextKit.Model.CacheManager;
 /// Упрощенная модель данных для сериализации.
 /// Сохраняет только необходимые данные и строковые идентификаторы ссылок.
 /// </summary>
-// context: roslyncache, model
+// context: roslyn, cache, model
 public record ContextInfoSerializableModel
 {
     public ContextInfoElementType ElementType { get; set; }

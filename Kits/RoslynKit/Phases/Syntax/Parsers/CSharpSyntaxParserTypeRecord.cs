@@ -45,7 +45,7 @@ public class CSharpSyntaxParserTypeRecord<TContext> : SyntaxParser<TContext>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - record syntax");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - record syntax");
 
         var recordContext = _recordContextInfoBuilder.BuildContextInfo(parent, recordSyntax, model, cancellationToken);
         if (recordContext == null)

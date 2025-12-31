@@ -53,7 +53,7 @@ public static class AppLoggerLevelStoreConfigurationLoader
         where TAppLevel : notnull
         where TLogLevel : notnull
     {
-        if (config == null || config.LogLevels == null)
+        if (config == null || !config.LogLevels.Any())
         {
             var defaultConfig = new Dictionary<TAppLevel, TLogLevel>();
             SetDefaultLogLevels(defaultConfig, defaultValue);

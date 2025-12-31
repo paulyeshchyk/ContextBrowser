@@ -7,6 +7,9 @@ namespace ExporterKit.DotDiagram;
 
 public static class DotDiagramExporter
 {
+    private const string SDiGraphItem = "  \"{0}\" -> \"{1}\" [label=\"{2}\"];";
+
+
     public static void Export(IEnumerable<UmlTransitionDto> transitions, string filePath)
     {
         using var writer = new StreamWriter(filePath);
@@ -16,7 +19,8 @@ public static class DotDiagramExporter
 
         foreach (var t in transitions.Distinct())
         {
-            writer.WriteLine($"  \"{t.CallerId}\" -> \"{t.CalleeId}\" [label=\"{t.Domain}\"];");
+            var digraphItem = string.Format(SDiGraphItem, t.CallerId, t.CalleeId, t.Domain);
+            writer.WriteLine(digraphItem);
         }
 
         writer.WriteLine("}");

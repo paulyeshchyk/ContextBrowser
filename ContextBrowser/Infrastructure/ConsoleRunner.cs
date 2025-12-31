@@ -10,8 +10,10 @@ using Microsoft.Extensions.Hosting;
 
 namespace ContextBrowser.Infrastructure;
 
+// context: app, execute
 internal static class ConsoleRunner
 {
+    // context: app, execute
     public static async Task Run(string[] args, AppOptions options)
     {
 

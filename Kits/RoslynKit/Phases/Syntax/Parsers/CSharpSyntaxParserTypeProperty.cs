@@ -91,6 +91,7 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
         // Проверяем, что это не базовый тип (например, int, string, object)
         if (!(typeSymbol != null && typeSymbol.Locations.Any()))
         {
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[{typeSymbol}] Symbol has no locations");
             return;
         }
 
@@ -98,6 +99,7 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
         var cnt = _collector.BySymbolDisplayName.GetValueOrDefault(typeSymbol.BuildFullMemberName());
         if (cnt != null)
         {
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[{typeSymbol}] Context allready defined");
             return;
         }
 
@@ -113,6 +115,8 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[{typeSymbol}] Symbol is not implicitly declared, but has no declared syntax");
             return;
         }
+
+#warning add factory
 
         if (declarationSyntax is ClassDeclarationSyntax tds)
         {

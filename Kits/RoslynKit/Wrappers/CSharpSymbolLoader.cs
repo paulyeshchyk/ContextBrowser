@@ -24,14 +24,7 @@ public static class CSharpSymbolLoader
         try
         {
             var declaredSymbol = model.GetDeclaredSymbol(syntax, cancellationToken);
-            if (declaredSymbol is ISymbol isymbol)
-            {
-                return isymbol;
-            }
-            else
-            {
-                throw new Exception("Symbol was not loaded for syntax");
-            }
+            return declaredSymbol as ISymbol ?? throw new Exception("Symbol was not loaded for syntax");
         }
         catch (Exception ex)
         {

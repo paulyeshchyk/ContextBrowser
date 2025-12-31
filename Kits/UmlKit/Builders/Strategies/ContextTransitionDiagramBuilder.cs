@@ -120,7 +120,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     }
 }
 
-// context: share, transitioncache
+// context: share, transition, cache
 internal class ContextTransitionDiagramBuilderCache
 {
     private readonly IAppLogger<AppLevel> _logger;
@@ -131,7 +131,7 @@ internal class ContextTransitionDiagramBuilderCache
         _logger = logger;
     }
 
-    // context: read, transitioncache
+    // context: read, transition, cache
     public bool IsEmpty()
     {
         return !_cache.Any();
@@ -151,7 +151,7 @@ internal class ContextTransitionDiagramBuilderCache
         return null;
     }
 
-    // context: create, transitioncache
+    // context: create, transition, cache
     public void AddToCache(string cacheKey, GrouppedSortedTransitionList? result)
     {
         if (result == null || !result.HasTransitions())
@@ -164,7 +164,7 @@ internal class ContextTransitionDiagramBuilderCache
         _logger.WriteLog(AppLevel.P_Tran, LogLevel.Trace, $"[CACHE]: Adding [{cacheKey}]");
     }
 
-    // context: delete, transitioncache
+    // context: delete, transition, cache
     public void ClearCache()
     {
         _cache.Clear();

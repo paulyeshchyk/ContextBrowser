@@ -154,7 +154,7 @@ public abstract class ExportPaths
     }
 }
 
-// context: roslyncache, model
+// context: roslyn, cache, model
 public class CacheJsonModel
 {
     public string Output { get; set; }

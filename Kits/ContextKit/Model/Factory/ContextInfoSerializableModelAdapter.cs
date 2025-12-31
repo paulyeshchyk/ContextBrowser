@@ -6,13 +6,13 @@ namespace ContextKit.Model.Factory;
 
 public static class ContextInfoSerializableModelAdapter
 {
-    // context: roslyncache, convert
+    // context: roslyn, cache, convert
     public static List<ContextInfoSerializableModel> Adapt(List<ContextInfo> contextsList)
     {
         return contextsList.Select(Adapt).ToList();
     }
 
-    // context: roslyncache, convert
+    // context: roslyn, cache, convert
     public static ContextInfoSerializableModel Adapt(ContextInfo contextInfo)
     {
         return new ContextInfoSerializableModel

@@ -28,7 +28,7 @@ public class RoslynInvocationParser<TContext> : IInvocationParser
         ISemanticModelWrapper> semanticTreeModelStorage,
         ISyntaxTreeWrapperBuilder syntaxTreeWrapperBuilder,
         RoslynInvocationReferenceBuilder<TContext> invocationReferenceBuilder,
-        IAppLogger<AppLevel> logger) : base()
+        IAppLogger<AppLevel> logger)
     {
         _collector = collector;
         _logger = logger;

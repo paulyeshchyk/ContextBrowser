@@ -53,12 +53,6 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
 
         var result = _factory.Create(contextInfo: dto);
 
-        if (result == null)
-        {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"Creating method ContextInfo failed {dto.Name}");
-            return default;
-        }
-
         ownerContext?.Owns.Add(result);
 
         _collector.Add(result);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace ContextKit.Model.Container;
 
 public abstract class ContextInfoKeyContainerBase<Key> : IContextInfoKeyContainer<Key>
+    where Key : notnull
 {
     public Key ContextKey { get; init; }
 

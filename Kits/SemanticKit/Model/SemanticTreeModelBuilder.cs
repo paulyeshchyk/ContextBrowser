@@ -46,6 +46,7 @@ public class SemanticTreeModelBuilder : ISemanticTreeModelBuilder<ISyntaxTreeWra
         var model = _modelStorage.GetModel(syntaxTreeWrapper);
         if (model == null)
         {
+#warning Distinct?????
             // Добавляем текущий syntaxTree во временный список всех деревьев
             var allSyntaxTrees = _modelStorage.GetAllSyntaxTrees().Concat(new[] { syntaxTreeWrapper }).Distinct();
 
