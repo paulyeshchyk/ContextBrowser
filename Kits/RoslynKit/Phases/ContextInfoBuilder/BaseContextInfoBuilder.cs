@@ -5,10 +5,22 @@ using ContextKit.Model;
 using LoggerKit;
 using RoslynKit.Converters;
 using SemanticKit.Model;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticModel, TWrapper>
+public interface IUniversalContextInfoBuilder<TContext>
+    where TContext : IContextWithReferences<TContext>
+{
+    ContextInfoElementType ElementType { get; }
+    bool CanBuild(object syntax);
+    bool CanBuild(ISyntaxWrapper syntax);
+    TContext BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken);
+    TContext BuildContextInfo(TContext? ownerContext, IContextInfo dto);
+}
+
+
+public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticModel, TWrapper> : IUniversalContextInfoBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
     where TSyntaxNode : class
     where TSemanticModel : ISemanticModelWrapper
@@ -18,7 +30,7 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
     protected readonly IContextFactory<TContext> _factory;
     protected readonly IAppLogger<AppLevel> _logger;
 
-    public BaseContextInfoBuilder(
+    protected BaseContextInfoBuilder(
         IContextCollector<TContext> collector,
         IContextFactory<TContext> factory,
         IAppLogger<AppLevel> logger)
@@ -30,7 +42,11 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
 
     public abstract ContextInfoElementType ElementType { get; }
 
-    public virtual TContext? BuildContextInfo(TContext? ownerContext, TSyntaxNode syntaxNode, TSemanticModel semanticModel, CancellationToken cancellationToken)
+    public bool CanBuild(object syntax) => syntax is TSyntaxNode;
+
+    public abstract bool CanBuild(ISyntaxWrapper contextInfo);
+
+    public virtual TContext BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -43,7 +59,7 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
         return BuildContextInfo(ownerContext, dto);
     }
 
-    protected virtual TContext? BuildContextInfo(TContext? ownerContext, IContextInfo dto)
+    public virtual TContext BuildContextInfo(TContext? ownerContext, IContextInfo dto)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");
 
@@ -60,3 +76,4 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
         return result;
     }
 }
+

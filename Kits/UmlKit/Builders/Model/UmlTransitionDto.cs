@@ -70,9 +70,7 @@ public static class UmlTransitionDtoExt
 {
     public static string GetId(this UmlTransitionDto dto)
     {
-        var list = new List<string?>() { dto.CallerId, dto.CalleeId, dto.Domain }.Where(s => !string.IsNullOrEmpty(s)).Select(s => s!);
-        return list == null
-            ? string.Empty
-            : string.Join(".", list);
+        var list = new List<string?>() { dto.CallerId, dto.CalleeId, dto.Domain }.Where(s => !string.IsNullOrEmpty(s));
+        return string.Join(".", list);
     }
 }

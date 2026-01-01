@@ -25,7 +25,7 @@ public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, Invo
         _invocationSyntaxExtractor = invocationSyntaxExtractor;
     }
 
-    public void Link(IEnumerable<InvocationExpressionSyntax> invocationList, TContext callerContext, TContext callerContextInfo, SemanticOptions options, CancellationToken cancellationToken)
+    public void Link(List<InvocationExpressionSyntax> invocationList, TContext callerContext, TContext callerContextInfo, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (!invocationList.Any())
         {

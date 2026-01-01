@@ -13,70 +13,64 @@ public class RoslynSemanticSyntaxRouterBuilder<TContext> : ISemanticSyntaxRouter
     where TContext : IContextWithReferences<TContext>
 {
     private readonly IContextCollector<TContext> _collector;
-    private readonly IContextFactory<TContext> _factory;
     private readonly IContextInfoCommentProcessor<TContext> _commentProcessor;
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
 
     public RoslynSemanticSyntaxRouterBuilder(
         IContextCollector<TContext> collector,
-        IContextFactory<TContext> factory,
         IContextInfoCommentProcessor<TContext> commentProcessor,
+        ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
         IAppLogger<AppLevel> logger)
     {
         _collector = collector;
-        _factory = factory;
         _commentProcessor = commentProcessor;
         _logger = logger;
+        _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
     public ISemanticSyntaxRouter<TContext> CreateRouter()
     {
         // 1. Создаем билдеры контекстов и другие вспомогательные классы
-        var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _logger);
-        var methodContextInfoBuilder = new CSharpMethodContextInfoBuilder<TContext>(_collector, _factory, _logger);
         var triviaCommentParser = new CSharpSyntaxParserCommentTrivia<TContext>(_commentProcessor, _logger);
-        var delegateContextInfoBuilder = new CSharpDelegateContextInfoBuilder<TContext>(_collector, _factory, _logger);
-        var interfaceContextInfoBuilder = new CSharpInterfaceContextInfoBuilder<TContext>(_collector, _factory, _logger);
-        var propertyContextInfoBuilder = new CSharpPropertyContextInfoBuilder<TContext>(_collector, _factory, _logger);
-        var recordContextInfoBuilder = new CSharpRecordContextInfoBuilder<TContext>(_collector, _factory, _logger);
-        var enumContextInfoBuilder = new CSharpEnumContextInfoBuilder<TContext>(_collector, _factory, _logger);
 
         var propertyDeclarationParser = new CSharpSyntaxParserTypeProperty<TContext>(
             _collector,
-            propertyContextInfoBuilder,
             triviaCommentParser,
-            typeContextInfoBuilder,
-            recordContextInfoBuilder,
-            enumContextInfoBuilder,
-            interfaceContextInfoBuilder,
+            _contextInfoBuilderDispatcher,
             _logger);
 
         var enumDeclarationParser = new CSharpSyntaxParserEnum<TContext>(_logger);
-        var delegateDeclarationParser = new CSharpSyntaxParserDelegate<TContext>(delegateContextInfoBuilder, triviaCommentParser, _logger);
 
-        var methodSyntaxParser = new CSharpSyntaxParserMethod<TContext>(methodContextInfoBuilder, triviaCommentParser, _logger);
+        var delegateDeclarationParser = new CSharpSyntaxParserDelegate<TContext>(
+            triviaCommentParser,
+            _contextInfoBuilderDispatcher,
+            _logger);
+
+        var methodSyntaxParser = new CSharpSyntaxParserMethod<TContext>(
+            triviaCommentParser,
+            _contextInfoBuilderDispatcher,
+            _logger);
 
         var interfaceDeclarationParser = new CSharpSyntaxParserInterface<TContext>(
-            interfaceContextInfoBuilder,
             propertyDeclarationParser,
             methodSyntaxParser,
             triviaCommentParser,
+            _contextInfoBuilderDispatcher,
             _logger);
 
         var typeDeclarationParser = new CSharpSyntaxParserTypeClass<TContext>(
-            _collector,
-            typeContextInfoBuilder,
             propertyDeclarationParser,
             methodSyntaxParser,
             triviaCommentParser,
+            _contextInfoBuilderDispatcher,
             _logger);
 
         var recordDeclarationParser = new CSharpSyntaxParserTypeRecord<TContext>(
-            _collector,
-            recordContextInfoBuilder,
             propertyDeclarationParser,
             methodSyntaxParser,
             triviaCommentParser,
+            _contextInfoBuilderDispatcher,
             _logger);
 
         // 4. Собираем все парсеры в список для роутера

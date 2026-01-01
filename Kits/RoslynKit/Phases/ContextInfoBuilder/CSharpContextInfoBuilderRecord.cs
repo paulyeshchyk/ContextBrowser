@@ -4,16 +4,18 @@ using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Model.SyntaxNodeWrapper;
 using SemanticKit.Model;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public class CSharpRecordContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, MemberDeclarationSyntax, ISemanticModelWrapper, CSharpRecordSyntaxNodeWrapper>
+public class CSharpContextInfoBuilderRecord<TContext> : BaseContextInfoBuilder<TContext, MemberDeclarationSyntax, ISemanticModelWrapper, CSharpRecordSyntaxNodeWrapper>
     where TContext : IContextWithReferences<TContext>
 {
-    public CSharpRecordContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IAppLogger<AppLevel> logger)
+    public CSharpContextInfoBuilderRecord(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IAppLogger<AppLevel> logger)
         : base(collector, factory, logger)
     {
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@record;
+    public override bool CanBuild(ISyntaxWrapper contextInfo) => false;
 }

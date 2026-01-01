@@ -18,23 +18,22 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
 {
     private const string SErrorNotClassDeclarationSyntax = "Syntax ({0}) is not ClassDeclarationSyntax";
     private const string SErrorNullTypeContext = "Syntax \"{0}\" was not resolved in {1}";
-    private readonly CSharpTypeContextInfoBulder<TContext> _typeContextInfoBuilder;
     private readonly CSharpSyntaxParserCommentTrivia<TContext> _triviaCommentParser;
     private readonly CSharpSyntaxParserMethod<TContext> _methodSyntaxParser;
     private readonly CSharpSyntaxParserTypeProperty<TContext> _propertyDeclarationParser;
+    private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
 
     public CSharpSyntaxParserTypeClass(
-        IContextCollector<TContext> collector,
-        CSharpTypeContextInfoBulder<TContext> typeContextInfoBuilder,
         CSharpSyntaxParserTypeProperty<TContext> propertyDeclarationParser,
         CSharpSyntaxParserMethod<TContext> methodSyntaxParser,
         CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
+        ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
         IAppLogger<AppLevel> logger) : base(logger)
     {
-        _typeContextInfoBuilder = typeContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
         _propertyDeclarationParser = propertyDeclarationParser;
         _methodSyntaxParser = methodSyntaxParser;
+        _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
     public override bool CanParse(object syntax) => syntax is ClassDeclarationSyntax;
@@ -51,9 +50,9 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - type syntax");
 
-        var symbol = CSharpSymbolLoader.LoadSymbol(typeSyntax, model, _logger, cancellationToken);
+        _ = CSharpSymbolLoader.LoadSymbol(typeSyntax, model, _logger, cancellationToken);
 
-        var typeContext = _typeContextInfoBuilder.BuildContextInfo(parent, typeSyntax, model, cancellationToken);
+        var typeContext = _contextInfoBuilderDispatcher.DispatchAndBuild(parent, typeSyntax, model, cancellationToken);
         if (typeContext == null)
         {
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, string.Format(SErrorNullTypeContext, typeSyntax, typeSyntax.GetNamespaceOrGlobal()));

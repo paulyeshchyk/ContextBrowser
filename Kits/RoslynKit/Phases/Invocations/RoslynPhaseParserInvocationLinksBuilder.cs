@@ -18,22 +18,23 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
 {
     private readonly IContextCollector<TContext> _collector;
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly CSharpMethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
-    private readonly CSharpTypeContextInfoBulder<TContext> _typeContextInfoBuilder;
+    private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
 
-    public RoslynPhaseParserInvocationLinksBuilder(IContextCollector<TContext> collector, IAppLogger<AppLevel> logger, CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder, CSharpTypeContextInfoBulder<TContext> typeContextInfoBuilder)
+    public RoslynPhaseParserInvocationLinksBuilder(
+        IContextCollector<TContext> collector,
+        ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
+        IAppLogger<AppLevel> logger)
     {
         _collector = collector;
         _logger = logger;
-        _methodContextInfoBuilder = methodContextInfoBuilder;
-        _typeContextInfoBuilder = typeContextInfoBuilder;
+        _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
     // context: roslyn, update
     public TContext? LinkInvocation(TContext callerContextInfo, ISyntaxWrapper symbolDto, SemanticOptions options)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Linking invocation caller: [{callerContextInfo.FullName}]]", LogLevelNode.Start);
-        var calleeContextInfo = FindOrCreateCalleeNode(callerContextInfo, symbolDto, options);
+        var calleeContextInfo = FindOrCreateCalleeNode(symbolDto, options);
         if (calleeContextInfo != null)
         {
             AddReferences(callerContextInfo, calleeContextInfo);
@@ -77,13 +78,13 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
     }
 
     // Класс: RoslynPhaseParserInvocationLinksBuilder<TContext>
-    private TContext? FindOrCreateCalleeNode(TContext callerContextInfo, ISyntaxWrapper symbolDto, SemanticOptions options)
+    private TContext? FindOrCreateCalleeNode(ISyntaxWrapper symbolDto, SemanticOptions options)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Looking for callee by symbol [{symbolDto.FullName}]");
 
         var fullNameHandler = new SymbolLookupHandlerFullName<TContext, ISemanticModelWrapper>(_collector, _logger);
         var methodSymbolHandler = new SymbolLookupHandlerMethod<TContext, ISemanticModelWrapper>(_collector, _logger);
-        var fakeNodeHandler = new RoslynInvocationLookupHandler<TContext, ISemanticModelWrapper>(_collector, _logger, options, _typeContextInfoBuilder, _methodContextInfoBuilder);
+        var fakeNodeHandler = new RoslynInvocationLookupHandler<TContext, ISemanticModelWrapper>(_collector, _contextInfoBuilderDispatcher, _logger, options);
 
         // Сначала FullName, затем MethodSymbol, затем FakeNode
         fullNameHandler

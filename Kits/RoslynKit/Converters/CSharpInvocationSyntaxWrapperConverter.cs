@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
+using RoslynKit.Model.SyntaxWrapper;
 using RoslynKit.Signature;
 using RoslynKit.Signature.SignatureBuilder;
-using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 using SemanticKit.Model.Signature;
@@ -13,9 +13,9 @@ namespace RoslynKit.Converters;
 
 public static class CSharpInvocationSyntaxWrapperConverter
 {
-    public static CSharpInvocationSyntaxWrapper FromSymbols(ISymbol symbol, ExpressionSyntax syntax)
+    public static CSharpSyntaxWrapperInvocation FromSymbols(ISymbol symbol, ExpressionSyntax syntax)
     {
-        var wrapper = new CSharpInvocationSyntaxWrapper()
+        var wrapper = new CSharpSyntaxWrapperInvocation()
         {
             ShortName = symbol.BuildShortName(),
             FullName = symbol.BuildFullMemberName(),
@@ -30,13 +30,13 @@ public static class CSharpInvocationSyntaxWrapperConverter
         return wrapper;
     }
 
-    public static CSharpInvocationSyntaxWrapper FromSignature(
+    public static CSharpSyntaxWrapperInvocation FromSignature(
         SignatureDefault signature,
         bool isPartial,
         int spanStart,
         int spanEnd)
     {
-        var wrapper = new CSharpInvocationSyntaxWrapper()
+        var wrapper = new CSharpSyntaxWrapperInvocation()
         {
             IsPartial = isPartial,
             FullName = signature.GetFullName(),
@@ -69,7 +69,7 @@ public static class CSharpInvocationSyntaxWrapperConverter
 
         var signature = CSharpSignatureUtils.Parse(raw);
 
-        return new CSharpInvocationSyntaxWrapper()
+        return new CSharpSyntaxWrapperInvocation()
         {
             Signature = signature,
             SpanStart = byInvocation.Span.Start,

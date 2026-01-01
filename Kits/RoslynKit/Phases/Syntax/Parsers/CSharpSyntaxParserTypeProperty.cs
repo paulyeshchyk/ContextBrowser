@@ -8,7 +8,6 @@ using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.AWrappers;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Signature.SignatureBuilder;
 using SemanticKit.Model;
@@ -19,32 +18,20 @@ namespace RoslynKit.Phases.Syntax.Parsers;
 public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly CSharpPropertyContextInfoBuilder<TContext> _propertyContextInfoBuilder;
     private readonly CSharpSyntaxParserCommentTrivia<TContext> _triviaCommentParser;
-    private readonly CSharpRecordContextInfoBuilder<TContext> _recordSyntaxBuilder;
-    private readonly CSharpTypeContextInfoBulder<TContext> _typeSyntaxBuilder;
-    private readonly CSharpEnumContextInfoBuilder<TContext> _enumSyntaxBuilder;
-    private readonly CSharpInterfaceContextInfoBuilder<TContext> _interfaceSyntaxBuilder;
     private readonly IContextCollector<TContext> _collector;
+    private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
 
     public CSharpSyntaxParserTypeProperty(
         IContextCollector<TContext> collector,
-        CSharpPropertyContextInfoBuilder<TContext> propertyContextInfoBuilder,
         CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
-        CSharpTypeContextInfoBulder<TContext> typeSyntaxBuilder,
-        CSharpRecordContextInfoBuilder<TContext> recordSyntaxBuilder,
-        CSharpEnumContextInfoBuilder<TContext> enumSyntaxBuilder,
-        CSharpInterfaceContextInfoBuilder<TContext> interfaceSyntaxBuilder,
+        ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
         IAppLogger<AppLevel> logger)
         : base(logger)
     {
         _collector = collector;
-        _propertyContextInfoBuilder = propertyContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
-        _typeSyntaxBuilder = typeSyntaxBuilder;
-        _recordSyntaxBuilder = recordSyntaxBuilder;
-        _enumSyntaxBuilder = enumSyntaxBuilder;
-        _interfaceSyntaxBuilder = interfaceSyntaxBuilder;
+        _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
     public override bool CanParse(object syntax) => syntax is PropertyDeclarationSyntax;
@@ -53,16 +40,16 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
     {
         if (syntax is not PropertyDeclarationSyntax propertySyntax)
         {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"Syntax is not PropertyDeclarationSyntax");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, "Syntax is not PropertyDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Parsing files: phase 1 - property syntax");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, "Parsing files: phase 1 - property syntax");
 
         //1.Создание контекста для самого свойства
-        var propertyContext = _propertyContextInfoBuilder.BuildContextInfo(parent, propertySyntax, model, cancellationToken);
+        var propertyContext = _contextInfoBuilderDispatcher.DispatchAndBuild(parent, propertySyntax, model, cancellationToken);
         if (propertyContext == null)
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, "Failed to build context for property.", LogLevelNode.End);
@@ -77,11 +64,6 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
 
         // 3. Обработка типа свойства (рекурсивный обход)
         var propertyTypeSyntax = propertySyntax.Type;
-        if (propertyTypeSyntax == null)
-        {
-            return;
-        }
-
         var ts = model.GetTypeInfo(propertyTypeSyntax);
         if (ts is not ITypeSymbol typeSymbol)
         {
@@ -89,7 +71,7 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
         }
 
         // Проверяем, что это не базовый тип (например, int, string, object)
-        if (!(typeSymbol != null && typeSymbol.Locations.Any()))
+        if (!typeSymbol.Locations.Any())
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[{typeSymbol}] Symbol has no locations");
             return;
@@ -116,31 +98,6 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
             return;
         }
 
-#warning add factory
-
-        if (declarationSyntax is ClassDeclarationSyntax tds)
-        {
-            _typeSyntaxBuilder.BuildContextInfo(default, tds, model, cancellationToken);
-        }
-        else if (declarationSyntax is RecordDeclarationSyntax rds)
-        {
-            _recordSyntaxBuilder.BuildContextInfo(default, rds, model, cancellationToken);
-        }
-        else if (declarationSyntax is EnumDeclarationSyntax eds)
-        {
-            _enumSyntaxBuilder.BuildContextInfo(default, eds, model, cancellationToken);
-        }
-        else if (declarationSyntax is InterfaceDeclarationSyntax ids)
-        {
-            _interfaceSyntaxBuilder.BuildContextInfo(default, ids, model, cancellationToken);
-        }
-        else if (declarationSyntax is TypeParameterSyntax tps)
-        {
-            //skip
-        }
-        else
-        {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"Syntax was not parsed: {declarationSyntax} ");
-        }
+        _contextInfoBuilderDispatcher.DispatchAndBuild(default, declarationSyntax, model, cancellationToken);
     }
 }

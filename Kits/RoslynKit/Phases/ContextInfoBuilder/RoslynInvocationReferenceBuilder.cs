@@ -5,7 +5,6 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Phases.Invocations;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 
@@ -16,22 +15,21 @@ public class RoslynInvocationReferenceBuilder<TContext>
 {
     private readonly IAppLogger<AppLevel> _logger;
     protected readonly IContextFactory<TContext> _factory;
-    private readonly IInvocationSyntaxResolver _invocationSyntaxResolver;
     private readonly IContextCollector<TContext> _collector;
     private readonly IInvocationLinker<TContext, InvocationExpressionSyntax> _invocationLinker;
     private readonly ISemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax> _referenceBuilderValidator;
 
-    public RoslynInvocationReferenceBuilder(IAppLogger<AppLevel> logger, IContextFactory<TContext> factory, IInvocationSyntaxResolver invocationSyntaxResolver, IContextCollector<TContext> collector)
+    public RoslynInvocationReferenceBuilder(
+        IAppLogger<AppLevel> logger,
+        IContextFactory<TContext> factory,
+        IContextCollector<TContext> collector,
+        IInvocationLinker<TContext, InvocationExpressionSyntax> invocationLinker)
     {
         _logger = logger;
         _factory = factory;
         _collector = collector;
-        _invocationSyntaxResolver = invocationSyntaxResolver;
+        _invocationLinker = invocationLinker;
 
-        var typeContextInfoBuilder = new CSharpTypeContextInfoBulder<TContext>(_collector, _factory, _logger);
-        var methodContextInfoBuilder = new CSharpMethodContextInfoBuilder<TContext>(_collector, _factory, _logger);
-        var linksInvocationBuilder = new RoslynPhaseParserInvocationLinksBuilder<TContext>(_collector, _logger, methodContextInfoBuilder, typeContextInfoBuilder);
-        _invocationLinker = new RoslynInvocationLinker<TContext>(linksInvocationBuilder, _logger, _invocationSyntaxResolver);
         _referenceBuilderValidator = new SemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax>(_logger);
     }
 

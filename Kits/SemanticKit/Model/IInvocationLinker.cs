@@ -9,5 +9,5 @@ public interface IInvocationLinker<TContext, TInvocationExpressionSyntax>
     where TContext : ContextInfo, IContextWithReferences<TContext>
     where TInvocationExpressionSyntax : class
 {
-    void Link(IEnumerable<TInvocationExpressionSyntax> invocationList, TContext callerContext, TContext callerContextInfo, SemanticOptions _options, CancellationToken cancellationToken);
+    void Link(List<TInvocationExpressionSyntax> invocationList, TContext callerContext, TContext callerContextInfo, SemanticOptions options, CancellationToken cancellationToken);
 }

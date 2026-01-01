@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using SemanticKit.Model;
 using SemanticKit.Model.Signature;
 
 namespace RoslynKit.Signature;
@@ -32,39 +31,45 @@ internal static class CSharpSignatureUtils
 
         // теперь матчим Namespace + Class + Method + Args
         string pattern = @"
-            (?<Namespace>[a-zA-Z0-9_]+)
-            \.
-            (?<ClassName>
-                (?:[a-zA-Z0-9_]+
-                    (?:<
-                        (?>[^<>]+|(?<Open><)|(?<-Open>>))*(?(Open)(?!))
-                    >)?
-                    \.
-                )*
-                [a-zA-Z0-9_]+
+            ^
+            # 1. Result Type
+            (?<ResultType>
+                [^ ]+?
                 (?:<
-                    (?>[^<>]+|(?<Open><)|(?<-Open>>))*(?(Open)(?!))
+                    (?>[^<>]+|(?<OpenR><)|(?<-OpenR>>))*(?(OpenR)(?!))
                 >)?
             )
-            \.
-            (?<MethodName>[a-zA-Z0-9_]+
-                (?:<
-                    (?>[^<>]+|(?<Open><)|(?<-Open>>))*(?(Open)(?!))
-                >)?
+            \s+
+            # 2. Полное имя метода
+            (?<FullName>
+                (?<TypeAndClass>
+                    (?:[a-zA-Z0-9_]+\.)*
+                    [a-zA-Z0-9_]+
+                    (?:<
+                        (?>[^<>]+|(?<OpenC><)|(?<-OpenC>>))*(?(OpenC)(?!))
+                    >)?
+                )
+                \.
+                (?<MethodName>
+                    [a-zA-Z0-9_]+
+                    (?:<
+                        (?>[^<>]+|(?<OpenM><)|(?<-OpenM>>))*(?(OpenM)(?!))
+                    >)?
+                )
             )
             \(
                 (?<Arguments>
                     (?>
                         [^()<>]+
-                        | \((?<Depth>)
-                        | \)(?<-Depth>)
-                        | <(?<Open>)
-                        | >(?<-Open>)
+                        | \( (?<Depth>)
+                        | \) (?<-Depth>)
+                        | <(?<Depth>)
+                        | >(?<-Depth>)
                     )*
                     (?(Depth)(?!))
-                    (?(Open)(?!))
                 )
             \)
+            $
         ";
 
         var match = Regex.Match(input[index..], pattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);

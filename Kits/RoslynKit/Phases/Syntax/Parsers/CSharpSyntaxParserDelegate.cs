@@ -14,14 +14,17 @@ namespace RoslynKit.Phases.Syntax.Parsers;
 public class CSharpSyntaxParserDelegate<TContext> : SyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly CSharpDelegateContextInfoBuilder<TContext> _delegateContextInfoBuilder;
     private readonly CSharpSyntaxParserCommentTrivia<TContext> _triviaCommentParser;
+    private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
 
-    public CSharpSyntaxParserDelegate(CSharpDelegateContextInfoBuilder<TContext> delegateContextInfoBuilder, CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser, IAppLogger<AppLevel> logger)
+    public CSharpSyntaxParserDelegate(
+        CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
+        ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
+        IAppLogger<AppLevel> logger)
         : base(logger)
     {
-        _delegateContextInfoBuilder = delegateContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
+        _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
     public override bool CanParse(object syntax) => syntax is DelegateDeclarationSyntax;
@@ -31,15 +34,15 @@ public class CSharpSyntaxParserDelegate<TContext> : SyntaxParser<TContext>
     {
         if (syntax is not DelegateDeclarationSyntax delegateSyntax)
         {
-            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax is not DelegateDeclarationSyntax");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, "Syntax is not DelegateDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - delegate syntax");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - delegate syntax");
 
-        var delegateContext = _delegateContextInfoBuilder.BuildContextInfo(default, delegateSyntax, model, cancellationToken);
+        var delegateContext = _contextInfoBuilderDispatcher.DispatchAndBuild(default, delegateSyntax, model, cancellationToken);
         if (delegateContext == null)
         {
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{delegateSyntax}\" was not resolved");

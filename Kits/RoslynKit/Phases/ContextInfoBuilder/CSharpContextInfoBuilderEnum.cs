@@ -4,16 +4,18 @@ using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Model.SyntaxNodeWrapper;
 using SemanticKit.Model;
+using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public class CSharpEnumContextInfoBuilder<TContext> : BaseContextInfoBuilder<TContext, EnumDeclarationSyntax, ISemanticModelWrapper, CSharpEnumSyntaxNodeWrapper>
+public class CSharpContextInfoBuilderEnum<TContext> : BaseContextInfoBuilder<TContext, EnumDeclarationSyntax, ISemanticModelWrapper, CSharpEnumSyntaxNodeWrapper>
     where TContext : IContextWithReferences<TContext>
 {
-    public CSharpEnumContextInfoBuilder(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IAppLogger<AppLevel> logger)
+    public CSharpContextInfoBuilderEnum(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IAppLogger<AppLevel> logger)
         : base(collector, factory, logger)
     {
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@enum;
+    public override bool CanBuild(ISyntaxWrapper contextInfo) => false;
 }

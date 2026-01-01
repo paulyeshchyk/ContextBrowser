@@ -9,7 +9,6 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using ExporterKit.Infrastucture;
 using LoggerKit;
 using TensorKit.Model;
@@ -40,7 +39,6 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassOnly");
 
-        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 

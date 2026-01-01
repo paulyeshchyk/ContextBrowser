@@ -1,10 +1,11 @@
-﻿using ContextBrowserKit.Log.Options;
+﻿using System.Diagnostics;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
+using RoslynKit.Model.SyntaxWrapper;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Invocations.Lookup;
-using RoslynKit.Wrappers.Syntax;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 using SemanticKit.Model.SyntaxWrapper;
@@ -18,16 +19,20 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
 {
     private readonly SemanticOptions _options;
     private readonly IContextCollector<TContext> _collector;
-    private readonly CSharpMethodContextInfoBuilder<TContext> _methodContextInfoBuilder;
-    private readonly CSharpTypeContextInfoBulder<TContext> _typeContextInfoBuilder;
+    private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
 
-    public RoslynInvocationLookupHandler(IContextCollector<TContext> collector, IAppLogger<AppLevel> logger, SemanticOptions options, CSharpTypeContextInfoBulder<TContext> typeContextInfoBuilder, CSharpMethodContextInfoBuilder<TContext> methodContextInfoBuilder)
+
+    public RoslynInvocationLookupHandler(
+        IContextCollector<TContext> collector,
+        ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
+        IAppLogger<AppLevel> logger,
+        SemanticOptions options)
         : base(logger)
     {
         _options = options;
-        _typeContextInfoBuilder = typeContextInfoBuilder;
-        _methodContextInfoBuilder = methodContextInfoBuilder;
         _collector = collector;
+        _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
+
     }
 
     public override TContext? Handle(ISyntaxWrapper symbolDto)
@@ -44,29 +49,27 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
 
         // Логика создания искусственного узла
 
-        var typeModel = new CSharpTypeSyntaxWrapper(syntaxWrapper: symbolDto, spanStart: symbolDto.SpanStart, spanEnd: symbolDto.SpanEnd);
-        var typeContext = _typeContextInfoBuilder.BuildContextInfo(ownerContext: default, typeModel);
+        var typeModel = new CSharpSyntaxWrapperType(syntaxWrapper: symbolDto);
+        var typeContext = _contextInfoBuilderDispatcher.DispatchAndBuild(null, typeModel);
         if (typeContext == null)
         {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[FAIL] Typecontext not found for: {symbolDto.FullName}");
-            return default;
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[MISS] Fallback fake callee be not used for {symbolDto.FullName}, because ContextInfoBuilder returns null");
+            return base.Handle(symbolDto);
+        }
+
+        var methodmodel = new CSharpSyntaxWrapperMethodArtifitial(wrapper: symbolDto, contextOwner: typeContext);
+        var methodContext = _contextInfoBuilderDispatcher.DispatchAndBuild(null, methodmodel);
+        if (methodContext == null)
+        {
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[MISS] Fallback fake callee be not used for {symbolDto.FullName}, because ContextInfoBuilder returns null for method");
+            return base.Handle(symbolDto);
         }
 
         _collector.Append(typeContext);
 
-        var methodmodel = new CSharpMethodSyntaxWrapper(wrapper: symbolDto);
-        var methodContext = _methodContextInfoBuilder.BuildInvocationContextInfo(ownerContext: typeContext, methodmodel);
-
-        if (methodContext == null)
-        {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[FAIL] Methodcontext not found for: {symbolDto.FullName}");
-            return default;
-        }
-
-        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[DONE] Fallback fake callee created for: {symbolDto.FullName}");
-
         typeContext.Owns.Add(methodContext);
         _collector.Append(methodContext);
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[DONE] Fallback fake callee created for: {symbolDto.FullName}");
 
         return methodContext;
     }

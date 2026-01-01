@@ -21,11 +21,11 @@ public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
         _parsers = parsers;
     }
 
-    public void Route(IEnumerable<object> availableSyntaxies, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
+    public void Route(List<object> availableSyntaxies, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Routing syntaxies - ({availableSyntaxies.Count()})", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Routing syntaxies - ({availableSyntaxies.Count})", LogLevelNode.Start);
 
         foreach (var item in availableSyntaxies)
         {

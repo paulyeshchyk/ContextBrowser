@@ -15,23 +15,22 @@ namespace RoslynKit.Phases.Syntax.Parsers;
 public class CSharpSyntaxParserTypeRecord<TContext> : SyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly CSharpRecordContextInfoBuilder<TContext> _recordContextInfoBuilder;
     private readonly CSharpSyntaxParserCommentTrivia<TContext> _triviaCommentParser;
     private readonly CSharpSyntaxParserTypeProperty<TContext> _propertyDeclarationParser;
     private readonly CSharpSyntaxParserMethod<TContext> _methodSyntaxParser;
+    private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
 
     public CSharpSyntaxParserTypeRecord(
-        IContextCollector<TContext> collector,
-        CSharpRecordContextInfoBuilder<TContext> typeContextInfoBuilder,
         CSharpSyntaxParserTypeProperty<TContext> propertyDeclarationParser,
         CSharpSyntaxParserMethod<TContext> methodSyntaxParser,
         CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
+        ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
         IAppLogger<AppLevel> logger) : base(logger)
     {
-        _recordContextInfoBuilder = typeContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
         _propertyDeclarationParser = propertyDeclarationParser;
         _methodSyntaxParser = methodSyntaxParser;
+        _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
     public override bool CanParse(object syntax) => syntax is RecordDeclarationSyntax;
@@ -47,7 +46,7 @@ public class CSharpSyntaxParserTypeRecord<TContext> : SyntaxParser<TContext>
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - record syntax");
 
-        var recordContext = _recordContextInfoBuilder.BuildContextInfo(parent, recordSyntax, model, cancellationToken);
+        var recordContext = _contextInfoBuilderDispatcher.DispatchAndBuild(parent, recordSyntax, model, cancellationToken);
         if (recordContext == null)
         {
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{recordSyntax}\" was not resolved");

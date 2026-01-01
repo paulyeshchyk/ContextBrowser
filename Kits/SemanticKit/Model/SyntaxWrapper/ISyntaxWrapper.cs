@@ -10,4 +10,6 @@ public interface ISyntaxWrapper : ISemanticInfo, ISpanInfo
     bool IsValid { get; }
 
     ISignature? Signature { get; }
+
+    IContextInfo GetContextInfoDto();
 }

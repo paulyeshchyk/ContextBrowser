@@ -8,13 +8,13 @@ using HtmlKit.Model.Containers;
 
 namespace HtmlKit.Builders.Page.Tabs.CoBuilders;
 
-public class HtmlPageWithTabsEntityBuilder<DTO, TTensor> : HtmlPageWithTabsBuilder<DTO, TTensor>
-    where DTO : ContextInfoKeyContainerEntityName
+public class HtmlPageWithTabsEntityBuilder<TDto, TTensor> : HtmlPageWithTabsBuilder<TDto, TTensor>
+    where TDto : ContextInfoKeyContainerEntityName
     where TTensor : notnull
 {
     private readonly Func<string, string> _onGetFileName;
 
-    public HtmlPageWithTabsEntityBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<DTO> tabbedPageBuilder, Func<string, string> onGetFileName)
+    public HtmlPageWithTabsEntityBuilder(IContextInfoDataset<ContextInfo, TTensor> contextInfoDataset, HtmlTabbedPageBuilder<TDto> tabbedPageBuilder, Func<string, string> onGetFileName)
         : base(contextInfoDataset, tabbedPageBuilder)
     {
         _onGetFileName = onGetFileName;
@@ -34,7 +34,7 @@ public class HtmlPageWithTabsEntityBuilder<DTO, TTensor> : HtmlPageWithTabsBuild
                 contextInfoList: new List<IContextInfo>() { contextInfoItem },
                 contextKey: contextInfoItem.FullName);
 
-            await _tabbedPageBuilder.GenerateFileAsync(title, filename, (DTO)cellData, cancellationToken).ConfigureAwait(false);
+            await _tabbedPageBuilder.GenerateFileAsync(title, filename, (TDto)cellData, cancellationToken).ConfigureAwait(false);
         }
     }
 }

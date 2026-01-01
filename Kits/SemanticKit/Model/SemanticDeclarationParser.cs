@@ -67,7 +67,7 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
     {
     }
 
-    private void ParseDeclarations(ISemanticSyntaxRouter<TContext> _router, SemanticOptions options, CompilationMap mapItem, CancellationToken cancellationToken)
+    internal void ParseDeclarations(ISemanticSyntaxRouter<TContext> _router, SemanticOptions options, CompilationMap mapItem, CancellationToken cancellationToken)
     {
         var tree = mapItem.SyntaxTree;
         var model = mapItem.SemanticModel;

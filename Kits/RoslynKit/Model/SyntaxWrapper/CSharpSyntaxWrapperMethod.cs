@@ -3,15 +3,13 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
-using RoslynKit.Signature;
 using RoslynKit.Signature.SignatureBuilder;
-using SemanticKit.Model;
 using SemanticKit.Model.Signature;
 using SemanticKit.Model.SyntaxWrapper;
 
-namespace RoslynKit.Wrappers.Syntax;
+namespace RoslynKit.Model.SyntaxWrapper;
 
-public record CSharpMethodSyntaxWrapper : ISyntaxWrapper
+public record CSharpSyntaxWrapperMethod : ISyntaxWrapper
 {
     public string Name { get; set; }
 
@@ -33,7 +31,7 @@ public record CSharpMethodSyntaxWrapper : ISyntaxWrapper
 
     public ISignature? Signature { get; set; }
 
-    public CSharpMethodSyntaxWrapper(object symbol, MethodDeclarationSyntax syntax)
+    public CSharpSyntaxWrapperMethod(object symbol, MethodDeclarationSyntax syntax)
     {
         if (symbol is ISymbol isymbol)
         {
@@ -52,7 +50,7 @@ public record CSharpMethodSyntaxWrapper : ISyntaxWrapper
         }
     }
 
-    public CSharpMethodSyntaxWrapper(ISyntaxWrapper wrapper)
+    public CSharpSyntaxWrapperMethod(ISyntaxWrapper wrapper)
     {
         Identifier = wrapper.Identifier;
         Name = wrapper.Name;
@@ -71,9 +69,7 @@ public record CSharpMethodSyntaxWrapper : ISyntaxWrapper
                 ClassName: wrapper.Signature.ClassName,
                 MethodName: wrapper.Signature.MethodName,
                 Arguments: wrapper.Signature.Arguments,
-                Raw: wrapper.Signature.Raw)
-            {
-            };
+                Raw: wrapper.Signature.Raw);
         }
     }
 
@@ -81,12 +77,12 @@ public record CSharpMethodSyntaxWrapper : ISyntaxWrapper
     {
         return new ContextInfoDto(
             elementType: ContextInfoElementType.method,
-               fullName: FullName,
-                   name: Name,
-              shortName: ShortName,
-              nameSpace: Namespace,
-             identifier: FullName,
-              spanStart: SpanStart,
-                spanEnd: SpanEnd);
+               fullName: this.FullName,
+                   name: this.Name,
+              shortName: this.ShortName,
+              nameSpace: this.Namespace,
+             identifier: this.FullName,
+              spanStart: this.SpanStart,
+                spanEnd: this.SpanEnd);
     }
 }

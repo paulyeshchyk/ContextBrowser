@@ -5,21 +5,20 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
 using RoslynKit.Signature;
 using RoslynKit.Signature.SignatureBuilder;
-using SemanticKit.Model;
 using SemanticKit.Model.Signature;
 using SemanticKit.Model.SyntaxWrapper;
 
-namespace RoslynKit.Wrappers.Syntax;
+namespace RoslynKit.Model.SyntaxWrapper;
 
-public record CSharpTypeSyntaxWrapper : ISyntaxWrapper
+public record CSharpSyntaxWrapperType : ISyntaxWrapper
 {
     public string Name { get; set; }
 
     public string Namespace { get; set; }
 
-    public int SpanEnd { get; private set; }
+    public int SpanEnd { get; }
 
-    public int SpanStart { get; private set; }
+    public int SpanStart { get; }
 
     public string FullName { get; set; }
 
@@ -33,7 +32,7 @@ public record CSharpTypeSyntaxWrapper : ISyntaxWrapper
 
     public ISignature? Signature { get; set; }
 
-    public CSharpTypeSyntaxWrapper(ISymbol symbol, TypeDeclarationSyntax syntax)
+    public CSharpSyntaxWrapperType(ISymbol symbol, TypeDeclarationSyntax syntax)
     {
         Identifier = symbol.BuildFullMemberName();
         Name = symbol.BuildNameAndClassOwnerName();
@@ -44,10 +43,10 @@ public record CSharpTypeSyntaxWrapper : ISyntaxWrapper
         ShortName = symbol.BuildShortName();
     }
 
-    public CSharpTypeSyntaxWrapper(ISyntaxWrapper syntaxWrapper, int spanStart, int spanEnd)
+    public CSharpSyntaxWrapperType(ISyntaxWrapper syntaxWrapper)
     {
-        SpanStart = spanStart;
-        SpanEnd = spanEnd;
+        SpanStart = syntaxWrapper.SpanStart;
+        SpanEnd = syntaxWrapper.SpanEnd;
 
         if (syntaxWrapper.Signature is not null)
         {
@@ -64,9 +63,7 @@ public record CSharpTypeSyntaxWrapper : ISyntaxWrapper
                 ClassName: syntaxWrapper.Signature.ClassName,
                 MethodName: syntaxWrapper.Signature.MethodName,
                 Arguments: syntaxWrapper.Signature.Arguments,
-                Raw: syntaxWrapper.Signature.Raw)
-            {
-            };
+                Raw: syntaxWrapper.Signature.Raw);
         }
         else
         {

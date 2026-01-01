@@ -23,9 +23,11 @@ using HtmlKit.Helpers;
 using HtmlKit.Matrix;
 using LoggerKit;
 using LoggerKit.Model;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using RoslynKit.Assembly;
 using RoslynKit.Phases;
+using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Invocations;
 using RoslynKit.Tree;
 using RoslynKit.Wrappers.Extractor;
@@ -101,6 +103,19 @@ public class HostConfigurator
         services.AddTransient<IReferenceParserFactory, RolsynReferenceParserFactory>();
 
         services.AddTransient<ISemanticSyntaxRouterBuilder<ContextInfo>, RoslynSemanticSyntaxRouterBuilder<ContextInfo>>();
+
+        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderProperty<ContextInfo>>();
+        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderDelegate<ContextInfo>>();
+        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderEnum<ContextInfo>>();
+        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderInterface<ContextInfo>>();
+        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderMethod<ContextInfo>>();
+        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderMethodArtifitial<ContextInfo>>();
+        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBulderType<ContextInfo>>();
+        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderRecord<ContextInfo>>();
+        services.AddTransient<ContextInfoBuilderDispatcher<ContextInfo>>();
+
+        services.AddTransient<IInvocationLinksBuilder<ContextInfo>, RoslynPhaseParserInvocationLinksBuilder<ContextInfo>>();
+        services.AddTransient<IInvocationLinker<ContextInfo, InvocationExpressionSyntax>, RoslynInvocationLinker<ContextInfo>>();
 
         // ---
 

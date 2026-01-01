@@ -1,10 +1,10 @@
-﻿using SemanticKit.Model;
+﻿using ContextKit.Model;
 using SemanticKit.Model.Signature;
 using SemanticKit.Model.SyntaxWrapper;
 
-namespace RoslynKit.Wrappers.Syntax;
+namespace RoslynKit.Model.SyntaxWrapper;
 
-public record CSharpInvocationSyntaxWrapper : ISyntaxWrapper
+public record CSharpSyntaxWrapperInvocation : ISyntaxWrapper
 {
     public bool IsPartial { get; init; }
 
@@ -26,4 +26,16 @@ public record CSharpInvocationSyntaxWrapper : ISyntaxWrapper
 
     public ISignature? Signature { get; init; }
 
+    public IContextInfo GetContextInfoDto()
+    {
+        return new ContextInfoDto(
+            elementType: ContextInfoElementType.method,
+               fullName: this.FullName,
+                   name: this.Name,
+              shortName: this.ShortName,
+              nameSpace: this.Namespace,
+             identifier: this.FullName,
+              spanStart: this.SpanStart,
+                spanEnd: this.SpanEnd);
+    }
 }

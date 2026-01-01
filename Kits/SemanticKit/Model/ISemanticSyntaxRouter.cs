@@ -6,5 +6,5 @@ namespace SemanticKit.Model;
 
 public interface ISemanticSyntaxRouter<TContext>
 {
-    void Route(IEnumerable<object> availableSyntaxies, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
+    void Route(List<object> availableSyntaxies, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
 }

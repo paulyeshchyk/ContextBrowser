@@ -14,23 +14,24 @@ namespace RoslynKit.Phases.Syntax.Parsers;
 public class CSharpSyntaxParserInterface<TContext> : SyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly CSharpInterfaceContextInfoBuilder<TContext> _interfaceContextInfoBuilder;
     private readonly CSharpSyntaxParserCommentTrivia<TContext> _triviaCommentParser;
     private readonly CSharpSyntaxParserTypeProperty<TContext> _propertyDeclarationParser;
     private readonly CSharpSyntaxParserMethod<TContext> _methodSyntaxParser;
+    private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
+
 
     public CSharpSyntaxParserInterface(
-        CSharpInterfaceContextInfoBuilder<TContext> interfaceContextInfoBuilder,
         CSharpSyntaxParserTypeProperty<TContext> propertyDeclarationParser,
         CSharpSyntaxParserMethod<TContext> methodSyntaxParser,
         CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
+        ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
         IAppLogger<AppLevel> logger)
         : base(logger)
     {
-        _interfaceContextInfoBuilder = interfaceContextInfoBuilder;
         _triviaCommentParser = triviaCommentParser;
         _propertyDeclarationParser = propertyDeclarationParser;
         _methodSyntaxParser = methodSyntaxParser;
+        _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
     public override bool CanParse(object syntax) => syntax is InterfaceDeclarationSyntax;
@@ -39,15 +40,15 @@ public class CSharpSyntaxParserInterface<TContext> : SyntaxParser<TContext>
     {
         if (syntax is not InterfaceDeclarationSyntax interfaceSyntax)
         {
-            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax is not InterfaceDeclarationSyntax");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, "Syntax is not InterfaceDeclarationSyntax");
             return;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Parsing files: phase 1 - interface syntax");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - interface syntax");
 
-        var interfaceContext = _interfaceContextInfoBuilder.BuildContextInfo(default, interfaceSyntax, model, cancellationToken);
+        var interfaceContext = _contextInfoBuilderDispatcher.DispatchAndBuild(default, interfaceSyntax, model, cancellationToken);
         if (interfaceContext == null)
         {
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, "Failed to build context for interface.");

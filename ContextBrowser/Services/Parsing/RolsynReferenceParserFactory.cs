@@ -2,6 +2,7 @@
 using ContextKit.Model;
 using ContextKit.Model.Collector;
 using LoggerKit;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Invocations.Parser;
 using SemanticKit.Model;
@@ -20,7 +21,7 @@ public class RolsynReferenceParserFactory : IReferenceParserFactory
     private readonly IAppLogger<AppLevel> _appLogger;
     private readonly IContextFactory<ContextInfo> _contextInfoFactory;
     private readonly IContextCollector<ContextInfo> _contextInfoCollector;
-    private readonly IInvocationSyntaxResolver _invocationSyntaxExtractor;
+    private readonly IInvocationLinker<ContextInfo, InvocationExpressionSyntax> _invocationLinker;
 
     public RolsynReferenceParserFactory(
         ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> semanticModelStorage,
@@ -28,14 +29,14 @@ public class RolsynReferenceParserFactory : IReferenceParserFactory
         IAppLogger<AppLevel> appLogger,
         IContextFactory<ContextInfo> contextInfoFactory,
         IContextCollector<ContextInfo> contextInfoCollector,
-        IInvocationSyntaxResolver invocationSyntaxExtractor)
+        IInvocationLinker<ContextInfo, InvocationExpressionSyntax> invocationLinker)
     {
         _semanticModelStorage = semanticModelStorage;
         _syntaxTreeWrapperBuilder = syntaxTreeWrapperBuilder;
         _appLogger = appLogger;
         _contextInfoFactory = contextInfoFactory;
         _contextInfoCollector = contextInfoCollector;
-        _invocationSyntaxExtractor = invocationSyntaxExtractor;
+        _invocationLinker = invocationLinker;
     }
 
     public RoslynInvocationParser<ContextInfo> Create()
@@ -45,8 +46,8 @@ public class RolsynReferenceParserFactory : IReferenceParserFactory
         var invocationReferenceBuilder = new RoslynInvocationReferenceBuilder<ContextInfo>(
             _appLogger,
             _contextInfoFactory,
-            _invocationSyntaxExtractor,
-            referenceCollector);
+            referenceCollector,
+            _invocationLinker);
 
         var referenceParser = new RoslynInvocationParser<ContextInfo>(
             collector: referenceCollector,
