@@ -8,7 +8,7 @@ using SemanticKit.Parsers.File;
 namespace RoslynKit.Phases.Invocations.Parser;
 
 [Obsolete]
-public class InvocationFileParser : IFileParser
+public class InvocationFileParser : IFileParser<ContextInfo>
 {
     private readonly RoslynInvocationParser<ContextInfo> _parser;
 

@@ -71,7 +71,7 @@ public class ParsingOrchestrator : IParsingOrchestrator
         var declarationFileParser = new SemanticDeclarationFileParser(_declarationParser);
         var referenceFileParser = new ReferenceFileParser(referenceParser);
 
-        var fileParsers = new SortedList<int, IFileParser> {
+        var fileParsers = new SortedList<int, IFileParser<ContextInfo>> {
                 { 0, declarationFileParser },
                 { 1, referenceFileParser }
             };

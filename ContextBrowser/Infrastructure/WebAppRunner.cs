@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
-using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
-using LoggerKit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 namespace ContextBrowser.Infrastructure;
@@ -16,13 +12,18 @@ namespace ContextBrowser.Infrastructure;
 // context: app, execute
 internal static class WebAppRunner
 {
+    private const string SLocalhost = "localhost";
+    private const string S127_0_0_1 = "127.0.0.1";
+    private const string SContextBrowserStartPage = "ContextBrowserStartPage.html";
+    private const int Port5000 = 5000;
+
+    // context: app, execute
     public static async Task Run(string[] args, AppOptions options)
     {
         var customUrl = options.Export.WebPaths.OutputDirectory;
         (string host, int port) = ParseUrl(customUrl);
 
-        var builder = WebApplication.CreateBuilder(args);
-
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         builder.WebHost.ConfigureKestrel(serverOptions =>
         {
@@ -30,7 +31,7 @@ internal static class WebAppRunner
             serverOptions.ListenAnyIP(0); // Сбрасывает любые адреса, которые Kestrel мог загрузить
 
             // 2. Явная установка конечной точки
-            serverOptions.Listen(IPAddress.Parse(host == "localhost" ? "127.0.0.1" : host), port);
+            serverOptions.Listen(IPAddress.Parse(host == SLocalhost ? S127_0_0_1 : host), port);
 
             // Если вы хотите всегда использовать localhost:
             // serverOptions.ListenLocalhost(port);
@@ -46,10 +47,10 @@ internal static class WebAppRunner
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
         // 1. Получаем IHostApplicationLifetime для выполнения кода после старта
-        var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+        IHostApplicationLifetime lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
         // 2. Регистрируем действие, которое будет выполнено, когда хост полностью запустится
         lifetime.ApplicationStarted.Register(() =>
@@ -57,7 +58,7 @@ internal static class WebAppRunner
             try
             {
                 // Формируем полный URL (например, "http://localhost:5500/ContextBrowserStartPage.html")
-                var startUrl = customUrl.TrimEnd('/') + "/ContextBrowserStartPage.html";
+                var startUrl = customUrl.TrimEnd('/') + "/" + SContextBrowserStartPage;
 
                 // Используем Process.Start для открытия URL в браузере по умолчанию
                 // Это кроссплатформенный способ, работающий на Windows, Linux и macOS.
@@ -73,7 +74,6 @@ internal static class WebAppRunner
             }
             catch (Exception ex)
             {
-                // Обработка ошибок (например, если браузер не найден или нет прав)
                 Console.WriteLine($"Error launching browser: {ex.Message}");
             }
         });
@@ -99,11 +99,8 @@ internal static class WebAppRunner
 
     private static (string Host, int Port) ParseUrl(string url)
     {
-        if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
-        {
-            return (uri.Host, uri.Port);
-        }
-        // Fallback, если не удалось распарсить
-        return ("localhost", 5000);
+        return Uri.TryCreate(url, UriKind.Absolute, out var uri)
+            ? (uri.Host, uri.Port)
+            : (SLocalhost, Port5000);
     }
 }

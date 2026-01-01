@@ -7,7 +7,7 @@ using SemanticKit.Model.Options;
 namespace SemanticKit.Parsers.File;
 
 // context: file, directory, contextInfo, read
-public class SemanticDeclarationFileParser : IFileParser
+public class SemanticDeclarationFileParser : IFileParser<ContextInfo>
 {
     private readonly ISemanticDeclarationParser<ContextInfo> _parser;
 

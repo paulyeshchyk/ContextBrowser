@@ -10,9 +10,9 @@ namespace SemanticKit.Parsers.File;
 // context: file, directory, contextInfo, read
 public sealed class FileParserPipeline : IFileParserPipeline<ContextInfo>
 {
-    private readonly SortedList<int, IFileParser> _parsers;
+    private readonly SortedList<int, IFileParser<ContextInfo>> _parsers;
 
-    public FileParserPipeline(SortedList<int, IFileParser> parsers)
+    public FileParserPipeline(SortedList<int, IFileParser<ContextInfo>> parsers)
     {
         _parsers = parsers;
     }

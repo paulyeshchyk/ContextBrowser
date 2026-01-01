@@ -5,9 +5,10 @@ using SemanticKit.Model.Options;
 
 namespace SemanticKit.Parsers.File;
 
-public interface IFileParser
+public interface IFileParser<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
-    IEnumerable<ContextInfo> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken ct);
+    IEnumerable<TContext> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken ct);
 
-    void RenewContextInfoList(IEnumerable<ContextInfo> contextInfoList);
+    void RenewContextInfoList(IEnumerable<TContext> contextInfoList);
 }
