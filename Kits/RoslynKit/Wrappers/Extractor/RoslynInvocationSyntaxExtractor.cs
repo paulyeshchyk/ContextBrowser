@@ -62,12 +62,6 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
     private ISemanticModelWrapper? FindSemanticModel(IInvocationNodeWrapper wrapper)
     {
         var treeWrapper = wrapper.BuildTree();
-        if (treeWrapper == null)
-        {
-            _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Err, $"[MISS]: Tree was not provided for invocation [{wrapper}]");
-
-            return null;
-        }
 
         return _semanticInvocationResolver.Resolve(treeWrapper);
     }

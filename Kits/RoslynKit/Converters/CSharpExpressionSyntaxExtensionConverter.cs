@@ -12,21 +12,20 @@ internal static class CSharpExpressionSyntaxExtensionConverter
     /// Извлекает имя метода и имя владельца (если есть) из ExpressionSyntax,
     /// работая только с синтаксическим деревом.
     /// </summary>
-    /// <param name="invocationExpression">Синтаксический узел вызова метода.</param>
+    /// <param name="initialExpression">Синтаксический узел вызова метода.</param>
+    /// <param name="options"></param>
     /// <returns>Кортеж с именем namespace и полным именем владельца</returns>
-    public static (string?, bool) ConvertToMethodRawSignature(this ExpressionSyntax initialExpression, SemanticOptions options)
+    public static string? ConvertToMethodRawSignature(this ExpressionSyntax initialExpression, SemanticOptions options)
     {
         var nameParts = new List<string>();
-        bool isPartial = false;
 
         var expression = initialExpression;
 
         // Перебираем синтаксические узлы, чтобы собрать полное имя.
-        while (expression != null)
+        while (true)
         {
             if (expression is MemberAccessExpressionSyntax memberAccess)
             {
-                isPartial = true;
                 nameParts.Add(memberAccess.Name.Identifier.Text);
                 expression = memberAccess.Expression;
             }
@@ -50,7 +49,7 @@ internal static class CSharpExpressionSyntaxExtensionConverter
 
         if (!nameParts.Any())
         {
-            return default;
+            return null;
         }
 
         // Собираем имя в обратном порядке.
@@ -60,14 +59,14 @@ internal static class CSharpExpressionSyntaxExtensionConverter
         if (nameParts.Count == 1)
         {
             // предположим, что это функция(напр, nameof)
-            return ($"{manualFullName}()", isPartial);
+            return $"{manualFullName}()";
         }
         else
         {
             // В этом случае namespace и ownerName не могут быть надежно определены.
             string namespaceName = options.ExternalNamespaceName;
             var raw = $"{namespaceName}.{manualFullName}()";
-            return (raw, isPartial);
+            return raw;
         }
     }
 }

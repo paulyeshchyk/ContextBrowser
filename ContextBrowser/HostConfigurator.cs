@@ -62,7 +62,7 @@ public class HostConfigurator
         services.AddSingleton<IContextCollector<ContextInfo>, ContextInfoCollector<ContextInfo>>();
         services.AddSingleton<ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper>, SemanticModelStorage>();
         services.AddTransient<ISemanticTreeModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper>, SemanticTreeModelBuilder>();
-        services.AddSingleton<IContextFactory<ContextInfo>, ContextInfoFactory<ContextInfo>>();
+        services.AddSingleton<IContextFactory<ContextInfo>, ContextInfoFactory>();
         services.AddTransient<ISyntaxTreeWrapperBuilder, RoslynSyntaxTreeWrapperBuilder>();
 
         services.AddSingleton<IContextInfoIndexerProvider, ContextInfoIndexerProvider>();
@@ -83,7 +83,7 @@ public class HostConfigurator
         services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFiller<DomainPerActionTensor>>();
         services.AddSingleton<IContextInfoFiller<DomainPerActionTensor>, ContextInfoFillerEmptyData<DomainPerActionTensor>>();
         services.AddSingleton<IContextInfoMapperProvider<DomainPerActionTensor>, ContextInfoMappingProvider<DomainPerActionTensor>>();
-        services.AddSingleton<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>, ContextInfo2DMap<DomainPerActionTensor>>();
+        services.AddSingleton<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>, ContextInfo2DMap<DomainPerActionTensor, ContextInfo>>();
         services.AddTransient<IContextInfoMapperFactory<DomainPerActionTensor>, ContextInfoMapperFactory<DomainPerActionTensor>>();
 
         // --- Code parsing
@@ -98,7 +98,7 @@ public class HostConfigurator
 
         // --- Roslyn ---
         services.AddTransient<ICompilationBuilder, RoslynCompilationBuilder>();
-        services.AddTransient<ISemanticInvocationResolver, RoslynInvocationSemanticResolver>();
+        services.AddTransient<ISemanticInvocationResolver, SemanticInvocationResolver>();
         services.AddTransient<IInvocationSyntaxResolver, RoslynInvocationSyntaxExtractor>();
         services.AddTransient<IReferenceParserFactory, RolsynReferenceParserFactory>();
 
@@ -123,7 +123,7 @@ public class HostConfigurator
         services.AddTransient(typeof(IContextInfoCommentProcessor<>), typeof(ContextInfoCommentProcessor<>));
         services.AddTransient(typeof(ICommentParsingStrategyFactory<>), typeof(CommentParsingStrategyFactory<>));
 
-        services.AddTransient<IContextElementExtractor, ContextElementExtractor>();
+        services.AddTransient<IContextElementExtractor<ContextInfo>, ContextElementExtractor<ContextInfo>>();
         services.AddTransient<IWordTensorBuildStrategy<DomainPerActionTensor>, WordTensorBuildStrategyVerbNoun<DomainPerActionTensor>>();
         services.AddTransient<IWordTensorBuildStrategy<DomainPerActionTensor>, WordTensorBuildStrategyVerbOnly<DomainPerActionTensor>>();
         services.AddTransient<IWordTensorBuildStrategy<DomainPerActionTensor>, WordTensorBuildStrategyNounOnly<DomainPerActionTensor>>();

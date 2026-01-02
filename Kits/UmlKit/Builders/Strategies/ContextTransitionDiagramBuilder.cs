@@ -21,7 +21,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     private readonly ContextTransitionDiagramBuilderCache _cache;
     private readonly DiagramBuilderOptions _options;
     private readonly IAppOptionsStore _optionsStore;
-    private readonly ITensorClassifierDomainPerActionContext _contextClassifier;
+    private readonly ITensorClassifierDomainPerActionContext<ContextInfo> _contextClassifier;
 
     public ContextTransitionDiagramBuilder(DiagramBuilderOptions options, IEnumerable<ITransitionBuilder> transitionBuilders, IAppLogger<AppLevel> logger, IAppOptionsStore optionsStore)
     {
@@ -30,7 +30,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
         _logger = logger;
         _optionsStore = optionsStore;
         _cache = new ContextTransitionDiagramBuilderCache(_logger);
-        _contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
+        _contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext<ContextInfo>>();
     }
 
     // context: builder, transition
@@ -75,7 +75,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     }
 
     // context: builder, transition
-    internal static List<ContextInfo> FetchAllMethods(string name, FetchType fetchType, List<ContextInfo> allContexts, ITensorClassifierDomainPerActionContext contextClassifier)
+    internal static List<ContextInfo> FetchAllMethods(string name, FetchType fetchType, List<ContextInfo> allContexts, ITensorClassifierDomainPerActionContext<ContextInfo> contextClassifier)
     {
         Func<ContextInfo, string, bool> filterFunc = fetchType switch
         {

@@ -9,9 +9,9 @@ namespace SemanticKit.Parsers.File;
 // context: file, directory, contextInfo, read
 public class ReferenceFileParser : IFileParser<ContextInfo>
 {
-    private readonly IInvocationParser _parser;
+    private readonly IInvocationParser<ContextInfo> _parser;
 
-    public ReferenceFileParser(IInvocationParser parser)
+    public ReferenceFileParser(IInvocationParser<ContextInfo> parser)
     {
         _parser = parser;
     }

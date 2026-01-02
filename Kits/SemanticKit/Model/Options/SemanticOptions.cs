@@ -60,14 +60,8 @@ public record SemanticOptions
 
 // parsing: error
 // context: model, semantic
-public record CodeParsingOptions
+public record CodeParsingOptions(SemanticOptions SemanticOptions, string SemanticLanguage)
 {
-    public string SemanticLanguage { get; set; }
-    public SemanticOptions SemanticOptions { get; set; }
-
-    public CodeParsingOptions(SemanticOptions semanticOptions, string semanticLanguage)
-    {
-        SemanticOptions = semanticOptions;
-        SemanticLanguage = semanticLanguage;
-    }
+    public string SemanticLanguage { get; set; } = SemanticLanguage;
+    public SemanticOptions SemanticOptions { get; set; } = SemanticOptions;
 }

@@ -13,10 +13,10 @@ using SemanticKit.Model.Options;
 namespace RoslynKit.Phases.Invocations.Parser;
 
 // context: roslyn, read
-public class RoslynInvocationParser<TContext> : IInvocationParser
-    where TContext : ContextInfo, IContextWithReferences<TContext>
+public class RoslynInvocationParser<TContext> : IInvocationParser<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
-    private readonly RoslynInvocationReferenceBuilder<TContext> _invocationReferenceBuilder;
+    private readonly SemanticInvocationReferenceBuilder<TContext> _invocationReferenceBuilder;
     private readonly IContextCollector<TContext> _collector;
     private readonly ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> _treeModelStorage;
     private readonly ISyntaxTreeWrapperBuilder _syntaxTreeWrapperBuilder;
@@ -27,7 +27,7 @@ public class RoslynInvocationParser<TContext> : IInvocationParser
         ISemanticModelStorage<ISyntaxTreeWrapper,
         ISemanticModelWrapper> semanticTreeModelStorage,
         ISyntaxTreeWrapperBuilder syntaxTreeWrapperBuilder,
-        RoslynInvocationReferenceBuilder<TContext> invocationReferenceBuilder,
+        SemanticInvocationReferenceBuilder<TContext> invocationReferenceBuilder,
         IAppLogger<AppLevel> logger)
     {
         _collector = collector;
@@ -56,7 +56,7 @@ public class RoslynInvocationParser<TContext> : IInvocationParser
 
         // 3. Обрабатываем все методы, зарегистрированные в коллекторе
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Building method references: {filePath}");
-        var theCollection = _collector.GetAll().Where(m => m.ElementType == ContextInfoElementType.method);
+        var theCollection = _collector.GetAll().Where(m => m.ElementType == ContextInfoElementType.method).ToList();
         if (!theCollection.Any())
         {
             _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Err, $"[FAIL] No method references found in: {filePath}");
@@ -79,7 +79,7 @@ public class RoslynInvocationParser<TContext> : IInvocationParser
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
-    public IEnumerable<ContextInfo> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
+    public IEnumerable<TContext> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -98,13 +98,13 @@ public class RoslynInvocationParser<TContext> : IInvocationParser
     // context: roslyn, read
     public void ParseFile(string filePath, SemanticOptions options, CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, $"Parsing files: phase 2 - {filePath}");
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, $"Parsing file: phase 2 - {filePath}");
 
         var code = File.ReadAllText(filePath);
         ParseCode(code, filePath, options, cancellationToken);
     }
 
-    public void RenewContextInfoList(IEnumerable<ContextInfo> contextInfoList)
+    public void RenewContextInfoList(IEnumerable<TContext> contextInfoList)
     {
         _collector.Renew((IEnumerable<TContext>)contextInfoList);
     }

@@ -4,18 +4,19 @@ using ContextKit.Model.Classifier;
 
 namespace ContextKit.Model;
 
-public class ContextElementExtractor : IContextElementExtractor
+public class ContextElementExtractor<TContext> : IContextElementExtractor<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
-    private readonly IContextClassifier _wordRoleClassifier;
+    private readonly IContextClassifier<TContext> _wordRoleClassifier;
     private readonly IFakeDimensionClassifier _fakeDimensionClassifier;
 
     public ContextElementExtractor(IAppOptionsStore appOptionsStore)
     {
-        _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier>();
+        _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier<TContext>>();
         _fakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
     }
 
-    public ContextElementGroups Extract(ContextInfo item)
+    public ContextElementGroups Extract(TContext item)
     {
         var groups = new ContextElementGroups
         {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using TensorKit.Model;
 
@@ -11,7 +12,7 @@ public static class ContextInfoCsvExporter<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
     //context: build, csv, matrix
-    public static void GenerateCsv(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<TDataTensor, List<string>> matrix, string outputPath)
+    public static void GenerateCsv(ITensorClassifierDomainPerActionContext<ContextInfo> contextClassifier, Dictionary<TDataTensor, List<string>> matrix, string outputPath)
     {
         var lines = new List<string>();
         lines.AddRange(contextClassifier.MetaItems);

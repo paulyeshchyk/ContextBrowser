@@ -2,10 +2,11 @@ using System.Collections.Generic;
 
 namespace ContextKit.Model;
 
-public interface IContextElementExtractor
+public interface IContextElementExtractor<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     // Возвращает структурированный результат классификации
-    ContextElementGroups Extract(ContextInfo item);
+    ContextElementGroups Extract(TContext item);
 }
 
 public class ContextElementGroups

@@ -9,11 +9,11 @@ public class ContextInfoFiller<TTensor> : IContextInfoFiller<TTensor>
     where TTensor : notnull
 {
     private readonly IEnumerable<IWordTensorBuildStrategy<TTensor>> _strategies;
-    private readonly IContextElementExtractor _contextElementExtractor;
+    private readonly IContextElementExtractor<ContextInfo> _contextElementExtractor;
 
     public int Order { get; } = int.MinValue;
 
-    public ContextInfoFiller(IEnumerable<IWordTensorBuildStrategy<TTensor>> strategies, IContextElementExtractor contextElementExtractor)
+    public ContextInfoFiller(IEnumerable<IWordTensorBuildStrategy<TTensor>> strategies, IContextElementExtractor<ContextInfo> contextElementExtractor)
     {
 
         // СОРТИРОВКА: Сортируем стратегии по приоритету (чем меньше число, тем раньше она будет обработана)

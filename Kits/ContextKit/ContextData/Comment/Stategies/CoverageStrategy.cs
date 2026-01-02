@@ -3,7 +3,7 @@
 namespace ContextKit.ContextData.Comment.Stategies;
 
 public class CoverageStrategy<T> : ICommentParsingStrategy<T>
-    where T : ContextInfo
+    where T : IContextWithReferences<T>
 {
     public static string Keyword => "coverage";
 

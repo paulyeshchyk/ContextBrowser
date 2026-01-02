@@ -23,8 +23,6 @@ public record CSharpSyntaxWrapperMethod : ISyntaxWrapper
 
     public string Identifier { get; set; }
 
-    public bool IsPartial { get; set; }
-
     public string ShortName { get; set; }
 
     public bool IsValid { get; set; } = true;
@@ -35,7 +33,6 @@ public record CSharpSyntaxWrapperMethod : ISyntaxWrapper
     {
         if (symbol is ISymbol isymbol)
         {
-            IsPartial = false;
             ShortName = isymbol.BuildShortName();
             Identifier = isymbol.BuildFullMemberName();
             Name = isymbol.BuildNameAndClassOwnerName();
@@ -58,7 +55,6 @@ public record CSharpSyntaxWrapperMethod : ISyntaxWrapper
         SpanStart = wrapper.SpanStart;
         SpanEnd = wrapper.SpanEnd;
         Namespace = wrapper.Namespace;
-        IsPartial = false;
         ShortName = wrapper.ShortName;
         if (wrapper.Signature is not null)
         {

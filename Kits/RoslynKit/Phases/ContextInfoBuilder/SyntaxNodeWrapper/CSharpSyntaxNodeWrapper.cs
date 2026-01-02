@@ -3,7 +3,7 @@ using System.Linq;
 using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 
-namespace RoslynKit.Model.SyntaxNodeWrapper;
+namespace RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 
 public abstract class CSharpSyntaxNodeWrapper<S> : ISyntaxNodeWrapper
     where S : SyntaxNode

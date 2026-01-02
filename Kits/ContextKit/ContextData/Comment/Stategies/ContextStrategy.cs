@@ -9,24 +9,24 @@ using LoggerKit;
 namespace ContextKit.ContextData.Comment.Stategies;
 
 // context: contextinfo, build
-public class ContextStrategy<T> : ICommentParsingStrategy<T>
-    where T : ContextInfo
+public class ContextStrategy<TContext> : ICommentParsingStrategy<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     public static string Keyword => "context";
 
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextClassifier _contextClassifier;
+    private readonly IContextClassifier<TContext> _contextClassifier;
     private readonly IFakeDimensionClassifier _fakeDimensionClassifier;
 
     public ContextStrategy(IAppOptionsStore appOptionsStore, IAppLogger<AppLevel> logger)
     {
-        _contextClassifier = appOptionsStore.GetOptions<IContextClassifier>();
+        _contextClassifier = appOptionsStore.GetOptions<IContextClassifier<TContext>>();
         _fakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
         _logger = logger;
     }
 
     // context: contextinfo, build
-    public void Execute(T? container, string comment)
+    public void Execute(TContext? container, string comment)
     {
         var content = CommentWithKeywordParser.ExtractContent(Keyword, comment);
 

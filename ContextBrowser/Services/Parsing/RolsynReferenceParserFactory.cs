@@ -43,7 +43,7 @@ public class RolsynReferenceParserFactory : IReferenceParserFactory
     {
         var referenceCollector = new ContextInfoReferenceCollector<ContextInfo>(_contextInfoCollector.GetAll());
 
-        var invocationReferenceBuilder = new RoslynInvocationReferenceBuilder<ContextInfo>(
+        var invocationReferenceBuilder = new SemanticInvocationReferenceBuilder<ContextInfo>(
             _appLogger,
             _contextInfoFactory,
             referenceCollector,

@@ -1,9 +1,9 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
 
-namespace RoslynKit.Model.SyntaxNodeWrapper;
+namespace RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 
-public class CSharpEnumSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<EnumDeclarationSyntax>
+public class CSharpSyntaxNodeWrapperEnum : CSharpSyntaxNodeWrapper<EnumDeclarationSyntax>
 {
     private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<EnumDeclarationSyntax>();
 

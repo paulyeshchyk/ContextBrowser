@@ -4,7 +4,7 @@ using ContextKit.Model;
 namespace SemanticKit.Model;
 
 public interface ISemanticReferenceBuilderValidator<TContext, TInvocationExpressionSyntax>
-    where TContext : ContextInfo, IContextWithReferences<TContext>
+    where TContext : IContextWithReferences<TContext>
     where TInvocationExpressionSyntax : class
 {
     SemanticReferenceBuilderValidationResult<TContext, TInvocationExpressionSyntax>? Validate(TContext callerContext, IContextCollector<TContext> collector);

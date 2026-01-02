@@ -4,6 +4,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextBrowserKit.Options.Import;
+using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using LoggerKit.Model;
 using SemanticKit.Model.Options;
@@ -43,8 +44,8 @@ public class AppOptions
     [CommandLineArgument("roslyn-options", "The source code path.")]
     // context: model, appoptions
     public CodeParsingOptions ParsingOptions { get; set; } = new(
-        semanticLanguage: "csharp",
-        semanticOptions: new(
+        SemanticLanguage: "csharp",
+        SemanticOptions: new(
             semanticFilters: new(
                 trustedFilters: new(included: string.Empty, excluded: string.Empty),
                 domainFilters: new(included: "**/*", excluded: "**/net6.0/System.Text.Json.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*;**/api-ms-*;"),
@@ -128,7 +129,7 @@ public class AppOptions
                                          indication: new DiagramIndicationOption(useAsync: true));
 
     [CommandLineArgument("context-classifier", "Определение контекста представления")]
-    public ITensorClassifierDomainPerActionContext Classifier { get; set; } = new DomainPerActionContextTensorClassifier(
+    public ITensorClassifierDomainPerActionContext<ContextInfo> Classifier { get; set; } = new DomainPerActionContextTensorClassifier<ContextInfo>(
         emptyDimensionClassifier: new EmptyDimensionClassifierDomainPerAction(emptyAction: "EmptyAction", emptyDomain: "EmptyDomain"),
          fakeDimensionClassifier: new FakeDimensionClassifierDomainPerAction(fakeAction: "_fakeAction", fakeDomain: "_fakeDomain"),
                        metaItems: new[] { "Action;Domain;Elements" },

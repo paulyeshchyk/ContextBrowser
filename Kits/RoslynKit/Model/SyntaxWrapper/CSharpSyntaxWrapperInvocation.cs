@@ -6,8 +6,6 @@ namespace RoslynKit.Model.SyntaxWrapper;
 
 public record CSharpSyntaxWrapperInvocation : ISyntaxWrapper
 {
-    public bool IsPartial { get; init; }
-
     public int SpanEnd { get; init; }
 
     public int SpanStart { get; init; }

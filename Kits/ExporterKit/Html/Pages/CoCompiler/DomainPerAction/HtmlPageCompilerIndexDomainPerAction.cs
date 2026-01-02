@@ -5,7 +5,6 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using ExporterKit.Infrastucture;
 using HtmlKit.Document;
 using LoggerKit;
@@ -37,8 +36,6 @@ public class HtmlPageCompilerIndexDomainPerAction<TDataTensor> : IHtmlPageCompil
         _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
-        var exportMatrixOptions = exportOptions.ExportMatrix;
-        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
 
         var matrix = await _matrixGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
         var result = await _indexPageProducer.ProduceAsync(matrix, cancellationToken).ConfigureAwait(false);

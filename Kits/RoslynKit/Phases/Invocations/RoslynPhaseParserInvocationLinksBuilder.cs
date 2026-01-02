@@ -14,7 +14,7 @@ namespace RoslynKit.Phases.Invocations;
 
 // context: roslyn, build
 public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLinksBuilder<TContext>
-    where TContext : ContextInfo, IContextWithReferences<TContext>
+    where TContext : class, IContextWithReferences<TContext>
 {
     private readonly IContextCollector<TContext> _collector;
     private readonly IAppLogger<AppLevel> _logger;

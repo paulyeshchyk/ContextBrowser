@@ -24,8 +24,6 @@ public record CSharpSyntaxWrapperType : ISyntaxWrapper
 
     public string Identifier { get; set; }
 
-    public bool IsPartial { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
     public string ShortName { get; set; }
 
     public bool IsValid { get; set; } = true;

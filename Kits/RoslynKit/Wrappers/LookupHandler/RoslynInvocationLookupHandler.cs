@@ -13,7 +13,7 @@ using SemanticKit.Model.SyntaxWrapper;
 namespace RoslynKit.Wrappers.LookupHandler;
 
 public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLookupHandler<TContext, TSemanticModel>
-    where TContext : ContextInfo, IContextWithReferences<TContext>
+    where TContext : class, IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper
 
 {
@@ -35,41 +35,41 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
 
     }
 
-    public override TContext? Handle(ISyntaxWrapper symbolDto)
+    public override TContext? Handle(ISyntaxWrapper syntaxWrapper)
     {
         if (!_options.CreateFailedCallees)
         {
             // Если создание искусственных узлов не разрешено, возвращаем null
 
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Fallback fake callee be not used for {symbolDto.FullName}, because of disabled option CreateFailedCallees");
-            return base.Handle(symbolDto);
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Fallback fake callee be not used for {syntaxWrapper.FullName}, because of disabled option CreateFailedCallees");
+            return base.Handle(syntaxWrapper);
         }
 
-        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[CREATE] Fallback fake callee created for: {symbolDto.FullName}");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[CREATE] Fallback fake callee created for: {syntaxWrapper.FullName}");
 
         // Логика создания искусственного узла
 
-        var typeModel = new CSharpSyntaxWrapperType(syntaxWrapper: symbolDto);
-        var typeContext = _contextInfoBuilderDispatcher.DispatchAndBuild(null, typeModel);
+        var typeModel = new CSharpSyntaxWrapperType(syntaxWrapper: syntaxWrapper);
+        var typeContext = _contextInfoBuilderDispatcher.DispatchAndBuild(default, typeModel);
         if (typeContext == null)
         {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[MISS] Fallback fake callee be not used for {symbolDto.FullName}, because ContextInfoBuilder returns null");
-            return base.Handle(symbolDto);
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[MISS] Fallback fake callee be not used for {syntaxWrapper.FullName}, because ContextInfoBuilder returns null");
+            return base.Handle(syntaxWrapper);
         }
 
-        var methodmodel = new CSharpSyntaxWrapperMethodArtifitial(wrapper: symbolDto, contextOwner: typeContext);
-        var methodContext = _contextInfoBuilderDispatcher.DispatchAndBuild(null, methodmodel);
+        var methodmodel = new CSharpSyntaxWrapperMethodArtifitial(wrapper: syntaxWrapper, contextOwner: typeContext);
+        var methodContext = _contextInfoBuilderDispatcher.DispatchAndBuild(default, methodmodel);
         if (methodContext == null)
         {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[MISS] Fallback fake callee be not used for {symbolDto.FullName}, because ContextInfoBuilder returns null for method");
-            return base.Handle(symbolDto);
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[MISS] Fallback fake callee be not used for {syntaxWrapper.FullName}, because ContextInfoBuilder returns null for method");
+            return base.Handle(syntaxWrapper);
         }
 
         _collector.Append(typeContext);
 
         typeContext.Owns.Add(methodContext);
         _collector.Append(methodContext);
-        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[DONE] Fallback fake callee created for: {symbolDto.FullName}");
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[DONE] Fallback fake callee created for: {syntaxWrapper.FullName}");
 
         return methodContext;
     }

@@ -3,9 +3,9 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
 
-namespace RoslynKit.Model.SyntaxNodeWrapper;
+namespace RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 
-public class CSharpDelegateSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<DelegateDeclarationSyntax>, ISymbolInfo
+public class CSharpSyntaxNodeWrapperDelegate : CSharpSyntaxNodeWrapper<DelegateDeclarationSyntax>, ISymbolInfo
 {
     private DelegateDeclarationSyntax? _syntaxNode => GetCoSyntax<DelegateDeclarationSyntax>();
 

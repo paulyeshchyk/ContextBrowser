@@ -18,8 +18,6 @@ public record CSharpSyntaxWrapperMethodArtifitial : ISyntaxWrapper
 
     public string Identifier { get; set; }
 
-    public bool IsPartial { get; set; }
-
     public string ShortName { get; set; }
 
     public bool IsValid { get; set; } = true;
@@ -37,7 +35,6 @@ public record CSharpSyntaxWrapperMethodArtifitial : ISyntaxWrapper
         SpanStart = wrapper.SpanStart;
         SpanEnd = wrapper.SpanEnd;
         Namespace = wrapper.Namespace;
-        IsPartial = false;
         ShortName = wrapper.ShortName;
         if (wrapper.Signature is not null)
         {

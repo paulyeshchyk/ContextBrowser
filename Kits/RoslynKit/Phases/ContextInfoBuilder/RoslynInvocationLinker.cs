@@ -12,7 +12,7 @@ using SemanticKit.Model.Options;
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
 public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, InvocationExpressionSyntax>
-    where TContext : ContextInfo, IContextWithReferences<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     private readonly IInvocationLinksBuilder<TContext> _linksInvocationBuilder;
     private readonly IAppLogger<AppLevel> _logger;

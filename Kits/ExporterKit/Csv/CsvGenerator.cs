@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using ContextBrowserKit.Options;
+using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using TensorKit.Factories;
 using TensorKit.Model;
@@ -15,19 +16,19 @@ public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
 {
     private readonly ITensorFactory<TDataTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
-    private readonly IContextClassifier _wordRoleClassifier;
+    private readonly IContextClassifier<ContextInfo> _wordRoleClassifier;
     private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
 
     public CsvGenerator(ITensorFactory<TDataTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
-        _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier>();
+        _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier<ContextInfo>>();
         _emptyDimensionClassifier = appOptionsStore.GetOptions<IEmptyDimensionClassifier>();
     }
 
     //context: build, csv, heatmap
-    public void GenerateHeatmap(ITensorClassifierDomainPerActionContext contextClassifier, Dictionary<TDataTensor, List<object>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
+    public void GenerateHeatmap(ITensorClassifierDomainPerActionContext<ContextInfo> contextClassifier, Dictionary<TDataTensor, List<object>> matrix, string outputPath, UnclassifiedPriorityType unclassifiedPriority = UnclassifiedPriorityType.None)
     {
         var lines = new List<string>();
 

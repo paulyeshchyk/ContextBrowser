@@ -2,24 +2,21 @@
 using ContextBrowserKit.Options;
 using ContextKit.ContextData.Comment;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using LoggerKit;
 
 namespace ContextKit.ContextData;
 
 // context: roslyn, contextInfo, build
 public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
-    where T : ContextInfo
+    where T : IContextWithReferences<T>
 {
     private readonly ICommentParsingStrategy<T> _strategy;
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly ITensorClassifierDomainPerActionContext _contextClassifier;
 
-    public ContextValidationDecorator(ITensorClassifierDomainPerActionContext contextClassifier, ICommentParsingStrategy<T> strategy, IAppLogger<AppLevel> logger)
+    public ContextValidationDecorator(ICommentParsingStrategy<T> strategy, IAppLogger<AppLevel> logger)
     {
         _strategy = strategy;
         _logger = logger;
-        _contextClassifier = contextClassifier;
     }
 
     // context: roslyn, contextInfo, build

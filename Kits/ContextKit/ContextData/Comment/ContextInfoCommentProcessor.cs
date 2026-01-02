@@ -7,7 +7,7 @@ namespace ContextKit.ContextData.Comment;
 
 // context: contextInfo, comment, build
 public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
-    where T : ContextInfo
+    where T : IContextWithReferences<T>
 {
     private readonly IAppOptionsStore _optionsStore;
     private readonly ICommentParsingStrategyFactory<T> _factory;

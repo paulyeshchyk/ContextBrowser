@@ -7,7 +7,7 @@ using LoggerKit;
 namespace SemanticKit.Model;
 
 public class SemanticReferenceBuilderValidator<TContext, TInvocationExpressionSyntax> : ISemanticReferenceBuilderValidator<TContext, TInvocationExpressionSyntax>
-    where TContext : ContextInfo, IContextWithReferences<TContext>
+    where TContext : IContextWithReferences<TContext>
     where TInvocationExpressionSyntax : class
 {
     private readonly IAppLogger<AppLevel> _logger;

@@ -29,7 +29,6 @@ public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
     // context: build, htmlmatrix
     public Task<IHtmlMatrix> GenerateAsync(CancellationToken cancellationToken)
     {
-        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
         var matrixOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
         var matrixOrientation = matrixOptions.HtmlTable.Orientation;
         var priority = matrixOptions.UnclassifiedPriority;

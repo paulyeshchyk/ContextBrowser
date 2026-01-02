@@ -62,12 +62,7 @@ public class TensorColumnWrapper<TTensor> : ILabeledValue
 
     public override int GetHashCode()
     {
-        int hash = 17;
+        return HashCode.Combine(LabeledCaption, LabeledData);
 
-        hash = hash * 31 + (LabeledCaption.GetHashCode());
-
-        hash = hash * 31 + (LabeledData.GetHashCode());
-
-        return hash;
     }
 }

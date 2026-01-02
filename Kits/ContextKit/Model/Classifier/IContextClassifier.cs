@@ -4,7 +4,8 @@ using System.Linq;
 
 namespace ContextKit.Model.Classifier;
 
-public interface IContextClassifier
+public interface IContextClassifier<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     /// <summary>
     /// Список предопределённых действий, определёющий есть у описания домен(ы) и действие, или нет.<br/>
@@ -56,10 +57,10 @@ public interface IContextClassifier
     /// <param name="info"></param>
     /// <param name="fakeDimensionClassifier"></param>
     /// <returns></returns>
-    bool HasAllDimensionsFilled(ContextInfo info, IFakeDimensionClassifier fakeDimensionClassifier);
+    bool HasAllDimensionsFilled(TContext info, IFakeDimensionClassifier fakeDimensionClassifier);
 }
 
-public record ContextClassifier : IContextClassifier
+public record ContextClassifier : IContextClassifier<ContextInfo>
 {
     public IEnumerable<string> StandardActions { get; }
 

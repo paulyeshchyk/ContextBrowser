@@ -10,17 +10,17 @@ using LoggerKit;
 namespace ContextBrowser.Services.Parsing;
 
 public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFactory<TContext>
-    where TContext : ContextInfo
+    where TContext : IContextWithReferences<TContext>
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IAppOptionsStore _optionsStore;
-    private readonly ITensorClassifierDomainPerActionContext _classifier;
+    private readonly ITensorClassifierDomainPerActionContext<TContext> _classifier;
 
     public CommentParsingStrategyFactory(IAppOptionsStore optionsStore, IAppLogger<AppLevel> logger)
     {
         _logger = logger;
         _optionsStore = optionsStore;
-        _classifier = optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
+        _classifier = optionsStore.GetOptions<ITensorClassifierDomainPerActionContext<TContext>>();
     }
 
     public IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies()
@@ -28,7 +28,7 @@ public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFa
         return new List<ICommentParsingStrategy<TContext>>()
         {
             new CoverageStrategy<TContext>(),
-            new ContextValidationDecorator<TContext>(_classifier,  new ContextStrategy<TContext>(_optionsStore, _logger), _logger),
+            new ContextValidationDecorator<TContext>(new ContextStrategy<TContext>(_optionsStore, _logger), _logger),
         };
     }
 }

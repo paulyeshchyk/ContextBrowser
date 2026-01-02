@@ -35,16 +35,24 @@ public class UmlNode : IUmlParticipant
 
     private record data
     {
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; } = string.Empty;
 
-        public string? Url { get; set; } = string.Empty;
+        public string? Url { get; } = string.Empty;
 
-        public int Depth { get; set; } = 0;
+        public int Depth { get; }
+
+        public data(string Name, string? Url, int Depth)
+        {
+            this.Name = Name;
+            this.Url = Url;
+            this.Depth = Depth;
+        }
+
     }
 
     public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
-        var data = new data() { Name = FullName, Url = Url, Depth = 1 };
+        var data = new data(Name: FullName, Url: Url, Depth: 1);
         var draw = DrawNode(writeOptions, data);
         writer.WriteLine(draw);
 
@@ -76,18 +84,11 @@ public class UmlNode : IUmlParticipant
 
         list.Add(nodeJoint);
 
-        if (Url != null)
-        {
-            // [[http://www.google.com Поисковая_система]]
 #warning do check .AlphanumericOnly()
-            list.Add($"[[{data.Url} {data.Name}]]");
-        }
-        else
-        {
-            // Поисковая_система
-#warning do check .AlphanumericOnly()
-            list.Add($"{data.Name}");
-        }
+        list.Add(Url != null
+            ? $"[[{data.Url} {data.Name}]]" // [[http://www.google.com Поисковая_система]]
+            : $"{data.Name}"// Поисковая_система
+        );
 
         // style: <<brown>>
         list.Add($"<< {this.Stylename} >>");

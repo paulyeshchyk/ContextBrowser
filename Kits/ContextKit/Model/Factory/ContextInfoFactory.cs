@@ -2,10 +2,9 @@
 
 // context: ContextInfo, build
 // pattern: Factory
-public class ContextInfoFactory<T> : IContextFactory<T>
-    where T : ContextInfo
+public class ContextInfoFactory : IContextFactory<ContextInfo>
 {
-    public T Create(IContextInfo dto)
+    public ContextInfo Create(IContextInfo dto)
     {
         var result = new ContextInfo
             (
@@ -20,10 +19,7 @@ public class ContextInfoFactory<T> : IContextFactory<T>
              symbolInfo: dto.SymbolWrapper,
              syntaxNode: dto.SyntaxWrapper,
              classOwner: dto.ClassOwner,
-            methodOwner: dto.MethodOwner)
-        {
-        };
-
-        return (T)result;
+            methodOwner: dto.MethodOwner);
+        return result;
     }
 }

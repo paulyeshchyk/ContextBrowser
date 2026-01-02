@@ -30,42 +30,13 @@ public static class CSharpInvocationSyntaxWrapperConverter
         return wrapper;
     }
 
-    public static CSharpSyntaxWrapperInvocation FromSignature(
-        SignatureDefault signature,
-        bool isPartial,
-        int spanStart,
-        int spanEnd)
-    {
-        var wrapper = new CSharpSyntaxWrapperInvocation()
-        {
-            IsPartial = isPartial,
-            FullName = signature.GetFullName(),
-            Identifier = signature.GetIdentifier(),
-            ShortName = signature.GetShortName(),
-            Name = signature.GetMethodName(),
-            Namespace = signature.GetNamespace(),
-            SpanStart = spanStart,
-            SpanEnd = spanEnd,
-            IsValid = true,
-            Signature = new SignatureDefault
-                (ResultType: signature.ResultType,
-                    Namespace: signature.Namespace,
-                    ClassName: signature.ClassName,
-                    MethodName: signature.MethodName,
-                    Arguments: signature.Arguments,
-                    Raw: signature.Raw
-                )
-        };
-        return wrapper;
-    }
-
     public static ISyntaxWrapper? FromExpression(
         ExpressionSyntax byInvocation,
         SemanticOptions _options)
     {
-        var (raw, isPartial) = CSharpExpressionSyntaxExtensionConverter.ConvertToMethodRawSignature(byInvocation, _options);
+        var raw = byInvocation.ConvertToMethodRawSignature(_options);
         if (string.IsNullOrEmpty(raw))
-            return default;
+            return null;
 
         var signature = CSharpSignatureUtils.Parse(raw);
 
@@ -74,7 +45,6 @@ public static class CSharpInvocationSyntaxWrapperConverter
             Signature = signature,
             SpanStart = byInvocation.Span.Start,
             SpanEnd = byInvocation.Span.End,
-            IsPartial = isPartial,
             FullName = signature.GetFullName(),
             ShortName = signature.GetShortName(),
             Name = signature.GetMethodName(),

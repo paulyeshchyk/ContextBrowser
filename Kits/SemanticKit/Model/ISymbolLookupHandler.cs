@@ -8,7 +8,7 @@ namespace SemanticKit.Model;
 /// </summary>
 /// <typeparam name="TContext">Тип возвращаемого контекста.</typeparam>
 public interface ISymbolLookupHandler<TContext, TSemanticModel>
-    where TContext : class, IContextWithReferences<TContext>
+    where TContext : IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper
 {
     /// <summary>

@@ -2,21 +2,16 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using ExporterKit.Uml.Exporters;
-using GraphKit.Walkers;
 using LoggerKit;
 using TensorKit.Model;
-using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
-using UmlKit.PlantUmlSpecification;
 
 namespace ExporterKit.Uml;
 
@@ -41,7 +36,6 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
         _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap Action");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
-        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 

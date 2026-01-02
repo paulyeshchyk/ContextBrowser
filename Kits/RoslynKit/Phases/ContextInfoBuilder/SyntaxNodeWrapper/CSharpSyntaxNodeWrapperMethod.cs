@@ -2,11 +2,11 @@ using ContextKit.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
 
-namespace RoslynKit.Model.SyntaxNodeWrapper;
+namespace RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 
-public class CSharpInterfaceSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<InterfaceDeclarationSyntax>, ISymbolInfo
+public class CSharpSyntaxNodeWrapperMethod : CSharpSyntaxNodeWrapper<MethodDeclarationSyntax>, ISymbolInfo
 {
-    private InterfaceDeclarationSyntax _syntaxNode => GetCoSyntax<InterfaceDeclarationSyntax>();
+    private MethodDeclarationSyntax _syntaxNode => GetCoSyntax<MethodDeclarationSyntax>();
 
     public override string Identifier => _syntaxNode.GetIdentifier();
 
@@ -16,6 +16,5 @@ public class CSharpInterfaceSyntaxNodeWrapper : CSharpSyntaxNodeWrapper<Interfac
 
     public override string GetName() => _syntaxNode.GetIdentifier();
 
-#warning this is incorrect
     public override string GetShortName() => GetName();
 }

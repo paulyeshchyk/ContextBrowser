@@ -4,7 +4,8 @@ using TensorKit.Model;
 
 namespace ContextKit.Model.Classifier;
 
-public interface ITensorClassifierDomainPerActionContext : ITensorClassifier<DomainPerActionDimensionType, ContextInfo>
+public interface ITensorClassifierDomainPerActionContext<TContext> : ITensorClassifier<DomainPerActionDimensionType, TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     IEnumerable<string> MetaItems { get; }
 }
@@ -12,17 +13,18 @@ public interface ITensorClassifierDomainPerActionContext : ITensorClassifier<Dom
 // context: model, ContextInfo
 // pattern: Strategy
 // parsing: error
-public record DomainPerActionContextTensorClassifier : ITensorClassifierDomainPerActionContext
+public record DomainPerActionContextTensorClassifier<TContext> : ITensorClassifierDomainPerActionContext<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     public IEnumerable<string> MetaItems { get; }
 
-    public IContextClassifier WordRoleClassifier { get; }
+    public IContextClassifier<TContext> WordRoleClassifier { get; }
 
     public IEmptyDimensionClassifier EmptyDimensionClassifier { get; }
 
     public IFakeDimensionClassifier FakeDimensionClassifier { get; }
 
-    public DomainPerActionContextTensorClassifier(string[] metaItems, IContextClassifier wordRoleClassifier, IEmptyDimensionClassifier emptyDimensionClassifier, IFakeDimensionClassifier fakeDimensionClassifier)
+    public DomainPerActionContextTensorClassifier(string[] metaItems, IContextClassifier<TContext> wordRoleClassifier, IEmptyDimensionClassifier emptyDimensionClassifier, IFakeDimensionClassifier fakeDimensionClassifier)
     {
         MetaItems = new List<string>(metaItems);
         WordRoleClassifier = wordRoleClassifier;
@@ -40,7 +42,7 @@ public record DomainPerActionContextTensorClassifier : ITensorClassifierDomainPe
         };
     }
 
-    public bool IsDimensionApplicable(ContextInfo ctx, string? dimensionName, int dimensionType)
+    public bool IsDimensionApplicable(TContext ctx, string? dimensionName, int dimensionType)
     {
         if (string.IsNullOrWhiteSpace(dimensionName) || GetEmptyDimensionValue(dimensionType) == dimensionName)
         {

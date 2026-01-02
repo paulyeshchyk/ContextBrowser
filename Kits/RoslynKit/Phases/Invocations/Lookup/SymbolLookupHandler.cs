@@ -11,7 +11,7 @@ namespace RoslynKit.Phases.Invocations.Lookup;
 /// </summary>
 /// <typeparam name="TContext">Тип возвращаемого контекста.</typeparam>
 public abstract class SymbolLookupHandler<TContext, TSemanticModel> : ISymbolLookupHandler<TContext, TSemanticModel>
-    where TContext : class, IContextWithReferences<TContext>
+    where TContext :  class, IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper
 {
     protected ISymbolLookupHandler<TContext, TSemanticModel>? _nextHandler;

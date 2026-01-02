@@ -67,7 +67,7 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
     {
     }
 
-    internal void ParseDeclarations(ISemanticSyntaxRouter<TContext> _router, SemanticOptions options, CompilationMap mapItem, CancellationToken cancellationToken)
+    internal void ParseDeclarations(ISemanticSyntaxRouter<TContext> router, SemanticOptions options, CompilationMap mapItem, CancellationToken cancellationToken)
     {
         var tree = mapItem.SyntaxTree;
         var model = mapItem.SemanticModel;
@@ -80,7 +80,7 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
 
         if (availableSyntaxies.Any())
         {
-            _router.Route(availableSyntaxies, model, options, cancellationToken);
+            router.Route(availableSyntaxies, model, options, cancellationToken);
         }
         else
         {

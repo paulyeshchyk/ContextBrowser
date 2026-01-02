@@ -10,10 +10,11 @@ using TensorKit.Model;
 namespace ContextKit.Model;
 
 // context: ContextInfoMatrix, model
-public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
+public class ContextInfo2DMap<TTensor, TContext> : IContextInfo2DMap<TContext, TTensor>
     where TTensor : IDomainPerActionTensor
+    where TContext : IContextWithReferences<TContext>
 {
-    private Dictionary<TTensor, List<ContextInfo>>? _data;
+    private Dictionary<TTensor, List<TContext>>? _data;
     private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
     private readonly IAppOptionsStore _optionsStore;
@@ -33,16 +34,16 @@ public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
         _FakeDimensionClassifier = _optionsStore.GetOptions<IFakeDimensionClassifier>();
     }
 
-    public Dictionary<TTensor, List<ContextInfo>>? GetMapData()
+    public Dictionary<TTensor, List<TContext>>? GetMapData()
     {
         return _data;
     }
 
-    private record ContextPair(ContextInfo Context, string Action, string Domain);
+    private record ContextPair(TContext Context, string Action, string Domain);
 
     private IEnumerable<ContextPair> GetContextPairs(
-        ContextInfo context,
-        IContextClassifier wordClassifier,
+        TContext context,
+        IContextClassifier<TContext> wordClassifier,
         IEmptyDimensionClassifier emptyClassifier)
     {
         // Извлекаем и подготавливаем действия
@@ -60,11 +61,11 @@ public class ContextInfo2DMap<TTensor> : IContextInfo2DMap<ContextInfo, TTensor>
     }
 
     // context: ContextInfoMatrix, build
-    public Task BuildAsync(IEnumerable<ContextInfo> contextsList, CancellationToken cancellationToken)
+    public Task BuildAsync(IEnumerable<TContext> contextsList, CancellationToken cancellationToken)
     {
         return Task.Run(() =>
         {
-            var wordClassifier = _optionsStore.GetOptions<IContextClassifier>();
+            var wordClassifier = _optionsStore.GetOptions<IContextClassifier<TContext>>();
             var emptyClassifier = _optionsStore.GetOptions<IEmptyDimensionClassifier>();
 
             _data = contextsList

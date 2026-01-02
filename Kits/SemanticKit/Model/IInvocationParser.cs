@@ -5,13 +5,14 @@ using SemanticKit.Model.Options;
 
 namespace SemanticKit.Model;
 
-public interface IInvocationParser
+public interface IInvocationParser<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     void ParseCode(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken);
 
     void ParseFile(string filePath, SemanticOptions options, CancellationToken cancellationToken);
 
-    IEnumerable<ContextInfo> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken);
+    IEnumerable<TContext> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken);
 
-    void RenewContextInfoList(IEnumerable<ContextInfo> contextInfoList);
+    void RenewContextInfoList(IEnumerable<TContext> contextInfoList);
 }

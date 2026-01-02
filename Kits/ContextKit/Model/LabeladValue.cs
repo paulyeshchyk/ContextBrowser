@@ -39,13 +39,7 @@ public class StringColumnWrapper : ILabeledValue
 
     public override int GetHashCode()
     {
-        int hash = 17;
-
-        hash = hash * 31 + (LabeledCaption.GetHashCode());
-
-        hash = hash * 31 + (LabeledData.GetHashCode());
-
-        return hash;
+        return HashCode.Combine(LabeledCaption, LabeledData);
     }
 
 }
@@ -77,13 +71,8 @@ public class IntColumnWrapper : ILabeledValue
 
     public override int GetHashCode()
     {
-        int hash = 17;
+        return HashCode.Combine(LabeledCaption, LabeledData);
 
-        hash = hash * 31 + (LabeledCaption.GetHashCode());
-
-        hash = hash * 31 + (LabeledData.GetHashCode());
-
-        return hash;
     }
 
 }

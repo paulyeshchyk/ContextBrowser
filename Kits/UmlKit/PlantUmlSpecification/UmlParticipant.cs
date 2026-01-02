@@ -10,7 +10,7 @@ public class UmlParticipant : IUmlParticipant
 {
     protected readonly string _raw;
 
-    public UmlParticipantKeyword Keyword { get; set; }
+    public UmlParticipantKeyword Keyword { get; }
 
     public string Alias { get; }
 
@@ -18,8 +18,7 @@ public class UmlParticipant : IUmlParticipant
 
     private string BuildFullName()
     {
-        var list = new List<string?>();
-        list.Add($"\"{_raw}\"");
+        var list = new List<string?> { $"\"{_raw}\"" };
         if (!string.IsNullOrWhiteSpace(Alias))
         {
             list.Add($"as {Alias}");
@@ -52,13 +51,8 @@ public class UmlParticipant : IUmlParticipant
 
     public override int GetHashCode()
     {
-        int hash = 17;
+        return HashCode.Combine(_raw, Keyword);
 
-        hash = hash * 31 + (_raw.GetHashCode());
-
-        hash = hash * 31 + (Keyword.GetHashCode());
-
-        return hash;
     }
 
     public override bool Equals(object? obj)

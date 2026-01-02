@@ -2,13 +2,13 @@
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Model.SyntaxNodeWrapper;
+using RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 using SemanticKit.Model;
 using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public class CSharpContextInfoBuilderProperty<TContext> : BaseContextInfoBuilder<TContext, PropertyDeclarationSyntax, ISemanticModelWrapper, CSharpPropertySyntaxNodeWrapper>
+public class CSharpContextInfoBuilderProperty<TContext> : BaseContextInfoBuilder<TContext, PropertyDeclarationSyntax, ISemanticModelWrapper, CSharpSyntaxNodeWrapperProperty>
     where TContext : IContextWithReferences<TContext>
 {
     public CSharpContextInfoBuilderProperty(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IAppLogger<AppLevel> logger)

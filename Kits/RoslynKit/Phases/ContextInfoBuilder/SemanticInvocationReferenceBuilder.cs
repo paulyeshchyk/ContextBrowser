@@ -10,8 +10,8 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public class RoslynInvocationReferenceBuilder<TContext>
-    where TContext : ContextInfo, IContextWithReferences<TContext>
+public class SemanticInvocationReferenceBuilder<TContext>
+    where TContext : IContextWithReferences<TContext>
 {
     private readonly IAppLogger<AppLevel> _logger;
     protected readonly IContextFactory<TContext> _factory;
@@ -19,7 +19,7 @@ public class RoslynInvocationReferenceBuilder<TContext>
     private readonly IInvocationLinker<TContext, InvocationExpressionSyntax> _invocationLinker;
     private readonly ISemanticReferenceBuilderValidator<TContext, InvocationExpressionSyntax> _referenceBuilderValidator;
 
-    public RoslynInvocationReferenceBuilder(
+    public SemanticInvocationReferenceBuilder(
         IAppLogger<AppLevel> logger,
         IContextFactory<TContext> factory,
         IContextCollector<TContext> collector,
