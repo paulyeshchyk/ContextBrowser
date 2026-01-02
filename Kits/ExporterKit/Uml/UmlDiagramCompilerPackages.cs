@@ -8,7 +8,6 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
@@ -41,7 +40,6 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
 
         var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
-        var contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext<ContextInfo>>();
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
@@ -52,8 +50,14 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
         diagram.SetSeparator("none");
 
-        var elements = contextInfoDataset.GetAll();
-        int maxNameLength = UmlDiagramMaxNamelengthExtractor.Extract(elements, new() { UmlDiagramMaxNamelengthExtractorType.@method, UmlDiagramMaxNamelengthExtractorType.@namespace, UmlDiagramMaxNamelengthExtractorType.entity, UmlDiagramMaxNamelengthExtractorType.property });
+        var elements = contextInfoDataset.GetAll().ToList();
+        int maxNameLength = UmlDiagramMaxNamelengthExtractor.Extract(elements,
+        [
+            UmlDiagramMaxNamelengthExtractorType.@method,
+            UmlDiagramMaxNamelengthExtractorType.@namespace,
+            UmlDiagramMaxNamelengthExtractorType.entity,
+            UmlDiagramMaxNamelengthExtractorType.property
+        ]);
 
         var classes = elements.Where(e => e.ElementType == ContextInfoElementType.@class).ToList();
         var methods = elements.Where(e => e.ElementType == ContextInfoElementType.method).ToList();

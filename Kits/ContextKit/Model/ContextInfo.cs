@@ -14,7 +14,7 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public string Namespace { get; set; }
 
-    public string FullName { get; set; }
+    public string FullName { get; }
 
     public string Name { get; set; }
 
@@ -44,9 +44,9 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public Dictionary<string, string> Dimensions { get; set; } = new();
 
-    public int SpanStart { get; set; } = 0;
+    public int SpanStart { get; set; }
 
-    public int SpanEnd { get; set; } = 0;
+    public int SpanEnd { get; set; }
 
     [JsonIgnore]
     public ISymbolInfo? SymbolWrapper { get; set; }

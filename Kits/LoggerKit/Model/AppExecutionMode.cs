@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace LoggerKit.Model;
 
 public enum AppExecutionMode

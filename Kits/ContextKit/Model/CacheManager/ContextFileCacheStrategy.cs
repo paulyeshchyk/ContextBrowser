@@ -17,31 +17,29 @@ namespace ContextKit.Model.CacheManager;
 public class ContextFileCacheStrategy : IFileCacheStrategy
 {
     private readonly IAppLogger<AppLevel> _appLogger;
-    private readonly IContextInfoRelationManager _relationManager;
-    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
 
-    public ContextFileCacheStrategy(IAppLogger<AppLevel> appLogger, IContextInfoRelationManager relationManager)
+    public ContextFileCacheStrategy(IAppLogger<AppLevel> appLogger)
     {
         _appLogger = appLogger;
-        _relationManager = relationManager;
     }
 
     public async Task<IEnumerable<ContextInfo>> ReadAsync(CacheJsonModel cacheModel, Func<List<ContextInfoSerializableModel>, CancellationToken, Task<IEnumerable<ContextInfo>>> onRelationCallback, CancellationToken cancellationToken)
     {
         if (await ShouldRebuildAsync(cacheModel, cancellationToken))
         {
-            return Enumerable.Empty<ContextInfo>();
+            return [];
         }
 
         try
         {
             var fileContent = await File.ReadAllTextAsync(cacheModel.Input, cancellationToken).ConfigureAwait(false);
             if (string.IsNullOrEmpty(fileContent))
-                return Enumerable.Empty<ContextInfo>();
+                return [];
 
             var serializableList = JsonSerializer.Deserialize<List<ContextInfoSerializableModel>>(fileContent, _jsonOptions);
             if (serializableList == null)
-                return Enumerable.Empty<ContextInfo>();
+                return [];
 
             _appLogger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "Returning data from file cache.");
             return await onRelationCallback(serializableList, cancellationToken).ConfigureAwait(false);
@@ -49,7 +47,7 @@ public class ContextFileCacheStrategy : IFileCacheStrategy
         catch (Exception ex)
         {
             _appLogger.WriteLog(AppLevel.R_Cntx, LogLevel.Exception, $"Cache read error: {ex.Message}");
-            return Enumerable.Empty<ContextInfo>();
+            return [];
         }
     }
 

@@ -146,7 +146,7 @@ public class IndentedAppLogger<T> : AppLogger<T>
         var indentation = new string(_indentedBy, currentIndentation * _indenterSize);
 
         // 1. Создаем массив строк-разделителей.
-        string[] separators = { "\r\n", "\n\r", "\n", "\r" };
+        string[] separators = ["\r\n", "\n\r", "\n", "\r"];
 
         // 2. Разбиваем сообщение. StringSplitOptions.None сохраняет пустые строки.
         var lines = theMessage.Split(separators, StringSplitOptions.None);

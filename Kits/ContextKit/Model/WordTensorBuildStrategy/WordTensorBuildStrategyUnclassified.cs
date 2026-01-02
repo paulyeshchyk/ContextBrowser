@@ -26,7 +26,7 @@ public class WordTensorBuildStrategyUnclassified<TTensor> : IWordTensorBuildStra
     public IEnumerable<TTensor> BuildTensors(ContextElementGroups contextElementGroups)
     {
         yield return _tensorBuilder.BuildTensor(TensorPermutationType.Standard,
-            new object[] { _emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain },
+            [_emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain],
             _tensorFactory.Create);
     }
 

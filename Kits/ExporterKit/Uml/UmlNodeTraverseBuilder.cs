@@ -21,7 +21,7 @@ public static class UmlNodeTraverseBuilder
         }
 
 
-        var resultNode = new UmlNode(ownerName, alias: null, url: namingProcessor.ClassOnlyHtmlFilename(startNode.ClassOwner?.FullName));
+        var resultNode = new UmlNode(ownerName, url: namingProcessor.ClassOnlyHtmlFilename(startNode.ClassOwner?.FullName));
         resultNode.Stylename = "grey";
 
         // Проверка, есть ли дочерние ноды
@@ -36,7 +36,7 @@ public static class UmlNodeTraverseBuilder
 
         foreach (var domain in startNode.Domains)
         {
-            var childNode = new UmlNode(domain, alias: null, UmlUrlBuilder.BuildDomainUrl(domain));
+            var childNode = new UmlNode(domain, UmlUrlBuilder.BuildDomainUrl(domain));
             childNode.Stylename = "green";
             resultNode.Children.Add(childNode);
 

@@ -1,16 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<BaseOutputPath>../../bin</BaseOutputPath>
 		<OutputType>library</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Compile Remove="Options\ExportMatrixOptions1.cs" />
-	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\CommandlineKit\CommandlineKit.csproj" />
 		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
@@ -34,5 +29,4 @@
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 	</ItemGroup>
-
 </Project>

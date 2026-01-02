@@ -23,7 +23,7 @@ public class WordTensorBuildStrategyVerbNoun<TTensor> : IWordTensorBuildStrategy
     public IEnumerable<TTensor> BuildTensors(ContextElementGroups contextElementGroups)
     {
         return contextElementGroups.Verbs.SelectMany(row => contextElementGroups.Nouns.Select(col =>
-            _tensorBuilder.BuildTensor(TensorPermutationType.Standard, new object[] { row, col }, _tensorFactory.Create)));
+            _tensorBuilder.BuildTensor(TensorPermutationType.Standard, [row, col], _tensorFactory.Create)));
     }
 
     public bool CanHandle(ContextElementGroups contextElementGroups, ExportMatrixOptions matrixOptions)

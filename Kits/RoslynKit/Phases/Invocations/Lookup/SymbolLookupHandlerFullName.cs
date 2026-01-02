@@ -11,6 +11,7 @@ namespace RoslynKit.Phases.Invocations.Lookup;
 /// Обработчик, который пытается найти ContextInfo по полному имени символа (symbolDto.FullName).
 /// </summary>
 /// <typeparam name="TContext">Тип возвращаемого контекста.</typeparam>
+/// <typeparam name="TSemanticModel"></typeparam>
 public class SymbolLookupHandlerFullName<TContext, TSemanticModel> : SymbolLookupHandler<TContext, TSemanticModel>
     where TContext : class, IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper

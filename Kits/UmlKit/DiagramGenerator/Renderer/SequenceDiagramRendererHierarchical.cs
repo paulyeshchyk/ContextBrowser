@@ -43,7 +43,7 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
 
     private IEnumerable<UmlTransitionDto> GetChildrenList(UmlTransitionDto? transition, GrouppedSortedTransitionList? allTransitions)
     {
-        return Enumerable.Empty<UmlTransitionDto>();
+        return [];
     }
 
     private void RenderRecursive(UmlDiagram<P> diagram, List<UmlTransitionDto> transitions, RenderContextActivationStack activationStack, GrouppedSortedTransitionList? allTransitions)

@@ -1,27 +1,22 @@
 ﻿using System;
 
-#if !NET7_0_OR_GREATER
 
-namespace ContextBrowserKit.Commandline.Polyfills
+namespace ContextBrowserKit.Commandline.Polyfills;
+//namespace System.Runtime.CompilerServices
+
+// Атрибут, необходимый компилятору для функции 'required'
+[AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
+public sealed class CompilerFeatureRequiredAttribute : Attribute
 {
-    //namespace System.Runtime.CompilerServices
-
-    // Атрибут, необходимый компилятору для функции 'required'
-    [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
-    public sealed class CompilerFeatureRequiredAttribute : Attribute
+    public CompilerFeatureRequiredAttribute(string featureName)
     {
-        public CompilerFeatureRequiredAttribute(string featureName)
-        {
-            FeatureName = featureName;
-        }
-
-        public string FeatureName { get; }
+        FeatureName = featureName;
     }
 
-    // Атрибут, который компилятор добавляет к свойствам с модификатором 'required'
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Field | AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    public sealed class RequiredMemberAttribute : Attribute
-    {
-    }
+    public string FeatureName { get; }
 }
-#endif
+
+// Атрибут, который компилятор добавляет к свойствам с модификатором 'required'
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Field | AttributeTargets.Property,
+    Inherited = false, AllowMultiple = false)]
+public sealed class RequiredMemberAttribute__dotNet6 : Attribute;

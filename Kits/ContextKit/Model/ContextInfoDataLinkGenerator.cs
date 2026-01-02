@@ -10,15 +10,13 @@ namespace ContextKit.Model;
 // context: ContextInfo, build
 public class ContextInfoDataLinkGenerator
 {
-    private readonly ITensorClassifierDomainPerActionContext<ContextInfo> _contextClassifier;
     private readonly IContextClassifier<ContextInfo> _wordRoleClassifier;
-    private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
+    private readonly IFakeDimensionClassifier _fakeDimensionClassifier;
 
     public ContextInfoDataLinkGenerator(IAppOptionsStore appOptionsStore)
     {
-        _contextClassifier = appOptionsStore.GetOptions<ITensorClassifierDomainPerActionContext<ContextInfo>>();
         _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier<ContextInfo>>();
-        _FakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
+        _fakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
     }
 
     // context: ContextInfo, read
@@ -54,8 +52,8 @@ public class ContextInfoDataLinkGenerator
         var methodToCell = new Dictionary<string, string>();
         foreach (var item in elements.Where(e => e.ElementType == ContextInfoElementType.method))
         {
-            var action = item.Contexts.FirstOrDefault(c => _wordRoleClassifier.IsVerb(c, _FakeDimensionClassifier));
-            var domain = item.Contexts.FirstOrDefault(c => _wordRoleClassifier.IsNoun(c, _FakeDimensionClassifier));
+            var action = item.Contexts.FirstOrDefault(c => _wordRoleClassifier.IsVerb(c, _fakeDimensionClassifier));
+            var domain = item.Contexts.FirstOrDefault(c => _wordRoleClassifier.IsNoun(c, _fakeDimensionClassifier));
 
             if (action == null || domain == null)
                 continue;

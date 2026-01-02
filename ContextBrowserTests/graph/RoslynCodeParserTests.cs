@@ -218,7 +218,7 @@ public class RoslynCodeParserTests
             MemberTypes: [RoslynCodeParserMemberType.@class],
             ClassModifierTypes: [RoslynCodeParserAccessorModifierType.@public],
             MethodModifierTypes: [RoslynCodeParserAccessorModifierType.@public],
-            CustomAssembliesPaths: new List<string>() { "D:\\projects\\ascon\\ContextBrowser\\ContextBrowserTests\\bin\\Debug\\net6.0" }
+            CustomAssembliesPaths: new List<string>() { "D:\\projects\\ascon\\ContextBrowser\\ContextBrowserTests\\bin\\Debug\\net8.0" }
         );
 
         var contextOptions = new RoslynContextParserOptions

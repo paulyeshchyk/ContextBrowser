@@ -16,14 +16,12 @@ public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
 {
     private readonly ITensorFactory<TDataTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
-    private readonly IContextClassifier<ContextInfo> _wordRoleClassifier;
     private readonly IEmptyDimensionClassifier _emptyDimensionClassifier;
 
     public CsvGenerator(ITensorFactory<TDataTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore appOptionsStore)
     {
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
-        _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier<ContextInfo>>();
         _emptyDimensionClassifier = appOptionsStore.GetOptions<IEmptyDimensionClassifier>();
     }
 
@@ -49,7 +47,7 @@ public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
             var rows = new List<object> { action };
             foreach (var domain in domains)
             {
-                var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, new[] { action, domain }, _keyFactory.Create);
+                var contextKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, [action, domain], _keyFactory.Create);
                 var count = matrix.TryGetValue(contextKey, out var methods) ? methods.Count : 0;
                 rows.Add(count.ToString());
             }
@@ -58,7 +56,7 @@ public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
 
         var includeUnclassified = unclassifiedPriority != UnclassifiedPriorityType.None;
 
-        var unclassified = _keyBuilder.BuildTensor(permutationType: TensorPermutationType.Standard, inputDimensions: new[] { _emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain }, createKey: _keyFactory.Create);
+        var unclassified = _keyBuilder.BuildTensor(permutationType: TensorPermutationType.Standard, inputDimensions: [_emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain], createKey: _keyFactory.Create);
 
         // Добавим строку для нераспознанных, если нужно
         if (includeUnclassified && matrix.ContainsKey(unclassified))

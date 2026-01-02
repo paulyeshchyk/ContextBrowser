@@ -40,7 +40,7 @@ public class ContextStrategy<TContext> : ICommentParsingStrategy<TContext>
             return;
         }
 
-        var tags = content.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+        var tags = content.Split((char[]?)[',', ';'], StringSplitOptions.RemoveEmptyEntries)
                           .Select(t => t.Trim().ToLowerInvariant())
                           .ToList();
 

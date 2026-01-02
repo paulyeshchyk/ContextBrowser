@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
-using ContextKit.Model;
-using ExporterKit.Infrastucture;
 using HtmlKit.Document;
 using LoggerKit;
 
@@ -16,15 +14,17 @@ public class HtmlPageCompilerIndexDomainPerAction<TDataTensor> : IHtmlPageCompil
     where TDataTensor : notnull
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly IContextInfo2DMap<ContextInfo, TDataTensor> _mapper;
     private readonly IHtmlPageIndexProducer<TDataTensor> _indexPageProducer;
     private readonly IAppOptionsStore _optionsStore;
     private readonly IHtmlMatrixGenerator _matrixGenerator;
 
-    public HtmlPageCompilerIndexDomainPerAction(IAppLogger<AppLevel> logger, IContextInfoMapperFactory<TDataTensor> contextInfoMapperContainer, IHtmlPageIndexProducer<TDataTensor> indexPageProducer, IAppOptionsStore optionsStore, IHtmlMatrixGenerator matrixGenerator)
+    public HtmlPageCompilerIndexDomainPerAction(
+        IAppLogger<AppLevel> logger,
+        IHtmlPageIndexProducer<TDataTensor> indexPageProducer,
+        IAppOptionsStore optionsStore,
+        IHtmlMatrixGenerator matrixGenerator)
     {
         _logger = logger;
-        _mapper = contextInfoMapperContainer.GetMapper(GlobalMapperKeys.DomainPerAction);
         _indexPageProducer = indexPageProducer;
         _optionsStore = optionsStore;
         _matrixGenerator = matrixGenerator;
@@ -42,6 +42,6 @@ public class HtmlPageCompilerIndexDomainPerAction<TDataTensor> : IHtmlPageCompil
 
         var outputFile = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.index, "index.html");
 
-        File.WriteAllText(outputFile, result);
+        await File.WriteAllTextAsync(outputFile, result, cancellationToken);
     }
 }

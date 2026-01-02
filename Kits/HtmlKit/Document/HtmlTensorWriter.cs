@@ -245,7 +245,7 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
 
             foreach (var col in matrix.cols)
             {
-                var contextKey = _keyBuilder.BuildTensor(options.Orientation, new[] { row.LabeledData, col.LabeledData }, _keyFactory.Create);
+                var contextKey = _keyBuilder.BuildTensor(options.Orientation, [row.LabeledData, col.LabeledData], _keyFactory.Create);
                 await _dataCellBuilder.BuildDataCell(textWriter, contextKey, options, token).ConfigureAwait(false);
             }
 

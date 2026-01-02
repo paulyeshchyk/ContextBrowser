@@ -19,18 +19,14 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     private readonly List<ITransitionBuilder> _transitionBuilders;
     private readonly IAppLogger<AppLevel> _logger;
     private readonly ContextTransitionDiagramBuilderCache _cache;
-    private readonly DiagramBuilderOptions _options;
-    private readonly IAppOptionsStore _optionsStore;
     private readonly ITensorClassifierDomainPerActionContext<ContextInfo> _contextClassifier;
 
     public ContextTransitionDiagramBuilder(DiagramBuilderOptions options, IEnumerable<ITransitionBuilder> transitionBuilders, IAppLogger<AppLevel> logger, IAppOptionsStore optionsStore)
     {
-        _options = options;
-        _transitionBuilders = transitionBuilders.Where(b => b.Direction == _options.DiagramDirection).ToList();
+        _transitionBuilders = transitionBuilders.Where(b => b.Direction == options.DiagramDirection).ToList();
         _logger = logger;
-        _optionsStore = optionsStore;
         _cache = new ContextTransitionDiagramBuilderCache(_logger);
-        _contextClassifier = _optionsStore.GetOptions<ITensorClassifierDomainPerActionContext<ContextInfo>>();
+        _contextClassifier = optionsStore.GetOptions<ITensorClassifierDomainPerActionContext<ContextInfo>>();
     }
 
     // context: builder, transition
@@ -131,12 +127,6 @@ internal class ContextTransitionDiagramBuilderCache
         _logger = logger;
     }
 
-    // context: read, transition, cache
-    public bool IsEmpty()
-    {
-        return !_cache.Any();
-    }
-
     // context: read, transitioncache
     public GrouppedSortedTransitionList? GetFromCache(string cacheKey)
     {
@@ -162,12 +152,5 @@ internal class ContextTransitionDiagramBuilderCache
 
         _cache.TryAdd(cacheKey, result);
         _logger.WriteLog(AppLevel.P_Tran, LogLevel.Trace, $"[CACHE]: Adding [{cacheKey}]");
-    }
-
-    // context: delete, transition, cache
-    public void ClearCache()
-    {
-        _cache.Clear();
-        _logger.WriteLog(AppLevel.P_Tran, LogLevel.Trace, "[CACHE]: Wiped");
     }
 }

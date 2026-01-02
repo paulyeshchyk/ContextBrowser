@@ -1,13 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<BaseOutputPath>../../bin</BaseOutputPath>
 		<OutputType>library</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
-
 	<ItemGroup>
 		<ProjectReference Include="..\ContextKit\ContextKit.csproj" />
 		<ProjectReference Include="..\GraphKit\GraphKit.csproj" />
@@ -15,7 +13,6 @@
 		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
 		<ProjectReference Include="..\TensorKit\TensorKit.csproj" />
 	</ItemGroup>
-
 	<ItemGroup>
 		<Compile Update="Resources.Designer.cs">
 			<DesignTime>True</DesignTime>
@@ -23,16 +20,10 @@
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
 	</ItemGroup>
-
 	<ItemGroup>
 		<EmbeddedResource Update="Resources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Options\" />
-	</ItemGroup>
-
 </Project>

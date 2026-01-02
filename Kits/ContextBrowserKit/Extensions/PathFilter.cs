@@ -25,7 +25,7 @@ public static class PathFilter
     {
         if (string.IsNullOrWhiteSpace(filter))
         {
-            return Array.Empty<T>();
+            return [];
         }
 
         string[] patterns = filter.Split(';', StringSplitOptions.RemoveEmptyEntries);

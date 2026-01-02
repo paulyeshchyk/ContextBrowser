@@ -48,7 +48,7 @@ public class AppOptions
         SemanticOptions: new(
             semanticFilters: new(
                 trustedFilters: new(included: string.Empty, excluded: string.Empty),
-                domainFilters: new(included: "**/*", excluded: "**/net6.0/System.Text.Json.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*;**/api-ms-*;"),
+                domainFilters: new(included: "**/*", excluded: "**/net8.0/System.Text.Json.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*;**/api-ms-*;"),
                 runtimeFilters: new(included: "**/System.Diagnostics.Process.dll;**/System.Net.NetworkInformation.dll;**/System.Net.Primitives.dll;", excluded: string.Empty)////**/ System.Resources.ResourceManager.dll;**/System.Globalization.dll
                 ),
             methodModifierTypes: new()
@@ -93,7 +93,7 @@ public class AppOptions
         //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
-        searchPaths: new[] { ".//..//..//..//" });
+        searchPaths: [".//..//..//..//"]);
 
     [CommandLineArgument("export-options", "Параметры экспорта")]
     public ExportOptions Export { get; set; } = new(
@@ -132,8 +132,8 @@ public class AppOptions
     public ITensorClassifierDomainPerActionContext<ContextInfo> Classifier { get; set; } = new DomainPerActionContextTensorClassifier<ContextInfo>(
         emptyDimensionClassifier: new EmptyDimensionClassifierDomainPerAction(emptyAction: "EmptyAction", emptyDomain: "EmptyDomain"),
          fakeDimensionClassifier: new FakeDimensionClassifierDomainPerAction(fakeAction: "_fakeAction", fakeDomain: "_fakeDomain"),
-                       metaItems: new[] { "Action;Domain;Elements" },
+                       metaItems: ["Action;Domain;Elements"],
               wordRoleClassifier: new ContextClassifier(
-                 standardActions: new[] { "create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction" }
+                 standardActions: ["create", "read", "update", "delete", "validate", "share", "build", "model", "execute", "convert", "_fakeAction"]
              ));
 }

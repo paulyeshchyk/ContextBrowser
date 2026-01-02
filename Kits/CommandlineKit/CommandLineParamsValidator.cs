@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using ContextBrowserKit.Commandline.Polyfills;
 
 namespace CommandlineKit;
@@ -17,21 +18,24 @@ public static class CommandLineParamsValidator
         // Находим все свойства, помеченные атрибутом RequiredMemberAttribute
         foreach (var prop in typeof(T).GetProperties())
         {
-            if (prop.GetCustomAttribute<RequiredMemberAttribute>() != null)
+            if (prop.GetCustomAttribute<RequiredMemberAttribute>() == null)
             {
-                // Проверяем, что свойство не null
-                // Это будет работать для reference-типов
-                if (prop.GetValue(options) == null)
-                {
-                    // Дополнительно можно проверить, является ли тип Value-типом (struct)
-                    // Для примера оставим так.
-
-                    // Если свойство не заполнено, ищем его имя аргумента
-                    var argAttr = prop.GetCustomAttribute<CommandLineArgumentAttribute>();
-                    string argName = argAttr?.Name ?? prop.Name;
-                    missingMembers.Add(argName);
-                }
+                continue;
             }
+
+            // Проверяем, что свойство не null
+            // Это будет работать для reference-типов
+            if (prop.GetValue(options) != null)
+            {
+                continue;
+            }
+            // Дополнительно можно проверить, является ли тип Value-типом (struct)
+            // Для примера оставим так.
+
+            // Если свойство не заполнено, ищем его имя аргумента
+            var argAttr = prop.GetCustomAttribute<CommandLineArgumentAttribute>();
+            string argName = argAttr?.Name ?? prop.Name;
+            missingMembers.Add(argName);
         }
 
         if (missingMembers.Any())

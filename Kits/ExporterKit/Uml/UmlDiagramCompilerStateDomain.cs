@@ -71,12 +71,12 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling State {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
 
-        var _factory = new UmlTransitionStateFactory();
-        var renderer = new SequenceDiagramRendererPlain<UmlState>(_logger, diagramBuilderOptions, _factory, _namingProcessor);
-        var _generator = new SequenceDiagramGenerator<UmlState>(renderer, diagramBuilderOptions, _logger, _factory);
+        var factory = new UmlTransitionStateFactory();
+        var renderer = new SequenceDiagramRendererPlain<UmlState>(_logger, diagramBuilderOptions, factory, _namingProcessor);
+        var generator = new SequenceDiagramGenerator<UmlState>(renderer, diagramBuilderOptions, _logger, factory);
         var diagramBuilder = ContextDiagramBuildersFactory.BuilderForType(diagramBuilderOptions.DiagramType, diagramBuilderOptions, _logger, _optionsStore);
 
-        var diagramCompilerState = new UmlStateDiagramCompilerDomain(contextClassifier, diagramBuilderOptions, diagramBuilder, exportOptions, _generator, _logger);
+        var diagramCompilerState = new UmlStateDiagramCompilerDomain(diagramBuilderOptions, diagramBuilder, exportOptions, generator, _logger);
         var rendered = diagramCompilerState.CompileAsync(options.MetaItem, options.DiagramId, options.OutputFileName, allContexts, cancellationToken);
 
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);

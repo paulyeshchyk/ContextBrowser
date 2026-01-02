@@ -399,6 +399,9 @@ dotnet_diagnostic.CA1305.severity = none
 # CA1305: Specify IFormatProvider
 dotnet_diagnostic.CA1305.severity = silent
 
+# IDE0290: Use primary constructor
+dotnet_diagnostic.IDE0290.severity = silent
+
 [*.{cs,vb}]
 
 # Naming rules
@@ -591,3 +594,17 @@ dotnet_naming_style.s_camelcase.capitalization = camel_case
 
 # resharper
 resharper_redundant_verbatim_string_prefix_highlighting = none
+resharper_redundant_verbatim_prefix_highlighting = none
+resharper_use_verbatim_string_highlighting = none
+csharp_style_prefer_primary_constructors = false
+resharper_convert_to_primary_constructor_highlighting = none
+resharper_redundant_explicit_tuple_component_name_highlighting = none
+resharper_use_collection_expression_highlighting = none
+
+# IDE0305: Simplify collection initialization
+dotnet_diagnostic.IDE0305.severity = silent
+dotnet_diagnostic.IDE0306.severity = silent
+
+dotnet_diagnostic.CS0234.severity = error
+dotnet_diagnostic.CS0246.severity = error
+dotnet_diagnostic.CS0103.severity = error

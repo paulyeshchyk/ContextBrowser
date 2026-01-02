@@ -4,7 +4,6 @@ using ContextKit.ContextData;
 using ContextKit.ContextData.Comment;
 using ContextKit.ContextData.Comment.Stategies;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using LoggerKit;
 
 namespace ContextBrowser.Services.Parsing;
@@ -14,13 +13,11 @@ public class CommentParsingStrategyFactory<TContext> : ICommentParsingStrategyFa
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IAppOptionsStore _optionsStore;
-    private readonly ITensorClassifierDomainPerActionContext<TContext> _classifier;
 
     public CommentParsingStrategyFactory(IAppOptionsStore optionsStore, IAppLogger<AppLevel> logger)
     {
         _logger = logger;
         _optionsStore = optionsStore;
-        _classifier = optionsStore.GetOptions<ITensorClassifierDomainPerActionContext<TContext>>();
     }
 
     public IEnumerable<ICommentParsingStrategy<TContext>> CreateStrategies()

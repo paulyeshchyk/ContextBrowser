@@ -36,14 +36,15 @@ public class SemanticReferenceBuilderValidator<TContext, TInvocationExpressionSy
             // срабатывает для функций, напр, nameof()
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] SyntaxNode is not defined for {callerContext.FullName}");
 #warning to be checked twice
-            return new SemanticReferenceBuilderValidationResult<TContext, TInvocationExpressionSyntax>(callerContextInfo, Enumerable.Empty<TInvocationExpressionSyntax>());
+            return new SemanticReferenceBuilderValidationResult<TContext, TInvocationExpressionSyntax>(callerContextInfo, []);
         }
 
         var canRaiseNoInvocationError = !(callerContext.ClassOwner?.ElementType == ContextInfoElementType.@class
             || callerContext.ClassOwner?.ElementType == ContextInfoElementType.@interface
             || callerContext.ClassOwner?.ElementType == ContextInfoElementType.@record);
-        var invocationList = callerSyntaxNode.DescendantSyntaxNodes<TInvocationExpressionSyntax>();
-        if (!invocationList.Any())
+
+        var invocationList = callerSyntaxNode.DescendantSyntaxNodes<TInvocationExpressionSyntax>().ToList();
+        if (invocationList.Count == 0)
         {
             if (canRaiseNoInvocationError)
             {

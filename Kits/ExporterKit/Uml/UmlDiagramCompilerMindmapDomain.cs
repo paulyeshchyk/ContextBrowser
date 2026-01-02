@@ -7,7 +7,6 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using ExporterKit.Uml.Exporters;
 using LoggerKit;
 using TensorKit.Model;

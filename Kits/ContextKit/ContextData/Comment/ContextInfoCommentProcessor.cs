@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ContextBrowserKit.Options;
 using ContextKit.Model;
 
 namespace ContextKit.ContextData.Comment;
@@ -9,17 +8,11 @@ namespace ContextKit.ContextData.Comment;
 public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
     where T : IContextWithReferences<T>
 {
-    private readonly IAppOptionsStore _optionsStore;
-    private readonly ICommentParsingStrategyFactory<T> _factory;
-
     private readonly List<ICommentParsingStrategy<T>> _strategies;
 
-    public ContextInfoCommentProcessor(ICommentParsingStrategyFactory<T> factory, IAppOptionsStore optionsStore)
+    public ContextInfoCommentProcessor(ICommentParsingStrategyFactory<T> factory)
     {
-        _factory = factory;
-        _optionsStore = optionsStore;
-
-        _strategies = _factory.CreateStrategies().ToList();
+        _strategies = factory.CreateStrategies().ToList();
     }
 
     // context: contextInfo, comment, build

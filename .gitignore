@@ -1,7 +1,6 @@
 ﻿.cr
 obj/**
 .vs/**
-bin/Debug/net6.0/output
 bin
 .vs
 obj

@@ -8,7 +8,6 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using ExporterKit.Uml.Exporters;
 using LoggerKit;
 using TensorKit.Model;
@@ -49,8 +48,6 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
         foreach (var nameSpace in namespaces)
         {
             var classesList = GetClassesForNamespace(dataset)(nameSpace);
-            var methodLists = GetMethods(dataset);
-            var properties = GetProperties(dataset);
 
             UmlDiagramExporterClassDiagramNamespace.Export(diagramBuilderOptions: diagramBuilderOptions,
                                                                    exportOptions: exportOptions,
@@ -71,15 +68,5 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
     private IEnumerable<string> GetNamespaces(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
         return contextInfoDataSet.GetAll().Select(c => c.Namespace).Distinct();
-    }
-
-    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
-    {
-        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
-    }
-
-    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
-    {
-        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
     }
 }

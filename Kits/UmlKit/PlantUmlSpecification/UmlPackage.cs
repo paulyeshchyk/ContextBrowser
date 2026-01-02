@@ -31,11 +31,6 @@ public class UmlPackage : IUmlElement, IUmlDeclarable, IUmlElementCollection
         return ClassAttributesBuilder.BuildUrl(Url) ?? string.Empty;
     }
 
-    public UmlComponent? FindElement(string predicate)
-    {
-        return Elements.Cast<UmlComponent>().FirstOrDefault(e => e.Name.Equals(predicate));
-    }
-
     // context: uml, create
     public void Add(IUmlElement e) => Elements.Add(Elements.Count, e);
 

@@ -26,7 +26,7 @@ public class WordTensorBuildStrategyNounOnly<TTensor> : IWordTensorBuildStrategy
 
     public IEnumerable<TTensor> BuildTensors(ContextElementGroups contextElementGroups)
     {
-        return contextElementGroups.Nouns.Select(noun => _tensorBuilder.BuildTensor(TensorPermutationType.Standard, new object[] { _emptyDimensionClassifier.EmptyAction, noun }, _tensorFactory.Create));
+        return contextElementGroups.Nouns.Select(noun => _tensorBuilder.BuildTensor(TensorPermutationType.Standard, [_emptyDimensionClassifier.EmptyAction, noun], _tensorFactory.Create));
     }
 
     public bool CanHandle(ContextElementGroups contextElementGroups, ExportMatrixOptions matrixOptions)

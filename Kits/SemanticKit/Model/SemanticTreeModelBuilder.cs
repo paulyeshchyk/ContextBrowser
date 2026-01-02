@@ -48,7 +48,7 @@ public class SemanticTreeModelBuilder : ISemanticTreeModelBuilder<ISyntaxTreeWra
         {
 #warning Distinct?????
             // Добавляем текущий syntaxTree во временный список всех деревьев
-            var allSyntaxTrees = _modelStorage.GetAllSyntaxTrees().Concat(new[] { syntaxTreeWrapper }).Distinct();
+            var allSyntaxTrees = _modelStorage.GetAllSyntaxTrees().Concat([syntaxTreeWrapper]).Distinct();
 
             var compilationWrapper = _compilationBuilder.BuildCompilation(options, allSyntaxTrees, options.CustomAssembliesPaths, "Parser");
             var themodel = compilationWrapper.GetSemanticModel(syntaxTreeWrapper);

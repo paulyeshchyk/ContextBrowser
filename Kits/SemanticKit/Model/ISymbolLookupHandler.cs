@@ -7,6 +7,7 @@ namespace SemanticKit.Model;
 /// Определяет интерфейс для обработчиков в цепочке поиска символов.
 /// </summary>
 /// <typeparam name="TContext">Тип возвращаемого контекста.</typeparam>
+/// <typeparam name="TSemanticModel"></typeparam>
 public interface ISymbolLookupHandler<TContext, TSemanticModel>
     where TContext : IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper

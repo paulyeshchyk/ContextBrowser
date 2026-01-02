@@ -48,14 +48,14 @@ public class RoslynCompilationBuilder : ICompilationBuilder
 
     private SemanticCompilationMap BuildSemanticCompilationMap(List<RoslynSyntaxTreeWrapper> syntaxTrees, ICompilationWrapper compilation)
     {
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Compilation map building", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation map building", LogLevelNode.Start);
         var result = new SemanticCompilationMap();
         foreach (var tree in syntaxTrees)
         {
             var compilationMap = BuildCompilationMap(compilation, tree);
             result.Add(compilationMap);
         }
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Compilation map build done", LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation map build done", LogLevelNode.End);
         return result;
     }
 
@@ -78,7 +78,7 @@ public class RoslynCompilationBuilder : ICompilationBuilder
             nullableContextOptions: NullableContextOptions.Enable,
             usings: usings);
 
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Compilation loading", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation loading", LogLevelNode.Start);
         var compilation = CSharpCompilation.Create(name, options: compilationOptions)
                     .AddSyntaxTrees(syntaxTrees.Select(st => st.Tree).Cast<SyntaxTree>())
                     .AddReferences(referencesToLoad);
@@ -101,27 +101,27 @@ public class RoslynCompilationBuilder : ICompilationBuilder
         {
             _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Diagnostics: {diagnostic}");
         }
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Compilation loaded", LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation loaded", LogLevelNode.End);
 
         return new RoslynCompilationWrapper(compilation);
     }
 
     private static string[] GetValidatedUsingsFromOptions(SemanticOptions options)
     {
-        string[] SDefaultUsing = new string[] { "System" };
+        string[] sDefaultUsing = ["System"];
 
         var result = string.IsNullOrWhiteSpace(options.GlobalUsings)
-            ? SDefaultUsing
+            ? sDefaultUsing
             : options.GlobalUsings.Split(";").Select(s => s.Trim()).ToArray();
         return (result.Length == 0)
-            ? SDefaultUsing
+            ? sDefaultUsing
             : result;
     }
 
-    private static string PsoudoCodeInject(SemanticOptions _options, string filePath)
+    private static string PsoudoCodeInject(SemanticOptions options, string filePath)
     {
         var code = File.ReadAllText(filePath);
-        if (!_options.IncludePseudoCode)
+        if (!options.IncludePseudoCode)
         {
             return code;
         }

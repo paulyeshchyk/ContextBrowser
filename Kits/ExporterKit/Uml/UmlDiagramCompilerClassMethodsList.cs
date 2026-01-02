@@ -7,7 +7,6 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using ContextKit.Model.Service;
 using ExporterKit.Uml.Model;
 using LoggerKit;
@@ -49,7 +48,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
                 .Where(e => e.ElementType == ContextInfoElementType.method)
                 .ToList();
 
-        int maxLength = UmlDiagramMaxNamelengthExtractor.Extract(methods, new() { UmlDiagramMaxNamelengthExtractorType.@method });
+        int maxLength = UmlDiagramMaxNamelengthExtractor.Extract(methods, [UmlDiagramMaxNamelengthExtractorType.@method]);
 
         var diagramId = $"methods_only_{outputPath}".AlphanumericOnly();
         var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
@@ -63,7 +62,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
             var references = ContextInfoService.GetReferencesSortedByInvocation(method);
             foreach (var callee in references)
             {
-                if (!methods.Any(m => m.Name == callee.Name))
+                if (methods.All(m => m.Name != callee.Name))
                     continue;
 
                 AddTransitionState(diagram, method, callee);
@@ -78,8 +77,8 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
 
     private static void AddTransitionState(UmlDiagramClass diagram, ContextInfo method, ContextInfo callee)
     {
-        var state1 = new UmlState(method.Name ?? "<unknown method>", null);
-        var state2 = new UmlState(callee?.Name ?? "<unknown callee>", null);
+        var state1 = new UmlState(string.IsNullOrWhiteSpace(method.Name) ? "<unknown method>" : method.Name, null);
+        var state2 = new UmlState(string.IsNullOrWhiteSpace(callee.Name) ? "<unknown callee>" : callee.Name, null);
         var arrow = new UmlArrow();
         var transitionState = new UmlTransitionState(state1, state2, arrow);
         diagram.Add(transitionState);

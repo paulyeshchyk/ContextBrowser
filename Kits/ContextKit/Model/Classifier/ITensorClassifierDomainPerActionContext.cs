@@ -4,7 +4,7 @@ using TensorKit.Model;
 
 namespace ContextKit.Model.Classifier;
 
-public interface ITensorClassifierDomainPerActionContext<TContext> : ITensorClassifier<DomainPerActionDimensionType, TContext>
+public interface ITensorClassifierDomainPerActionContext<TContext> : ITensorClassifier<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     IEnumerable<string> MetaItems { get; }

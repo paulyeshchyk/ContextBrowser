@@ -76,7 +76,7 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
         var generator = new SequenceDiagramGenerator<UmlState>(renderer, diagramBuilderOptions, _logger, factory);
         var diagramBuilder = ContextDiagramBuildersFactory.BuilderForType(diagramBuilderOptions.DiagramType, diagramBuilderOptions, _logger, _optionsStore);
 
-        var compiler = new UmlStateDiagramCompilerAction(contextClassifier, diagramBuilderOptions, diagramBuilder, exportOptions, generator, _logger);
+        var compiler = new UmlStateDiagramCompilerAction(diagramBuilderOptions, diagramBuilder, exportOptions, generator, _logger);
         var rendered = compiler.CompileAsync(options.MetaItem, options.DiagramId, options.OutputFileName, allContexts, CancellationToken.None);
 
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);

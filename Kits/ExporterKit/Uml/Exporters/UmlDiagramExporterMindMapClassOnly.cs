@@ -27,7 +27,7 @@ public class UmlDiagramExporterMindMapClassOnly
         diagram.AddStyle(UmlStyle.Builder("green").BackgroundColor("#90de90").LineColor("#60d060").HyperlinkColor("#1d601d").HyperlinkUnderlineThickness(0).Build());
         diagram.AddStyle(UmlStyle.Builder("selected").BackgroundColor("#ff9500").LineColor("#d47c00").HyperlinkColor("#1f1510").HyperlinkUnderlineThickness(0).Build());
 
-        var node = new UmlNode(classContextInfo.Name, alias: null, url: UmlUrlBuilder.BuildActionUrl(classContextInfo.Name));
+        var node = new UmlNode(classContextInfo.Name, url: UmlUrlBuilder.BuildActionUrl(classContextInfo.Name));
         node.Stylename = "selected";
 
         IEnumerable<UmlNode> classMethods = GetClassMethods(classContextInfo, dataset, namingProcessor, (item) => item.ElementType == ContextInfoElementType.method);

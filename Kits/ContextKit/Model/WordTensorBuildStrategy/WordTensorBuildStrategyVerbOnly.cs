@@ -26,7 +26,7 @@ public class WordTensorBuildStrategyVerbOnly<TTensor> : IWordTensorBuildStrategy
 
     public IEnumerable<TTensor> BuildTensors(ContextElementGroups contextElementGroups)
     {
-        return contextElementGroups.Verbs.Select(row => _tensorBuilder.BuildTensor(TensorPermutationType.Standard, new object[] { row, _emptyDimensionClassifier.EmptyDomain }, _tensorFactory.Create));
+        return contextElementGroups.Verbs.Select(row => _tensorBuilder.BuildTensor(TensorPermutationType.Standard, [row, _emptyDimensionClassifier.EmptyDomain], _tensorFactory.Create));
     }
 
     public bool CanHandle(ContextElementGroups contextElementGroups, ExportMatrixOptions matrixOptions)

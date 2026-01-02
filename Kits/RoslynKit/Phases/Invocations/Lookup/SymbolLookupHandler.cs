@@ -10,6 +10,7 @@ namespace RoslynKit.Phases.Invocations.Lookup;
 /// Базовый абстрактный класс для обработчиков цепочки поиска символов.
 /// </summary>
 /// <typeparam name="TContext">Тип возвращаемого контекста.</typeparam>
+/// <typeparam name="TSemanticModel"></typeparam>
 public abstract class SymbolLookupHandler<TContext, TSemanticModel> : ISymbolLookupHandler<TContext, TSemanticModel>
     where TContext :  class, IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper

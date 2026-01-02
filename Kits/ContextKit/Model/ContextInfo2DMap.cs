@@ -18,7 +18,7 @@ public class ContextInfo2DMap<TTensor, TContext> : IContextInfo2DMap<TContext, T
     private readonly ITensorFactory<TTensor> _keyFactory;
     private readonly ITensorBuilder _keyBuilder;
     private readonly IAppOptionsStore _optionsStore;
-    private readonly IFakeDimensionClassifier _FakeDimensionClassifier;
+    private readonly IFakeDimensionClassifier _fakeDimensionClassifier;
 
     // context: ContextInfoMatrix, read
     public IEnumerable<ILabeledValue> GetCols() => _data!.Select(k => new StringColumnWrapper(k.Key.Domain, k.Key.Domain));
@@ -31,7 +31,7 @@ public class ContextInfo2DMap<TTensor, TContext> : IContextInfo2DMap<TContext, T
         _keyFactory = keyFactory;
         _keyBuilder = keyBuilder;
         _optionsStore = optionsStore;
-        _FakeDimensionClassifier = _optionsStore.GetOptions<IFakeDimensionClassifier>();
+        _fakeDimensionClassifier = _optionsStore.GetOptions<IFakeDimensionClassifier>();
     }
 
     public Dictionary<TTensor, List<TContext>>? GetMapData()
@@ -47,11 +47,11 @@ public class ContextInfo2DMap<TTensor, TContext> : IContextInfo2DMap<TContext, T
         IEmptyDimensionClassifier emptyClassifier)
     {
         // Извлекаем и подготавливаем действия
-        var actions = context.Contexts.Where(ctx => wordClassifier.IsVerb(ctx, _FakeDimensionClassifier)).ToList();
+        var actions = context.Contexts.Where(ctx => wordClassifier.IsVerb(ctx, _fakeDimensionClassifier)).ToList();
         var effectiveActions = actions.Any() ? actions : new List<string> { emptyClassifier.EmptyAction };
 
         // Извлекаем и подготавливаем домены
-        var domains = context.Contexts.Where(ctx => wordClassifier.IsNoun(ctx, _FakeDimensionClassifier)).ToList();
+        var domains = context.Contexts.Where(ctx => wordClassifier.IsNoun(ctx, _fakeDimensionClassifier)).ToList();
         var effectiveDomains = domains.Any() ? domains : new List<string> { emptyClassifier.EmptyDomain };
 
         // Декартово произведение (Action x Domain)
@@ -80,7 +80,7 @@ public class ContextInfo2DMap<TTensor, TContext> : IContextInfo2DMap<TContext, T
                     // Формирование TTensor ключа
                     var contextKey = _keyBuilder.BuildTensor(
                         TensorPermutationType.Standard,
-                        new object[] { pair.Action, pair.Domain },
+                        [pair.Action, pair.Domain],
                         _keyFactory.Create);
                     return contextKey;
                 })

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using ContextBrowserKit.Log.Options;
+﻿using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
@@ -50,7 +49,7 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
         // Логика создания искусственного узла
 
         var typeModel = new CSharpSyntaxWrapperType(syntaxWrapper: syntaxWrapper);
-        var typeContext = _contextInfoBuilderDispatcher.DispatchAndBuild(default, typeModel);
+        var typeContext = _contextInfoBuilderDispatcher.DispatchAndBuild(null, typeModel);
         if (typeContext == null)
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[MISS] Fallback fake callee be not used for {syntaxWrapper.FullName}, because ContextInfoBuilder returns null");
@@ -58,7 +57,7 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
         }
 
         var methodmodel = new CSharpSyntaxWrapperMethodArtifitial(wrapper: syntaxWrapper, contextOwner: typeContext);
-        var methodContext = _contextInfoBuilderDispatcher.DispatchAndBuild(default, methodmodel);
+        var methodContext = _contextInfoBuilderDispatcher.DispatchAndBuild(null, methodmodel);
         if (methodContext == null)
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[MISS] Fallback fake callee be not used for {syntaxWrapper.FullName}, because ContextInfoBuilder returns null for method");

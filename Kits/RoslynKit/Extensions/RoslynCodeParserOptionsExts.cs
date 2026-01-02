@@ -13,7 +13,7 @@ internal static class RoslynCodeParserOptionsExts
     //context: roslyn, read
     public static IEnumerable<MemberDeclarationSyntax> GetMemberDeclarationSyntaxies(this CompilationUnitSyntax root, SemanticOptions options)
     {
-        IEnumerable<MemberDeclarationSyntax> typeNodes = Enumerable.Empty<MemberDeclarationSyntax>();
+        IEnumerable<MemberDeclarationSyntax> typeNodes = [];
         if (options.MemberTypes.Contains(SemanticMemberType.@class))
             typeNodes = typeNodes.Concat(FilterByModifier<ClassDeclarationSyntax>(root, options));
         if (options.MemberTypes.Contains(SemanticMemberType.@record))

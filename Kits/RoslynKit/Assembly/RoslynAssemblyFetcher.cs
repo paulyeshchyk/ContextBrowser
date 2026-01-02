@@ -55,7 +55,7 @@ public static class RoslynAssemblyFetcher
         if (result.Length == 0)
         {
             logger.WriteLog(AppLevel.R_Dll, LogLevel.Warn, "Не удалось найти доверенные сборки платформы.");
-            return Array.Empty<string>();
+            return [];
         }
 
         return result;
@@ -96,7 +96,7 @@ public static class RoslynAssemblyFetcher
         if (string.IsNullOrWhiteSpace(runtimeDirectory))
         {
             logger.WriteLog(AppLevel.R_Dll, LogLevel.Warn, "[MISS]: Не найден путь assembly для typeof(object)");
-            return Array.Empty<string>();
+            return [];
         }
 
         var result = Directory.GetFiles(runtimeDirectory, "*.dll", SearchOption.TopDirectoryOnly).ToList();

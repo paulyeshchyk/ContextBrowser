@@ -5,7 +5,6 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
-using ContextKit.Model.Classifier;
 using LoggerKit;
 using UmlKit.Builders;
 using UmlKit.Builders.TransitionFactory;
@@ -22,7 +21,6 @@ namespace UmlKit.Compiler.CoCompiler;
 public class UmlDiagramCompilerSequence
 {
     // Свойства класса, инициализируемые в конструкторе
-    private readonly ITensorClassifierDomainPerActionContext<ContextInfo> _classifier;
     private readonly ExportOptions _exportOptions;
     private readonly IAppLogger<AppLevel> _logger;
     private readonly DiagramBuilderOptions _options;
@@ -32,20 +30,18 @@ public class UmlDiagramCompilerSequence
     /// <summary>
     /// Создает новый экземпляр компилятора.
     /// </summary>
-    /// <param name="classifier">Классификатор контекста.</param>
+    /// <param name="logger">Делегат для записи логов.</param>
     /// <param name="exportOptions">Путь для сохранения выходных файлов.</param>
-    /// <param name="onWriteLog">Делегат для записи логов.</param>
     /// <param name="options">Опции для построителя диаграммы переходов.</param>
-    /// <param name="diagramBuilder">Построителя диаграмм.</param>
+    /// <param name="diagramBuilder">Построитель диаграмм.</param>
+    /// <param name="namingProcessor"></param>
     public UmlDiagramCompilerSequence(
         IAppLogger<AppLevel> logger,
-        ITensorClassifierDomainPerActionContext<ContextInfo> classifier,
         ExportOptions exportOptions,
         DiagramBuilderOptions options,
         IContextDiagramBuilder diagramBuilder,
         INamingProcessor namingProcessor)
     {
-        _classifier = classifier;
         _exportOptions = exportOptions;
         _logger = logger;
         _options = options;
@@ -63,6 +59,7 @@ public class UmlDiagramCompilerSequence
     /// <param name="title">Заголовок диаграммы.</param>
     /// <param name="outputFileName">Имя выходного файла.</param>
     /// <param name="contextItems">Список контекстных элементов.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>Возвращает true, если рендеринг был успешным, иначе false.</returns>
     public bool Compile(string metaItem, FetchType fetchType, string diagramId, string title, string outputFileName, List<ContextInfo> contextItems, CancellationToken cancellationToken)
     {

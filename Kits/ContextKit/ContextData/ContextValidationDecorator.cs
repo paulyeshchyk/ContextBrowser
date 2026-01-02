@@ -22,7 +22,7 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
     // context: roslyn, contextInfo, build
     public void Execute(T? container, string comment)
     {
-        if (!(container != null && container is not null))
+        if (container == null)
         {
             _logger.WriteLog(AppLevel.R_Comments, LogLevel.Err, "Comment container is null");
             return;

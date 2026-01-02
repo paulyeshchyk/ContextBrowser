@@ -106,6 +106,6 @@ public class RoslynInvocationParser<TContext> : IInvocationParser<TContext>
 
     public void RenewContextInfoList(IEnumerable<TContext> contextInfoList)
     {
-        _collector.Renew((IEnumerable<TContext>)contextInfoList);
+        _collector.Renew(contextInfoList);
     }
 }

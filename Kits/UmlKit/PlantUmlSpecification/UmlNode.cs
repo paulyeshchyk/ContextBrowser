@@ -27,13 +27,13 @@ public class UmlNode : IUmlParticipant
 
     public string Id { get; } = Guid.NewGuid().ToString();
 
-    public UmlNode(string? raw, string? alias, string? url = null)
+    public UmlNode(string? raw, string? url = null)
     {
         _raw = string.IsNullOrWhiteSpace(raw) ? SUnknownState : raw;
         Url = url;
     }
 
-    private record data
+    private record TheData
     {
         public string Name { get; } = string.Empty;
 
@@ -41,7 +41,7 @@ public class UmlNode : IUmlParticipant
 
         public int Depth { get; }
 
-        public data(string Name, string? Url, int Depth)
+        public TheData(string Name, string? Url, int Depth)
         {
             this.Name = Name;
             this.Url = Url;
@@ -52,7 +52,7 @@ public class UmlNode : IUmlParticipant
 
     public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
-        var data = new data(Name: FullName, Url: Url, Depth: 1);
+        var data = new TheData(Name: FullName, Url: Url, Depth: 1);
         var draw = DrawNode(writeOptions, data);
         writer.WriteLine(draw);
 
@@ -72,7 +72,7 @@ public class UmlNode : IUmlParticipant
         //}
     }
 
-    private string DrawNode(UmlWriteOptions writeOptions, data data)
+    private string DrawNode(UmlWriteOptions writeOptions, TheData data)
     {
         var list = new List<string?>();
 

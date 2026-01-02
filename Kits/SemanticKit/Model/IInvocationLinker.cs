@@ -5,7 +5,7 @@ using SemanticKit.Model.Options;
 
 namespace SemanticKit.Model;
 
-public interface IInvocationLinker<TContext, TInvocationExpressionSyntax>
+public interface IInvocationLinker<in TContext, TInvocationExpressionSyntax>
     where TContext : IContextWithReferences<TContext>
     where TInvocationExpressionSyntax : class
 {

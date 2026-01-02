@@ -53,14 +53,14 @@ public class ParsingOrchestrator : IParsingOrchestrator
             _relationManager.ConvertToContextInfoAsync,
             cancellationToken).ConfigureAwait(false);
 
-        IEnumerable<ContextInfo> orchestratedContextsAsync = result.ToList();
-        if (orchestratedContextsAsync.Any())
+        var orchestratedContextsAsync = result.ToList();
+        if (orchestratedContextsAsync.Count != 0)
         {
             return orchestratedContextsAsync;
         }
 
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, "Context list is empty");
-        return Enumerable.Empty<ContextInfo>();
+        return [];
     }
 
     // context: parsing, build

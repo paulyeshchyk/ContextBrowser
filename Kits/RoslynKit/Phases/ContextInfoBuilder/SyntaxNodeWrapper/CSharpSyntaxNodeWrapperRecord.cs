@@ -5,15 +5,15 @@ namespace RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 
 public class CSharpSyntaxNodeWrapperRecord : CSharpSyntaxNodeWrapper<MemberDeclarationSyntax>
 {
-    private MemberDeclarationSyntax _syntaxNode => GetCoSyntax<MemberDeclarationSyntax>();
+    private MemberDeclarationSyntax SyntaxNode => GetCoSyntax<MemberDeclarationSyntax>();
 
-    public override string Identifier => _syntaxNode.GetIdentifier();
+    public override string Identifier => SyntaxNode.GetIdentifier();
 
-    public override string Namespace => _syntaxNode.GetNamespaceOrGlobal();
+    public override string Namespace => SyntaxNode.GetNamespaceOrGlobal();
 
     public override string GetFullName() => $"{Namespace}.{GetName()}";
 
-    public override string GetName() => _syntaxNode.GetIdentifier();
+    public override string GetName() => SyntaxNode.GetIdentifier();
 
 #warning this is incorrect
     public override string GetShortName() => GetName();
