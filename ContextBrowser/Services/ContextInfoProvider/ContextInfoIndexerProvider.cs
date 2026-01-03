@@ -2,31 +2,29 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowser.Services.Parsing;
-using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
+// context: ContextInfo, read
 public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoIndexerProvider
 {
     private readonly IContextInfoIndexerFactory _mapperFactory;
-    private readonly IAppOptionsStore _optionsStore;
 
     private readonly Dictionary<MapperKeyBase, IKeyIndexBuilder<ContextInfo>> _mappers = new();
 
     private readonly object _lock = new();
 
     public ContextInfoIndexerProvider(
-        IAppOptionsStore optionsStore,
         IParsingOrchestrator parsingOrchestrant,
         IContextInfoIndexerFactory mapperFactory)
         : base(parsingOrchestrant)
     {
         _mapperFactory = mapperFactory;
-        _optionsStore = optionsStore;
     }
 
+    // context: ContextInfo, read
     public async Task<IKeyIndexBuilder<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)
@@ -45,12 +43,9 @@ public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoI
 
         lock (_lock)
         {
-            if (!_mappers.ContainsKey(mapperType))
-            {
-                _mappers[mapperType] = result;
-            }
+            _mappers.TryAdd(mapperType, result);
         }
 
-        return _mappers[mapperType];
+        return result;
     }
 }

@@ -5,20 +5,23 @@ using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
-using RoslynKit.Model.SymbolWrapper;
 using RoslynKit.Signature.SignatureBuilder;
 using RoslynKit.Wrappers;
 using SemanticKit.Model;
 
 namespace RoslynKit.Converters;
 
-public static class CSharpISymbolWrapperConverter
+public class SymbolWrapperConverter : ISymbolWrapperConverter
 {
-    public static CSharpISymbolWrapper FromSymbolInfo(
-        ISemanticModelWrapper semanticModel,
-        ISyntaxNodeWrapper syntaxWrapper,
-        IAppLogger<AppLevel> logger,
-        CancellationToken cancellationToken)
+    private readonly IAppLogger<AppLevel> _logger;
+
+    public SymbolWrapperConverter(IAppLogger<AppLevel> logger)
+    {
+        _logger = logger;
+    }
+
+
+    public CSharpISymbolWrapper Convert(ISemanticModelWrapper semanticModel, ISyntaxNodeWrapper syntaxWrapper, CancellationToken cancellationToken)
     {
         if (semanticModel is null)
         {
@@ -31,7 +34,7 @@ public static class CSharpISymbolWrapperConverter
         }
 
         var wrapper = new CSharpISymbolWrapper();
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, semanticModel, logger, cancellationToken);
+        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, semanticModel, _logger, cancellationToken);
 
 #warning refactor this
         if (symbol == null)

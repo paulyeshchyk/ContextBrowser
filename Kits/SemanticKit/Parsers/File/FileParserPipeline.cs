@@ -7,7 +7,7 @@ using SemanticKit.Model.Options;
 
 namespace SemanticKit.Parsers.File;
 
-// context: file, directory, contextInfo, read
+// context: file, directory, ContextInfo, read
 public sealed class FileParserPipeline : IFileParserPipeline<ContextInfo>
 {
     private readonly SortedList<int, IFileParser<ContextInfo>> _parsers;
@@ -17,7 +17,7 @@ public sealed class FileParserPipeline : IFileParserPipeline<ContextInfo>
         _parsers = parsers;
     }
 
-    // context: file, directory, contextInfo, read
+    // context: file, directory, ContextInfo, read
     public Task<IEnumerable<ContextInfo>> ParseAsync(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
     {
         var result = new List<ContextInfo>();

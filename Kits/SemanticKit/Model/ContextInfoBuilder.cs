@@ -3,41 +3,50 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
-using RoslynKit.Converters;
-using SemanticKit.Model;
 using SemanticKit.Model.SyntaxWrapper;
 
-namespace RoslynKit.Phases.ContextInfoBuilder;
+namespace SemanticKit.Model;
 
-public interface IUniversalContextInfoBuilder<TContext>
+// context: ContextInfo, build
+public interface IContextInfoBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     ContextInfoElementType ElementType { get; }
     bool CanBuild(object syntax);
     bool CanBuild(ISyntaxWrapper syntax);
+
+    // context: ContextInfo, build
     TContext BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken);
+
+    // context: ContextInfo, build
     TContext BuildContextInfo(TContext? ownerContext, IContextInfo dto);
 }
 
-
-public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticModel, TWrapper> : IUniversalContextInfoBuilder<TContext>
+// context: ContextInfo, build
+public abstract class ContextInfoBuilder<TContext, TSyntaxNode, TWrapper> : IContextInfoBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
     where TSyntaxNode : class
-    where TSemanticModel : ISemanticModelWrapper
     where TWrapper : ISyntaxNodeWrapper, new()
 {
     protected readonly IContextCollector<TContext> _collector;
     protected readonly IContextFactory<TContext> _factory;
     protected readonly IAppLogger<AppLevel> _logger;
+    protected readonly ISymbolWrapperConverter _symbolWrapperConverter;
+    protected readonly IContextInfoDtoConverter<TContext, ISyntaxNodeWrapper> _contextInfoDtoConverter;
 
-    protected BaseContextInfoBuilder(
+    protected ContextInfoBuilder(
         IContextCollector<TContext> collector,
         IContextFactory<TContext> factory,
+        ISymbolWrapperConverter symbolWrapperConverter,
+        IContextInfoDtoConverter<TContext, ISyntaxNodeWrapper> contextInfoDtoConverter,
         IAppLogger<AppLevel> logger)
     {
         _collector = collector;
         _factory = factory;
         _logger = logger;
+        _symbolWrapperConverter = symbolWrapperConverter;
+        _contextInfoDtoConverter = contextInfoDtoConverter;
+
     }
 
     public abstract ContextInfoElementType ElementType { get; }
@@ -46,6 +55,7 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
 
     public abstract bool CanBuild(ISyntaxWrapper contextInfo);
 
+    // context: ContextInfo, build
     public virtual TContext BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -53,12 +63,13 @@ public abstract class BaseContextInfoBuilder<TContext, TSyntaxNode, TSemanticMod
         var syntaxNodeWrapper = new TWrapper();
         syntaxNodeWrapper.SetSyntax(syntaxNode);
 
-        var symbolInfo = CSharpISymbolWrapperConverter.FromSymbolInfo(semanticModel, syntaxNodeWrapper, _logger, cancellationToken);
-        var dto = ContextInfoDtoConverter.ConvertFromSyntaxNodeWrapper(ownerContext, syntaxNodeWrapper, symbolInfo, ElementType);
+        var symbolInfo = _symbolWrapperConverter.Convert(semanticModel, syntaxNodeWrapper, cancellationToken);
+        var dto = _contextInfoDtoConverter.Convert(ownerContext, syntaxNodeWrapper, symbolInfo, ElementType);
 
         return BuildContextInfo(ownerContext, dto);
     }
 
+    // context: ContextInfo, build
     public virtual TContext BuildContextInfo(TContext? ownerContext, IContextInfo dto)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");

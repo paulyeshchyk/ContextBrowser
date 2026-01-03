@@ -9,6 +9,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
+// context: syntax, build, roslyn
 public class CSharpSyntaxParserEnum<TContext> : SyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
@@ -17,7 +18,7 @@ public class CSharpSyntaxParserEnum<TContext> : SyntaxParser<TContext>
     {
     }
 
-    public override bool CanParse(object syntax) => syntax is EnumDeclarationSyntax;
+    public override bool CanParseSyntax(object syntax) => syntax is EnumDeclarationSyntax;
 
     public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {

@@ -78,7 +78,8 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
     }
 
     // Класс: RoslynPhaseParserInvocationLinksBuilder<TContext>
-    private TContext? FindOrCreateCalleeNode(ISyntaxWrapper symbolDto, SemanticOptions options)
+    // context: syntax, read
+    internal TContext? FindOrCreateCalleeNode(ISyntaxWrapper symbolDto, SemanticOptions options)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Looking for callee by symbol [{symbolDto.FullName}]");
 

@@ -2,6 +2,7 @@
 using ContextBrowserKit.Options;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using RoslynKit.Model.Meta;
 using SemanticKit.Model;
 
 namespace RoslynKit.Wrappers.Meta;

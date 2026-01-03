@@ -7,6 +7,7 @@ using ExporterKit.Infrastucture;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
+// context: ContextInfo, read
 public class ContextInfoMappingProvider<TTensor> : BaseContextInfoProvider, IContextInfoMapperProvider<TTensor>
     where TTensor : notnull
 {
@@ -39,12 +40,9 @@ public class ContextInfoMappingProvider<TTensor> : BaseContextInfoProvider, ICon
 
         lock (_lock)
         {
-            if (!_mappers.ContainsKey(mapperType))
-            {
-                _mappers[mapperType] = result;
-            }
+            _mappers.TryAdd(mapperType, result);
         }
 
-        return _mappers[mapperType];
+        return result;
     }
 }

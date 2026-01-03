@@ -14,7 +14,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
-// context: comment, build
+// context: syntax, build, roslyn, comment
 public class CSharpSyntaxParserCommentTrivia<TContext> : CSharpSyntaxParserComment<TContext>
     where TContext : IContextWithReferences<TContext>
 {

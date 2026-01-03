@@ -3,7 +3,6 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using RoslynKit.Model.SyntaxWrapper;
-using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Invocations.Lookup;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
@@ -11,6 +10,7 @@ using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Wrappers.LookupHandler;
 
+// context: roslyn, syntax, build
 public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLookupHandler<TContext, TSemanticModel>
     where TContext : class, IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper
@@ -34,6 +34,7 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
 
     }
 
+    // context: roslyn, syntax, build
     public override TContext? Handle(ISyntaxWrapper syntaxWrapper)
     {
         if (!_options.CreateFailedCallees)

@@ -2,19 +2,24 @@
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 using RoslynKit.Model.SyntaxWrapper;
+using RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 using SemanticKit.Model;
 using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-// context: roslyn, build, contextInfo
-public class CSharpContextInfoBuilderMethod<TContext> : BaseContextInfoBuilder<TContext, MethodDeclarationSyntax, ISemanticModelWrapper, CSharpSyntaxNodeWrapperMethod>
+// context: ContextInfo, build, roslyn
+public class CSharpContextInfoBuilderMethod<TContext> : ContextInfoBuilder<TContext, MethodDeclarationSyntax, CSharpSyntaxNodeWrapperMethod>
     where TContext : IContextWithReferences<TContext>
 {
-    public CSharpContextInfoBuilderMethod(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IAppLogger<AppLevel> logger)
-        : base(collector, factory, logger)
+    public CSharpContextInfoBuilderMethod(
+        IContextCollector<TContext> collector,
+        IContextFactory<TContext> factory,
+        ISymbolWrapperConverter symbolWrapperConverter,
+        IContextInfoDtoConverter<TContext, ISyntaxNodeWrapper> contextInfoDtoConverter,
+        IAppLogger<AppLevel> logger)
+        : base(collector, factory, symbolWrapperConverter, contextInfoDtoConverter, logger)
     {
     }
 

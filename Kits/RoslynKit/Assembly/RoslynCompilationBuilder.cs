@@ -8,6 +8,7 @@ using ContextBrowserKit.Options;
 using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using RoslynKit.Model.Meta;
 using RoslynKit.Wrappers.Meta;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;

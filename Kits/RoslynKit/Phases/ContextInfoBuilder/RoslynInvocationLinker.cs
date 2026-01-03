@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
@@ -11,6 +10,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
+// context: roslyn, invocation, build
 public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, InvocationExpressionSyntax>
     where TContext : IContextWithReferences<TContext>
 {
@@ -25,9 +25,10 @@ public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, Invo
         _invocationSyntaxExtractor = invocationSyntaxExtractor;
     }
 
+    // context: roslyn, invocation, syntax, build
     public void Link(List<InvocationExpressionSyntax> invocationList, TContext callerContext, TContext callerContextInfo, SemanticOptions options, CancellationToken cancellationToken)
     {
-        if (!invocationList.Any())
+        if (invocationList.Count == 0)
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"No invocation to resolve for [{callerContext.FullName}]");
             return;
@@ -41,12 +42,15 @@ public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, Invo
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
-    private void ResolveSymbolThenLink(InvocationExpressionSyntax invocation, TContext callerContextInfo, IInvocationLinksBuilder<TContext> linksInvocationBuilder, SemanticOptions options, CancellationToken cancellationToken)
+    // context: roslyn, invocation, syntax, read
+    internal void ResolveSymbolThenLink(InvocationExpressionSyntax invocation, TContext callerContextInfo, IInvocationLinksBuilder<TContext> linksInvocationBuilder, SemanticOptions options, CancellationToken cancellationToken)
     {
         var symbolDto = _invocationSyntaxExtractor.ResolveInvocationSymbol(invocation, options, cancellationToken);
-        if (symbolDto != null)
+        if (symbolDto == null)
         {
-            linksInvocationBuilder.LinkInvocation(callerContextInfo, symbolDto, options);
+            return;
         }
+
+        linksInvocationBuilder.LinkInvocation(callerContextInfo, symbolDto, options);
     }
 }

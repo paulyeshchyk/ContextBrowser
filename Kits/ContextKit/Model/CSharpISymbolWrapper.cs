@@ -1,7 +1,6 @@
 ﻿using System;
-using ContextKit.Model;
 
-namespace RoslynKit.Model.SymbolWrapper;
+namespace ContextKit.Model;
 
 public class CSharpISymbolWrapper : ISymbolInfo
 {

@@ -6,7 +6,7 @@ using RoslynKit.Extensions;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 
-namespace RoslynKit.Wrappers.Meta;
+namespace RoslynKit.Model.Meta;
 
 public class RoslynSyntaxTreeWrapper : ISyntaxTreeWrapper
 {

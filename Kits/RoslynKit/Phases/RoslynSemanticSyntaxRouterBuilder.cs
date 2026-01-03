@@ -3,7 +3,6 @@ using ContextBrowserKit.Options;
 using ContextKit.ContextData.Comment;
 using ContextKit.Model;
 using LoggerKit;
-using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Syntax.Parsers;
 using SemanticKit.Model;
 
@@ -34,15 +33,15 @@ public class RoslynSemanticSyntaxRouterBuilder<TContext> : ISemanticSyntaxRouter
         // 1. Создаем билдеры контекстов и другие вспомогательные классы
         var triviaCommentParser = new CSharpSyntaxParserCommentTrivia<TContext>(_commentProcessor, _logger);
 
-        var propertyDeclarationParser = new CSharpSyntaxParserTypeProperty<TContext>(
+        var propertySyntaxParser = new CSharpSyntaxParserTypeProperty<TContext>(
             _collector,
             triviaCommentParser,
             _contextInfoBuilderDispatcher,
             _logger);
 
-        var enumDeclarationParser = new CSharpSyntaxParserEnum<TContext>(_logger);
+        var enumSyntaxParser = new CSharpSyntaxParserEnum<TContext>(_logger);
 
-        var delegateDeclarationParser = new CSharpSyntaxParserDelegate<TContext>(
+        var delegateSyntaxParser = new CSharpSyntaxParserDelegate<TContext>(
             triviaCommentParser,
             _contextInfoBuilderDispatcher,
             _logger);
@@ -52,22 +51,22 @@ public class RoslynSemanticSyntaxRouterBuilder<TContext> : ISemanticSyntaxRouter
             _contextInfoBuilderDispatcher,
             _logger);
 
-        var interfaceDeclarationParser = new CSharpSyntaxParserInterface<TContext>(
-            propertyDeclarationParser,
+        var interfaceSyntaxParser = new CSharpSyntaxParserInterface<TContext>(
+            propertySyntaxParser,
             methodSyntaxParser,
             triviaCommentParser,
             _contextInfoBuilderDispatcher,
             _logger);
 
         var typeDeclarationParser = new CSharpSyntaxParserTypeClass<TContext>(
-            propertyDeclarationParser,
+            propertySyntaxParser,
             methodSyntaxParser,
             triviaCommentParser,
             _contextInfoBuilderDispatcher,
             _logger);
 
-        var recordDeclarationParser = new CSharpSyntaxParserTypeRecord<TContext>(
-            propertyDeclarationParser,
+        var recordSyntaxParser = new CSharpSyntaxParserTypeRecord<TContext>(
+            propertySyntaxParser,
             methodSyntaxParser,
             triviaCommentParser,
             _contextInfoBuilderDispatcher,
@@ -76,12 +75,12 @@ public class RoslynSemanticSyntaxRouterBuilder<TContext> : ISemanticSyntaxRouter
         // 4. Собираем все парсеры в список для роутера
         var parsers = new List<ISyntaxParser<TContext>>
         {
-            interfaceDeclarationParser,
+            interfaceSyntaxParser,
             typeDeclarationParser,
-            enumDeclarationParser,
-            propertyDeclarationParser,
-            delegateDeclarationParser,
-            recordDeclarationParser
+            enumSyntaxParser,
+            propertySyntaxParser,
+            delegateSyntaxParser,
+            recordSyntaxParser
         };
 
         return new SemanticSyntaxRouter<TContext>(_logger, parsers);

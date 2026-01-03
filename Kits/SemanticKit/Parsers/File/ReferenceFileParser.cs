@@ -6,7 +6,7 @@ using SemanticKit.Model.Options;
 
 namespace SemanticKit.Parsers.File;
 
-// context: file, directory, contextInfo, read
+// context: file, directory, ContextInfo, read
 public class ReferenceFileParser : IFileParser<ContextInfo>
 {
     private readonly IInvocationParser<ContextInfo> _parser;
@@ -16,13 +16,13 @@ public class ReferenceFileParser : IFileParser<ContextInfo>
         _parser = parser;
     }
 
-    // context: file, directory, contextInfo, read
+    // context: file, directory, syntax, ContextInfo, read
     public IEnumerable<ContextInfo> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken ct)
     {
         return _parser.ParseFiles(filePaths, options, ct);
     }
 
-    // context: file, directory, contextInfo, read
+    // context: file, directory, ContextInfo, read
     public void RenewContextInfoList(IEnumerable<ContextInfo> contextInfoList)
     {
         _parser.RenewContextInfoList(contextInfoList);

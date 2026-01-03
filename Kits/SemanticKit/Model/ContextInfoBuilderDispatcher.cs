@@ -5,26 +5,27 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
-using SemanticKit.Model;
 using SemanticKit.Model.SyntaxWrapper;
 
-namespace RoslynKit.Phases.ContextInfoBuilder;
+namespace SemanticKit.Model;
 
+// context: ContextInfo, build
 public class ContextInfoBuilderDispatcher<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    private readonly IEnumerable<IUniversalContextInfoBuilder<TContext>> _builders;
+    private readonly IEnumerable<IContextInfoBuilder<TContext>> _builders;
 
     private readonly IAppLogger<AppLevel> _logger;
 
     public ContextInfoBuilderDispatcher(
-        IEnumerable<IUniversalContextInfoBuilder<TContext>> builders,
+        IEnumerable<IContextInfoBuilder<TContext>> builders,
         IAppLogger<AppLevel> logger)
     {
         _builders = builders;
         _logger = logger;
     }
 
+    // context: ContextInfo, build
     public TContext? DispatchAndBuild(TContext? parent, object syntax, ISemanticModelWrapper semanticModelWrapper, CancellationToken cancellationToken)
     {
         var builder = _builders.FirstOrDefault(b => b.CanBuild(syntax));

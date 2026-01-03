@@ -29,7 +29,7 @@ public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
 
         foreach (var item in availableSyntaxies)
         {
-            var parser = _parsers.FirstOrDefault(p => p.CanParse(item));
+            var parser = _parsers.FirstOrDefault(p => p.CanParseSyntax(item));
 
             if (parser == null)
             {

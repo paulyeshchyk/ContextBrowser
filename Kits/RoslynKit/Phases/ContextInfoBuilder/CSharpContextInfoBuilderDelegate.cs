@@ -8,11 +8,17 @@ using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-public class CSharpContextInfoBuilderDelegate<TContext> : BaseContextInfoBuilder<TContext, DelegateDeclarationSyntax, ISemanticModelWrapper, CSharpSyntaxNodeWrapperDelegate>
+// context: ContextInfo, build, roslyn
+public class CSharpContextInfoBuilderDelegate<TContext> : ContextInfoBuilder<TContext, DelegateDeclarationSyntax, CSharpSyntaxNodeWrapperDelegate>
     where TContext : IContextWithReferences<TContext>
 {
-    public CSharpContextInfoBuilderDelegate(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IAppLogger<AppLevel> logger)
-        : base(collector, factory, logger)
+    public CSharpContextInfoBuilderDelegate(
+        IContextCollector<TContext> collector,
+        IContextFactory<TContext> factory,
+        ISymbolWrapperConverter symbolWrapperConverter,
+        IContextInfoDtoConverter<TContext, ISyntaxNodeWrapper> contextInfoDtoConverter,
+        IAppLogger<AppLevel> logger)
+        : base(collector, factory, symbolWrapperConverter, contextInfoDtoConverter, logger)
     {
     }
 

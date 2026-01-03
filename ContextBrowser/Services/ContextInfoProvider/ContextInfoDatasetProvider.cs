@@ -5,6 +5,7 @@ using ContextKit.Model;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
+// context: ContextInfo, read
 public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, IContextInfoDatasetProvider<TTensor>
     where TTensor : notnull
 {

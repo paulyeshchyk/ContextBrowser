@@ -16,7 +16,7 @@ using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler;
 
-// context: contextInfo, build, html
+// context: ContextInfo, build, html
 public class HtmlPageCompilerClassOnly<TDataTensor> : IHtmlPageCompiler
     where TDataTensor : IDomainPerActionTensor
 {
@@ -33,7 +33,7 @@ public class HtmlPageCompilerClassOnly<TDataTensor> : IHtmlPageCompiler
         _namingProcessor = namingProcessor;
     }
 
-    // context: contextInfo, build, html
+    // context: ContextInfo, build, html
     public async Task CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- DomainOnly.Build ---", LogLevelNode.None));

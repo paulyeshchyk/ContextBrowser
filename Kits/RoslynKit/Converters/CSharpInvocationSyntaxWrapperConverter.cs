@@ -4,9 +4,7 @@ using RoslynKit.AWrappers;
 using RoslynKit.Model.SyntaxWrapper;
 using RoslynKit.Signature;
 using RoslynKit.Signature.SignatureBuilder;
-using SemanticKit.Model;
 using SemanticKit.Model.Options;
-using SemanticKit.Model.Signature;
 using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Converters;
@@ -32,9 +30,9 @@ public static class CSharpInvocationSyntaxWrapperConverter
 
     public static ISyntaxWrapper? FromExpression(
         ExpressionSyntax byInvocation,
-        SemanticOptions _options)
+        SemanticOptions options)
     {
-        var raw = byInvocation.ConvertToMethodRawSignature(_options);
+        var raw = byInvocation.ConvertToMethodRawSignature(options);
         if (string.IsNullOrEmpty(raw))
             return null;
 

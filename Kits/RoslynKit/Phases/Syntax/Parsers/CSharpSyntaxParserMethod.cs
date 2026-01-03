@@ -8,13 +8,13 @@ using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
 using RoslynKit.Model.SyntaxWrapper;
-using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Wrappers;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
+// context: syntax, build, roslyn
 public class CSharpSyntaxParserMethod<TContext>
     where TContext : IContextWithReferences<TContext>
 {

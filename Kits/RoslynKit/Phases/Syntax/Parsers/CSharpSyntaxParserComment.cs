@@ -10,13 +10,14 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
+// context: syntax, build, roslyn
 public abstract class CSharpSyntaxParserComment<TContext> : ISyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     protected readonly IContextInfoCommentProcessor<TContext> _commentAdapter;
     protected readonly IAppLogger<AppLevel> _logger;
 
-    public bool CanParse(object syntax) => syntax is MemberDeclarationSyntax;
+    public bool CanParseSyntax(object syntax) => syntax is MemberDeclarationSyntax;
 
     protected CSharpSyntaxParserComment(IContextInfoCommentProcessor<TContext> commentProcessor, IAppLogger<AppLevel> logger)
     {

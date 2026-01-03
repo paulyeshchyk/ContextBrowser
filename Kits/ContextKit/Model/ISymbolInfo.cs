@@ -1,5 +1,6 @@
 ﻿namespace ContextKit.Model;
 
+// context: syntax, model, symbol
 public interface ISymbolInfo
 {
     string Identifier { get; }

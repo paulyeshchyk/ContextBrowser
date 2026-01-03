@@ -4,17 +4,18 @@ using RoslynKit.AWrappers;
 
 namespace RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 
+// context: syntax, model, roslyn, symbol
 public class CSharpSyntaxNodeWrapperMethod : CSharpSyntaxNodeWrapper<MethodDeclarationSyntax>, ISymbolInfo
 {
-    private MethodDeclarationSyntax _syntaxNode => GetCoSyntax<MethodDeclarationSyntax>();
+    private MethodDeclarationSyntax SyntaxNode => GetCoSyntax<MethodDeclarationSyntax>();
 
-    public override string Identifier => _syntaxNode.GetIdentifier();
+    public override string Identifier => SyntaxNode.GetIdentifier();
 
-    public override string Namespace => _syntaxNode.GetNamespaceOrGlobal();
+    public override string Namespace => SyntaxNode.GetNamespaceOrGlobal();
 
     public override string GetFullName() => $"{Namespace}.{GetName()}";
 
-    public override string GetName() => _syntaxNode.GetIdentifier();
+    public override string GetName() => SyntaxNode.GetIdentifier();
 
     public override string GetShortName() => GetName();
 }

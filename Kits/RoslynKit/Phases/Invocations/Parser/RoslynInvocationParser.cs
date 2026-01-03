@@ -69,7 +69,8 @@ public class RoslynInvocationParser<TContext> : IInvocationParser<TContext>
         _collector.MergeFakeItems();
     }
 
-    private void BuildReferences(string filePath, IEnumerable<TContext> theCollection, SemanticOptions options, CancellationToken cancellationToken)
+    // context: roslyn, syntax, read
+    internal void BuildReferences(string filePath, IEnumerable<TContext> theCollection, SemanticOptions options, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Building invocatons {filePath}", LogLevelNode.Start);
         foreach (var method in theCollection)
@@ -79,6 +80,7 @@ public class RoslynInvocationParser<TContext> : IInvocationParser<TContext>
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }
 
+    // context: roslyn, syntax, read
     public IEnumerable<TContext> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

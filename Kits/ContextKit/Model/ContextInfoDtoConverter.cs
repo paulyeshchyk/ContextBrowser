@@ -1,13 +1,20 @@
 ﻿using System;
-using ContextKit.Model;
 
-namespace RoslynKit.Converters;
+namespace ContextKit.Model;
 
-public static class ContextInfoDtoConverter
-{
-    public static IContextInfo ConvertFromSyntaxNodeWrapper<TContext, TWrapper>(TContext? ownerContext, TWrapper syntaxWrap, ISymbolInfo wrapper, ContextInfoElementType ElementType)
-        where TWrapper : ISyntaxNodeWrapper
+public interface IContextInfoDtoConverter<TContext, TWrapper>
         where TContext : IContextWithReferences<TContext>
+        where TWrapper : ISyntaxNodeWrapper
+
+{
+    IContextInfo Convert(TContext? ownerContext, TWrapper syntaxWrap, ISymbolInfo wrapper, ContextInfoElementType elementType);
+}
+
+
+public class ContextInfoDtoConverter<TContext> : IContextInfoDtoConverter<TContext, ISyntaxNodeWrapper>
+        where TContext : IContextWithReferences<TContext>
+{
+    public IContextInfo Convert(TContext? ownerContext, ISyntaxNodeWrapper syntaxWrap, ISymbolInfo wrapper, ContextInfoElementType elementType)
     {
         var nameSpace = wrapper.Namespace;
         var identifier = wrapper.Identifier;
@@ -21,7 +28,7 @@ public static class ContextInfoDtoConverter
         string shortName = wrapper.GetShortName();
 
         return new ContextInfoDto(
-              elementType: ElementType,
+              elementType: elementType,
                  fullName: fullName,
                      name: name,
                 shortName: shortName,

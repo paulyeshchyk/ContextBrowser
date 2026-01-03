@@ -8,6 +8,7 @@ using TensorKit.Model;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
+// context: ContextInfo, read
 public class ContextInfoDatasetProviderMethodList<TDataTensor> : BaseContextInfoProvider, IContextInfoDatasetProvider<MethodListTensor<TDataTensor>>
     where TDataTensor : IDomainPerActionTensor
 {

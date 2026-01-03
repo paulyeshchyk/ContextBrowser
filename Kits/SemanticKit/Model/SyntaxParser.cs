@@ -16,7 +16,7 @@ public abstract class SyntaxParser<TContext> : ISyntaxParser<TContext>
         _logger = logger;
     }
 
-    public abstract bool CanParse(object syntax);
+    public abstract bool CanParseSyntax(object syntax);
 
     public abstract void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
 }

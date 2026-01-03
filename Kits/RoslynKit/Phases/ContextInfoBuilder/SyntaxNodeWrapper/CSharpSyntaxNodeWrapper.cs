@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 
+// context: syntax, model, roslyn
 public abstract class CSharpSyntaxNodeWrapper<S> : ISyntaxNodeWrapper
     where S : SyntaxNode
 {

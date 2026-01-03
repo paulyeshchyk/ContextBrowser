@@ -8,7 +8,7 @@ using LoggerKit;
 
 namespace ContextKit.ContextData.Comment.Stategies;
 
-// context: contextinfo, build
+// context: ContextInfo, build
 public class ContextStrategy<TContext> : ICommentParsingStrategy<TContext>
     where TContext : IContextWithReferences<TContext>
 {
@@ -25,7 +25,7 @@ public class ContextStrategy<TContext> : ICommentParsingStrategy<TContext>
         _logger = logger;
     }
 
-    // context: contextinfo, build
+    // context: ContextInfo, build
     public void Execute(TContext? container, string comment)
     {
         var content = CommentWithKeywordParser.ExtractContent(Keyword, comment);

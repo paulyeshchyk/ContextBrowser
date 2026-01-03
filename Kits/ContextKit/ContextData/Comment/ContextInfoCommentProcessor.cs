@@ -4,7 +4,7 @@ using ContextKit.Model;
 
 namespace ContextKit.ContextData.Comment;
 
-// context: contextInfo, comment, build
+// context: ContextInfo, comment, build
 public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
     where T : IContextWithReferences<T>
 {
@@ -15,7 +15,7 @@ public class ContextInfoCommentProcessor<T> : IContextInfoCommentProcessor<T>
         _strategies = factory.CreateStrategies().ToList();
     }
 
-    // context: contextInfo, comment, build
+    // context: ContextInfo, comment, build
     public void Process(T? target, string comment)
     {
         foreach (var strategy in _strategies)

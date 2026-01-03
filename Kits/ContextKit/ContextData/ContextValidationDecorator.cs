@@ -6,7 +6,7 @@ using LoggerKit;
 
 namespace ContextKit.ContextData;
 
-// context: roslyn, contextInfo, build
+// context: roslyn, ContextInfo, build
 public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
     where T : IContextWithReferences<T>
 {
@@ -19,7 +19,7 @@ public class ContextValidationDecorator<T> : ICommentParsingStrategy<T>
         _logger = logger;
     }
 
-    // context: roslyn, contextInfo, build
+    // context: roslyn, ContextInfo, build
     public void Execute(T? container, string comment)
     {
         if (container == null)

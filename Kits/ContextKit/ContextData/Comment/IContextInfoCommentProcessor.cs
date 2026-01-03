@@ -2,10 +2,10 @@
 
 namespace ContextKit.ContextData.Comment;
 
-// context: contextInfo, build
+// context: ContextInfo, build
 public interface IContextInfoCommentProcessor<T>
 {
-    // context: contextInfo, comment, build
+    // context: ContextInfo, comment, build
     void Process(T? target, string comment);
 }
 

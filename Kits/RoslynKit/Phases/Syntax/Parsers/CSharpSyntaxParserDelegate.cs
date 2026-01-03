@@ -4,13 +4,12 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.Phases.ContextInfoBuilder;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
-// context: roslyn, build
+// context: syntax, build, roslyn
 public class CSharpSyntaxParserDelegate<TContext> : SyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
@@ -27,7 +26,7 @@ public class CSharpSyntaxParserDelegate<TContext> : SyntaxParser<TContext>
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
-    public override bool CanParse(object syntax) => syntax is DelegateDeclarationSyntax;
+    public override bool CanParseSyntax(object syntax) => syntax is DelegateDeclarationSyntax;
 
     // context: roslyn, build
     public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)

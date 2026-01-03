@@ -6,13 +6,13 @@ using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.AWrappers;
-using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Wrappers;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.Syntax.Parsers;
 
+// context: syntax, build, roslyn
 public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
     where TContext : IContextWithReferences<TContext>
 {
@@ -36,7 +36,7 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
-    public override bool CanParse(object syntax) => syntax is ClassDeclarationSyntax;
+    public override bool CanParseSyntax(object syntax) => syntax is ClassDeclarationSyntax;
 
     public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {

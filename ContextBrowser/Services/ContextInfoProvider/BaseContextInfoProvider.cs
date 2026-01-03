@@ -7,6 +7,7 @@ using ContextKit.Model;
 namespace ContextBrowser.Services.ContextInfoProvider;
 
 // Абстрактный базовый класс для провайдеров, которым нужен список контекстов.
+// context: ContextInfo, read
 public abstract class BaseContextInfoProvider
 {
     protected readonly IParsingOrchestrator _parsingOrchestrant;
@@ -22,6 +23,7 @@ public abstract class BaseContextInfoProvider
         _parsingOrchestrant = parsingOrchestrant;
     }
 
+    // context: ContextInfo, read
     protected async Task<IEnumerable<ContextInfo>> GetParsedContextsAsync(CancellationToken cancellationToken)
     {
         lock (_lock)

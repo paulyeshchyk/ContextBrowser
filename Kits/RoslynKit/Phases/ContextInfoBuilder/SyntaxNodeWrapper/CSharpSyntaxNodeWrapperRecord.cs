@@ -3,6 +3,7 @@ using RoslynKit.AWrappers;
 
 namespace RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;
 
+// context: syntax, model, roslyn
 public class CSharpSyntaxNodeWrapperRecord : CSharpSyntaxNodeWrapper<MemberDeclarationSyntax>
 {
     private MemberDeclarationSyntax SyntaxNode => GetCoSyntax<MemberDeclarationSyntax>();

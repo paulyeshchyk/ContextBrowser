@@ -2,6 +2,7 @@
 
 namespace ContextKit.Model;
 
+// context: ContextInfo, model
 public interface IContextInfo : ISemanticInfo, ISpanInfo, ISemanticContainer
 {
     IContextInfo? ClassOwner { get; set; }

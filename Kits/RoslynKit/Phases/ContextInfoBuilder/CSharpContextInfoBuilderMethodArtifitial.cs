@@ -9,16 +9,20 @@ using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
-// context: roslyn, build, contextInfo
-public class CSharpContextInfoBuilderMethodArtifitial<TContext> : BaseContextInfoBuilder<TContext, MethodDeclarationSyntax, ISemanticModelWrapper, CSharpSyntaxNodeWrapperMethod>
+// context: ContextInfo, build, roslyn
+public class CSharpContextInfoBuilderMethodArtifitial<TContext> : ContextInfoBuilder<TContext, MethodDeclarationSyntax, CSharpSyntaxNodeWrapperMethod>
     where TContext : IContextWithReferences<TContext>
 {
-    public CSharpContextInfoBuilderMethodArtifitial(IContextCollector<TContext> collector, IContextFactory<TContext> factory, IAppLogger<AppLevel> logger)
-        : base(collector, factory, logger)
+    public CSharpContextInfoBuilderMethodArtifitial(
+        IContextCollector<TContext> collector,
+        IContextFactory<TContext> factory,
+        ISymbolWrapperConverter symbolWrapperConverter,
+        IContextInfoDtoConverter<TContext, ISyntaxNodeWrapper> contextInfoDtoConverter,
+        IAppLogger<AppLevel> logger)
+        : base(collector, factory, symbolWrapperConverter, contextInfoDtoConverter, logger)
     {
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@method;
     public override bool CanBuild(ISyntaxWrapper contextInfo) => contextInfo is CSharpSyntaxWrapperMethodArtifitial;
-
 }

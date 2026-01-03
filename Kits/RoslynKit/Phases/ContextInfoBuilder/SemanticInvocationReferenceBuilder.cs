@@ -10,6 +10,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Phases.ContextInfoBuilder;
 
+// context: roslyn, read
 public class SemanticInvocationReferenceBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {

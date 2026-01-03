@@ -27,6 +27,7 @@ using LoggerKit.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using RoslynKit.Assembly;
+using RoslynKit.Converters;
 using RoslynKit.Phases;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Invocations;
@@ -86,7 +87,7 @@ public class HostConfigurator
         services.AddSingleton<IContextInfoMapperProvider<DomainPerActionTensor>, ContextInfoMappingProvider<DomainPerActionTensor>>();
         services.AddSingleton<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>, ContextInfo2DMap<DomainPerActionTensor, ContextInfo>>();
         services.AddTransient<IContextInfoMapperFactory<DomainPerActionTensor>, ContextInfoMapperFactory<DomainPerActionTensor>>();
-
+        services.AddTransient<IContextInfoDtoConverter<ContextInfo, ISyntaxNodeWrapper>,ContextInfoDtoConverter<ContextInfo>>();
         // --- Code parsing
         services.AddTransient<ICodeParseService, CodeParseService>();
         services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
@@ -105,19 +106,19 @@ public class HostConfigurator
 
         services.AddTransient<ISemanticSyntaxRouterBuilder<ContextInfo>, RoslynSemanticSyntaxRouterBuilder<ContextInfo>>();
 
-        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderProperty<ContextInfo>>();
-        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderDelegate<ContextInfo>>();
-        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderEnum<ContextInfo>>();
-        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderInterface<ContextInfo>>();
-        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderMethod<ContextInfo>>();
-        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderMethodArtifitial<ContextInfo>>();
-        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBulderType<ContextInfo>>();
-        services.AddTransient<IUniversalContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderRecord<ContextInfo>>();
+        services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderProperty<ContextInfo>>();
+        services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderDelegate<ContextInfo>>();
+        services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderEnum<ContextInfo>>();
+        services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderInterface<ContextInfo>>();
+        services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderMethod<ContextInfo>>();
+        services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderMethodArtifitial<ContextInfo>>();
+        services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBulderType<ContextInfo>>();
+        services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderRecord<ContextInfo>>();
         services.AddTransient<ContextInfoBuilderDispatcher<ContextInfo>>();
 
         services.AddTransient<IInvocationLinksBuilder<ContextInfo>, RoslynPhaseParserInvocationLinksBuilder<ContextInfo>>();
         services.AddTransient<IInvocationLinker<ContextInfo, InvocationExpressionSyntax>, RoslynInvocationLinker<ContextInfo>>();
-
+        services.AddTransient<ISymbolWrapperConverter, SymbolWrapperConverter>();
         // ---
 
         services.AddSingleton<IContextInfoCommentProcessor<ContextInfo>, ContextInfoCommentProcessor<ContextInfo>>();
