@@ -10,29 +10,37 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;
 using Microsoft.CodeAnalysis;
+using SemanticKit.Model;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Assembly;
 
 // context: roslyn, build
 // coverage: 50
-public static class RoslynAssemblyFetcher
+public class RoslynAssemblyFetcher : IAssemblyFetcher<MetadataReference>
 {
+    private readonly IAppLogger<AppLevel> _logger;
+
+    public RoslynAssemblyFetcher(IAppLogger<AppLevel> logger)
+    {
+        _logger = logger;
+    }
+
     // context: roslyn, build
     // coverage: 20
-    public static IEnumerable<MetadataReference> Fetch(AssemblyPathFilterPatterns assemblyPathsFilter, IAppLogger<AppLevel> logger)
+    public IEnumerable<MetadataReference> Fetch(AssemblyPathFilterPatterns assemblyPathsFilter)
     {
-        var trustedPlatformPaths = RoslynAssemblyFetcher.FetchTrustedPlatformPaths(logger);
-        var filteredTrustedPaths = RoslynAssemblyFetcher.ApplyFilters(trustedPlatformPaths, assemblyPathsFilter.TrustedFilters);
-        logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredTrustedPaths.Count()} trusted сборок");
+        var trustedPlatformPaths = FetchTrustedPlatformPaths();
+        var filteredTrustedPaths = ApplyFilters(trustedPlatformPaths, assemblyPathsFilter.TrustedFilters);
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredTrustedPaths.Count()} trusted сборок");
 
-        var currentDomainPaths = RoslynAssemblyFetcher.FetchCurrentDomainPaths(logger);
-        var filteredDomainPaths = RoslynAssemblyFetcher.ApplyFilters(currentDomainPaths, assemblyPathsFilter.DomainFilters);
-        logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredDomainPaths.Count()} domain сборок");
+        var currentDomainPaths = FetchCurrentDomainPaths();
+        var filteredDomainPaths = ApplyFilters(currentDomainPaths, assemblyPathsFilter.DomainFilters);
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredDomainPaths.Count()} domain сборок");
 
-        var runtimeDirectoryPaths = RoslynAssemblyFetcher.FetchRuntimeDirectoryAssemblyPaths(logger);
-        var filteredRuntimePaths = RoslynAssemblyFetcher.ApplyFilters(runtimeDirectoryPaths, assemblyPathsFilter.DomainFilters);
-        logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredRuntimePaths.Count()} domain сборок");
+        var runtimeDirectoryPaths = FetchRuntimeDirectoryAssemblyPaths();
+        var filteredRuntimePaths = ApplyFilters(runtimeDirectoryPaths, assemblyPathsFilter.DomainFilters);
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredRuntimePaths.Count()} domain сборок");
 
         var allAssemblyPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -47,14 +55,14 @@ public static class RoslynAssemblyFetcher
     }
 
     // context: roslyn, build
-    private static string[] FetchTrustedPlatformPaths(IAppLogger<AppLevel> logger)
+    internal string[] FetchTrustedPlatformPaths()
     {
         var result = (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string ?? string.Empty)
             .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
 
         if (result.Length == 0)
         {
-            logger.WriteLog(AppLevel.R_Dll, LogLevel.Warn, "Не удалось найти доверенные сборки платформы.");
+            _logger.WriteLog(AppLevel.R_Dll, LogLevel.Warn, "Не удалось найти доверенные сборки платформы.");
             return [];
         }
 
@@ -62,7 +70,7 @@ public static class RoslynAssemblyFetcher
     }
 
     // context: roslyn, build
-    private static string[] FetchCurrentDomainPaths(IAppLogger<AppLevel> logger)
+    internal string[] FetchCurrentDomainPaths()
     {
         var domainAssemblies = AssemblyLoadContext.Default.Assemblies.ToArray();
         var result = new List<string>();
@@ -73,7 +81,7 @@ public static class RoslynAssemblyFetcher
             {
                 if (assembly.IsDynamic)
                 {
-                    logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"[SKIP] Dynamic assembly {assembly.FullName}");
+                    _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"[SKIP] Dynamic assembly {assembly.FullName}");
                 }
                 else
                 {
@@ -82,7 +90,7 @@ public static class RoslynAssemblyFetcher
             }
             catch (Exception ex)
             {
-                logger.WriteLog(AppLevel.R_Dll, LogLevel.Exception, $"Ошибка при загрузке сборки {assembly.FullName}: {ex.Message}");
+                _logger.WriteLog(AppLevel.R_Dll, LogLevel.Exception, $"Ошибка при загрузке сборки {assembly.FullName}: {ex.Message}");
             }
         }
 
@@ -90,12 +98,12 @@ public static class RoslynAssemblyFetcher
     }
 
     // context: roslyn, build
-    private static string[] FetchRuntimeDirectoryAssemblyPaths(IAppLogger<AppLevel> logger)
+    internal string[] FetchRuntimeDirectoryAssemblyPaths()
     {
         var runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
         if (string.IsNullOrWhiteSpace(runtimeDirectory))
         {
-            logger.WriteLog(AppLevel.R_Dll, LogLevel.Warn, "[MISS]: Не найден путь assembly для typeof(object)");
+            _logger.WriteLog(AppLevel.R_Dll, LogLevel.Warn, "[MISS]: Не найден путь assembly для typeof(object)");
             return [];
         }
 
@@ -109,6 +117,7 @@ public static class RoslynAssemblyFetcher
         return result.ToArray();
     }
 
+    // context: roslyn, build
     internal static IEnumerable<string> ApplyFilters(string[] paths, FilterPatterns filterPatterns)
     {
         // из всего списка оставляем только те, что нужны

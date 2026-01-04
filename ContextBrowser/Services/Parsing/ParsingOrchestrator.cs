@@ -7,6 +7,8 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.CacheManager;
 using LoggerKit;
+using RoslynKit.Assembly;
+using RoslynKit.Model.Meta;
 using SemanticKit.Model;
 using SemanticKit.Parsers.File;
 
@@ -20,22 +22,23 @@ public interface IParsingOrchestrator
 }
 
 // context: parsing, build
-public class ParsingOrchestrator : IParsingOrchestrator
+public class ParsingOrchestrator<TSyntaxTreeWrapper> : IParsingOrchestrator
+    where TSyntaxTreeWrapper : RoslynSyntaxTreeWrapper
 {
     private readonly IContextInfoCacheService _contextInfoCacheService;
     private readonly ICodeParseService _codeParseService;
-    private readonly IReferenceParserFactory _referenceParserFactory;
+    private readonly IReferenceParserFactory<TSyntaxTreeWrapper> _referenceParserFactory;
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoRelationManager _relationManager;
-    private readonly ISemanticDeclarationParser<ContextInfo> _declarationParser;
+    private readonly ISemanticFileParser<ContextInfo> _declarationParser;
 
     public ParsingOrchestrator(
         IContextInfoCacheService contextInfoCacheService,
         ICodeParseService codeParseService,
-        IReferenceParserFactory referenceParserFactory,
+        IReferenceParserFactory<TSyntaxTreeWrapper> referenceParserFactory,
         IContextInfoRelationManager relationManager,
         IAppLogger<AppLevel> logger,
-        ISemanticDeclarationParser<ContextInfo> declarationParser)
+        ISemanticFileParser<ContextInfo> declarationParser)
     {
         _contextInfoCacheService = contextInfoCacheService;
         _codeParseService = codeParseService;

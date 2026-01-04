@@ -2,7 +2,8 @@ using System.Threading;
 
 namespace SemanticKit.Model;
 
-public interface ISyntaxTreeWrapperBuilder
+public interface ISyntaxTreeWrapperBuilder<TSyntaxTreeWrapper>
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
-    ISyntaxTreeWrapper Build(string code, string filePath, CancellationToken cancellationToken);
+    TSyntaxTreeWrapper Build(string code, string filePath, CancellationToken cancellationToken);
 }

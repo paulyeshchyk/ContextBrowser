@@ -10,9 +10,9 @@ namespace SemanticKit.Parsers.File;
 // context: file, directory, ContextInfo, read
 public class SemanticDeclarationFileParser : IFileParser<ContextInfo>
 {
-    private readonly ISemanticDeclarationParser<ContextInfo> _parser;
+    private readonly ISemanticFileParser<ContextInfo> _parser;
 
-    public SemanticDeclarationFileParser(ISemanticDeclarationParser<ContextInfo> parser)
+    public SemanticDeclarationFileParser(ISemanticFileParser<ContextInfo> parser)
     {
         _parser = parser;
     }

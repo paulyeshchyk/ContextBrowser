@@ -16,7 +16,8 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Assembly;
 
-public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference>
+// context: roslyn, build
+public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference, RoslynSyntaxTreeWrapper, CSharpCompilation>
 {
     private readonly IAppLogger<AppLevel> _logger;
 
@@ -25,7 +26,8 @@ public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference>
         _logger = logger;
     }
 
-    public CSharpCompilation CreateCompilation(SemanticOptions options, IEnumerable<ISyntaxTreeWrapper> syntaxTrees, string name, IEnumerable<MetadataReference> referencesToLoad)
+    // context: roslyn, build
+    public CSharpCompilation CreateCompilation(SemanticOptions options, IEnumerable<RoslynSyntaxTreeWrapper> syntaxTrees, string name, IEnumerable<MetadataReference> referencesToLoad)
     {
         var usings = GetValidatedUsingsFromOptions(options);
         var compilationOptions = new CSharpCompilationOptions
@@ -35,16 +37,20 @@ public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference>
             usings: usings
         );
 
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation loading", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation building", LogLevelNode.Start);
+
         var compilation = CSharpCompilation.Create(name, options: compilationOptions)
                                            .AddSyntaxTrees(syntaxTrees.Select(st => st.Tree).Cast<SyntaxTree>())
                                            .AddReferences(referencesToLoad);
         LogLoadedReferences(compilation);
 
+        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+
         return compilation;
     }
 
-    private void LogLoadedReferences(CSharpCompilation compilation)
+    // context: roslyn, read
+    internal void LogLoadedReferences(CSharpCompilation compilation)
     {
         var references = compilation.References;
         foreach (var reference in references)

@@ -16,6 +16,7 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Assembly;
 
+// context: roslyn, read
 public class RoslynDiagnosticsInspector : ICompilationDiagnosticsInspector<CSharpCompilation>
 {
     private readonly IAppLogger<AppLevel> _logger;
@@ -25,6 +26,7 @@ public class RoslynDiagnosticsInspector : ICompilationDiagnosticsInspector<CShar
         _logger = logger;
     }
 
+    // context: roslyn, read
     public void LogAndFilterDiagnostics(CSharpCompilation compilation, CancellationToken cancellationToken)
     {
         var diagnostics = compilation.GetDiagnostics(cancellationToken);

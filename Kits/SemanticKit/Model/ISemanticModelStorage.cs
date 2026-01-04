@@ -3,20 +3,21 @@ using System.Collections.Generic;
 namespace SemanticKit.Model;
 
 // context: semantic, model
-public interface ISemanticModelStorage<ISyntaxTreeWrapper, TSemanticModel>
+public interface ISemanticModelStorage<TSyntaxTreeWrapper, TSemanticModel>
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
     // context: semantic, create
-    void Add(ISyntaxTreeWrapper syntaxTree, TSemanticModel? model);
+    void Add(TSyntaxTreeWrapper syntaxTree, TSemanticModel? model);
 
     // context: semantic, create
-    void AddRange(IEnumerable<KeyValuePair<ISyntaxTreeWrapper, TSemanticModel>> models);
+    void AddRange(IEnumerable<KeyValuePair<TSyntaxTreeWrapper, TSemanticModel>> models);
 
     // context: semantic, create
-    void Add(SemanticCompilationMap map);
+    void Add(SemanticCompilationMap<TSyntaxTreeWrapper> map);
 
     // context: semantic, read
-    TSemanticModel? GetModel(ISyntaxTreeWrapper syntaxTree);
+    TSemanticModel? GetModel(TSyntaxTreeWrapper syntaxTree);
 
     // context: semantic, read
-    IEnumerable<ISyntaxTreeWrapper> GetAllSyntaxTrees();
+    IEnumerable<TSyntaxTreeWrapper> GetAllSyntaxTrees();
 }

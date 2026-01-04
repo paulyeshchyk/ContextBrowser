@@ -1,0 +1,121 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ContextBrowserKit.Log.Options;
+using ContextBrowserKit.Options;
+using ContextKit.Model;
+using LoggerKit;
+using RoslynKit;
+using RoslynKit.Assembly;
+using RoslynKit.ContextInfoBuilder;
+using RoslynKit.Model.Meta;
+using RoslynKit.Phases;
+using RoslynKit.Phases.ContextInfoBuilder;
+using SemanticKit.Model;
+using SemanticKit.Model.Options;
+
+namespace RoslynKit.Assembly;
+
+// context: roslyn, read
+public class RoslynInvocationParser<TContext, TSyntaxTreeWrapper> : IInvocationParser<TContext>
+    where TContext : IContextWithReferences<TContext>
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper
+{
+    private readonly SemanticInvocationReferenceBuilder<TContext> _invocationReferenceBuilder;
+    private readonly IContextCollector<TContext> _collector;
+    private readonly ISemanticModelStorage<TSyntaxTreeWrapper, ISemanticModelWrapper> _treeModelStorage;
+    private readonly ISyntaxTreeWrapperBuilder<TSyntaxTreeWrapper> _syntaxTreeWrapperBuilder;
+    private readonly IAppLogger<AppLevel> _logger;
+
+    public RoslynInvocationParser(
+        IContextCollector<TContext> collector,
+        ISemanticModelStorage<TSyntaxTreeWrapper,
+        ISemanticModelWrapper> semanticTreeModelStorage,
+        ISyntaxTreeWrapperBuilder<TSyntaxTreeWrapper> syntaxTreeWrapperBuilder,
+        SemanticInvocationReferenceBuilder<TContext> invocationReferenceBuilder,
+        IAppLogger<AppLevel> logger)
+    {
+        _collector = collector;
+        _logger = logger;
+        _invocationReferenceBuilder = invocationReferenceBuilder;
+        _syntaxTreeWrapperBuilder = syntaxTreeWrapperBuilder;
+        _treeModelStorage = semanticTreeModelStorage;
+    }
+
+    // context: roslyn, read
+    public void ParseCode(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Parsing code: phase 2 - {filePath}");
+
+        // 1. Достаём дерево из файла
+        var syntaxTreeWrapper = _syntaxTreeWrapperBuilder.Build(code, filePath, cancellationToken);
+
+        // 2. Получаем сохранённую модель из хранилища
+        var semanticModel = _treeModelStorage.GetModel(syntaxTreeWrapper);
+        if (semanticModel == null)
+        {
+            _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Warn, $"[FAIL] SemanticModel not found for {filePath}");
+            return;
+        }
+
+        // 3. Обрабатываем все методы, зарегистрированные в коллекторе
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Building method references: {filePath}");
+        var theCollection = _collector.GetAll().Where(m => m.ElementType == ContextInfoElementType.method).ToList();
+        if (!theCollection.Any())
+        {
+            _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Err, $"[FAIL] No method references found in: {filePath}");
+            return;
+        }
+
+        // 4. Строим все связи
+        BuildReferences(filePath, theCollection.ToList(), options, cancellationToken);
+
+        _collector.MergeFakeItems();
+    }
+
+    // context: roslyn, syntax, read
+    internal void BuildReferences(string filePath, IEnumerable<TContext> theCollection, SemanticOptions options, CancellationToken cancellationToken)
+    {
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Building invocatons {filePath}", LogLevelNode.Start);
+        foreach (var method in theCollection)
+        {
+            _invocationReferenceBuilder.BuildReferences(method, options, cancellationToken);
+        }
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+    }
+
+    // context: roslyn, syntax, read
+    public Task<IEnumerable<TContext>> ParseFilesAsync(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, "Parsing files: phase 2", LogLevelNode.Start);
+
+        foreach (var file in filePaths)
+        {
+            ParseFile(file, options, cancellationToken);
+        }
+
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+
+        return Task.FromResult(_collector.GetAll());
+    }
+
+    // context: roslyn, read
+    public void ParseFile(string filePath, SemanticOptions options, CancellationToken cancellationToken)
+    {
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, $"Parsing file: phase 2 - {filePath}");
+
+        var code = File.ReadAllText(filePath);
+        ParseCode(code, filePath, options, cancellationToken);
+    }
+
+    // context: roslyn, build
+    public void RenewContextInfoList(IEnumerable<TContext> contextInfoList)
+    {
+        _collector.Renew(contextInfoList);
+    }
+}

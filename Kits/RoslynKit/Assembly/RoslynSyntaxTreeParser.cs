@@ -16,37 +16,25 @@ using SemanticKit.Model.Options;
 
 namespace RoslynKit.Assembly;
 
+// context: roslyn, build
 public class RoslynSyntaxTreeParser : ISyntaxTreeParser<RoslynSyntaxTreeWrapper>
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly ICodeInjector _codeInjector;
 
-    public RoslynSyntaxTreeParser(IAppLogger<AppLevel> logger)
+    public RoslynSyntaxTreeParser(IAppLogger<AppLevel> logger, ICodeInjector codeInjector)
     {
         _logger = logger;
+        _codeInjector = codeInjector;
     }
 
-    public async Task<string> ReadAndInjectPseudoCodeAsync(SemanticOptions options, string filePath, CancellationToken cancellationToken)
-    {
-        var code = await File.ReadAllTextAsync(filePath, cancellationToken);
-        if (!options.IncludePseudoCode)
-        {
-            return code;
-        }
-
-        if (!code.Contains("using System;", StringComparison.Ordinal))
-        {
-            // Вставим в самое начало, добавим отступ
-            code = "using System;\n" + code;
-        }
-        return code;
-    }
-
+    // context: roslyn, build
     public async Task<IEnumerable<RoslynSyntaxTreeWrapper>> ParseFilesToSyntaxTreesAsync(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken)
     {
         var treeCreationTasks = codeFiles.Select(async filePath =>
         {
             // Асинхронный I/O
-            string code = await ReadAndInjectPseudoCodeAsync(options, filePath, cancellationToken).ConfigureAwait(false);
+            string code = await _codeInjector.ReadAndInjectPseudoCodeAsync(options, filePath, cancellationToken).ConfigureAwait(false);
 
             // Синхронный CPU-bound парсинг
             var syntaxTree = CSharpSyntaxTree.ParseText(code, path: filePath, cancellationToken: cancellationToken);

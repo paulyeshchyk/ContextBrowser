@@ -7,15 +7,15 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Wrappers.Meta;
 
-public class RoslynInvocationExpressionWrapper : IInvocationNodeWrapper
+public class RoslynInvocationExpressionWrapper : IInvocationNodeWrapper<RoslynSyntaxTreeWrapper>
 {
     private readonly InvocationExpressionSyntax _invocation;
-    private readonly ISemanticInvocationResolver _semanticInvocationResolver;
+    private readonly ISemanticInvocationResolver<RoslynSyntaxTreeWrapper> _semanticInvocationResolver;
     private readonly IAppLogger<AppLevel> _logger;
 
     public object Expression => _invocation.Expression;
 
-    public RoslynInvocationExpressionWrapper(InvocationExpressionSyntax invocation, ISemanticInvocationResolver semanticInvocationResolver, IAppLogger<AppLevel> logger)
+    public RoslynInvocationExpressionWrapper(InvocationExpressionSyntax invocation, ISemanticInvocationResolver<RoslynSyntaxTreeWrapper> semanticInvocationResolver, IAppLogger<AppLevel> logger)
     {
         _invocation = invocation;
         _semanticInvocationResolver = semanticInvocationResolver;
@@ -28,13 +28,13 @@ public class RoslynInvocationExpressionWrapper : IInvocationNodeWrapper
         if (syntaxTreeWrapper == null)
         {
             _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Err, $"[MISS]: Tree was not provided for invocation [{_invocation}]");
-            return null;
+            return default;
         }
 
         return _semanticInvocationResolver.Resolve(syntaxTreeWrapper);
     }
 
-    public ISyntaxTreeWrapper BuildTree()
+    public RoslynSyntaxTreeWrapper BuildTree()
     {
         return new RoslynSyntaxTreeWrapper(_invocation.SyntaxTree);
     }

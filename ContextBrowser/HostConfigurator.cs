@@ -34,9 +34,7 @@ using RoslynKit.Converters;
 using RoslynKit.Model.Meta;
 using RoslynKit.Phases;
 using RoslynKit.Phases.ContextInfoBuilder;
-using RoslynKit.Phases.Invocations;
-using RoslynKit.Tree;
-using RoslynKit.Wrappers.Extractor;
+using RoslynKit.Phases.Syntax;
 using SemanticKit.Model;
 using TensorKit.Factories;
 using TensorKit.Model;
@@ -67,10 +65,10 @@ public class HostConfigurator
         // --- Службы, связанные с ContextInfo и анализом кода ---
 
         services.AddSingleton<IContextCollector<ContextInfo>, ContextInfoCollector<ContextInfo>>();
-        services.AddSingleton<ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper>, SemanticModelStorage>();
-        services.AddTransient<ISemanticTreeModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper>, SemanticTreeModelBuilder>();
+        services.AddSingleton<ISemanticModelStorage<RoslynSyntaxTreeWrapper, ISemanticModelWrapper>, SemanticModelStorage<RoslynSyntaxTreeWrapper>>();
+        services.AddTransient<ISemanticTreeModelBuilder<RoslynSyntaxTreeWrapper, ISemanticModelWrapper>, SemanticTreeModelBuilder<RoslynSyntaxTreeWrapper>>();
         services.AddSingleton<IContextFactory<ContextInfo>, ContextInfoFactory>();
-        services.AddTransient<ISyntaxTreeWrapperBuilder, RoslynSyntaxTreeWrapperBuilder>();
+        services.AddTransient<ISyntaxTreeWrapperBuilder<RoslynSyntaxTreeWrapper>, RoslynSyntaxTreeWrapperBuilder<RoslynSyntaxTreeWrapper>>();
 
         services.AddSingleton<IContextInfoIndexerProvider, ContextInfoIndexerProvider>();
         services.AddTransient<ICsvGenerator<DomainPerActionTensor>, CsvGenerator<DomainPerActionTensor>>();
@@ -95,25 +93,29 @@ public class HostConfigurator
         services.AddTransient<IContextInfoDtoConverter<ContextInfo, ISyntaxNodeWrapper>, ContextInfoDtoConverter<ContextInfo>>();
         // --- Code parsing
         services.AddTransient<ICodeParseService, CodeParseService>();
-        services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
-        services.AddTransient<ISemanticDeclarationParser<ContextInfo>, SemanticDeclarationParser<ContextInfo>>();
 
         // --- language selector
         // использует RoslynSemanticSyntaxRouterBuilder
         // будет использовать AngularSemanticSyntaxRouterBuilder
         services.AddTransient<ISemanticSyntaxRouterBuilderRegistry<ContextInfo>, SemanticSyntaxRouterBuilderRegistry<ContextInfo>>();
 
+        services.AddTransient<IAssemblyFetcher<MetadataReference>, RoslynAssemblyFetcher>();
+
         // --- Roslyn ---
-        services.AddTransient<ICompilationBuilder, RoslynCompilationBuilder>();
-        services.AddTransient<ISyntaxCompiler<MetadataReference>, RoslynSyntaxCompiler>();
+        services.AddTransient<IParsingOrchestrator, ParsingOrchestrator<RoslynSyntaxTreeWrapper>>();
+        services.AddTransient<ISemanticDeclarationParser<ContextInfo, RoslynSyntaxTreeWrapper>, RoslynSemanticDeclarationParser<ContextInfo>>();
+        services.AddTransient<ISemanticFileParser<ContextInfo>, SemanticFileParser<ContextInfo, RoslynSyntaxTreeWrapper>>();
+        services.AddTransient<ICompilationBuilder<RoslynSyntaxTreeWrapper>, RoslynCompilationBuilder>();
+        services.AddTransient<ISyntaxCompiler<MetadataReference, RoslynSyntaxTreeWrapper, CSharpCompilation>, RoslynSyntaxCompiler>();
+        services.AddTransient<ISemanticMapExtractor<RoslynSyntaxTreeWrapper>, RoslynCompilationMapBuilder>();
         services.AddTransient<ISyntaxTreeParser<RoslynSyntaxTreeWrapper>, RoslynSyntaxTreeParser>();
         services.AddTransient<ICompilationMapMapper<RoslynSyntaxTreeWrapper>, RoslynCompilationMapMapper>();
         services.AddTransient<ICompilationDiagnosticsInspector<CSharpCompilation>, RoslynDiagnosticsInspector>();
+        services.AddTransient<ICodeInjector, RoslynCodeInjector>();
 
-
-        services.AddTransient<ISemanticInvocationResolver, SemanticInvocationResolver>();
+        services.AddTransient<ISemanticInvocationResolver<RoslynSyntaxTreeWrapper>, RoslynSemanticInvocationResolver>();
         services.AddTransient<IInvocationSyntaxResolver, RoslynInvocationSyntaxExtractor>();
-        services.AddTransient<IReferenceParserFactory, RolsynReferenceParserFactory>();
+        services.AddTransient<IReferenceParserFactory<RoslynSyntaxTreeWrapper>, RoslynReferenceParserFactory<RoslynSyntaxTreeWrapper>>();
 
         services.AddTransient<ISemanticSyntaxRouterBuilder<ContextInfo>, RoslynSemanticSyntaxRouterBuilder<ContextInfo>>();
 

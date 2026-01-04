@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ContextKit.Model;
+using RoslynKit.Assembly;
 using RoslynKit.Phases;
+using RoslynKit.Phases.Syntax;
 using SemanticKit.Model;
 
 

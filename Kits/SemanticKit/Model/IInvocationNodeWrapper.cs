@@ -1,10 +1,11 @@
 ﻿namespace SemanticKit.Model;
 
-public interface IInvocationNodeWrapper
+public interface IInvocationNodeWrapper<TSyntaxTreeWrapper>
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
     ISemanticModelWrapper? GetSemanticModel();
 
-    ISyntaxTreeWrapper BuildTree();
+    TSyntaxTreeWrapper BuildTree();
 
     object Expression { get; }
 }

@@ -1,26 +1,7 @@
 ﻿namespace SemanticKit.Model;
 
-public interface ISemanticInvocationResolver
+public interface ISemanticInvocationResolver<TSyntaxTreeWrapper>
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
-    ISemanticModelWrapper? Resolve(ISyntaxTreeWrapper? syntaxTree);
-}
-
-//context: roslyn, read
-public class SemanticInvocationResolver : ISemanticInvocationResolver
-{
-    private readonly ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> _storage;
-
-    //context: roslyn, read
-    public SemanticInvocationResolver(ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> storage)
-    {
-        _storage = storage;
-    }
-
-    //context: roslyn, read
-    public ISemanticModelWrapper? Resolve(ISyntaxTreeWrapper? syntaxTree)
-    {
-        return syntaxTree == null
-            ? null
-            : _storage.GetModel(syntaxTree);
-    }
+    ISemanticModelWrapper? Resolve(TSyntaxTreeWrapper? syntaxTree);
 }

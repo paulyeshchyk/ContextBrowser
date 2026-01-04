@@ -8,38 +8,39 @@ using LoggerKit;
 namespace SemanticKit.Model;
 
 //context: roslyn, read, create, update, delete
-public class SemanticModelStorage : ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper>
+public class SemanticModelStorage<TSyntaxTreeWrapper> : ISemanticModelStorage<TSyntaxTreeWrapper, ISemanticModelWrapper>
+    where TSyntaxTreeWrapper: ISyntaxTreeWrapper
 {
-    private readonly LRUCache<string, CompilationMap> _cache;
+    private readonly LRUCache<string, CompilationMap<TSyntaxTreeWrapper>> _cache;
     private readonly IAppLogger<AppLevel> _logger;
 
     public SemanticModelStorage(IAppLogger<AppLevel> logger)
     {
         int capacity = 0;
-        _cache = new LRUCache<string, CompilationMap>(capacity);
+        _cache = new LRUCache<string, CompilationMap<TSyntaxTreeWrapper>>(capacity);
         _logger = logger;
     }
 
     public bool IsInfinite => _cache.IsInfinite;
 
-    public void Add(ISyntaxTreeWrapper tree, ISemanticModelWrapper? model)
+    public void Add(TSyntaxTreeWrapper tree, ISemanticModelWrapper? model)
     {
         if (!IsValid(tree, model, out var filePath))
             return;
 
-        _cache.Add(filePath, new CompilationMap(tree, model!));
+        _cache.Add(filePath, new CompilationMap<TSyntaxTreeWrapper>(tree, model!));
     }
 
-    public void AddRange(IEnumerable<CompilationMap> models)
+    public void AddRange(IEnumerable<CompilationMap<TSyntaxTreeWrapper>> models)
     {
         foreach (var map in models)
             Add(map.SyntaxTree, map.SemanticModel);
     }
 
-    public void Add(SemanticCompilationMap compilationMap)
+    public void Add(SemanticCompilationMap<TSyntaxTreeWrapper> compilationMap)
         => AddRange(compilationMap);
 
-    public ISemanticModelWrapper? GetModel(ISyntaxTreeWrapper tree)
+    public ISemanticModelWrapper? GetModel(TSyntaxTreeWrapper tree)
     {
         if (!IsValid(tree, null, out var filePath))
             return null;
@@ -47,12 +48,12 @@ public class SemanticModelStorage : ISemanticModelStorage<ISyntaxTreeWrapper, IS
         return _cache.TryGetValue(filePath, out var map) ? map?.SemanticModel : null;
     }
 
-    public IEnumerable<ISyntaxTreeWrapper> GetAllSyntaxTrees()
+    public IEnumerable<TSyntaxTreeWrapper> GetAllSyntaxTrees()
         => _cache.Values.Select(v => v.SyntaxTree);
 
     public void Flush() => _cache.Clear();
 
-    private bool IsValid(ISyntaxTreeWrapper? tree, ISemanticModelWrapper? model, out string filePath)
+    private bool IsValid(TSyntaxTreeWrapper? tree, ISemanticModelWrapper? model, out string filePath)
     {
         filePath = tree?.FilePath ?? string.Empty;
 
@@ -65,7 +66,7 @@ public class SemanticModelStorage : ISemanticModelStorage<ISyntaxTreeWrapper, IS
         return true;
     }
 
-    public void AddRange(IEnumerable<KeyValuePair<ISyntaxTreeWrapper, ISemanticModelWrapper>> models)
+    public void AddRange(IEnumerable<KeyValuePair<TSyntaxTreeWrapper, ISemanticModelWrapper>> models)
     {
         foreach (var model in models)
         {

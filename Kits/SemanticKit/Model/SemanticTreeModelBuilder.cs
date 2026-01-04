@@ -9,25 +9,35 @@ using SemanticKit.Model.Options;
 namespace SemanticKit.Model;
 
 // context: roslyn, build, contextInfo
-public class SemanticTreeModelBuilder : ISemanticTreeModelBuilder<ISyntaxTreeWrapper, ISemanticModelWrapper>
+public class SemanticTreeModelBuilder<TSyntaxTreeWrapper> : ISemanticTreeModelBuilder<TSyntaxTreeWrapper, ISemanticModelWrapper>
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
-    private readonly ICompilationBuilder _compilationBuilder;
+    private readonly ICompilationBuilder<TSyntaxTreeWrapper> _compilationBuilder;
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> _modelStorage;
-    private readonly ISyntaxTreeWrapperBuilder _treeWrapperBuilder;
+    private readonly ISemanticModelStorage<TSyntaxTreeWrapper, ISemanticModelWrapper> _modelStorage;
+    private readonly ISyntaxTreeWrapperBuilder<TSyntaxTreeWrapper> _treeWrapperBuilder;
+    private readonly ISemanticMapExtractor<TSyntaxTreeWrapper> _semanticMapBuilder;
 
-    public SemanticTreeModelBuilder(ICompilationBuilder compilationBuilder, ISemanticModelStorage<ISyntaxTreeWrapper, ISemanticModelWrapper> modelStorage, ISyntaxTreeWrapperBuilder treeWrapperBuilder, IAppLogger<AppLevel> logger)
+    public SemanticTreeModelBuilder(
+        ICompilationBuilder<TSyntaxTreeWrapper> compilationBuilder,
+        ISemanticModelStorage<TSyntaxTreeWrapper,
+        ISemanticModelWrapper> modelStorage,
+        ISyntaxTreeWrapperBuilder<TSyntaxTreeWrapper> treeWrapperBuilder,
+        IAppLogger<AppLevel> logger,
+        ISemanticMapExtractor<TSyntaxTreeWrapper> semanticMapBuilder)
     {
         _modelStorage = modelStorage;
         _treeWrapperBuilder = treeWrapperBuilder;
         _logger = logger;
         _compilationBuilder = compilationBuilder;
+        _semanticMapBuilder = semanticMapBuilder;
+
     }
 
     // context: roslyn, build, contextInfo
-    public async Task<SemanticCompilationMap> BuildCompilationMapAsync(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task<SemanticCompilationMap<TSyntaxTreeWrapper>> BuildCompilationMapAsync(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
     {
-        var compilationMap = await _compilationBuilder.CreateSemanticMapFromFilesAsync(options, codeFiles, cancellationToken);
+        var compilationMap = await _semanticMapBuilder.CreateSemanticMapFromFilesAsync(options, codeFiles, cancellationToken);
         _modelStorage.Add(compilationMap);
         return compilationMap;
     }
@@ -40,7 +50,7 @@ public class SemanticTreeModelBuilder : ISemanticTreeModelBuilder<ISyntaxTreeWra
     }
 
     // context: roslyn, build, contextInfo
-    internal SemanticCompilationView BuildCompilationView(ISyntaxTreeWrapper syntaxTreeWrapper, SemanticOptions options, CancellationToken cancellationToken)
+    internal SemanticCompilationView BuildCompilationView(TSyntaxTreeWrapper syntaxTreeWrapper, SemanticOptions options, CancellationToken cancellationToken)
     {
         var root = syntaxTreeWrapper.GetCompilationUnitRoot(cancellationToken);
 

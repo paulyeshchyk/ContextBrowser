@@ -4,6 +4,7 @@ using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using RoslynKit.Assembly;
 using RoslynKit.AWrappers;
 using RoslynKit.Signature.SignatureBuilder;
 using RoslynKit.Wrappers;
@@ -34,7 +35,7 @@ public class SymbolWrapperConverter : ISymbolWrapperConverter
         }
 
         var wrapper = new CSharpISymbolWrapper();
-        var symbol = CSharpSymbolLoader.LoadSymbol(syntax, semanticModel, _logger, cancellationToken);
+        var symbol = RoslynSymbolLoader.LoadSymbol(syntax, semanticModel, _logger, cancellationToken);
 
 #warning refactor this
         if (symbol == null)

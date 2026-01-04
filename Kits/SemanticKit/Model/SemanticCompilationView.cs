@@ -18,52 +18,54 @@ public record struct SemanticCompilationView(ISemanticModelWrapper model, ISynta
     }
 }
 
-public class SemanticCompilationMap : IEnumerable<CompilationMap>
+public class SemanticCompilationMap<TSyntaxTreeWrapper> : IEnumerable<CompilationMap<TSyntaxTreeWrapper>>
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
-    private readonly Dictionary<ISyntaxTreeWrapper, ISemanticModelWrapper> _data
+    private readonly Dictionary<TSyntaxTreeWrapper, ISemanticModelWrapper> _data
         = new();
 
     public SemanticCompilationMap()
     {
-        _data = new Dictionary<ISyntaxTreeWrapper, ISemanticModelWrapper>();
+        _data = new Dictionary<TSyntaxTreeWrapper, ISemanticModelWrapper>();
     }
 
-    public SemanticCompilationMap(IEnumerable<CompilationMap> maps)
+    public SemanticCompilationMap(IEnumerable<CompilationMap<TSyntaxTreeWrapper>> maps)
     {
         _data = maps.ToDictionary(
             map => map.SyntaxTree,
             map => map.SemanticModel);
     }
 
-    public void Add(ISyntaxTreeWrapper syntaxTree, ISemanticModelWrapper semanticModel)
+    public void Add(TSyntaxTreeWrapper syntaxTree, ISemanticModelWrapper semanticModel)
     {
         _data[syntaxTree] = semanticModel;
     }
 
-    public void Add(CompilationMap map)
+    public void Add(CompilationMap<TSyntaxTreeWrapper> map)
     {
         _data[map.SyntaxTree] = map.SemanticModel;
     }
 
-    public void AddRange(IEnumerable<CompilationMap> models)
+    public void AddRange(IEnumerable<CompilationMap<TSyntaxTreeWrapper>> models)
     {
         foreach (var m in models)
             _data[m.SyntaxTree] = m.SemanticModel;
     }
 
-    public ISemanticModelWrapper? Get(ISyntaxTreeWrapper syntaxTree)
+    public ISemanticModelWrapper? Get(TSyntaxTreeWrapper syntaxTree)
     {
         return _data.TryGetValue(syntaxTree, out var value) ? value : default;
     }
 
-    public IEnumerable<ISyntaxTreeWrapper> GetAllSyntaxTrees()
+    public IEnumerable<TSyntaxTreeWrapper> GetAllSyntaxTrees()
         => _data.Keys;
 
-    public IEnumerator<CompilationMap> GetEnumerator()
-        => _data.Select(kvp => new CompilationMap(kvp.Key, kvp.Value)).GetEnumerator();
+    public IEnumerator<CompilationMap<TSyntaxTreeWrapper>> GetEnumerator()
+        => _data.Select(kvp => new CompilationMap<TSyntaxTreeWrapper>(kvp.Key, kvp.Value)).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
 }
 
-public record CompilationMap(ISyntaxTreeWrapper SyntaxTree, ISemanticModelWrapper SemanticModel);
+public record CompilationMap<TSyntaxTreeWrapper>(TSyntaxTreeWrapper SyntaxTree, ISemanticModelWrapper SemanticModel)
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper;
