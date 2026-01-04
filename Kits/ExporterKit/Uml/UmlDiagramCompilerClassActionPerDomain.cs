@@ -6,12 +6,12 @@ using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
-using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
@@ -27,13 +27,15 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
     private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
     private readonly INamingProcessor _namingProcessor;
+    private readonly IUmlUrlBuilder _umlUrlBuilder;
 
-    public UmlDiagramCompilerClassActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
+    public UmlDiagramCompilerClassActionPerDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
         _namingProcessor = namingProcessor;
+        _umlUrlBuilder = umlUrlBuilder;
     }
 
     public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
@@ -78,7 +80,7 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
 
         foreach (var nsGroup in namespaces)
         {
-            var namespaceUrl = UmlUrlBuilder.BuildNamespaceUrl(nsGroup.Key);
+            var namespaceUrl = _umlUrlBuilder.BuildNamespaceUrl(nsGroup.Key);
             var package = new UmlPackage(nsGroup.Key.PadRight(maxLength), alias: nsGroup.Key.AlphanumericOnly(), url: namespaceUrl);
             diagram.Add(package);
 

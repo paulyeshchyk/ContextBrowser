@@ -6,7 +6,7 @@ using ContextKit.Model.Service;
 
 namespace GraphKit.Walkers;
 
-// context: build, Walker
+// context: build, Walker, graph
 // pattern: Visitor
 // pattern note: weak
 public class Walker<T>
@@ -23,7 +23,7 @@ public class Walker<T>
 
     protected bool CanAddToVisited(T item) => !Visited.Contains(item);
 
-    // context: update, Walker
+    // context: update, Walker, graph
     protected bool AddToVisited(T item, HashSet<T> visited)
     {
         if (!visited.Add(item))

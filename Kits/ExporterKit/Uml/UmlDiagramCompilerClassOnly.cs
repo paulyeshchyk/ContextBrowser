@@ -7,12 +7,12 @@ using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
 using LoggerKit;
 using TensorKit.Model;
-using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
@@ -26,13 +26,16 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
     private readonly INamingProcessor _namingProcessor;
+    private readonly IUmlUrlBuilder _umlUrlBuilder;
 
-    public UmlDiagramCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
+    public UmlDiagramCompilerClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
         _namingProcessor = namingProcessor;
+        _umlUrlBuilder = umlUrlBuilder;
+
     }
 
     public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
@@ -85,11 +88,11 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
 
-        var packageUrl = UmlUrlBuilder.BuildNamespaceUrl(contextInfo.Namespace);
+        var packageUrl = _umlUrlBuilder.BuildNamespaceUrl(contextInfo.Namespace);
         var package = new UmlPackage(contextInfo.Namespace, alias: contextInfo.Namespace.AlphanumericOnly(), url: packageUrl);
         diagram.Add(package);
 
-        var entityType = ContextInfoExt.ConvertToUmlEntityType(contextInfo.ElementType);
+        var entityType = contextInfo.ElementType.ConvertToUmlEntityType();
         var umlClass = new UmlEntity(entityType, contextInfo.Name, contextInfo.Name.AlphanumericOnly(), url: null);
         package.Add(umlClass);
 

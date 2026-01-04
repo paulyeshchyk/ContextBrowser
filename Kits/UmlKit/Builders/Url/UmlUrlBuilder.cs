@@ -1,14 +1,20 @@
 ﻿using System;
-using ContextBrowserKit.Extensions;
+using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
-using UmlKit.Builders.Model;
 
 namespace UmlKit.Builders.Url;
 
-public static class UmlUrlBuilder
+public class UmlUrlBuilder : IUmlUrlBuilder
 {
-    public static string? BuildContextInfoUrl(IContextInfo? contextInfo, INamingProcessor _namingProcessor)
+    private readonly INamingProcessor _namingProcessor;
+
+    public UmlUrlBuilder(INamingProcessor namingProcessor)
+    {
+        _namingProcessor = namingProcessor;
+    }
+
+    public string? BuildContextInfoUrl(IContextInfo? contextInfo)
     {
         if (contextInfo == null)
         {
@@ -27,14 +33,14 @@ public static class UmlUrlBuilder
         }
     }
 
-    public static string? BuildNamespaceUrl(string? nameSpace)
+    public string? BuildNamespaceUrl(string? nameSpace)
     {
         return string.IsNullOrWhiteSpace(nameSpace)
             ? null
-            : $"namespace_only_{nameSpace.AlphanumericOnly()}.html";
+            : _namingProcessor.NamespaceOnlyHtmlFilename(nameSpace);
     }
 
-    public static string? BuildDomainUrl(string? domain)
+    public string? BuildDomainUrl(string? domain)
     {
         long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -43,7 +49,7 @@ public static class UmlUrlBuilder
             : $"composite_domain_{domain}.html?v={timestamp}&t=MindmapTab";//.AlphanumericOnly()
     }
 
-    public static string? BuildActionUrl(string? action)
+    public string? BuildActionUrl(string? action)
     {
         long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 

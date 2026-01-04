@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
@@ -36,7 +35,7 @@ public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
     // context: ContextInfo, build, html
     public async Task CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- NamespaceOnly.Build ---", LogLevelNode.None));
+        _logger.WriteLogObject(AppLevel.P_Bld, new LogObject(LogLevel.Cntx, "--- NamespaceOnly.Build ---"));
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
@@ -52,7 +51,7 @@ public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
         var builder = new HtmlPageWithTabsNamespaceEntityBuilder<ContextInfoKeyContainerNamespace, TDataTensor>(
             dataset,
             tabbedPageBuilder,
-            (ns) => $"namespace_only_{ns.AlphanumericOnly()}.html",
+            (ns) => _namingProcessor.NamespaceOnlyHtmlFilename(ns),
             (ns) => $" Namespace {ns}");
         await builder.BuildAsync(cancellationToken).ConfigureAwait(false);
     }

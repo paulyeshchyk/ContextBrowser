@@ -4,6 +4,7 @@ using ContextBrowser.Services;
 using ContextBrowser.Services.ContextInfoProvider;
 using ContextBrowser.Services.Parsing;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData;
 using ContextKit.ContextData.Comment;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
@@ -36,6 +37,7 @@ using RoslynKit.Wrappers.Extractor;
 using SemanticKit.Model;
 using TensorKit.Factories;
 using TensorKit.Model;
+using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Compiler.Orchestrant;
 
@@ -176,6 +178,8 @@ public class HostConfigurator
         services.AddScoped<ICoverageValueExtractor, CoverageValueExtractor>();
 
         // --- Службы, связанные с генерацией UML ---
+
+        services.AddTransient<IUmlUrlBuilder, UmlUrlBuilder>();
 
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassActionPerDomain<DomainPerActionTensor>>();
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerNamespaceOnly<DomainPerActionTensor>>();

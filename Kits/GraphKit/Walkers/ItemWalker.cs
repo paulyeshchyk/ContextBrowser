@@ -4,7 +4,7 @@ using ContextKit.Model;
 
 namespace GraphKit.Walkers;
 
-// context: build, Walker
+// context: build, Walker, graph
 // pattern: Visitor
 // pattern note: weak
 public sealed class ItemWalker : Walker<ContextInfo>
@@ -15,18 +15,18 @@ public sealed class ItemWalker : Walker<ContextInfo>
 
     public delegate void ExportItem(ContextInfo item, ContextInfo descendant, ContextInfo? descendantDomainItem, string domain);
 
-    private readonly GetDescendantsFunction OnGetDescendants;
-    private readonly GetDomainItemsFunction OnGetDomainItems;
-    private readonly ExportItem OnExportItem;
+    private readonly GetDescendantsFunction _onGetDescendants;
+    private readonly GetDomainItemsFunction _onGetDomainItems;
+    private readonly ExportItem _onExportItem;
 
-    public ItemWalker(GetDescendantsFunction onGetDescendants, GetDomainItemsFunction onGetDomainItems, ExportItem onExportItem, Action<ContextInfo>? visitCallback = default) : base(visitCallback)
+    public ItemWalker(GetDescendantsFunction onGetDescendants, GetDomainItemsFunction onGetDomainItems, ExportItem onExportItem, Action<ContextInfo>? visitCallback = null) : base(visitCallback)
     {
-        OnGetDescendants = onGetDescendants;
-        OnGetDomainItems = onGetDomainItems;
-        OnExportItem = onExportItem;
+        _onGetDescendants = onGetDescendants;
+        _onGetDomainItems = onGetDomainItems;
+        _onExportItem = onExportItem;
     }
 
-    // context: build, Walker
+    // context: build, Walker, graph
     public void Walk(IEnumerable<ContextInfo> items, bool skipDescendants = false)
     {
         foreach (var item in items)
@@ -35,14 +35,14 @@ public sealed class ItemWalker : Walker<ContextInfo>
         }
     }
 
-    // context: build, Walker
+    // context: build, Walker, graph
     public void Walk(ContextInfo item, bool skipDescendants = false)
     {
         // Добавляем item и все его References в Visited
         if (!AddToVisited(item, Visited))
             return;
 
-        var descendants = OnGetDescendants.Invoke(item);
+        var descendants = _onGetDescendants.Invoke(item);
         foreach (var descendant in descendants)
         {
             // специально не проверяем Visited здесь
@@ -53,7 +53,7 @@ public sealed class ItemWalker : Walker<ContextInfo>
         }
     }
 
-    // context: build, share, Walker
+    // context: build, share, Walker, graph
     internal void TryExport(ContextInfo caller, ContextInfo callee)
     {
         var contexts = new HashSet<string>();
@@ -62,10 +62,10 @@ public sealed class ItemWalker : Walker<ContextInfo>
 
         foreach (var domain in contexts)
         {
-            var domainItems = OnGetDomainItems.Invoke(domain);
+            var domainItems = _onGetDomainItems.Invoke(domain);
             foreach (var itemForDomain in domainItems)
             {
-                OnExportItem(caller, callee, itemForDomain, domain);
+                _onExportItem(caller, callee, itemForDomain, domain);
 
                 if (!Visited.Contains(itemForDomain))
                     Walk(itemForDomain, true);

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit.Uml.Exporters;
@@ -24,14 +25,15 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
     private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
     private readonly INamingProcessor _namingProcessor;
+    private readonly IUmlUrlBuilder _umlUrlBuilder;
 
-    public UmlDiagramCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
+    public UmlDiagramCompilerNamespaceOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<TDataTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
         _namingProcessor = namingProcessor;
-
+        _umlUrlBuilder = umlUrlBuilder;
     }
 
     //context: uml, build
@@ -47,13 +49,14 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
         var namespaces = GetNamespaces(dataset).ToList();
         foreach (var nameSpace in namespaces)
         {
-            var classesList = GetClassesForNamespace(dataset)(nameSpace);
+            var classesList = GetClassesForNamespace(dataset)(nameSpace).ToList();
 
             UmlDiagramExporterClassDiagramNamespace.Export(diagramBuilderOptions: diagramBuilderOptions,
                                                                    exportOptions: exportOptions,
                                                                        nameSpace: nameSpace,
                                                                  namingProcessor: _namingProcessor,
-                                                                     classesList: classesList);
+                                                                     classesList: classesList,
+                                                                   umlUrlBuilder: _umlUrlBuilder);
         }
         return new Dictionary<object, bool>();
     }

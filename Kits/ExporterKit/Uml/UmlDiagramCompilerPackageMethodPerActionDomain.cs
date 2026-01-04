@@ -6,13 +6,13 @@ using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
-using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
@@ -28,13 +28,15 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
     private readonly INamingProcessor _namingProcessor;
+    private readonly IUmlUrlBuilder _umlUrlBuilder;
 
-    public UmlDiagramCompilerPackageMethodPerActionDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
+    public UmlDiagramCompilerPackageMethodPerActionDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
         _namingProcessor = namingProcessor;
+        _umlUrlBuilder = umlUrlBuilder;
     }
 
     //context: build, uml
@@ -47,16 +49,16 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
-        CompileDomainGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor);
-        CompileNoDomainGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor);
+        CompileDomainGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder);
+        CompileNoDomainGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder);
 
-        CompileActionGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor);
-        CompileNoActionGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor);
+        CompileActionGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder);
+        CompileNoActionGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder);
 
         return new Dictionary<object, bool>();
     }
 
-    private static void CompileActionGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor)
+    private static void CompileActionGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         var actionContexts = contextInfoDataset
             .SelectMany(cell => cell.Value.Select(context => (action: cell.Key.Action, context: context)))
@@ -68,24 +70,24 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
             var action = group.Key;
             var contexts = group.Select(item => item.context).Distinct().ToList();
 
-            if (contexts.Any())
+            if (contexts.Count != 0)
             {
-                BuildPackageAction(contexts, exportOptions, diagramBuilderOptions, namingProcessor, action, "?");
+                BuildPackageAction(contexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, action);
             }
         }
     }
 
-    private static void CompileNoActionGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor)
+    private static void CompileNoActionGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         var actionContexts = contextInfoDataset
                 .SelectMany(cell => cell.Value)
                 .Where(context => string.IsNullOrWhiteSpace(context.Action))
                 .ToList();
 
-        BuildPackageAction(actionContexts, exportOptions, diagramBuilderOptions, namingProcessor, "NoAction", "?");
+        BuildPackageAction(actionContexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, "NoAction");
     }
 
-    private static void CompileDomainGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor)
+    private static void CompileDomainGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)
@@ -98,15 +100,12 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
             var contexts = group.ToList(); // The list of all ContextInfo for that domain
             if (!string.IsNullOrWhiteSpace(domain))
             {
-                BuildPackageDomain(contexts, exportOptions, diagramBuilderOptions, namingProcessor, domain, "?");
-            }
-            else
-            {
+                BuildPackageDomain(contexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, domain);
             }
         }
     }
 
-    private static void CompileNoDomainGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor)
+    private static void CompileNoDomainGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)
@@ -116,29 +115,29 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         if (domainContexts.Any())
         {
             // Вместо группировки - просто передаём список
-            BuildPackageDomain(domainContexts, exportOptions, diagramBuilderOptions, namingProcessor, "NoDomain", "?");
+            BuildPackageDomain(domainContexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, "NoDomain");
         }
     }
 
-    private static void BuildPackageDomain(List<ContextInfo> items, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, string domain, string blockLabel)
+    private static void BuildPackageDomain(List<ContextInfo> items, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, string domain)
     {
         var fileName = namingProcessor.ClassDomainPumlFilename(domain);
         var actionOutputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, fileName);
         var actionDiagramId = namingProcessor.ClassDomainDiagramId(domain);
 
-        BuildPackageDiagram(diagramBuilderOptions, namingProcessor, blockLabel, items, actionOutputPath, actionDiagramId);
+        BuildPackageDiagram(diagramBuilderOptions, namingProcessor, umlUrlBuilder, items, actionOutputPath, actionDiagramId);
     }
 
-    private static void BuildPackageAction(List<ContextInfo> items, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, string action, string blockLabel)
+    private static void BuildPackageAction(List<ContextInfo> items, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, string action)
     {
         var puml = namingProcessor.ClassActionPumlFilename(action);
         var actionOutputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, puml);
         var actionDiagramId = namingProcessor.ClassActionDiagramId(action);
 
-        BuildPackageDiagram(diagramBuilderOptions, namingProcessor, blockLabel, items, actionOutputPath, actionDiagramId);
+        BuildPackageDiagram(diagramBuilderOptions, namingProcessor, umlUrlBuilder, items, actionOutputPath, actionDiagramId);
     }
 
-    private static void BuildPackageDiagram(DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, string blockLabel, List<ContextInfo> items, string outputPath, string diagramId)
+    private static void BuildPackageDiagram(DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, List<ContextInfo> items, string outputPath, string diagramId)
     {
         // Создаем новую диаграмму
         var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
@@ -169,7 +168,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
         foreach (var ns in namespaces)
         {
-            var namespaceUrl = UmlUrlBuilder.BuildNamespaceUrl(ns);
+            var namespaceUrl = umlUrlBuilder.BuildNamespaceUrl(ns);
             var umlPackage = new UmlPackage(ns, alias: ns.AlphanumericOnly(), url: namespaceUrl);
 
             var classesInNamespace = classes.Where(c => c.Namespace == ns).Distinct().ToList();

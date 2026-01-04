@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
 using ContextBrowserKit.Extensions;
 
 namespace ContextKit.ContextData.Naming;
@@ -35,4 +33,6 @@ public class NamingProcessor : INamingProcessor
     public string NamespaceOnlyDiagramId(string? nameSpace) => string.Format("namespace_only_{0}", nameSpace?.AlphanumericOnly());
 
     public string NamespaceOnlyPumlFilename(string? nameSpace) => string.Format("namespace_only_{0}.puml", nameSpace?.AlphanumericOnly());
+
+    public string NamespaceOnlyHtmlFilename(string? nameSpace) => string.Format("namespace_only_{0}.html", nameSpace?.AlphanumericOnly());
 }

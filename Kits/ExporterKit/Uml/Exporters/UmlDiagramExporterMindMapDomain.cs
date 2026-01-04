@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using GraphKit.Walkers;
 using TensorKit.Model;
-using UmlKit.Builders.Url;
 using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
 
@@ -14,7 +14,7 @@ namespace ExporterKit.Uml.Exporters;
 
 public class UmlDiagramExporterMindMapDomain
 {
-    public static void Export(IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, string domain, INamingProcessor namingProcessor)
+    public static void Export(IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, string domain, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         var fileName = namingProcessor.MindmapDomainPumlFilename(domain);
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, fileName);
@@ -27,13 +27,15 @@ public class UmlDiagramExporterMindMapDomain
         diagram.AddStyle(UmlStyle.Builder("green").BackgroundColor("#90de90").LineColor("#60d060").HyperlinkColor("#1d601d").HyperlinkUnderlineThickness(0).Build());
         diagram.AddStyle(UmlStyle.Builder("selected").BackgroundColor("#ff9500").LineColor("#d47c00").HyperlinkColor("#1f1510").HyperlinkUnderlineThickness(0).Build());
 
-        var node = new UmlNode(domain, url: UmlUrlBuilder.BuildDomainUrl(domain));
-        node.Stylename = "selected";
+        var node = new UmlNode(domain, url: umlUrlBuilder.BuildDomainUrl(domain))
+        {
+            Stylename = "selected"
+        };
 
-        IEnumerable<UmlNode> parentsForDomain = GetParentsForDomain(domain, dataset, namingProcessor, (item) => item.ElementType != ContextInfoElementType.method);
+        IEnumerable<UmlNode> parentsForDomain = GetParentsForDomain(domain, dataset, namingProcessor, umlUrlBuilder, (item) => item.ElementType != ContextInfoElementType.method);
         node.Parents.AddRange(parentsForDomain);
 
-        IEnumerable<UmlNode> childrenDomain = GetChildrenForDomain(domain, dataset, namingProcessor, (item) => item.ElementType != ContextInfoElementType.method);
+        IEnumerable<UmlNode> childrenDomain = GetChildrenForDomain(domain, dataset, namingProcessor, umlUrlBuilder, (item) => item.ElementType != ContextInfoElementType.method);
         node.Children.AddRange(childrenDomain);
 
         diagram.Add(node);
@@ -48,9 +50,10 @@ public class UmlDiagramExporterMindMapDomain
     /// <param name="domain">Домен, для которого ищутся дети.</param>
     /// <param name="dataset">Набор данных о контексте.</param>
     /// <param name="namingProcessor"></param>
+    /// <param name="umlUrlBuilder"></param>
     /// <param name="filter"></param>
     /// <returns>Коллекция узлов UmlNode, представляющих дочерние домены.</returns>
-    private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, Func<ContextInfo, bool> filter)
+    private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, Func<ContextInfo, bool> filter)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain)).DistinctBy(e => e.Identifier);
 
@@ -60,6 +63,7 @@ public class UmlDiagramExporterMindMapDomain
               createNode: UmlNodeTraverseBuilder.BuildMindNode,
                linkNodes: (parent, child) => parent.Children.Add(child),
          namingProcessor: namingProcessor,
+           umlUrlBuilder: umlUrlBuilder,
                   filter: filter);
     }
 
@@ -69,9 +73,10 @@ public class UmlDiagramExporterMindMapDomain
     /// <param name="domain">Домен, для которого ищутся родители.</param>
     /// <param name="dataset">Набор данных о контексте.</param>
     /// <param name="namingProcessor"></param>
+    /// <param name="umlUrlBuilder"></param>
     /// <param name="filter"></param>
     /// <returns>Коллекция узлов UmlNode, представляющих родительские домены.</returns>
-    private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, Func<ContextInfo, bool> filter)
+    private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, Func<ContextInfo, bool> filter)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain)).DistinctBy(e => e.Identifier);
 
@@ -81,6 +86,7 @@ public class UmlDiagramExporterMindMapDomain
               createNode: UmlNodeTraverseBuilder.BuildMindNode,
                linkNodes: (child, parent) => child.Parents.Add(parent),
          namingProcessor: namingProcessor,
+           umlUrlBuilder: umlUrlBuilder,
                   filter: filter);
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
+using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit.Uml.Exporters;
@@ -21,13 +22,17 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
     private readonly INamingProcessor _namingProcessor;
+    private readonly IUmlUrlBuilder _umlUrlBuilder;
 
-    public UmlDiagramCompilerMindmapAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
+
+    public UmlDiagramCompilerMindmapAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
         _namingProcessor = namingProcessor;
+        _umlUrlBuilder = umlUrlBuilder;
+
     }
 
     // context: build, uml
@@ -44,7 +49,7 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
 
         foreach (var action in distinctAction)
         {
-            UmlDiagramExporterMindMapAction.Export(dataset, exportOptions, diagramBuilderOptions, action, _namingProcessor);
+            UmlDiagramExporterMindMapAction.Export(dataset, exportOptions, diagramBuilderOptions, action, _namingProcessor, _umlUrlBuilder);
         }
 
         return new Dictionary<object, bool>();

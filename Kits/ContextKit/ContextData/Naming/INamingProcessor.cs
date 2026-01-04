@@ -1,5 +1,3 @@
-using System;
-
 namespace ContextKit.ContextData.Naming;
 
 public interface INamingProcessor
@@ -24,6 +22,7 @@ public interface INamingProcessor
 
     string NamespaceOnlyDiagramId(string? nameSpace);
     string NamespaceOnlyPumlFilename(string? nameSpace);
+    string NamespaceOnlyHtmlFilename(string? nameSpace);
 
     string MindmapClassOnlyPumlFilename(string? className);
 
