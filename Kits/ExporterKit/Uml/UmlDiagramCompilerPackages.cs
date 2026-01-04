@@ -36,7 +36,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
     }
 
     // context: build, uml
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile Packages");
 
@@ -74,7 +74,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
         diagram.WriteToFile(outputPath, writeOptons);
 
-        return new Dictionary<object, bool>();
+        return new Dictionary<ILabeledValue, bool>();
     }
 
     private static void AddPackage(IUmlUrlBuilder umlUrlBuilder, UmlDiagramClass diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> nsGroup)

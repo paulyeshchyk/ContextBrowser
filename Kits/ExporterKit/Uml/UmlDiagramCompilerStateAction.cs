@@ -42,7 +42,7 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
     }
 
     // context: uml, build
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile StateAction");
 
@@ -56,30 +56,28 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken).ConfigureAwait(false);
         var actions = mapper.GetRows().Distinct();
 
-        var renderedCache = new Dictionary<object, bool>();
-        foreach (var action in actions)
+        var tasks = actions.Select(async action =>
         {
-            var compileOptions = DiagramCompileOptionsFactory.ActionStateOptions(action);
-            renderedCache[action] = GenerateSingle(compileOptions, elements, contextClassifier, exportOptions, diagramBuilderOptions);
-        }
-        return renderedCache;
+            var compileOptions = DiagramCompileOptionsFactory.ActionStateOptions(action, _namingProcessor);
+            var res = await GenerateSingleAsync(compileOptions, elements, contextClassifier, exportOptions, diagramBuilderOptions, cancellationToken).ConfigureAwait(false);
+            return new { Action = action, Result = res };
+        });
+
+        var results = await Task.WhenAll(tasks);
+        return results.ToDictionary(item => item.Action, item => item.Result);
     }
 
     /// <summary>
     /// Компилирует диаграмму состояний.
     /// </summary>
-    protected bool GenerateSingle(IDiagramCompileOptions options, List<ContextInfo> allContexts, ITensorClassifierDomainPerActionContext<ContextInfo> contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    protected Task<bool> GenerateSingleAsync(IDiagramCompileOptions options, List<ContextInfo> allContexts, ITensorClassifierDomainPerActionContext<ContextInfo> contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling State {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
         var factory = new UmlTransitionStateFactory();
         var renderer = new SequenceDiagramRendererPlain<UmlState>(_logger, diagramBuilderOptions, factory, _namingProcessor);
         var generator = new SequenceDiagramGenerator<UmlState>(renderer, diagramBuilderOptions, _logger, factory);
         var diagramBuilder = ContextDiagramBuildersFactory.BuilderForType(diagramBuilderOptions.DiagramType, diagramBuilderOptions, _logger, _optionsStore);
 
         var compiler = new UmlStateDiagramCompilerAction(diagramBuilderOptions, diagramBuilder, exportOptions, generator, _logger);
-        var rendered = compiler.CompileAsync(options.MetaItem, options.DiagramId, options.OutputFileName, allContexts, CancellationToken.None);
-
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
-        return rendered;
+        return compiler.CompileAsync(options.MetaItem, options.DiagramId, options.OutputFileName, allContexts, cancellationToken);
     }
 }

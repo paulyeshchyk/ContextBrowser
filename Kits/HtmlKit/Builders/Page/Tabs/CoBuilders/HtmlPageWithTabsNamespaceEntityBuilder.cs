@@ -24,8 +24,9 @@ public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TTensor> : HtmlPageWith
     public override async Task BuildAsync(CancellationToken cancellationToken)
     {
         var entitiesList = _contextInfoDataset.GetAll()
-            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
-            .Cast<IContextInfo>();
+            .Where(c => c.ElementType.IsEntityDefinition())
+            .Cast<IContextInfo>()
+            .ToList();
 
         var namespaces = entitiesList.Select(e => e.Namespace).Distinct();
         foreach (var ns in namespaces)

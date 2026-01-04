@@ -36,7 +36,7 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
     }
 
     // context: build, uml
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap Action");
 
@@ -47,11 +47,17 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
         var elements = dataset.GetAll();
         var distinctAction = elements.Select(e => e.Action).Distinct().Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s!).Select(s => s.Split(';')).SelectMany(s => s).Distinct();
 
-        foreach (var action in distinctAction)
-        {
-            UmlDiagramExporterMindMapAction.Export(dataset, exportOptions, diagramBuilderOptions, action, _namingProcessor, _umlUrlBuilder);
-        }
+        var tasks = distinctAction.Select(async action => await UmlDiagramExporterMindMapAction.ExportAsync(
+            dataset,
+            exportOptions,
+            diagramBuilderOptions,
+            action,
+            _namingProcessor,
+            _umlUrlBuilder,
+            cancellationToken).ConfigureAwait(false)
+        );
+        await Task.WhenAll(tasks);
 
-        return new Dictionary<object, bool>();
+        return new Dictionary<ILabeledValue, bool>();
     }
 }

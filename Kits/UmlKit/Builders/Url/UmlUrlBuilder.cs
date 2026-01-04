@@ -9,10 +9,7 @@ public class UmlUrlBuilder : IUmlUrlBuilder
 {
     private readonly INamingProcessor _namingProcessor;
 
-    public UmlUrlBuilder(INamingProcessor namingProcessor)
-    {
-        _namingProcessor = namingProcessor;
-    }
+    public UmlUrlBuilder(INamingProcessor namingProcessor) => _namingProcessor = namingProcessor;
 
     public string? BuildContextInfoUrl(IContextInfo? contextInfo)
     {
@@ -20,17 +17,9 @@ public class UmlUrlBuilder : IUmlUrlBuilder
         {
             return null;
         }
-
-        if ((contextInfo.ElementType == ContextInfoElementType.@class)
-            || (contextInfo.ElementType == ContextInfoElementType.record)
-            || (contextInfo.ElementType == ContextInfoElementType.@struct))
-        {
-            return _namingProcessor.ClassOnlyHtmlFilename(contextInfo.FullName);
-        }
-        else
-        {
-            return null;
-        }
+        return contextInfo.ElementType.IsEntityDefinition()
+            ? _namingProcessor.ClassOnlyHtmlFilename(contextInfo.FullName)
+            : null;
     }
 
     public string? BuildNamespaceUrl(string? nameSpace)
@@ -43,18 +32,18 @@ public class UmlUrlBuilder : IUmlUrlBuilder
     public string? BuildDomainUrl(string? domain)
     {
         long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
+        var compositeDomainHtmlFile = _namingProcessor.CompositeDomainHtmlFile(domain);
         return string.IsNullOrWhiteSpace(domain)
             ? null
-            : $"composite_domain_{domain}.html?v={timestamp}&t=MindmapTab";//.AlphanumericOnly()
+            : $"{compositeDomainHtmlFile}?v={timestamp}&t=MindmapTab";//.AlphanumericOnly()
     }
 
     public string? BuildActionUrl(string? action)
     {
         long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
+        var compositeActionHtmlFile = _namingProcessor.CompositeActionHtmlFile(action);
         return string.IsNullOrWhiteSpace(action)
             ? null
-            : $"composite_action_{action}.html?v={timestamp}&t=MindmapTab";//.AlphanumericOnly()
+            : $"{compositeActionHtmlFile}?v={timestamp}&t=MindmapTab";//.AlphanumericOnly()
     }
 }

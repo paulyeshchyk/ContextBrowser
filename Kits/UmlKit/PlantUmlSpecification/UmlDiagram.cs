@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using UmlKit.Infrastructure.Options;
 
 namespace UmlKit.PlantUmlSpecification;
@@ -234,5 +236,11 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
     public void WriteToFile(string path, UmlWriteOptions writeOptions)
     {
         File.WriteAllText(path, ToUmlString(writeOptions));
+    }
+
+    // context: uml, share
+    public Task WriteToFileAsync(string path, UmlWriteOptions writeOptions, CancellationToken cancellationToken)
+    {
+        return File.WriteAllTextAsync(path, ToUmlString(writeOptions), cancellationToken);
     }
 }

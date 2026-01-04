@@ -23,7 +23,6 @@ namespace ExporterKit.Html.Pages.CoCompiler;
 public class HtmlPageCompilerActionOnly<TDataTensor> : IHtmlPageCompiler
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string SHtmlFilenameTemplate = "composite_action_{0}.html";
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoMapperFactory<TDataTensor> _contextInfoMapperContainer;
     private readonly IContextInfoDatasetProvider<TDataTensor> _datasetProvider;
@@ -73,7 +72,7 @@ public class HtmlPageCompilerActionOnly<TDataTensor> : IHtmlPageCompiler
         var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(
             contextInfoDataset: dataset,
             tabbedPageBuilder: tabbedPageBuilder,
-            onGetFileName: (cellData) => string.Format(SHtmlFilenameTemplate, cellData.ContextKey.Action),
+            onGetFileName: (cellData) => _namingProcessor.CompositeActionHtmlFile(cellData.ContextKey.Action),
             onGetTitle: (cellData) => string.Format("Action: {0} ", cellData.ContextKey.Action)
             );
         await builder.BuildAsync(cancellationToken).ConfigureAwait(false);

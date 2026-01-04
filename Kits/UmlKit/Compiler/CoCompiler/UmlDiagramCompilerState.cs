@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
@@ -70,8 +71,10 @@ public abstract class UmlDiagramCompilerState
     /// <param name="diagramFileName"></param>
     /// <param name="allContexts">Список всех контекстных элементов.</param>
     /// <param name="cancellationToken"></param>
-    public bool CompileAsync(string metaItem, string diagramId, string diagramFileName, List<ContextInfo> allContexts, CancellationToken cancellationToken)
+    public async Task<bool> CompileAsync(string metaItem, string diagramId, string diagramFileName, List<ContextInfo> allContexts, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile state for [{metaItem}]", LogLevelNode.Start);
 
         var diagram = new UmlDiagramState(_options, diagramId: diagramId);
@@ -89,7 +92,7 @@ public abstract class UmlDiagramCompilerState
             // Если рендеринг успешен, записываем диаграмму в файл
             var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
             var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, diagramFileName);
-            diagram.WriteToFile(path, writeOptons);
+            await diagram.WriteToFileAsync(path, writeOptons, cancellationToken);
         }
 
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);

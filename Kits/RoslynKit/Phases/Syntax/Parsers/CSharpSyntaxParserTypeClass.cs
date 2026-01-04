@@ -38,6 +38,7 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
 
     public override bool CanParseSyntax(object syntax) => syntax is ClassDeclarationSyntax;
 
+    // context: syntax, build
     public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (syntax is not ClassDeclarationSyntax typeSyntax)

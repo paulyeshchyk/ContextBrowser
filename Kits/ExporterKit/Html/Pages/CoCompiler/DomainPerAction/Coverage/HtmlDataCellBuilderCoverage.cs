@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Options;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using HtmlKit.Builders.Core;
 using HtmlKit.Builders.Page;
@@ -20,6 +21,7 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
     private readonly IHtmlCellStyleBuilder<TTensor> _cellStyleBuilder;
     private readonly IContextInfoDatasetProvider<TTensor> _datasetProvider;
     private readonly IKeyIndexBuilder<ContextInfo> _coverageIndexer;
+    private readonly INamingProcessor _namingProcessor;
 
     private Dictionary<object, ContextInfo>? _indexData;
 
@@ -28,7 +30,9 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
         IHtmlCellDataProducer<List<ContextInfo>, TTensor> contextInfoListDataProducer,
         IHtmlHrefManager<TTensor> hRefManager,
         IHtmlCellStyleBuilder<TTensor> cellStyleBuilder,
-        IKeyIndexBuilder<ContextInfo> coverageIndexer, IContextInfoDatasetProvider<TTensor> datasetProvider)
+        IKeyIndexBuilder<ContextInfo> coverageIndexer,
+        IContextInfoDatasetProvider<TTensor> datasetProvider,
+        INamingProcessor namingProcessor)
     {
         _coverageDataProducer = coverageDataProducer;
         _contextInfoListDataProducer = contextInfoListDataProducer;
@@ -38,6 +42,8 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
         _datasetProvider = datasetProvider;
 
         _coverageIndexer = coverageIndexer;
+        _namingProcessor = namingProcessor;
+
     }
 
     public async Task BuildDataCell(TextWriter textWriter, TTensor cell, HtmlTableOptions options, CancellationToken cancellationToken)
@@ -57,7 +63,7 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
 
         await HtmlBuilderFactory.HtmlBuilderTableCell.Data.WithAsync(textWriter, (token) =>
         {
-            var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, options) } };
+            var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, options, _namingProcessor) } };
             if (!string.IsNullOrWhiteSpace(styleValue))
                 attrs["style"] = styleValue;
             HtmlBuilderFactory.A.CellAsync(textWriter, attrs, cellData, isEncodable: false);

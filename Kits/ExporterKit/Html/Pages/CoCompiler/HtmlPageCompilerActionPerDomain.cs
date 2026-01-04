@@ -58,7 +58,7 @@ public class HtmlPageCompilerActionPerDomain<TDataTensor> : IHtmlPageCompiler
         var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(
             contextInfoDataset: dataset,
             tabbedPageBuilder: tabbedPageBuilder,
-            onGetFileName: (cellData) => $"composite_{cellData.ContextKey.Action}_{cellData.ContextKey.Domain}.html",
+            onGetFileName: (cellData) => _namingProcessor.CompositeActionDomainHtmlFile(cellData.ContextKey.Action, cellData.ContextKey.Domain),
             onGetTitle: (cellData) => $"Domain: {cellData.ContextKey.Domain}; Action: {cellData.ContextKey.Action}"
             );
         await builder.BuildAsync(cancellationToken).ConfigureAwait(false);

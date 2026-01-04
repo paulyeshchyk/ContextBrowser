@@ -38,7 +38,7 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
         _umlUrlBuilder = umlUrlBuilder;
     }
 
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassActionPerDomain");
 
@@ -46,16 +46,16 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
-        foreach (var element in dataset)
-        {
-            Build(element, exportOptions, diagramBuilderOptions);
-        }
-        return new Dictionary<object, bool>();
+        var tasks = dataset.Select(async e => await BuildAsync(e, exportOptions, diagramBuilderOptions, cancellationToken).ConfigureAwait(false));
+        await Task.WhenAll(tasks);
+        return new Dictionary<ILabeledValue, bool>();
     }
 
     //context: uml, build, heatmap, directory
-    internal void Build(KeyValuePair<TDataTensor, List<ContextInfo>> cell, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions)
+    internal async Task BuildAsync(KeyValuePair<TDataTensor, List<ContextInfo>> cell, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var contextInfoKey = cell.Key;
         var contextInfoList = cell.Value.Distinct().ToList();
 
@@ -108,7 +108,7 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: maxLength);
 
-        diagram.WriteToFile(fileName, writeOptons);
+        await diagram.WriteToFileAsync(fileName, writeOptons, cancellationToken).ConfigureAwait(false);
     }
 }
 

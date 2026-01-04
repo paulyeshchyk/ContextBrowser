@@ -37,7 +37,7 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
     }
 
     //context: uml, build
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile Namespaces only");
 
@@ -58,13 +58,13 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
                                                                      classesList: classesList,
                                                                    umlUrlBuilder: _umlUrlBuilder);
         }
-        return new Dictionary<object, bool>();
+        return new Dictionary<ILabeledValue, bool>();
     }
 
     private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
         return (nameSpace) => contextInfoDataSet.GetAll()
-            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record))
+            .Where(c => c.ElementType.IsEntityDefinition())
             .Where(c => c.Namespace == nameSpace);
     }
 

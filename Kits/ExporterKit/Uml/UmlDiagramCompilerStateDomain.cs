@@ -41,7 +41,7 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
     }
 
     // context: uml, build
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile StateDomain");
 
@@ -55,11 +55,11 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken).ConfigureAwait(false);
         var domains = mapper.GetCols().Distinct();
 
-        var renderedCache = new Dictionary<object, bool>();
+        var renderedCache = new Dictionary<ILabeledValue, bool>();
         foreach (var domain in domains)
         {
-            var compileOptions = DiagramCompileOptionsFactory.DomainStateCompileOptions(domain);
-            renderedCache[domain] = GenerateSingle(compileOptions, elements, contextClassifier, exportOptions, diagramBuilderOptions, cancellationToken);
+            var compileOptions = DiagramCompileOptionsFactory.DomainStateCompileOptions(domain,_namingProcessor);
+            renderedCache[domain] = await GenerateSingle(compileOptions, elements, contextClassifier, exportOptions, diagramBuilderOptions, cancellationToken);
         }
         return renderedCache;
     }
@@ -67,7 +67,7 @@ public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler
     /// <summary>
     /// Компилирует диаграмму состояний.
     /// </summary>
-    protected bool GenerateSingle(IDiagramCompileOptions options, List<ContextInfo> allContexts, ITensorClassifierDomainPerActionContext<ContextInfo> contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
+    protected Task<bool> GenerateSingle(IDiagramCompileOptions options, List<ContextInfo> allContexts, ITensorClassifierDomainPerActionContext<ContextInfo> contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling State {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
 

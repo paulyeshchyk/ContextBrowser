@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Extensions;
 using ContextBrowserKit.Options.Export;
 using ExporterKit;
@@ -11,7 +13,7 @@ namespace ExporterKit.Uml.Exporters;
 
 public class UmlDiagramExporter_4_links
 {
-    public static void Export(ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, HashSet<(string From, string To)> links)
+    public static async Task ExportAsync(ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, HashSet<(string From, string To)> links, CancellationToken cancellationToken)
     {
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.pumlExtra, "uml.4.links.puml");
         var diagramId = $"relation_{outputPath}".AlphanumericOnly();
@@ -25,7 +27,7 @@ public class UmlDiagramExporter_4_links
         }
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
-        diagram.WriteToFile(outputPath, writeOptons);
+        await diagram.WriteToFileAsync(outputPath, writeOptons, cancellationToken).ConfigureAwait(false);
     }
 
     private static void AddRelation(DiagramBuilderOptions options, UmlDiagramClass diagram, string from, string to)

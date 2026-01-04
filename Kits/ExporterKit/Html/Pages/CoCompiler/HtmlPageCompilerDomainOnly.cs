@@ -63,7 +63,7 @@ public class HtmlPageCompilerDomainOnly<TDataTensor> : IHtmlPageCompiler
         var builder = new HtmlPageWithTabsEntityListBuilder<ContextInfoKeyContainerTensor<TDataTensor>, TDataTensor>(
             contextInfoDataset: dataset,
             tabbedPageBuilder: tabbedPageBuilder,
-            onGetFileName: (cellData) => $"composite_domain_{cellData.ContextKey.Domain}.html",
+            onGetFileName: (cellData) => _namingProcessor.CompositeDomainHtmlFile(cellData.ContextKey.Domain),
             onGetTitle: (cellData) => $"Domain: {cellData.ContextKey.Domain}"
             );
         await builder.BuildAsync(cancellationToken);

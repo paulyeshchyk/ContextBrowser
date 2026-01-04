@@ -38,7 +38,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
 
     }
 
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassOnly");
 
@@ -47,18 +47,17 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
 
         var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
-        var classesOnly = contextInfoDataset.GetAll()
-            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.record) || (c.ElementType == ContextInfoElementType.@interface));
+        var classesOnly = contextInfoDataset.GetAll().Where(c => (c.ElementType.IsEntityDefinition()));
 
-        foreach (var context in classesOnly)
-        {
-            Build(contextInfo: context,
-                exportOptions: exportOptions,
-                      options: diagramBuilderOptions,
-                      methods: GetMethods(contextInfoDataset),
-                   properties: GetProperties(contextInfoDataset));
-        }
-        return new Dictionary<object, bool>();
+        var tasks = classesOnly.Select(async context => await BuildAsync(contextInfo: context,
+                                                                       exportOptions: exportOptions,
+                                                                             options: diagramBuilderOptions,
+                                                                             methods: GetMethods(contextInfoDataset),
+                                                                          properties: GetProperties(contextInfoDataset),
+                                                                   cancellationToken: cancellationToken)
+        );
+        await Task.WhenAll(tasks);
+        return new Dictionary<ILabeledValue, bool>();
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
@@ -74,7 +73,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     }
 
     //context: uml, build, heatmap, directory
-    internal void Build(IContextInfo contextInfo, ExportOptions exportOptions, DiagramBuilderOptions options, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties)
+    internal async Task BuildAsync(IContextInfo contextInfo, ExportOptions exportOptions, DiagramBuilderOptions options, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties, CancellationToken cancellationToken)
     {
         var fullName = $"{contextInfo.FullName.AlphanumericOnly()}";
         var pumlFileName = _namingProcessor.ClassOnlyPumlFilename(fullName);
@@ -111,6 +110,6 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         }
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
-        diagram.WriteToFile(fileName, writeOptons);
+        await diagram.WriteToFileAsync(fileName, writeOptons, cancellationToken);
     }
 }

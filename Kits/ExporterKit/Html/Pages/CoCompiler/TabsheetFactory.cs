@@ -334,11 +334,11 @@ public static class TabsheetFactory<TDataTensor>
 internal class SummaryMethodListDataModel<TDataTensor> : IMethodListDatamodel<TDataTensor>
     where TDataTensor : notnull
 {
-    private readonly INamingProcessor _namingProcessor;
+    // private readonly INamingProcessor _namingProcessor;
 
     public SummaryMethodListDataModel(INamingProcessor namingProcessor)
     {
-        _namingProcessor = namingProcessor;
+        // _namingProcessor = namingProcessor;
     }
 
     public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TDataTensor> dto) => dto.ContextInfoList.Where(c => c.ElementType == ContextInfoElementType.method);
@@ -347,11 +347,11 @@ internal class SummaryMethodListDataModel<TDataTensor> : IMethodListDatamodel<TD
 internal class ActionPerDomainMethodListDataModel<TTensor> : IMethodListDatamodel<TTensor>
     where TTensor : notnull
 {
-    private readonly INamingProcessor _namingProcessor;
+    // private readonly INamingProcessor _namingProcessor;
 
     public ActionPerDomainMethodListDataModel(INamingProcessor namingProcessor)
     {
-        _namingProcessor = namingProcessor;
+        // _namingProcessor = namingProcessor;
     }
 
 
@@ -361,11 +361,11 @@ internal class ActionPerDomainMethodListDataModel<TTensor> : IMethodListDatamode
 internal class DomainOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTensor>
     where TTensor : notnull
 {
-    private readonly INamingProcessor _namingProcessor;
+    // private readonly INamingProcessor _namingProcessor;
 
     public DomainOnlyMethodListDataModel(INamingProcessor namingProcessor)
     {
-        _namingProcessor = namingProcessor;
+        // _namingProcessor = namingProcessor;
     }
 
 
@@ -375,11 +375,11 @@ internal class DomainOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTe
 internal class ActionOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTensor>
     where TTensor : notnull
 {
-    private readonly INamingProcessor _namingProcessor;
+    // private readonly INamingProcessor _namingProcessor;
 
     public ActionOnlyMethodListDataModel(INamingProcessor namingProcessor)
     {
-        _namingProcessor = namingProcessor;
+        // _namingProcessor = namingProcessor;
     }
 
 
@@ -389,7 +389,6 @@ internal class ActionOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTe
 internal class NamespaceOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TTensor>, IPumlEnbeddedInjectionDatamodel<TTensor>
     where TTensor : notnull
 {
-    private const string PumlFilenameTemplate = "namespace_only_{0}.puml";
     private readonly INamingProcessor _namingProcessor;
 
     public NamespaceOnlyDatamodel(INamingProcessor namingProcessor)
@@ -400,7 +399,7 @@ internal class NamespaceOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TT
 
     protected override string GetPumlFileName(TTensor contextKey) => throw new NotImplementedException();
 
-    protected override string GetPumlFileName(string contextKey) => string.Format(PumlFilenameTemplate, contextKey.AlphanumericOnly());
+    protected override string GetPumlFileName(string contextKey) => _namingProcessor.NamespaceOnlyPumlFilename(contextKey);
 }
 
 internal class DomainSummaryComponentsDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
@@ -421,7 +420,6 @@ internal class DomainSummaryComponentsDatamodel<TDataTensor> : PumlEmbeddedConte
 internal class DomainOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "state_domain_{0}.puml";
     private readonly INamingProcessor _namingProcessor;
 
     public DomainOnlyStatesDatamodel(INamingProcessor namingProcessor)
@@ -429,7 +427,7 @@ internal class DomainOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
         _namingProcessor = namingProcessor;
     }
 
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.StateDomainPumlFilename(contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -467,7 +465,6 @@ internal class DomainOnlyMindmapDatamodel<TDataTensor> : PumlEmbeddedContentData
 internal class DomainOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "sequence_domain_{0}.puml";
     private readonly INamingProcessor _namingProcessor;
 
     public DomainOnlySequenceDatamodel(INamingProcessor namingProcessor)
@@ -476,7 +473,7 @@ internal class DomainOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDat
     }
 
 
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Domain);
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.SequenceDomainPumlFilename(contextKey.Domain);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -499,7 +496,6 @@ internal class DomainOnlyClassesDatamodel<TDataTensor> : PumlEmbeddedContentData
 internal class ActionOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "state_action_{0}.puml";
     private readonly INamingProcessor _namingProcessor;
 
     public ActionOnlyStatesDatamodel(INamingProcessor namingProcessor)
@@ -507,7 +503,7 @@ internal class ActionOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
         _namingProcessor = namingProcessor;
     }
 
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.StateActionPumlFilename(contextKey.Action);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }
@@ -515,7 +511,6 @@ internal class ActionOnlyStatesDatamodel<TDataTensor> : PumlEmbeddedContentDatam
 internal class ActionOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>
     where TDataTensor : IDomainPerActionTensor
 {
-    private const string PumlFilenameTemplate = "sequence_action_{0}.puml";
     private readonly INamingProcessor _namingProcessor;
 
     public ActionOnlySequenceDatamodel(INamingProcessor namingProcessor)
@@ -523,8 +518,7 @@ internal class ActionOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDat
         _namingProcessor = namingProcessor;
     }
 
-
-    protected override string GetPumlFileName(TDataTensor contextKey) => string.Format(PumlFilenameTemplate, contextKey.Action);
+    protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.SequenceActionPumlFilename(contextKey.Action);
 
     protected override string GetPumlFileName(string contextKey) => throw new NotImplementedException();
 }

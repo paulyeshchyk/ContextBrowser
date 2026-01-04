@@ -11,61 +11,54 @@ public class HtmlHrefManagerMethodList<TDataTensor> : IHtmlHrefManager<MethodLis
     where TDataTensor : notnull
 {
     private static readonly long TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-    private readonly INamingProcessor _namingProcessor;
 
-    public HtmlHrefManagerMethodList(INamingProcessor namingProcessor)
+    public string GetHrefCell(MethodListTensor<TDataTensor> cell, HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
-        _namingProcessor = namingProcessor;
-    }
-
-
-    public string GetHrefCell(MethodListTensor<TDataTensor> cell, HtmlTableOptions _options)
-    {
-        var htmlFilename = _namingProcessor.ClassOnlyHtmlFilename(cell.DomainPerActionTensorContainer.ContextKey.ToString());
+        var htmlFilename = namingProcessor.ClassOnlyHtmlFilename(cell.DomainPerActionTensorContainer.ContextKey.ToString());
         return $"{htmlFilename}?v={TimeStamp}";
     }
 
-    public string GetHrefColHeaderSummary(HtmlTableOptions _options)
+    public string GetHrefColHeaderSummary(HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
         return string.Empty;
     }
 
-    public string GetHrefColSummary(ILabeledValue key, HtmlTableOptions _options)
+    public string GetHrefColSummary(ILabeledValue key, HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
         return string.Empty;
     }
 
-    public string GetHRefRow(ILabeledValue key, HtmlTableOptions _options)
+    public string GetHRefRow(ILabeledValue key, HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
         return string.Empty;
     }
 
-    public string GetHRefRowHeader(ILabeledValue key, HtmlTableOptions _options)
+    public string GetHRefRowHeader(ILabeledValue key, HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
         return string.Empty;
     }
 
-    public string GetHrefRowHeaderSummary(HtmlTableOptions _options)
+    public string GetHrefRowHeaderSummary(HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
         return string.Empty;
     }
 
-    public string GetHrefRowHeaderSummaryAfterFirst(HtmlTableOptions _options)
+    public string GetHrefRowHeaderSummaryAfterFirst(HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
         return string.Empty;
     }
 
-    public string GetHRefRowMeta(ILabeledValue key, HtmlTableOptions _options)
+    public string GetHRefRowMeta(ILabeledValue key, HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
         return string.Empty;
     }
 
-    public string GetHrefRowSummary(ILabeledValue key, HtmlTableOptions _options)
+    public string GetHrefRowSummary(ILabeledValue key, HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
         return string.Empty;
     }
 
-    public string GetHrefSummary(HtmlTableOptions _options)
+    public string GetHrefSummary(HtmlTableOptions _options, INamingProcessor namingProcessor)
     {
         return string.Empty;
     }

@@ -56,7 +56,7 @@ public class IncomingTransitionBuilder : ITransitionBuilder
             var result = UmlTransitionDtoBuilder.CreateTransition(caller, callee, _logger, theKey);
             if (result != null)
             {
-                resultList.Add((UmlTransitionDto)result, theKey.ToString());
+                resultList.Add(result, theKey.ToString());
             }
         }
         _logger.WriteLog(AppLevel.P_Tran, LogLevel.Dbg, string.Empty, LogLevelNode.End);

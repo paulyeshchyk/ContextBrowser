@@ -32,7 +32,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
     }
 
     //context: build, uml, links
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassRelation");
 
@@ -45,7 +45,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
         var linkGenerator = new ContextInfoDataLinkGenerator(_optionsStore);
         var links = linkGenerator.Generate(contextInfoList);
 
-        UmlDiagramExporter_4_links.Export(exportOptions, diagramBuilderOptions, links);
-        return new Dictionary<object, bool>();
+        await UmlDiagramExporter_4_links.ExportAsync(exportOptions, diagramBuilderOptions, links, cancellationToken).ConfigureAwait(false);
+        return new Dictionary<ILabeledValue, bool>();
     }
 }

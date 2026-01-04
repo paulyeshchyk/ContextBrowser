@@ -55,6 +55,8 @@ public class CSharpSyntaxParserMethod<TContext>
 
         foreach (var (context, syntax) in buildItems)
         {
+#warning should add domains&action here from typecontext
+
             _triviaCommentParser.Parse(context, syntax, semanticModel, options, cancellationToken);
         }
     }

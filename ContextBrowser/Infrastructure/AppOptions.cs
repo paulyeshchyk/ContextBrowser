@@ -93,7 +93,7 @@ public class AppOptions
         //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
-        searchPaths: [".//..//..//..//"]);
+        searchPaths: [".//..//..//..//ContextSamples//ContextSamples//S2"]);
 
     [CommandLineArgument("export-options", "Параметры экспорта")]
     public ExportOptions Export { get; set; } = new(

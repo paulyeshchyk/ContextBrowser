@@ -32,13 +32,15 @@ public static class UmlDiagramMaxNamelengthExtractor
 
         if (typesToConsider.Contains(UmlDiagramMaxNamelengthExtractorType.@property) && allElements.Any())
         {
-            var l = allElements.Where(e => e.ContextInfo.ElementType == ContextInfoElementType.property);
-            if (l.Any())
+            var l = allElements.Where(e => e.ContextInfo.ElementType == ContextInfoElementType.property).ToList();
+            if (l.Count != 0)
             {
                 lengths.Add(l.Max(m => m.ContextInfo.Name.Length));
             }
         }
-        return lengths.Any() ? lengths.Max() : 0;
+        return lengths.Count != 0
+            ? lengths.Max()
+            : 0;
     }
 
     public static int Extract(IEnumerable<IContextInfo> allElements, HashSet<UmlDiagramMaxNamelengthExtractorType> typesToConsider)
@@ -52,8 +54,8 @@ public static class UmlDiagramMaxNamelengthExtractor
 
         if (typesToConsider.Contains(UmlDiagramMaxNamelengthExtractorType.@entity) && allElements.Any())
         {
-            var l = allElements.Where(e => e.ElementType == ContextInfoElementType.@record || e.ElementType == ContextInfoElementType.@class || e.ElementType == ContextInfoElementType.@struct);
-            if (l.Any())
+            var l = allElements.Where(e => e.ElementType.IsEntityDefinition()).ToList();
+            if (l.Count != 0)
             {
                 lengths.Add(l.Max(e => e.Name.Length));
             }
@@ -70,7 +72,7 @@ public static class UmlDiagramMaxNamelengthExtractor
 
         if (typesToConsider.Contains(UmlDiagramMaxNamelengthExtractorType.@property) && allElements.Any())
         {
-            var l = allElements.Where(e => e.ElementType == ContextInfoElementType.property);
+            var l = allElements.Where(e => e.ElementType == ContextInfoElementType.property).ToList();
             if (l.Any())
             {
                 lengths.Add(l.Max(m => m.Name.Length));

@@ -48,19 +48,19 @@ public class ParsingOrchestrator : IParsingOrchestrator
     // context: parsing, build
     public async Task<IEnumerable<ContextInfo>> ParseAsync(CancellationToken cancellationToken)
     {
-        var result = await _contextInfoCacheService.GetOrParseAndCacheAsync(
-            ParsingJobAsync,
-            _relationManager.ConvertToContextInfoAsync,
-            cancellationToken).ConfigureAwait(false);
+        var result = await _contextInfoCacheService.GetOrParseAndCacheAsync
+        (
+                      parseJob: ParsingJobAsync,
+            onRelationCallback: _relationManager.ConvertToContextInfoAsync,
+             cancellationToken: cancellationToken
+        ).ConfigureAwait(false);
 
-        var orchestratedContextsAsync = result.ToList();
-        if (orchestratedContextsAsync.Count != 0)
+        if (!result.Any())
         {
-            return orchestratedContextsAsync;
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, "Context list is empty");
+            return [];
         }
-
-        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, "Context list is empty");
-        return [];
+        return result;
     }
 
     // context: parsing, build

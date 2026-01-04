@@ -23,7 +23,7 @@ public class HtmlPageWithTabsEntityBuilder<TDto, TTensor> : HtmlPageWithTabsBuil
     public override async Task BuildAsync(CancellationToken cancellationToken)
     {
         var entitiesList = _contextInfoDataset.GetAll()
-            .Where(c => (c.ElementType == ContextInfoElementType.@class) || (c.ElementType == ContextInfoElementType.@struct) || (c.ElementType == ContextInfoElementType.@record) || (c.ElementType == ContextInfoElementType.@interface))
+            .Where(c => c.ElementType.IsEntityDefinition())
             .Cast<IContextInfo>();
 
         foreach (var contextInfoItem in entitiesList)

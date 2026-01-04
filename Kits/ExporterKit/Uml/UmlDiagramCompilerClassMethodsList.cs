@@ -33,7 +33,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
     }
 
     // context: build, uml, links
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassMethodList");
 
@@ -70,9 +70,9 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
         }
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
-        diagram.WriteToFile(outputPath, writeOptons);
+        await diagram.WriteToFileAsync(outputPath, writeOptons, cancellationToken);
 
-        return new Dictionary<object, bool>();
+        return new Dictionary<ILabeledValue, bool>();
     }
 
     private static void AddTransitionState(UmlDiagramClass diagram, ContextInfo method, ContextInfo callee)

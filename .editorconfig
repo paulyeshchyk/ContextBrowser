@@ -60,7 +60,7 @@ dotnet_diagnostic.CS0579.severity = warning
 dotnet_diagnostic.CS8130.severity = warning
 
 ##unused method
-dotnet_diagnostic.CRR0026.severity = none
+dotnet_diagnostic.CRR0026.severity = suggestion
 
 dotnet_diagnostic.CRR0029.severity = none
 dotnet_diagnostic.CRR0030.severity = suggestion
@@ -299,7 +299,7 @@ csharp_style_var_when_type_is_apparent = false:silent
 
 # Expression-bodied members
 csharp_style_expression_bodied_accessors = true:silent
-csharp_style_expression_bodied_constructors = false:silent
+csharp_style_expression_bodied_constructors = true:silent
 csharp_style_expression_bodied_indexers = true:silent
 csharp_style_expression_bodied_lambdas = true:suggestion
 csharp_style_expression_bodied_local_functions = false:silent
@@ -334,7 +334,7 @@ csharp_style_prefer_index_operator = true:suggestion
 csharp_style_prefer_range_operator = true:suggestion
 csharp_style_throw_expression = true:suggestion
 csharp_style_unused_value_assignment_preference = discard_variable:suggestion
-csharp_style_unused_value_expression_statement_preference = discard_variable:silent
+csharp_style_unused_value_expression_statement_preference = discard_variable:suggestion
 
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:silent

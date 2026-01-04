@@ -40,7 +40,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
     }
 
     //context: build, uml
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile PackageMethodPerAction");
 
@@ -48,96 +48,96 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
+        var taskList = new List<Task?>();
+        taskList.AddRange(CompileDomainGroupAsync(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder, cancellationToken));
+        taskList.Add(CompileNoDomainGroupAsync(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder, cancellationToken));
 
-        CompileDomainGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder);
-        CompileNoDomainGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder);
+        taskList.AddRange(CompileActionGroupAsync(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder, cancellationToken));
+        taskList.Add(CompileNoActionGroupAsync(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder, cancellationToken));
 
-        CompileActionGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder);
-        CompileNoActionGroup(dataset, exportOptions, diagramBuilderOptions, _namingProcessor, _umlUrlBuilder);
-
-        return new Dictionary<object, bool>();
+        await Task.WhenAll(taskList.Where(t => t != null).Cast<Task>());
+        return new Dictionary<ILabeledValue, bool>();
     }
 
-    private static void CompileActionGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
+    private static IEnumerable<Task?> CompileActionGroupAsync(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, CancellationToken cancellationToken)
     {
         var actionContexts = contextInfoDataset
             .SelectMany(cell => cell.Value.Select(context => (action: cell.Key.Action, context: context)))
             .GroupBy(item => item.action)
             .Where(group => !string.IsNullOrWhiteSpace(group.Key));
 
-        foreach (var group in actionContexts)
+        return actionContexts.Select(group =>
         {
             var action = group.Key;
             var contexts = group.Select(item => item.context).Distinct().ToList();
 
-            if (contexts.Count != 0)
-            {
-                BuildPackageAction(contexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, action);
-            }
-        }
+            if (contexts.Count == 0)
+                return null;
+            return BuildPackageActionAsync(contexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, action, cancellationToken);
+        });
     }
 
-    private static void CompileNoActionGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
+    private static Task CompileNoActionGroupAsync(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, CancellationToken cancellationToken)
     {
         var actionContexts = contextInfoDataset
                 .SelectMany(cell => cell.Value)
                 .Where(context => string.IsNullOrWhiteSpace(context.Action))
                 .ToList();
 
-        BuildPackageAction(actionContexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, "NoAction");
+        return BuildPackageActionAsync(actionContexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, "NoAction", cancellationToken);
     }
 
-    private static void CompileDomainGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
+    private static IEnumerable<Task> CompileDomainGroupAsync(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, CancellationToken cancellationToken)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)
-            .GroupBy(context => context.Domains.FirstOrDefault())
-            .Where(group => group.Key != null);
+            .SelectMany(context => context.Domains, (context, domain) => new { Domain = domain, Context = context }) // Разворачиваем ContextInfo по всем его доменам
+            .Where(item => !string.IsNullOrWhiteSpace(item.Domain))
+            .GroupBy(item => item.Domain);
 
-        foreach (var group in domainContexts)
+        return domainContexts.Select(group =>
         {
-            var domain = group.Key; // The unique domain string
-            var contexts = group.ToList(); // The list of all ContextInfo for that domain
-            if (!string.IsNullOrWhiteSpace(domain))
-            {
-                BuildPackageDomain(contexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, domain);
-            }
-        }
+            var domain = group.Key;
+
+            var contexts = group.Select(item => item.Context).Distinct().ToList();
+
+            return BuildPackageDomainAsync(contexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, domain, cancellationToken);
+        });
     }
 
-    private static void CompileNoDomainGroup(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
+    private static Task? CompileNoDomainGroupAsync(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, CancellationToken cancellationToken)
     {
         var domainContexts = contextInfoDataset
             .SelectMany(cell => cell.Value)
-            .Where(context => !context.Domains.Any())
+            .Where(context => context.Domains.Count == 0)
             .ToList();
 
-        if (domainContexts.Any())
-        {
-            // Вместо группировки - просто передаём список
-            BuildPackageDomain(domainContexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, "NoDomain");
-        }
+        if (domainContexts.Count == 0)
+            return null;
+
+        // Вместо группировки - просто передаём список
+        return BuildPackageDomainAsync(domainContexts, exportOptions, diagramBuilderOptions, namingProcessor, umlUrlBuilder, "NoDomain", cancellationToken);
     }
 
-    private static void BuildPackageDomain(List<ContextInfo> items, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, string domain)
+    private static Task BuildPackageDomainAsync(List<ContextInfo> items, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, string domain, CancellationToken cancellationToken)
     {
         var fileName = namingProcessor.ClassDomainPumlFilename(domain);
         var actionOutputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, fileName);
         var actionDiagramId = namingProcessor.ClassDomainDiagramId(domain);
 
-        BuildPackageDiagram(diagramBuilderOptions, namingProcessor, umlUrlBuilder, items, actionOutputPath, actionDiagramId);
+        return BuildPackageDiagramAsync(diagramBuilderOptions, namingProcessor, umlUrlBuilder, items, actionOutputPath, actionDiagramId, cancellationToken);
     }
 
-    private static void BuildPackageAction(List<ContextInfo> items, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, string action)
+    private static Task BuildPackageActionAsync(List<ContextInfo> items, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, string action, CancellationToken cancellationToken)
     {
         var puml = namingProcessor.ClassActionPumlFilename(action);
         var actionOutputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, puml);
         var actionDiagramId = namingProcessor.ClassActionDiagramId(action);
 
-        BuildPackageDiagram(diagramBuilderOptions, namingProcessor, umlUrlBuilder, items, actionOutputPath, actionDiagramId);
+        return BuildPackageDiagramAsync(diagramBuilderOptions, namingProcessor, umlUrlBuilder, items, actionOutputPath, actionDiagramId, cancellationToken);
     }
 
-    private static void BuildPackageDiagram(DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, List<ContextInfo> items, string outputPath, string diagramId)
+    private static Task BuildPackageDiagramAsync(DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, List<ContextInfo> items, string outputPath, string diagramId, CancellationToken cancellationToken)
     {
         // Создаем новую диаграмму
         var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
@@ -203,6 +203,6 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(ns => ns.AlphanumericOnly())));
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
-        diagram.WriteToFile(outputPath, writeOptons);
+        return diagram.WriteToFileAsync(outputPath, writeOptons, cancellationToken);
     }
 }

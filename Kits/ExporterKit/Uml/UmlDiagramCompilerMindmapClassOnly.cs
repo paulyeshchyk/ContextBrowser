@@ -35,7 +35,7 @@ public class UmlDiagramCompilerMindmapClassOnly : IUmlDiagramCompiler
     }
 
     // context: build, uml
-    public async Task<Dictionary<object, bool>> CompileAsync(CancellationToken cancellationToken)
+    public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap Action");
 
@@ -51,6 +51,6 @@ public class UmlDiagramCompilerMindmapClassOnly : IUmlDiagramCompiler
             UmlDiagramExporterMindMapClassOnly.Export(dataset, exportOptions, diagramBuilderOptions, classItem, _namingProcessor, _umlUrlBuilder);
         }
 
-        return new Dictionary<object, bool>();
+        return new Dictionary<ILabeledValue, bool>();
     }
 }

@@ -2,34 +2,54 @@ namespace ContextKit.ContextData.Naming;
 
 public interface INamingProcessor
 {
-    string ClassActionPumlFilename(string action);
-    string ClassActionDiagramId(string action);
-
-    string ClassDomainPumlFilename(string domain);
-    string ClassDomainDiagramId(string domain);
-
-    string ClassActionDomainPumlFilename(string action, string domain);
     string ClassActionDomainDiagramId(string action, string domain);
     string ClassActionDomainDiagramTitle(string action, string domain);
+    string ClassActionDomainPumlFilename(string action, string domain);
+    string ClassActionDomainPageLink(string action, string domain);
+    string ClassActionDomainHtmlFilename(string action, string domain);
 
-    string ClassOnlyHtmlFilename(string? className);
-    string ClassOnlyPumlFilename(string? className);
+    string ClassActionDiagramId(string action);
+    string ClassActionPumlFilename(string action);
+
+    string ClassDomainDiagramId(string domain);
+    string ClassDomainPumlFilename(string domain);
+
     string ClassOnlyDiagramId(string? className);
     string ClassOnlyDiagramTitle(string? className);
+    string ClassOnlyHtmlFilename(string? className);
+    string ClassOnlyPumlFilename(string? className);
 
-    string CompositeDomainPageLink(string? domain);
+    string CompositeActionDomainPageLink(string? action, string domain);
+
+    string CompositeActionDomainHtmlFile(string? action, string? domain);
+
+    string CompositeActionHtmlFile(string? action);
     string CompositeActionPageLink(string? action);
 
-    string NamespaceOnlyDiagramId(string? nameSpace);
-    string NamespaceOnlyPumlFilename(string? nameSpace);
-    string NamespaceOnlyHtmlFilename(string? nameSpace);
+    string CompositeDomainHtmlFile(string? domain);
+    string CompositeDomainPageLink(string? domain);
+
+    string MindmapActionDiagramId(string? action);
+    string MindmapActionPumlFilename(string? action);
 
     string MindmapClassOnlyPumlFilename(string? className);
 
-    string MindmapActionPumlFilename(string? action);
-    string MindmapActionDiagramId(string? action);
-
-    string MindmapDomainPumlFilename(string? domain);
     string MindmapDomainDiagramId(string? domain);
+    string MindmapDomainPumlFilename(string? domain);
 
+    string NamespaceOnlyDiagramId(string? nameSpace);
+    string NamespaceOnlyHtmlFilename(string? nameSpace);
+    string NamespaceOnlyPumlFilename(string? nameSpace);
+
+    string SequenceActionDiagramId(string? action);
+    string SequenceActionPumlFilename(string? action);
+
+    string SequenceDomainDiagramId(string? domain);
+    string SequenceDomainPumlFilename(string? domain);
+
+    string StateActionDiagramId(string? action);
+    string StateActionPumlFilename(string? action);
+
+    string StateDomainDiagramId(string? domain);
+    string StateDomainPumlFilename(string? domain);
 }
