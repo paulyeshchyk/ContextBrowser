@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;
@@ -19,119 +20,61 @@ namespace RoslynKit.Assembly;
 public class RoslynCompilationBuilder : ICompilationBuilder
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly ISyntaxCompiler<MetadataReference> _compiler;
+    private readonly ISyntaxTreeParser<RoslynSyntaxTreeWrapper> _syntaxTreeParser;
+    private readonly ICompilationMapMapper<RoslynSyntaxTreeWrapper> _compilationMapMapper;
+    private readonly ICompilationDiagnosticsInspector<CSharpCompilation> _diagnosticsInspector;
 
-    public RoslynCompilationBuilder(IAppLogger<AppLevel> logger)
+    public RoslynCompilationBuilder(IAppLogger<AppLevel> logger, ISyntaxCompiler<MetadataReference> compiler, ISyntaxTreeParser<RoslynSyntaxTreeWrapper> syntaxTreeParser, ICompilationMapMapper<RoslynSyntaxTreeWrapper> compilationMapMapper, ICompilationDiagnosticsInspector<CSharpCompilation> diagnosticsInspector)
     {
         _logger = logger;
+        _compiler = compiler;
+        _syntaxTreeParser = syntaxTreeParser;
+        _compilationMapMapper = compilationMapMapper;
+        _diagnosticsInspector = diagnosticsInspector;
     }
 
     // context: roslyn, build
-    public SemanticCompilationMap BuildCompilationMap(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken = default)
-    {
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Build compilation map", LogLevelNode.Start);
-
-        // 1. Читаем все файлы и создаём деревья с путями
-        var syntaxTrees = codeFiles
-            .Select(filePath => CSharpSyntaxTree.ParseText(PsoudoCodeInject(options, filePath), path: filePath, cancellationToken: cancellationToken))
-            .Select(t => new RoslynSyntaxTreeWrapper(t))
-            .ToList();
-
-        // 2. Создаём единый Compilation
-        var compilation = BuildCompilation(options, syntaxTrees, options.CustomAssembliesPaths);
-
-        // 3. Формируем модель для каждого дерева
-        var result = BuildSemanticCompilationMap(syntaxTrees, compilation);
-
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Build compilation map", LogLevelNode.End);
-
-        return result;
-    }
-
-    private SemanticCompilationMap BuildSemanticCompilationMap(List<RoslynSyntaxTreeWrapper> syntaxTrees, ICompilationWrapper compilation)
-    {
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation map building", LogLevelNode.Start);
-        var result = new SemanticCompilationMap();
-        foreach (var tree in syntaxTrees)
-        {
-            var compilationMap = BuildCompilationMap(compilation, tree);
-            result.Add(compilationMap);
-        }
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation map build done", LogLevelNode.End);
-        return result;
-    }
-
-    private CompilationMap BuildCompilationMap(ICompilationWrapper compilation, RoslynSyntaxTreeWrapper tree)
-    {
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Compilation map building for: {tree.FilePath}");
-        var model = compilation.GetSemanticModel(tree);
-        var compilationMap = new CompilationMap(tree, model);
-        return compilationMap;
-    }
-
-    // context: roslyn, build
-    public ICompilationWrapper BuildCompilation(SemanticOptions options, IEnumerable<ISyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name = "Parser")
+    public ICompilationWrapper Build(SemanticOptions options, IEnumerable<ISyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name, CancellationToken cancellationToken)
     {
         var referencesToLoad = RoslynAssemblyFetcher.Fetch(options.SemanticFilters, _logger);
-        var usings = GetValidatedUsingsFromOptions(options);
-        var compilationOptions = new CSharpCompilationOptions
-        (
-            OutputKind.DynamicallyLinkedLibrary,
-            nullableContextOptions: NullableContextOptions.Enable,
-            usings: usings);
 
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation loading", LogLevelNode.Start);
-        var compilation = CSharpCompilation.Create(name, options: compilationOptions)
-                    .AddSyntaxTrees(syntaxTrees.Select(st => st.Tree).Cast<SyntaxTree>())
-                    .AddReferences(referencesToLoad);
+        var compilation = _compiler.CreateCompilation(options, syntaxTrees, name, referencesToLoad);
 
-        var references = compilation.References;
-        foreach (var reference in references)
-        {
-            _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Loaded reference: {reference.Display}");
-        }
+        _diagnosticsInspector.LogAndFilterDiagnostics(compilation, cancellationToken);
 
-        var diagnostics = compilation.GetDiagnostics().ToList();
-        var diagnosticErrors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
-        foreach (var diagnostic in diagnosticErrors)
-        {
-            _logger.WriteLog(AppLevel.R_Dll, LogLevel.Err, $"Diagnostics: {diagnostic}");
-        }
-
-        var diagnosticWarnings = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning);
-        foreach (var diagnostic in diagnosticWarnings)
-        {
-            _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Diagnostics: {diagnostic}");
-        }
         _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation loaded", LogLevelNode.End);
 
         return new RoslynCompilationWrapper(compilation);
     }
 
-    private static string[] GetValidatedUsingsFromOptions(SemanticOptions options)
+    // context: roslyn, build
+    public async Task<SemanticCompilationMap> CreateSemanticMapFromFilesAsync(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken)
     {
-        string[] sDefaultUsing = ["System"];
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Build compilation map", LogLevelNode.Start);
 
-        var result = string.IsNullOrWhiteSpace(options.GlobalUsings)
-            ? sDefaultUsing
-            : options.GlobalUsings.Split(";").Select(s => s.Trim()).ToArray();
-        return (result.Length == 0)
-            ? sDefaultUsing
-            : result;
+        var result = await CreateSyntaxTreesAndMapAsync(options, codeFiles, cancellationToken).ConfigureAwait(false);
+
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Build compilation map", LogLevelNode.End);
+        return result;
     }
 
-    private static string PsoudoCodeInject(SemanticOptions options, string filePath)
+    // context: roslyn, build
+    public Task<SemanticCompilationMap> CreateSemanticMapFromFilesAsync(SemanticOptions options, string filePath, CancellationToken cancellationToken)
     {
-        var code = File.ReadAllText(filePath);
-        if (!options.IncludePseudoCode)
-        {
-            return code;
-        }
+        var codeFiles = new[] { filePath };
 
-        if (!code.Contains("using System;", StringComparison.Ordinal))
-        {
-            // Вставим в самое начало, добавим отступ
-            code = "using System;\n" + code;
-        }
-        return code;
+        return CreateSemanticMapFromFilesAsync(options, codeFiles, cancellationToken);
+    }
+
+    internal async Task<SemanticCompilationMap> CreateSyntaxTreesAndMapAsync(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken)
+    {
+        var syntaxTrees = await _syntaxTreeParser.ParseFilesToSyntaxTreesAsync(options, codeFiles, cancellationToken);
+
+        var compilation = Build(options, syntaxTrees, options.CustomAssembliesPaths, "Parser", cancellationToken);
+
+        var result = _compilationMapMapper.MapSemanticModelToCompilationMap(syntaxTrees, compilation);
+
+        return result;
     }
 }

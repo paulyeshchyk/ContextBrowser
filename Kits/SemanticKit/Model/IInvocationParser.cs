@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextKit.Model;
 using SemanticKit.Model.Options;
 
@@ -12,7 +13,7 @@ public interface IInvocationParser<TContext>
 
     void ParseFile(string filePath, SemanticOptions options, CancellationToken cancellationToken);
 
-    IEnumerable<TContext> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken);
+    Task<IEnumerable<TContext>> ParseFilesAsync(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken);
 
     void RenewContextInfoList(IEnumerable<TContext> contextInfoList);
 }

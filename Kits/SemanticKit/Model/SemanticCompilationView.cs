@@ -23,6 +23,18 @@ public class SemanticCompilationMap : IEnumerable<CompilationMap>
     private readonly Dictionary<ISyntaxTreeWrapper, ISemanticModelWrapper> _data
         = new();
 
+    public SemanticCompilationMap()
+    {
+        _data = new Dictionary<ISyntaxTreeWrapper, ISemanticModelWrapper>();
+    }
+
+    public SemanticCompilationMap(IEnumerable<CompilationMap> maps)
+    {
+        _data = maps.ToDictionary(
+            map => map.SyntaxTree,
+            map => map.SemanticModel);
+    }
+
     public void Add(ISyntaxTreeWrapper syntaxTree, ISemanticModelWrapper semanticModel)
     {
         _data[syntaxTree] = semanticModel;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextKit.Model;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
@@ -17,9 +18,9 @@ public class ReferenceFileParser : IFileParser<ContextInfo>
     }
 
     // context: file, directory, syntax, ContextInfo, read
-    public IEnumerable<ContextInfo> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken ct)
+    public Task<IEnumerable<ContextInfo>> ParseFilesAsync(string[] filePaths, SemanticOptions options, CancellationToken ct)
     {
-        return _parser.ParseFiles(filePaths, options, ct);
+        return _parser.ParseFilesAsync(filePaths, options, ct);
     }
 
     // context: file, directory, ContextInfo, read

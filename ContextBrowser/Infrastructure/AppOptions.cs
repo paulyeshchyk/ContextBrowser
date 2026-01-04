@@ -84,7 +84,7 @@ public class AppOptions
 
     [CommandLineArgument("import-options", "Параметры импорта")]
     public ImportOptions Import { get; set; } = new(
-        exclude: "**/obj/**;**/*Tests*/**;**/Resources.Designer.cs;",
+        exclude: "**/obj/**;**/*Tests*/**;",
         fileExtensions: ".cs",
 
         //".//..//..//..//"

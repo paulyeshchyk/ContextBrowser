@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -81,7 +82,7 @@ public class RoslynInvocationParser<TContext> : IInvocationParser<TContext>
     }
 
     // context: roslyn, syntax, read
-    public IEnumerable<TContext> ParseFiles(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
+    public Task<IEnumerable<TContext>> ParseFilesAsync(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -94,7 +95,7 @@ public class RoslynInvocationParser<TContext> : IInvocationParser<TContext>
 
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, string.Empty, LogLevelNode.End);
 
-        return _collector.GetAll();
+        return Task.FromResult(_collector.GetAll());
     }
 
     // context: roslyn, read

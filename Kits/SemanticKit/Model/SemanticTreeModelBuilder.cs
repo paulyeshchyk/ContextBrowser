@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using LoggerKit;
 using SemanticKit.Model.Options;
@@ -24,9 +25,9 @@ public class SemanticTreeModelBuilder : ISemanticTreeModelBuilder<ISyntaxTreeWra
     }
 
     // context: roslyn, build, contextInfo
-    public SemanticCompilationMap BuildCompilationMap(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task<SemanticCompilationMap> BuildCompilationMapAsync(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
     {
-        var compilationMap = _compilationBuilder.BuildCompilationMap(options, codeFiles, cancellationToken);
+        var compilationMap = await _compilationBuilder.CreateSemanticMapFromFilesAsync(options, codeFiles, cancellationToken);
         _modelStorage.Add(compilationMap);
         return compilationMap;
     }
@@ -50,7 +51,7 @@ public class SemanticTreeModelBuilder : ISemanticTreeModelBuilder<ISyntaxTreeWra
             // Добавляем текущий syntaxTree во временный список всех деревьев
             var allSyntaxTrees = _modelStorage.GetAllSyntaxTrees().Concat([syntaxTreeWrapper]).Distinct();
 
-            var compilationWrapper = _compilationBuilder.BuildCompilation(options, allSyntaxTrees, options.CustomAssembliesPaths, "Parser");
+            var compilationWrapper = _compilationBuilder.Build(options, allSyntaxTrees, options.CustomAssembliesPaths, "Parser", cancellationToken);
             var themodel = compilationWrapper.GetSemanticModel(syntaxTreeWrapper);
 
             _modelStorage.Add(syntaxTreeWrapper, themodel);

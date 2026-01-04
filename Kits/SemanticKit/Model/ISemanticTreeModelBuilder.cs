@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using SemanticKit.Model.Options;
 
 namespace SemanticKit.Model;
@@ -13,5 +14,5 @@ public interface ISemanticTreeModelBuilder<TSyntaxTree, TSemanticModel>
     public SemanticCompilationView BuildCompilationView(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken);
 
     // context: semantic, build
-    public SemanticCompilationMap BuildCompilationMap(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken);
+    public Task<SemanticCompilationMap> BuildCompilationMapAsync(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken);
 }

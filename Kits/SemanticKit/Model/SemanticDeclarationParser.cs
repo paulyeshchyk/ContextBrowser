@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -37,7 +38,7 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
     }
 
     // context: semantic, build
-    public IEnumerable<TContext> ParseFiles(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task<IEnumerable<TContext>> ParseFilesAsync(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -51,11 +52,11 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Parsing files", LogLevelNode.Start);
 
-        var compilationMap = _semanticModelBuilder.BuildCompilationMap(codeFiles, options, cancellationToken);
-        foreach (var mapItem in compilationMap)
-        {
-            ParseDeclarations(semanticRouter, options, mapItem, cancellationToken);
-        }
+        //собираем все компиляции
+        var compilationMap = await _semanticModelBuilder.BuildCompilationMapAsync(codeFiles, options, cancellationToken).ConfigureAwait(false);
+
+        var tasks = compilationMap.Select(async mapItem => await ParseDeclarations(semanticRouter, options, mapItem, cancellationToken).ConfigureAwait(false));
+        await Task.WhenAll(tasks);
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
@@ -67,7 +68,7 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
     {
     }
 
-    internal void ParseDeclarations(ISemanticSyntaxRouter<TContext> router, SemanticOptions options, CompilationMap mapItem, CancellationToken cancellationToken)
+    internal Task ParseDeclarations(ISemanticSyntaxRouter<TContext> router, SemanticOptions options, CompilationMap mapItem, CancellationToken cancellationToken)
     {
         var tree = mapItem.SyntaxTree;
         var model = mapItem.SemanticModel;
@@ -78,7 +79,7 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
 
         var availableSyntaxies = tree.GetAvailableSyntaxies(options, cancellationToken).ToList();
 
-        if (availableSyntaxies.Any())
+        if (availableSyntaxies.Count != 0)
         {
             router.Route(availableSyntaxies, model, options, cancellationToken);
         }
@@ -88,5 +89,6 @@ public class SemanticDeclarationParser<TContext> : ISemanticDeclarationParser<TC
         }
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        return Task.CompletedTask;
     }
 }

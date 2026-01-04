@@ -18,14 +18,19 @@ public sealed class FileParserPipeline : IFileParserPipeline<ContextInfo>
     }
 
     // context: file, directory, ContextInfo, read
-    public Task<IEnumerable<ContextInfo>> ParseAsync(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ContextInfo>> ParseAsync(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
     {
-        var result = new List<ContextInfo>();
+        var result = Enumerable.Empty<ContextInfo>();
+
         foreach (var parser in _parsers.OrderBy(p => p.Key).Select(p => p.Value))
         {
-            parser.RenewContextInfoList(result);
-            result = parser.ParseFiles(filePaths, options, cancellationToken).ToList();
+            parser.RenewContextInfoList(result.ToList());
+
+            result = await parser.ParseFilesAsync(filePaths, options, cancellationToken).ConfigureAwait(false);
+
+            cancellationToken.ThrowIfCancellationRequested();
         }
-        return Task.FromResult((IEnumerable<ContextInfo>)result);
+
+        return result;
     }
 }

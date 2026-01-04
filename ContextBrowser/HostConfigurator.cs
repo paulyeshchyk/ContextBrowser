@@ -25,10 +25,13 @@ using HtmlKit.Helpers;
 using HtmlKit.Matrix;
 using LoggerKit;
 using LoggerKit.Model;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using RoslynKit.Assembly;
 using RoslynKit.Converters;
+using RoslynKit.Model.Meta;
 using RoslynKit.Phases;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Invocations;
@@ -89,7 +92,7 @@ public class HostConfigurator
         services.AddSingleton<IContextInfoMapperProvider<DomainPerActionTensor>, ContextInfoMappingProvider<DomainPerActionTensor>>();
         services.AddSingleton<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>, ContextInfo2DMap<DomainPerActionTensor, ContextInfo>>();
         services.AddTransient<IContextInfoMapperFactory<DomainPerActionTensor>, ContextInfoMapperFactory<DomainPerActionTensor>>();
-        services.AddTransient<IContextInfoDtoConverter<ContextInfo, ISyntaxNodeWrapper>,ContextInfoDtoConverter<ContextInfo>>();
+        services.AddTransient<IContextInfoDtoConverter<ContextInfo, ISyntaxNodeWrapper>, ContextInfoDtoConverter<ContextInfo>>();
         // --- Code parsing
         services.AddTransient<ICodeParseService, CodeParseService>();
         services.AddTransient<IParsingOrchestrator, ParsingOrchestrator>();
@@ -102,6 +105,12 @@ public class HostConfigurator
 
         // --- Roslyn ---
         services.AddTransient<ICompilationBuilder, RoslynCompilationBuilder>();
+        services.AddTransient<ISyntaxCompiler<MetadataReference>, RoslynSyntaxCompiler>();
+        services.AddTransient<ISyntaxTreeParser<RoslynSyntaxTreeWrapper>, RoslynSyntaxTreeParser>();
+        services.AddTransient<ICompilationMapMapper<RoslynSyntaxTreeWrapper>, RoslynCompilationMapMapper>();
+        services.AddTransient<ICompilationDiagnosticsInspector<CSharpCompilation>, RoslynDiagnosticsInspector>();
+
+
         services.AddTransient<ISemanticInvocationResolver, SemanticInvocationResolver>();
         services.AddTransient<IInvocationSyntaxResolver, RoslynInvocationSyntaxExtractor>();
         services.AddTransient<IReferenceParserFactory, RolsynReferenceParserFactory>();
