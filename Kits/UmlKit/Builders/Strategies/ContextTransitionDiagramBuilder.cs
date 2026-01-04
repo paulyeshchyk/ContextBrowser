@@ -32,7 +32,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     // context: builder, transition
     public GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts)
     {
-        if (!allContexts.Any())
+        if (allContexts.Count == 0)
         {
             _logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, $"[CACHE]: No contexts provided for {metaItem}");
             return null;
@@ -91,7 +91,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     {
         var allTransitions = new GrouppedSortedTransitionList();
 
-        if (!_transitionBuilders.Any())
+        if (_transitionBuilders.Count == 0)
         {
             _logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, $"Build Domain [{metaItem}] - no transition builders provided for domain");
             return allTransitions;

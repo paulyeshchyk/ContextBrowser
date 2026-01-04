@@ -37,4 +37,6 @@ public interface IContextDataContainerDomainPerAction
     string? Action { get; set; }
 
     HashSet<string> Domains { get; }
+
+    void MergeDomains(IEnumerable<string> externalDomains);
 }

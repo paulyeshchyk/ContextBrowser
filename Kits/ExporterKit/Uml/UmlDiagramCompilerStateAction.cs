@@ -59,8 +59,8 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
         var tasks = actions.Select(async action =>
         {
             var compileOptions = DiagramCompileOptionsFactory.ActionStateOptions(action, _namingProcessor);
-            var res = await GenerateSingleAsync(compileOptions, elements, contextClassifier, exportOptions, diagramBuilderOptions, cancellationToken).ConfigureAwait(false);
-            return new { Action = action, Result = res };
+            var wasCompiled = await GenerateSingleAsync(compileOptions, elements, contextClassifier, exportOptions, diagramBuilderOptions, cancellationToken).ConfigureAwait(false);
+            return new { Action = action, Result = wasCompiled };
         });
 
         var results = await Task.WhenAll(tasks);

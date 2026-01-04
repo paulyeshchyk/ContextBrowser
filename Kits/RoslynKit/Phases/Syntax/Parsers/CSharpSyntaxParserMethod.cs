@@ -32,7 +32,7 @@ public class CSharpSyntaxParserMethod<TContext>
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
     }
 
-    //context: roslyn, build
+    //context: roslyn, build, ContextInfo
     public void ParseMethodSyntax(MemberDeclarationSyntax availableSyntax, ISemanticModelWrapper semanticModel, TContext typeContext, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (availableSyntax is not TypeDeclarationSyntax typeSyntax)
@@ -52,13 +52,13 @@ public class CSharpSyntaxParserMethod<TContext>
         }
 
         var buildItems = ParseMethodSyntax(typeContext, methodDeclarationSyntaxies, semanticModel, cancellationToken);
-
+        var extraDomains = new List<string>();
         foreach (var (context, syntax) in buildItems)
         {
-#warning should add domains&action here from typecontext
-
             _triviaCommentParser.Parse(context, syntax, semanticModel, options, cancellationToken);
+            extraDomains.AddRange(context.Domains);
         }
+        typeContext.MergeDomains(extraDomains);
     }
 
     public List<(TContext context, MethodDeclarationSyntax syntax)> ParseMethodSyntax(TContext parent, IEnumerable<MethodDeclarationSyntax> methods, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)

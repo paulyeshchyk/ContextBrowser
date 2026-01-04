@@ -68,6 +68,14 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public virtual bool Equals(ContextInfo? obj) => obj is ContextInfo other && FullName.Equals(other.FullName);
 
+    public void MergeDomains(IEnumerable<string> externalDomains)
+    {
+        foreach (var externalDomain in externalDomains)
+        {
+            Domains.Add(externalDomain);
+        }
+    }
+
     public ContextInfo(
         ContextInfoElementType elementType,
         string identifier,

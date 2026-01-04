@@ -29,7 +29,7 @@ public class UmlTransitionDtoBuilder
         return CreateTransitionFromMethodCall(caller, callee, logger, parentUid);
     }
 
-    private static UmlTransitionDto CreateTransitionFromMethodCall(ContextInfo caller, ContextInfo callee, IAppLogger<AppLevel> logger, string? parentUid)
+    public static UmlTransitionDto CreateTransitionFromMethodCall(ContextInfo caller, ContextInfo callee, IAppLogger<AppLevel> logger, string? parentUid)
     {
         var callerInfo = ExtractParticipantInfo(caller);
         var calleeInfo = ExtractParticipantInfo(callee);

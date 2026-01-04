@@ -84,7 +84,7 @@ public class AppOptions
 
     [CommandLineArgument("import-options", "Параметры импорта")]
     public ImportOptions Import { get; set; } = new(
-        exclude: "**/obj/**;**/*Tests*/**",
+        exclude: "**/obj/**;**/*Tests*/**;**/Resources.Designer.cs;",
         fileExtensions: ".cs",
 
         //".//..//..//..//"
@@ -93,7 +93,7 @@ public class AppOptions
         //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
-        searchPaths: [".//..//..//..//ContextSamples//ContextSamples//S2"]);
+        searchPaths: [".//..//..//..//"]);
 
     [CommandLineArgument("export-options", "Параметры экспорта")]
     public ExportOptions Export { get; set; } = new(
