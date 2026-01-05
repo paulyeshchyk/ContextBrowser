@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -26,26 +28,26 @@ public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, Invo
     }
 
     // context: roslyn, invocation, syntax, build
-    public void Link(List<InvocationExpressionSyntax> invocationList, TContext callerContext, TContext callerContextInfo, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task LinkAsync(List<InvocationExpressionSyntax> invocationList, TContext callerContext, TContext callerContextInfo, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (invocationList.Count == 0)
         {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"No invocation to resolve for [{callerContext.FullName}]");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Trace, $"No invocation to resolve for [{callerContext.FullName}]");
             return;
         }
 
-        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Resolving invocations for [{callerContext.FullName}]", LogLevelNode.Start);
-        foreach (var invocation in invocationList)
-        {
-            ResolveSymbolThenLink(invocation, callerContextInfo, _linksInvocationBuilder, options, cancellationToken);
-        }
-        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Trace, $"Resolving invocations for [{callerContext.FullName}]", LogLevelNode.Start);
+
+        var tasks = invocationList.Select(invocation => ResolveSymbolThenLinkAsync(invocation, callerContextInfo, _linksInvocationBuilder, options, cancellationToken));
+        await Task.WhenAll(tasks);
+
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Trace, string.Empty, LogLevelNode.End);
     }
 
     // context: roslyn, invocation, syntax, read
-    internal void ResolveSymbolThenLink(InvocationExpressionSyntax invocation, TContext callerContextInfo, IInvocationLinksBuilder<TContext> linksInvocationBuilder, SemanticOptions options, CancellationToken cancellationToken)
+    internal async Task ResolveSymbolThenLinkAsync(InvocationExpressionSyntax invocation, TContext callerContextInfo, IInvocationLinksBuilder<TContext> linksInvocationBuilder, SemanticOptions options, CancellationToken cancellationToken)
     {
-        var symbolDto = _invocationSyntaxExtractor.ResolveInvocationSymbol(invocation, options, cancellationToken);
+        var symbolDto = await _invocationSyntaxExtractor.ResolveInvocationSymbolAsync(invocation, options, cancellationToken).ConfigureAwait(false);
         if (symbolDto == null)
         {
             return;

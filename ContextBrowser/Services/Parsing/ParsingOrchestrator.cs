@@ -17,13 +17,13 @@ namespace ContextBrowser.Services.Parsing;
 // context: parsing, build
 public interface IParsingOrchestrator
 {
-    // context: parsing, build
+    // context: parsing, build, compilationFlow
     Task<IEnumerable<ContextInfo>> ParseAsync(CancellationToken cancellationToken);
 }
 
 // context: parsing, build
 public class ParsingOrchestrator<TSyntaxTreeWrapper> : IParsingOrchestrator
-    where TSyntaxTreeWrapper : RoslynSyntaxTreeWrapper
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
     private readonly IContextInfoCacheService _contextInfoCacheService;
     private readonly ICodeParseService _codeParseService;
@@ -48,7 +48,7 @@ public class ParsingOrchestrator<TSyntaxTreeWrapper> : IParsingOrchestrator
         _declarationParser = declarationParser;
     }
 
-    // context: parsing, build
+    // context: parsing, build, compilationFlow
     public async Task<IEnumerable<ContextInfo>> ParseAsync(CancellationToken cancellationToken)
     {
         var result = await _contextInfoCacheService.GetOrParseAndCacheAsync
@@ -66,9 +66,11 @@ public class ParsingOrchestrator<TSyntaxTreeWrapper> : IParsingOrchestrator
         return result;
     }
 
-    // context: parsing, build
+    // context: parsing, build, compilationFlow
     internal Task<IEnumerable<ContextInfo>> ParsingJobAsync(CancellationToken token)
     {
+        _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Cntx, "Starting parsing job");
+
         var referenceParser = _referenceParserFactory.Create();
 
         var declarationFileParser = new SemanticDeclarationFileParser(_declarationParser);

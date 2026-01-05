@@ -40,7 +40,7 @@ public class SemanticFileParser<TContext, TSyntaxTreeWrapper> : ISemanticFilePar
         _declarationParser = declarationParser;
     }
 
-    // context: semantic, build
+    // context: semantic, build, compilationFlow
     public async Task<IEnumerable<TContext>> ParseFilesAsync(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -53,15 +53,15 @@ public class SemanticFileParser<TContext, TSyntaxTreeWrapper> : ISemanticFilePar
         var semanticRouterBuilder = _semanticSyntaxRouterBuilderRegistry.GetRouterBuilder(semanticLanguage);
         var semanticRouter = semanticRouterBuilder.CreateRouter();
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Parsing files", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, "Compilation preparations", LogLevelNode.Start);
 
         //собираем все компиляции
         var compilationMap = await _semanticModelBuilder.BuildCompilationMapAsync(codeFiles, options, cancellationToken).ConfigureAwait(false);
 
-        var tasks = compilationMap.Select(async mapItem => await _declarationParser.Parse(semanticRouter, options, mapItem, cancellationToken).ConfigureAwait(false));
+        var tasks = compilationMap.Select(mapItem => _declarationParser.Parse(semanticRouter, options, mapItem, cancellationToken));
         await Task.WhenAll(tasks);
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Compilation preparations done", LogLevelNode.End);
 
         return _collector.GetAll();
     }

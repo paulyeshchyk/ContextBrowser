@@ -36,14 +36,17 @@ public class RoslynCompilationMapBuilder : ISemanticMapExtractor<RoslynSyntaxTre
         _compilationMapBuilder = compilationMapBuilder;
     }
 
-    // context: roslyn, build
+    // context: roslyn, build, compilationFlow
     public async Task<SemanticCompilationMap<RoslynSyntaxTreeWrapper>> CreateSemanticMapFromFilesAsync(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Build compilation map", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Building compilation map for {codeFiles.Count()} files", LogLevelNode.None);
 
-        var result = await CreateSyntaxTreesAndMapAsync(options, codeFiles, cancellationToken).ConfigureAwait(false);
+        var syntaxTrees = await _syntaxTreeParser.ParseFilesToSyntaxTreesAsync(options, codeFiles, cancellationToken);
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Phase 1: Build compilation map", LogLevelNode.End);
+        var compilation = _compilationMapBuilder.Build(options, syntaxTrees, options.CustomAssembliesPaths, "Parser", cancellationToken);
+
+        var result = _compilationMapMapper.MapSemanticModelToCompilationMap(syntaxTrees, compilation);
+
         return result;
     }
 
@@ -53,17 +56,5 @@ public class RoslynCompilationMapBuilder : ISemanticMapExtractor<RoslynSyntaxTre
         var codeFiles = new[] { filePath };
 
         return CreateSemanticMapFromFilesAsync(options, codeFiles, cancellationToken);
-    }
-
-    // context: roslyn, build
-    internal async Task<SemanticCompilationMap<RoslynSyntaxTreeWrapper>> CreateSyntaxTreesAndMapAsync(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken)
-    {
-        var syntaxTrees = await _syntaxTreeParser.ParseFilesToSyntaxTreesAsync(options, codeFiles, cancellationToken);
-
-        var compilation = _compilationMapBuilder.Build(options, syntaxTrees, options.CustomAssembliesPaths, "Parser", cancellationToken);
-
-        var result = _compilationMapMapper.MapSemanticModelToCompilationMap(syntaxTrees, compilation);
-
-        return result;
     }
 }

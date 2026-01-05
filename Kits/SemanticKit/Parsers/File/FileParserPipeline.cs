@@ -17,7 +17,7 @@ public sealed class FileParserPipeline : IFileParserPipeline<ContextInfo>
         _parsers = parsers;
     }
 
-    // context: file, directory, ContextInfo, read
+    // context: file, directory, ContextInfo, read, compilationFlow
     public async Task<IEnumerable<ContextInfo>> ParseAsync(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
     {
         var result = Enumerable.Empty<ContextInfo>();

@@ -40,7 +40,7 @@ public class SymbolLookupHandlerFullName<TContext, TSemanticModel> : SymbolLooku
     /// <returns>Найденный контекст или null, если не найден.</returns>
     public override TContext? Handle(ISyntaxWrapper symbolDto)
     {
-        if (_collector.BySymbolDisplayName.TryGetValue(symbolDto.FullName, out var calleeContextInfo))
+        if (_collector.Collection.TryGetValue(symbolDto.FullName, out var calleeContextInfo))
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[OK  ] ContextInfo was found for {symbolDto.FullName}");
             return calleeContextInfo;

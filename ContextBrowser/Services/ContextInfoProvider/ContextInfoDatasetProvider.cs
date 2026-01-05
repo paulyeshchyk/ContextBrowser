@@ -21,6 +21,7 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
         _datasetBuilder = datasetBuilder;
     }
 
+    // context: build, compilationFlow
     public async Task<IContextInfoDataset<ContextInfo, TTensor>> GetDatasetAsync(CancellationToken cancellationToken)
     {
         // Первая проверка без лока, для быстрого выхода
@@ -43,6 +44,7 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
         return await _datasetTask.ConfigureAwait(false);
     }
 
+    // context: build, compilationFlow
     internal async Task<IContextInfoDataset<ContextInfo, TTensor>> BuildDatasetTaskAsync(CancellationToken cancellationToken)
     {
         var contextsList = await GetParsedContextsAsync(cancellationToken).ConfigureAwait(false);

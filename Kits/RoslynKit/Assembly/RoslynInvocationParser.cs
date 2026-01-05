@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
@@ -44,78 +45,89 @@ public class RoslynInvocationParser<TContext, TSyntaxTreeWrapper> : IInvocationP
         _treeModelStorage = semanticTreeModelStorage;
     }
 
-    // context: roslyn, read
-    public void ParseCode(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken)
+    // context: roslyn, syntax, read
+    public async Task<IEnumerable<TContext>> ParseFilesAsync(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Parsing code: phase 2 - {filePath}");
+
+        var parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = options.MaxDegreeOfParallelism,
+            CancellationToken = cancellationToken
+        };
+
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, "Parsing files: phase 2", LogLevelNode.Start);
+
+        await Parallel.ForEachAsync(filePaths, parallelOptions, async (filePath, token) =>
+        {
+            // ParseFileAsync вызывается в пределах установленного лимита
+            await ParseFileAsync(filePath, options, token);
+        });
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+
+        return _collector.GetAll();
+    }
+
+    // context: roslyn, read
+    public async Task ParseFileAsync(string filePath, SemanticOptions options, CancellationToken cancellationToken)
+    {
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, $"Reading file: {filePath}");
+        var code = await File.ReadAllTextAsync(filePath, cancellationToken);
+
+        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, $"Parsing code: {filePath}");
+        await ParseCodeAsync(code, filePath, options, cancellationToken);
+    }
+
+    // context: roslyn, read
+    public async Task<bool> ParseCodeAsync(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
 
         // 1. Достаём дерево из файла
-        var syntaxTreeWrapper = _syntaxTreeWrapperBuilder.Build(code, filePath, cancellationToken);
+        var syntaxTreeWrapper = await _syntaxTreeWrapperBuilder.BuildAsync(code, filePath, cancellationToken).ConfigureAwait(false);
 
         // 2. Получаем сохранённую модель из хранилища
         var semanticModel = _treeModelStorage.GetModel(syntaxTreeWrapper);
         if (semanticModel == null)
         {
-            _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Warn, $"[FAIL] SemanticModel not found for {filePath}");
-            return;
+            _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Err, $"[FAIL] SemanticModel not found for {filePath}");
+            return false;
         }
 
         // 3. Обрабатываем все методы, зарегистрированные в коллекторе
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Building method references: {filePath}");
         var theCollection = _collector.GetAll().Where(m => m.ElementType == ContextInfoElementType.method).ToList();
-        if (!theCollection.Any())
+        if (theCollection.Count == 0)
         {
             _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Err, $"[FAIL] No method references found in: {filePath}");
-            return;
+            return false;
         }
 
         // 4. Строим все связи
-        BuildReferences(filePath, theCollection.ToList(), options, cancellationToken);
+        await BuildReferencesAsync(filePath, theCollection.ToList(), options, cancellationToken).ConfigureAwait(false);
 
-        _collector.MergeFakeItems();
+        Flush();
+
+        return true;
     }
 
     // context: roslyn, syntax, read
-    internal void BuildReferences(string filePath, IEnumerable<TContext> theCollection, SemanticOptions options, CancellationToken cancellationToken)
+    internal async Task BuildReferencesAsync(string filePath, IEnumerable<TContext> theCollection, SemanticOptions options, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Building invocatons {filePath}", LogLevelNode.Start);
-        foreach (var method in theCollection)
-        {
-            _invocationReferenceBuilder.BuildReferences(method, options, cancellationToken);
-        }
+        var tasks = theCollection.Select(method => _invocationReferenceBuilder.BuildReferencesAsync(method, options, cancellationToken));
+        await Task.WhenAll(tasks);
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, string.Empty, LogLevelNode.End);
-    }
-
-    // context: roslyn, syntax, read
-    public Task<IEnumerable<TContext>> ParseFilesAsync(string[] filePaths, SemanticOptions options, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, "Parsing files: phase 2", LogLevelNode.Start);
-
-        foreach (var file in filePaths)
-        {
-            ParseFile(file, options, cancellationToken);
-        }
-
-        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, string.Empty, LogLevelNode.End);
-
-        return Task.FromResult(_collector.GetAll());
-    }
-
-    // context: roslyn, read
-    public void ParseFile(string filePath, SemanticOptions options, CancellationToken cancellationToken)
-    {
-        _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Cntx, $"Parsing file: phase 2 - {filePath}");
-
-        var code = File.ReadAllText(filePath);
-        ParseCode(code, filePath, options, cancellationToken);
     }
 
     // context: roslyn, build
     public void RenewContextInfoList(IEnumerable<TContext> contextInfoList)
     {
         _collector.Renew(contextInfoList);
+    }
+
+    public void Flush()
+    {
+        _collector.MergeFakeItems();
     }
 }

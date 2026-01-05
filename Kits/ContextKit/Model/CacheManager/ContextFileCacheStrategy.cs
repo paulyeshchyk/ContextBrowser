@@ -13,7 +13,6 @@ using LoggerKit;
 
 namespace ContextKit.Model.CacheManager;
 
-// Новая реализация, которая инкапсулирует всю файловую логику
 public class ContextFileCacheStrategy : IFileCacheStrategy
 {
     private readonly IAppLogger<AppLevel> _appLogger;

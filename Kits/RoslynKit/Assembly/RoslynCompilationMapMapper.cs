@@ -27,22 +27,21 @@ public class RoslynCompilationMapMapper : ICompilationMapMapper<RoslynSyntaxTree
     // context: roslyn, build, compilation
     public SemanticCompilationMap<RoslynSyntaxTreeWrapper> MapSemanticModelToCompilationMap(IEnumerable<RoslynSyntaxTreeWrapper> syntaxTrees, ICompilationWrapper compilation)
     {
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation map building", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Making semantic models for {syntaxTrees.Count()} syntax tries", LogLevelNode.Start);
 
         var compiledMaps = syntaxTrees
             .Select(tree => MapSemanticModelToSingleMap(compilation, tree))
             .ToList();
 
-        var result = new SemanticCompilationMap<RoslynSyntaxTreeWrapper>(compiledMaps);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, "Making semantic models done", LogLevelNode.End);
 
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, string.Empty, LogLevelNode.End);
-        return result;
+        return new SemanticCompilationMap<RoslynSyntaxTreeWrapper>(compiledMaps);
     }
 
     // context: roslyn, build, compilation
     internal CompilationMap<RoslynSyntaxTreeWrapper> MapSemanticModelToSingleMap(ICompilationWrapper compilation, RoslynSyntaxTreeWrapper tree)
     {
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Compilation map building for: {tree.FilePath}");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Trace, $"Making semantic model for: {tree.FilePath}");
         var model = compilation.GetSemanticModel(tree);
         var compilationMap = new CompilationMap<RoslynSyntaxTreeWrapper>(tree, model);
         return compilationMap;

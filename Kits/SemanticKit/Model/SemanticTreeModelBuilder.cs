@@ -34,7 +34,7 @@ public class SemanticTreeModelBuilder<TSyntaxTreeWrapper> : ISemanticTreeModelBu
 
     }
 
-    // context: roslyn, build, contextInfo
+    // context: roslyn, build, contextInfo, compilationFlow
     public async Task<SemanticCompilationMap<TSyntaxTreeWrapper>> BuildCompilationMapAsync(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken)
     {
         var compilationMap = await _semanticMapBuilder.CreateSemanticMapFromFilesAsync(options, codeFiles, cancellationToken);
@@ -43,9 +43,9 @@ public class SemanticTreeModelBuilder<TSyntaxTreeWrapper> : ISemanticTreeModelBu
     }
 
     // context: roslyn, build, contextInfo
-    public SemanticCompilationView BuildCompilationView(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task<SemanticCompilationView> BuildCompilationViewAsync(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken)
     {
-        var syntaxTreeWrapper = _treeWrapperBuilder.Build(code, filePath, cancellationToken);
+        var syntaxTreeWrapper = await _treeWrapperBuilder.BuildAsync(code, filePath, cancellationToken).ConfigureAwait(false);
         return BuildCompilationView(syntaxTreeWrapper, options, cancellationToken);
     }
 

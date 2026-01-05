@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextKit.Model;
 using SemanticKit.Model.Options;
 
@@ -11,5 +12,5 @@ public interface IInvocationLinker<in TContext, TInvocationExpressionSyntax>
     where TInvocationExpressionSyntax : class
 {
     // context: invocation, build
-    void Link(List<TInvocationExpressionSyntax> invocationList, TContext callerContext, TContext callerContextInfo, SemanticOptions options, CancellationToken cancellationToken);
+    Task LinkAsync(List<TInvocationExpressionSyntax> invocationList, TContext callerContext, TContext callerContextInfo, SemanticOptions options, CancellationToken cancellationToken);
 }

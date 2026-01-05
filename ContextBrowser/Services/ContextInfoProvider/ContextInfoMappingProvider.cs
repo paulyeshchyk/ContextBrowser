@@ -22,6 +22,7 @@ public class ContextInfoMappingProvider<TTensor> : BaseContextInfoProvider, ICon
         _mapperFactory = mapperFactory;
     }
 
+    // context: build, compilationFlow
     public async Task<IContextInfo2DMap<ContextInfo, TTensor>> GetMapperAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)

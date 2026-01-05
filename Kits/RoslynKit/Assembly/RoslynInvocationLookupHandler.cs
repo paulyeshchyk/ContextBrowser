@@ -22,6 +22,7 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
     private readonly SemanticOptions _options;
     private readonly IContextCollector<TContext> _collector;
     private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
+    private readonly object _lock = new();
 
     public RoslynInvocationLookupHandler(
         IContextCollector<TContext> collector,
@@ -57,7 +58,6 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, $"[MISS] Fallback fake callee be not used for {syntaxWrapper.FullName}, because ContextInfoBuilder returns null");
             return base.Handle(syntaxWrapper);
         }
-
         var methodmodel = new CSharpSyntaxWrapperMethodArtifitial(wrapper: syntaxWrapper, contextOwner: typeContext);
         var methodContext = _contextInfoBuilderDispatcher.DispatchAndBuild(null, methodmodel);
         if (methodContext == null)
@@ -66,12 +66,9 @@ public class RoslynInvocationLookupHandler<TContext, TSemanticModel> : SymbolLoo
             return base.Handle(syntaxWrapper);
         }
 
-        _collector.Append(typeContext);
-
-        typeContext.Owns.Add(methodContext);
+        _collector.Append(item: typeContext, owns: methodContext);
         _collector.Append(methodContext);
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"[DONE] Fallback fake callee created for: {syntaxWrapper.FullName}");
-
         return methodContext;
     }
 }

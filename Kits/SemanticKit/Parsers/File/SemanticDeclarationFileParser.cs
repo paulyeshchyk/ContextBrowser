@@ -17,7 +17,7 @@ public class SemanticDeclarationFileParser : IFileParser<ContextInfo>
         _parser = parser;
     }
 
-    // context: file, directory, ContextInfo, read
+    // context: file, directory, ContextInfo, read, compilationFlow
     public Task<IEnumerable<ContextInfo>> ParseFilesAsync(string[] filePaths, SemanticOptions options, CancellationToken ct)
     {
         return _parser.ParseFilesAsync(filePaths, options, ct);

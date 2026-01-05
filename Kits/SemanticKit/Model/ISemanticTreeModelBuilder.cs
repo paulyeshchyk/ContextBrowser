@@ -11,8 +11,8 @@ public interface ISemanticTreeModelBuilder<TSyntaxTree, TSemanticModel>
     where TSemanticModel : notnull
 {
     // context: semantic, build
-    public SemanticCompilationView BuildCompilationView(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken);
+    Task<SemanticCompilationView> BuildCompilationViewAsync(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken);
 
     // context: semantic, build
-    public Task<SemanticCompilationMap<TSyntaxTree>> BuildCompilationMapAsync(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken);
+    Task<SemanticCompilationMap<TSyntaxTree>> BuildCompilationMapAsync(IEnumerable<string> codeFiles, SemanticOptions options, CancellationToken cancellationToken);
 }

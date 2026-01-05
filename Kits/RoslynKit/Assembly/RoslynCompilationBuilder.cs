@@ -34,10 +34,9 @@ public class RoslynCompilationBuilder : ICompilationBuilder<RoslynSyntaxTreeWrap
         _compiler = compiler;
         _diagnosticsInspector = diagnosticsInspector;
         _assemblyFetcher = assemblyFetcher;
-
     }
 
-    // context: roslyn, build
+    // context: roslyn, build, compilationFlow
     public ICompilationWrapper Build(SemanticOptions options, IEnumerable<RoslynSyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name, CancellationToken cancellationToken)
     {
         var assemblies = _assemblyFetcher.Fetch(options.SemanticFilters);
@@ -46,6 +45,6 @@ public class RoslynCompilationBuilder : ICompilationBuilder<RoslynSyntaxTreeWrap
 
         _diagnosticsInspector.LogAndFilterDiagnostics(compilation, cancellationToken);
 
-        return new RoslynCompilationWrapper(compilation);
+        return new RoslynCompilationWrapper(compilation, _logger);
     }
 }

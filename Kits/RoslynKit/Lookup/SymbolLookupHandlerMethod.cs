@@ -49,7 +49,7 @@ public class SymbolLookupHandlerMethod<TContext, TSemanticModel> : SymbolLookupH
 
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[FALLBACK] Trying full signature: {symbolDto.FullName}");
 
-        if (!_collector.BySymbolDisplayName.TryGetValue(symbolDto.FullName, out var result))
+        if (!_collector.Collection.TryGetValue(symbolDto.FullName, out var result))
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol exists but fallback lookup failed: {symbolDto.FullName}");
 

@@ -24,9 +24,9 @@ public class SemanticReferenceBuilderValidator<TContext, TInvocationExpressionSy
     public SemanticReferenceBuilderValidationResult<TContext, TInvocationExpressionSyntax>? Validate(TContext callerContext, IContextCollector<TContext> collector)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Validating context [{callerContext.FullName}]");
-        if (string.IsNullOrWhiteSpace(callerContext.FullName) || !collector.BySymbolDisplayName.TryGetValue(callerContext.FullName, out var callerContextInfo))
+        if (string.IsNullOrWhiteSpace(callerContext.FullName) || !collector.Collection.TryGetValue(callerContext.FullName, out var callerContextInfo))
         {
-            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Symbol not found in {collector.BySymbolDisplayName} for {callerContext.FullName}");
+            _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Warn, $"[MISS] Symbol not found in {collector.Collection} for {callerContext.FullName}");
             return null;
         }
 

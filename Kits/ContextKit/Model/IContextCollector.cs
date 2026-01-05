@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace ContextKit.Model;
 
@@ -12,11 +13,13 @@ public interface IContextCollector<T>
 
     void Append(T item);
 
+    void Append(T item, T owns);
+
     IEnumerable<T> GetAll();
 
     void MergeFakeItems();
 
-    Dictionary<string, T> BySymbolDisplayName { get; }
+    ConcurrentDictionary<string, T> Collection { get; }
 
     void Renew(IEnumerable<T> byItems);
 }

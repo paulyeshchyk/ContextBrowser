@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace ContextKit.Model;
 
 // coverage: 255
-// context: ContextInfo, model, IContextWithReferences
+// context: ContextInfo, model
 public record ContextInfo : IContextWithReferences<ContextInfo>
 {
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;

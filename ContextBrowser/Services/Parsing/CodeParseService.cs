@@ -32,7 +32,7 @@ public class CodeParseService : ICodeParseService
         _optionsStore = optionsStore;
     }
 
-    // context: parsing, build
+    // context: parsing, build, compilationFlow
     public Task<IEnumerable<ContextInfo>> ParseAsync(IFileParserPipeline<ContextInfo> pipeline, CancellationToken cancellationToken)
     {
         var importOptions = _optionsStore.GetOptions<ImportOptions>();
@@ -41,7 +41,7 @@ public class CodeParseService : ICodeParseService
         var filePaths = PathAnalyzer.GetFilePaths(importOptions.SearchPaths, importOptions.FileExtensions, _logger.WriteLog);
         var filtered = PathFilter.FilteroutPaths(filePaths, importOptions.Exclude, (thePath) => thePath);
 
-        if (!filtered.Any())
+        if (filtered.Length == 0)
         {
             throw new Exception("No files to parse");
         }

@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
 using RoslynKit;
 using RoslynKit.Assembly;
@@ -14,9 +15,12 @@ public class RoslynSyntaxTreeWrapperBuilder<TSyntaxTreeWrapper> : ISyntaxTreeWra
 {
 
     // context: roslyn, build
-    public TSyntaxTreeWrapper Build(string code, string filePath, CancellationToken cancellationToken)
+    public Task<TSyntaxTreeWrapper> BuildAsync(string code, string filePath, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var syntaxTree = CSharpSyntaxTree.ParseText(text: code, path: filePath, cancellationToken: cancellationToken);
-        return (TSyntaxTreeWrapper)new RoslynSyntaxTreeWrapper(syntaxTree);
+        var result = (TSyntaxTreeWrapper)new RoslynSyntaxTreeWrapper(syntaxTree);
+        return Task.FromResult(result);
     }
 }

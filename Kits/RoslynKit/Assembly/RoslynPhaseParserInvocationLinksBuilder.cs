@@ -17,6 +17,7 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
     private readonly IContextCollector<TContext> _collector;
     private readonly IAppLogger<AppLevel> _logger;
     private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
+    private readonly object _lock = new();
 
     public RoslynPhaseParserInvocationLinksBuilder(
         IContextCollector<TContext> collector,
@@ -52,29 +53,35 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
     // context: roslyn, build
     internal void AddInvokedBy(TContext callerContextInfo, TContext calleeContextInfo)
     {
-        var addedInvokedBy = ContextInfoService.AddToInvokedBy(callerContextInfo, calleeContextInfo);
+        lock (_lock)
+        {
+            var addedInvokedBy = ContextInfoService.AddToInvokedBy(callerContextInfo, calleeContextInfo);
 
-        var message = addedInvokedBy
-            ? $"[DONE] Adding invokedBy for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]"
-            : $"[SKIP] Adding invokedBy for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]";
-        var level = addedInvokedBy
-            ? LogLevel.Trace
-            : LogLevel.Err;
-        _logger.WriteLog(AppLevel.R_Cntx, level, message);
+            var message = addedInvokedBy
+                ? $"[DONE] Adding invokedBy for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]"
+                : $"[SKIP] Adding invokedBy for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]";
+            var level = addedInvokedBy
+                ? LogLevel.Trace
+                : LogLevel.Err;
+            _logger.WriteLog(AppLevel.R_Cntx, level, message);
+        }
     }
 
     // context: roslyn, build
     internal void AddReferences(TContext callerContextInfo, TContext calleeContextInfo)
     {
-        var addedReference = ContextInfoService.AddToReferences(callerContextInfo, calleeContextInfo);
+        lock (_lock)
+        {
+            var addedReference = ContextInfoService.AddToReferences(callerContextInfo, calleeContextInfo);
 
-        var message = (addedReference)
-            ? $"[DONE] Adding reference for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]"
-            : $"[SKIP] Adding reference for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]";
-        var level = addedReference
-            ? LogLevel.Trace
-            : LogLevel.Err;
-        _logger.WriteLog(AppLevel.R_Cntx, level, message);
+            var message = (addedReference)
+                ? $"[DONE] Adding reference for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]"
+                : $"[SKIP] Adding reference for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]";
+            var level = addedReference
+                ? LogLevel.Trace
+                : LogLevel.Err;
+            _logger.WriteLog(AppLevel.R_Cntx, level, message);
+        }
     }
 
     // Класс: RoslynPhaseParserInvocationLinksBuilder<TContext>

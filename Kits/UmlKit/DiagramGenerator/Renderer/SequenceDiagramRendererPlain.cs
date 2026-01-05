@@ -26,7 +26,6 @@ public class SequenceDiagramRendererPlain<P> : ISequenceDiagramRenderer<P>
         _options = options;
         _factory = factory;
         _namingProcessor = namingProcessor;
-
     }
 
     public void Render(UmlDiagram<P> diagram, GrouppedSortedTransitionList? allTransitions)

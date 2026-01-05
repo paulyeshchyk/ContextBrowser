@@ -33,6 +33,7 @@ public abstract class ContextInfoBuilder<TContext, TSyntaxNode, TWrapper> : ICon
     protected readonly IAppLogger<AppLevel> _logger;
     protected readonly ISymbolWrapperConverter _symbolWrapperConverter;
     protected readonly IContextInfoDtoConverter<TContext, ISyntaxNodeWrapper> _contextInfoDtoConverter;
+    private readonly object _lock = new();
 
     protected ContextInfoBuilder(
         IContextCollector<TContext> collector,
@@ -79,11 +80,12 @@ public abstract class ContextInfoBuilder<TContext, TSyntaxNode, TWrapper> : ICon
             return availableItem;
 
         var result = _factory.Create(contextInfo: dto);
+        lock (_lock)
+        {
+            ownerContext?.Owns.Add(result);
 
-        ownerContext?.Owns.Add(result);
-
-        _collector.Add(result);
-
+            _collector.Add(result);
+        }
         return result;
     }
 }

@@ -27,6 +27,11 @@ public record SemanticOptions
     public string GlobalUsings { get; set; }
 
     /// <summary>
+    /// задаёт к-во потоков, используемых при парсинге файлов
+    /// </summary>
+    public int MaxDegreeOfParallelism { get; set; } = -1;
+
+    /// <summary>
     /// if true then error CS8915 occured
     /// </summary>
     public bool IncludePseudoCode { get; set; }
@@ -42,7 +47,8 @@ public record SemanticOptions
         bool createFailedCallees,
         bool includePseudoCode,
         string globalUsings,
-        AssemblyPathFilterPatterns semanticFilters)
+        AssemblyPathFilterPatterns semanticFilters,
+        int maxDegreeOfParallelism)
     {
         ExternalNamespaceName = externalNamespaceName;
         FakeOwnerName = fakeOwnerName;
@@ -55,6 +61,7 @@ public record SemanticOptions
         IncludePseudoCode = includePseudoCode;
         GlobalUsings = globalUsings;
         SemanticFilters = semanticFilters;
+        MaxDegreeOfParallelism = maxDegreeOfParallelism;
     }
 }
 

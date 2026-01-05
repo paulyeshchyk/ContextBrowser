@@ -37,14 +37,14 @@ public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference, RoslynSyn
             usings: usings
         );
 
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, "Compilation building", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Creating compilation for {syntaxTrees.Count()} tries", LogLevelNode.Start);
 
         var compilation = CSharpCompilation.Create(name, options: compilationOptions)
                                            .AddSyntaxTrees(syntaxTrees.Select(st => st.Tree).Cast<SyntaxTree>())
                                            .AddReferences(referencesToLoad);
-        LogLoadedReferences(compilation);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, string.Empty, LogLevelNode.End);
 
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+        LogLoadedReferences(compilation);
 
         return compilation;
     }
@@ -55,7 +55,7 @@ public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference, RoslynSyn
         var references = compilation.References;
         foreach (var reference in references)
         {
-            _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Loaded reference: {reference.Display}");
+            _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Trace, $"Loaded reference: {reference.Display}");
         }
     }
 

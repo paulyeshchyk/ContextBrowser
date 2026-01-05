@@ -23,7 +23,7 @@ public abstract class BaseContextInfoProvider
         _parsingOrchestrant = parsingOrchestrant;
     }
 
-    // context: ContextInfo, read
+    // context: ContextInfo, read, compilationFlow
     protected async Task<IEnumerable<ContextInfo>> GetParsedContextsAsync(CancellationToken cancellationToken)
     {
         lock (_lock)

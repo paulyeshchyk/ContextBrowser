@@ -31,6 +31,9 @@ public class RoslynSyntaxTreeParser : ISyntaxTreeParser<RoslynSyntaxTreeWrapper>
     // context: roslyn, build
     public async Task<IEnumerable<RoslynSyntaxTreeWrapper>> ParseFilesToSyntaxTreesAsync(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken)
     {
+
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Making syntax tries for {codeFiles.Count()} files", LogLevelNode.None);
+
         var treeCreationTasks = codeFiles.Select(async filePath =>
         {
             // Асинхронный I/O

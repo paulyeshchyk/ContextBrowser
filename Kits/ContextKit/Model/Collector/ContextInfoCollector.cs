@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,80 +9,108 @@ namespace ContextKit.Model.Collector;
 public class ContextInfoCollector<TContext> : IContextCollector<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    public readonly HashSet<TContext> Collection = new HashSet<TContext>();
-    private readonly List<TContext> FakeCollection = new List<TContext>();
+    public ConcurrentDictionary<string, TContext> Collection { get; } = new(StringComparer.Ordinal);
+    private readonly ConcurrentBag<TContext> FakeCollection = new ConcurrentBag<TContext>();
 
-    public Dictionary<string, TContext> BySymbolDisplayName { get; }
+    private readonly object _lock = new();
 
     public ContextInfoCollector()
     {
-        BySymbolDisplayName = new Dictionary<string, TContext>(StringComparer.Ordinal);
     }
 
     // context: ContextInfo, read
-    public IEnumerable<TContext> GetAll() => Collection;
+    public IEnumerable<TContext> GetAll() => Collection.Values;
 
     // context: ContextInfo, build
     public bool AddIfNotExists(TContext info)
     {
-        if (BySymbolDisplayName.TryGetValue(info.FullName, out var available))
+        // TryAdd атомарно добавляет, только если ключ отсутствует, возвращая false, если уже есть.
+        if (string.IsNullOrWhiteSpace(info.FullName))
         {
-            return false;
+            // Здесь может потребоваться lock, если вы хотите синхронизировать доступ к Collection (HashSet)
+            // Но мы заменили HashSet на ConcurrentDictionary, поэтому FullName должен быть ключом.
+            return false; // или добавить в FakeCollection
         }
 
-        Add(info);
-
-        if (!string.IsNullOrWhiteSpace(info.FullName))
-            BySymbolDisplayName[info.FullName] = info;
-
-        return true;
+        return Collection.TryAdd(info.FullName, info);
     }
 
     public TContext? GetItem(string predicate)
     {
-        BySymbolDisplayName.TryGetValue(predicate, out TContext? result);
+        Collection.TryGetValue(predicate, out TContext? result);
         return result;
     }
 
     // context: ContextInfo, build
     public void Add(TContext info)
     {
-        Collection.Add(info);
+        if (string.IsNullOrWhiteSpace(info.FullName))
+            return;
 
-        if (!string.IsNullOrWhiteSpace(info.FullName))
-            BySymbolDisplayName[info.FullName] = info;
+        Collection.AddOrUpdate(info.FullName, info, (key, existing) => info);
     }
 
     public void Append(TContext info)
     {
         FakeCollection.Add(info);
+
         if (!string.IsNullOrWhiteSpace(info.FullName))
-            BySymbolDisplayName[info.FullName] = info;
+            Collection.AddOrUpdate(info.FullName, info, (key, existing) => info);
+    }
+
+    public void Append(TContext item, TContext owns)
+    {
+        lock (_lock)
+        {
+            item.Owns.Add(owns);
+
+            FakeCollection.Add(item);
+
+            if (!string.IsNullOrWhiteSpace(item.FullName))
+                Collection.AddOrUpdate(item.FullName, item, (key, existing) => item);
+        }
     }
 
     public void MergeFakeItems()
     {
-        foreach (var item in FakeCollection)
+        lock (_lock)
         {
-            AddIfNotExists(item);
+            // 1. Извлекаем все элементы потокобезопасно
+            List<TContext> itemsToMerge = new List<TContext>();
+            while (FakeCollection.TryTake(out var item))
+            {
+                if (!string.IsNullOrWhiteSpace(item.FullName))
+                {
+                    itemsToMerge.Add(item);
+                }
+            }
+
+            // 2. Слияние без lock, используя атомарные операции
+            foreach (var item in itemsToMerge)
+            {
+                // TryAdd не требует блокировки, выполняется атомарно
+                Collection.TryAdd(item.FullName, item);
+            }
         }
-        FakeCollection.Clear();
     }
 
     public void Renew(IEnumerable<TContext> byItems)
     {
         // намеренно ничего не делаем — коллектор необновляемый здесь
     }
+
 }
 
 public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    public Dictionary<string, TContext> BySymbolDisplayName { get; private set; } = new Dictionary<string, TContext>();
+    public ConcurrentDictionary<string, TContext> Collection { get; } = new ConcurrentDictionary<string, TContext>();
 
-    private readonly HashSet<TContext> FakeCollection = new();
+    private readonly ConcurrentBag<TContext> FakeCollection = new ConcurrentBag<TContext>();
 
-    private List<TContext> _existing = new List<TContext>();
+    private readonly ConcurrentBag<TContext> _existing = new ConcurrentBag<TContext>();
+    private readonly object _lock = new();
+
 
     public ContextInfoReferenceCollector(IEnumerable<TContext> existing)
     {
@@ -90,14 +119,23 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
 
     public void Renew(IEnumerable<TContext> byItems)
     {
-        _existing = byItems.ToList();
+        lock (_lock)
+        {
+            _existing.Clear();
+            foreach (var item in byItems)
+                _existing.Add(item);
 
-        BySymbolDisplayName = ContextInfoFullNameIndexBuilder.Build(_existing);
+            Collection.Clear();
+
+            var names = ContextInfoFullNameIndexBuilder.Build(_existing);
+            foreach (var key in names.Keys)
+                Collection[key] = names[key];
+        }
     }
 
     public TContext? GetItem(string predicate)
     {
-        BySymbolDisplayName.TryGetValue(predicate, out TContext? result);
+        Collection.TryGetValue(predicate, out TContext? result);
         return result;
     }
 
@@ -118,16 +156,59 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     {
         FakeCollection.Add(info);
         if (!string.IsNullOrWhiteSpace(info.FullName))
-            BySymbolDisplayName[info.FullName] = info;
+            Collection[info.FullName] = info;
+    }
+
+    public void Append(TContext item, TContext owns)
+    {
+        lock (_lock)
+        {
+            item.Owns.Add(owns);
+            FakeCollection.Add(item);
+            if (!string.IsNullOrWhiteSpace(item.FullName))
+                Collection[item.FullName] = item;
+        }
     }
 
     public void MergeFakeItems()
     {
-        var legacy = FakeCollection.Where(item => _existing.Any(existingItem => existingItem.FullName == item.FullName)).ToList();
+        lock (_lock)
+        {
+            if (FakeCollection.IsEmpty) return;
 
-        var newItems = FakeCollection.Where(item => !_existing.Any(existingItem => existingItem.FullName == item.FullName)).ToList();
-        _existing.AddRange(newItems);
+            // Шаг 1: Извлекаем все элементы из ConcurrentBag
+            List<TContext> incomingItems = new List<TContext>();
+            while (FakeCollection.TryTake(out var item))
+            {
+                if (!string.IsNullOrWhiteSpace(item.FullName))
+                {
+                    incomingItems.Add(item);
+                }
+            }
 
-        FakeCollection.Clear();
+            // Шаг 2: Создаем Хеш-индекс для существующего списка (_existing)
+            // O(N) — это быстро
+            // Поскольку _existing модифицируется только в этом lock и в Renew, мы можем это сделать.
+            HashSet<string> existingFullNames = new HashSet<string>(_existing.Select(e => e.FullName), StringComparer.Ordinal);
+
+            // Шаг 3: Фильтрация и добавление новых элементов
+            // O(M) — это быстро
+            foreach (var item in incomingItems)
+            {
+                // Проверка по индексу O(1)
+                if (!existingFullNames.Contains(item.FullName))
+                {
+                    _existing.Add(item); // Теперь это ConcurrentBag.Add
+                    existingFullNames.Add(item.FullName);
+                }
+            }
+
+            // ВНИМАНИЕ: Мы также должны обновить Collection (ConcurrentDictionary, который служит индексом поиска)
+            // Создадим новый индекс только для новых элементов
+            foreach (var item in incomingItems)
+            {
+                Collection.TryAdd(item.FullName, item);
+            }
+        }
     }
 }

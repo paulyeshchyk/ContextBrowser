@@ -27,16 +27,7 @@ public static class RoslynSymbolLoader
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        try
-        {
-            var declaredSymbol = model.GetDeclaredSymbol(syntax, cancellationToken);
-            return declaredSymbol as ISymbol ?? throw new Exception("Symbol was not loaded for syntax");
-        }
-        catch (Exception ex)
-        {
-            logger.WriteLog(AppLevel.R_Symbol, LogLevel.Exception, $"{syntax.GetIdentifier()} - {ex.Message}");
-            logger.WriteLog(AppLevel.R_Symbol, LogLevel.Trace, $"{syntax}");
-            return default;
-        }
+        var declaredSymbol = model.GetDeclaredSymbol(syntax, cancellationToken);
+        return declaredSymbol as ISymbol ?? default;
     }
 }

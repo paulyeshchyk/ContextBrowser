@@ -29,17 +29,19 @@ public class RoslynDiagnosticsInspector : ICompilationDiagnosticsInspector<CShar
     // context: roslyn, read
     public void LogAndFilterDiagnostics(CSharpCompilation compilation, CancellationToken cancellationToken)
     {
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Preparing diagnostics", LogLevelNode.Start);
         var diagnostics = compilation.GetDiagnostics(cancellationToken);
         foreach (var diagnostic in diagnostics)
         {
             if (diagnostic.Severity == DiagnosticSeverity.Error)
             {
-                _logger.WriteLog(AppLevel.R_Dll, LogLevel.Err, $"Diagnostics Error: {diagnostic}");
+                _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Diagnostics Error: {diagnostic}");
             }
             else if (diagnostic.Severity == DiagnosticSeverity.Warning)
             {
-                _logger.WriteLog(AppLevel.R_Dll, LogLevel.Trace, $"Diagnostics Warning: {diagnostic}");
+                _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Trace, $"Diagnostics Warning: {diagnostic}");
             }
         }
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, string.Empty, LogLevelNode.End);
     }
 }

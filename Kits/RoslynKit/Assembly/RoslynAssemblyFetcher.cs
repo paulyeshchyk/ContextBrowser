@@ -26,21 +26,21 @@ public class RoslynAssemblyFetcher : IAssemblyFetcher<MetadataReference>
         _logger = logger;
     }
 
-    // context: roslyn, build
+    // context: assembly, read
     // coverage: 20
     public IEnumerable<MetadataReference> Fetch(AssemblyPathFilterPatterns assemblyPathsFilter)
     {
         var trustedPlatformPaths = FetchTrustedPlatformPaths();
         var filteredTrustedPaths = ApplyFilters(trustedPlatformPaths, assemblyPathsFilter.TrustedFilters);
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredTrustedPaths.Count()} trusted сборок");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Загрузится {filteredTrustedPaths.Count()} trusted сборок");
 
         var currentDomainPaths = FetchCurrentDomainPaths();
         var filteredDomainPaths = ApplyFilters(currentDomainPaths, assemblyPathsFilter.DomainFilters);
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredDomainPaths.Count()} domain сборок");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Загрузится {filteredDomainPaths.Count()} domain сборок");
 
         var runtimeDirectoryPaths = FetchRuntimeDirectoryAssemblyPaths();
         var filteredRuntimePaths = ApplyFilters(runtimeDirectoryPaths, assemblyPathsFilter.DomainFilters);
-        _logger.WriteLog(AppLevel.R_Dll, LogLevel.Cntx, $"Загрузится {filteredRuntimePaths.Count()} domain сборок");
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Загрузится {filteredRuntimePaths.Count()} domain сборок");
 
         var allAssemblyPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {

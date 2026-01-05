@@ -24,7 +24,7 @@ public class ContextInfoIndexerProvider : BaseContextInfoProvider, IContextInfoI
         _mapperFactory = mapperFactory;
     }
 
-    // context: ContextInfo, read
+    // context: ContextInfo, read, compilationFlow
     public async Task<IKeyIndexBuilder<ContextInfo>> GetIndexerAsync(MapperKeyBase mapperType, CancellationToken cancellationToken)
     {
         lock (_lock)

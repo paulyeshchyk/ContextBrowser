@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;
@@ -31,7 +32,7 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
     }
 
     // context: roslyn, read
-    public ISyntaxWrapper? ResolveInvocationSymbol(object invocation, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task<ISyntaxWrapper?> ResolveInvocationSymbolAsync(object invocation, SemanticOptions options, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Resolving symbol for invocation [{invocation}]", LogLevelNode.Start);
 
@@ -40,14 +41,14 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
             throw new Exception("Invocation is not InvocationExpressionSyntax");
         }
 
-        var result = GetSyntaxWrapper(byInvocation, options, cancellationToken);
+        var result = await GetSyntaxWrapperAsync(byInvocation, options, cancellationToken).ConfigureAwait(false);
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
         return result;
     }
 
     // context: roslyn, read
-    internal ISyntaxWrapper? GetSyntaxWrapper(InvocationExpressionSyntax byInvocation, SemanticOptions options, CancellationToken cancellationToken)
+    internal async Task<ISyntaxWrapper?> GetSyntaxWrapperAsync(InvocationExpressionSyntax byInvocation, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -59,7 +60,7 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
             return CSharpInvocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
         }
 
-        var symbol = RoslynInvocationSyntaxExtractor.GetMethodSymbol(invocationWrapper, invocationSemanticModel, _logger, cancellationToken);
+        var symbol = await RoslynInvocationSyntaxExtractor.GetMethodSymbolAsync(invocationWrapper, invocationSemanticModel, _logger, cancellationToken).ConfigureAwait(false);
         return (symbol != null)
             ? CSharpInvocationSyntaxWrapperConverter.FromSymbols(symbol, byInvocation)
             : CSharpInvocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
@@ -74,13 +75,13 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
     }
 
     // context: roslyn, read
-    internal static IMethodSymbol? GetMethodSymbol(IInvocationNodeWrapper<RoslynSyntaxTreeWrapper> invocation, ISemanticModelWrapper semanticModel, IAppLogger<AppLevel>? logger, CancellationToken cancellationToken)
+    internal static async Task<IMethodSymbol?> GetMethodSymbolAsync(IInvocationNodeWrapper<RoslynSyntaxTreeWrapper> invocation, ISemanticModelWrapper semanticModel, IAppLogger<AppLevel>? logger, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         logger?.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Looking IMethodSymbol for expression: {invocation.Expression}");
 
-        var si = semanticModel.GetSymbolInfo(invocation.Expression, cancellationToken);
+        var si = await semanticModel.GetSymbolInfoAsync(invocation.Expression, cancellationToken);
         if (si is not SymbolInfo symbolInfo)
         {
             logger?.WriteLog(AppLevel.R_Invocation, LogLevel.Exception, $"SymbolInfo not found for {invocation.Expression}");

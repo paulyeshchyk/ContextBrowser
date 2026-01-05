@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -39,7 +40,7 @@ public class SemanticInvocationReferenceBuilder<TContext>
     }
 
     // context: roslyn, read
-    public void BuildReferences(TContext callerContext, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task BuildReferencesAsync(TContext callerContext, SemanticOptions options, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Building references for {callerContext.FullName}", LogLevelNode.Start);
 
@@ -49,7 +50,7 @@ public class SemanticInvocationReferenceBuilder<TContext>
             var callerContextInfo = validationResult.CallerContextInfo;
             var invocationList = validationResult.Invocations.ToList();
 
-            _invocationLinker.Link(invocationList, callerContext, callerContextInfo, options, cancellationToken);
+            await _invocationLinker.LinkAsync(invocationList, callerContext, callerContextInfo, options, cancellationToken).ConfigureAwait(false);
         }
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }

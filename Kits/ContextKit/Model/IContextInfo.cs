@@ -12,20 +12,20 @@ public interface IContextInfo : ISemanticInfo, ISpanInfo, ISemanticContainer
     string NameWithClassOwnerName { get; }
 }
 
-// context: IContextWithReferences, model
+// context: ContextInfo, model
 public interface IContextWithReferences<T> : IContextInfo, IContextDataContainerDomainPerAction
     where T : IContextWithReferences<T>
 {
-    // context: IContextWithReferences, read
+    // context: ContextInfo, read
     HashSet<T> References { get; }
 
-    // context: IContextWithReferences, read
+    // context: ContextInfo, read
     HashSet<T> InvokedBy { get; }
 
-    // context: IContextWithReferences, read
+    // context: ContextInfo, read
     HashSet<T> Properties { get; }
 
-    // context: IContextWithReferences, read
+    // context: ContextInfo, read
     HashSet<T> Owns { get; }
 
     HashSet<string> Contexts { get; }

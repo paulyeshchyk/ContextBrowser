@@ -13,7 +13,7 @@ namespace ContextBrowser.Infrastructure;
 // context: app, execute
 internal static class ConsoleRunner
 {
-    // context: app, execute
+    // context: app, execute, compilationFlow
     public static async Task Run(string[] args, AppOptions options)
     {
 

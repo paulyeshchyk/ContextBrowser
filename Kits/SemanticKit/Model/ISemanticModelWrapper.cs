@@ -1,10 +1,11 @@
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SemanticKit.Model;
 
 public interface ISemanticModelWrapper
 {
-    object? GetSymbolInfo(object node, CancellationToken cancellationToken);
+    Task<object?> GetSymbolInfoAsync(object node, CancellationToken cancellationToken);
 
     object? GetSymbolForInvocation(object invocationNode);
 

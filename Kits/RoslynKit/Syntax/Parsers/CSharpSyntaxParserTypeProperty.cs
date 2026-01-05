@@ -78,7 +78,7 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
         }
 
         // Проверяем, существует ли уже контекст для этого типа, чтобы избежать рекурсии
-        var cnt = _collector.BySymbolDisplayName.GetValueOrDefault(typeSymbol.BuildFullMemberName());
+        var cnt = _collector.Collection.GetValueOrDefault(typeSymbol.BuildFullMemberName());
         if (cnt != null)
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[{typeSymbol}] Context allready defined");

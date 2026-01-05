@@ -50,9 +50,6 @@ public class ContextInfoBuilderDispatcher<TContext>
             return default;
         }
 
-        // Вызываем универсальный метод, который вызывает специфичный BuildContextInfo внутри
         return builder.BuildContextInfo(ownerContext, syntaxWrapper.GetContextInfoDto());
     }
-
 }
-
