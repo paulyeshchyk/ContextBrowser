@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
@@ -15,11 +16,14 @@ public class RoslynSemanticModelWrapper : ISemanticModelWrapper
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly SemanticModel _semanticModel;
+    private readonly ImmutableArray<Diagnostic> _diagnostics;
 
-    public RoslynSemanticModelWrapper(SemanticModel semanticModel, IAppLogger<AppLevel> logger)
+
+    public RoslynSemanticModelWrapper(ImmutableArray<Diagnostic> diagnostics, SemanticModel semanticModel, IAppLogger<AppLevel> logger)
     {
         _semanticModel = semanticModel;
         _logger = logger;
+        _diagnostics = diagnostics;
     }
 
 #warning set object to SyntaxNode
@@ -27,7 +31,8 @@ public class RoslynSemanticModelWrapper : ISemanticModelWrapper
     {
         if (node is not SyntaxNode syntaxNode)
         {
-            return Task.FromResult<object?>(null);
+            await Task.CompletedTask;
+            return null;
         }
         try
         {
@@ -38,25 +43,50 @@ public class RoslynSemanticModelWrapper : ISemanticModelWrapper
         catch (Exception ex)
         {
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Exception, ex.Message);
-            return Task.FromResult<object?>(null);
+            await Task.CompletedTask;
+            return null;
         }
     }
 
 #warning set object to MemberDeclarationSyntax
-    public object? GetDeclaredSymbol(object syntax, CancellationToken cancellationToken)
+    public async Task<object?> GetDeclaredSymbolAsync(object syntax, CancellationToken cancellationToken)
     {
         if (syntax is not MemberDeclarationSyntax syntaxNode)
         {
+            await Task.CompletedTask;
             return null;
         }
+
+        var targetTree = syntaxNode.SyntaxTree;
+        var compilation = _semanticModel.Compilation;
+        var location = syntaxNode.Span;
+
+        var root = targetTree.GetRoot(cancellationToken);
+
+        var node = root.FindNode(location);
+        if (node == null)
+        {
+            await Task.CompletedTask;
+            return null;
+        }
+
+        var currentModel = compilation.GetSemanticModel(targetTree);
+
         try
         {
-            return _semanticModel.GetDeclaredSymbol(syntaxNode, cancellationToken);
+            var result = currentModel.GetDeclaredSymbol(node, cancellationToken);
+            await Task.CompletedTask;
+
+            return result;
         }
         catch (Exception ex)
         {
-            var exText = $"Unable to get declared symbol for {syntaxNode.GetIdentifier()}, because of: {ex.Message}";
+            //FakeIdentifier
+            var identifier = syntaxNode.GetIdentifier();
+            var exText = $"Unable to get declared symbol for {identifier}, because of: {ex.Message}";
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Exception, exText);
+
+            await Task.CompletedTask;
             return null;
         }
     }
@@ -98,4 +128,8 @@ public class RoslynSemanticModelWrapper : ISemanticModelWrapper
             return null;
         }
     }
+
+    public ImmutableArray<Diagnostic> GetDiagnostics() => _diagnostics;
+
+    public object GetSemanticModel() => _semanticModel;
 }

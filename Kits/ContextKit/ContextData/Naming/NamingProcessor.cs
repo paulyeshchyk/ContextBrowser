@@ -17,7 +17,7 @@ public class NamingProcessor : INamingProcessor
     public string ClassDomainPumlFilename(string domain) => string.Format("class_domain_{0}.puml", domain.AlphanumericOnly());
 
     public string ClassOnlyDiagramId(string? className) => string.Format("class_only_{0}", className?.AlphanumericOnly());
-    public string ClassOnlyDiagramTitle(string? className) => string.Format("Class diagram -> {0}", className);
+    public string ClassOnlyDiagramTitle(string? className) => string.Format("Class diagram -> {0}", className?.AlphanumericOnly());
     public string ClassOnlyHtmlFilename(string? className) => string.Format("class_only_{0}.html", className?.AlphanumericOnly());
     public string ClassOnlyPumlFilename(string? className) => string.Format("class_only_{0}.puml", className?.AlphanumericOnly());
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ContextKit.Model;
+using ContextKit.Model.Service;
 
 namespace GraphKit.Walkers;
 
@@ -10,7 +11,7 @@ namespace GraphKit.Walkers;
 // pattern note: weak
 public sealed class DomainWalker : Walker<ContextInfo>
 {
-    public DomainWalker(string startingDomain, Action<ContextInfo>? visitCallback = null) : base(visitCallback)
+    public DomainWalker(string startingDomain, IContextInfoManager<ContextInfo> contextInfoManager, Action<ContextInfo>? visitCallback = null) : base(contextInfoManager, visitCallback)
     {
         StartingDomain = startingDomain;
     }

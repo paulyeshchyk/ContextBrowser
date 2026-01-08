@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
@@ -36,7 +38,7 @@ public class CSharpSyntaxParserInterface<TContext> : SyntaxParser<TContext>
 
     public override bool CanParseSyntax(object syntax) => syntax is InterfaceDeclarationSyntax;
 
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
+    public override async Task ParseAsync(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (syntax is not InterfaceDeclarationSyntax interfaceSyntax)
         {
@@ -48,7 +50,7 @@ public class CSharpSyntaxParserInterface<TContext> : SyntaxParser<TContext>
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - interface syntax");
 
-        var interfaceContext = _contextInfoBuilderDispatcher.DispatchAndBuild(default, interfaceSyntax, model, cancellationToken);
+        var interfaceContext = await _contextInfoBuilderDispatcher.DispatchAndBuildAsync(default, interfaceSyntax, model, cancellationToken).ConfigureAwait(false);
         if (interfaceContext == null)
         {
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, "Failed to build context for interface.");
@@ -58,13 +60,13 @@ public class CSharpSyntaxParserInterface<TContext> : SyntaxParser<TContext>
         var propertySyntaxes = interfaceSyntax.Members.OfType<PropertyDeclarationSyntax>();
         foreach (var propertySyntax in propertySyntaxes)
         {
-            _propertyDeclarationParser.Parse(interfaceContext, propertySyntax, model, options, cancellationToken);
+            await _propertyDeclarationParser.ParseAsync(interfaceContext, propertySyntax, model, options, cancellationToken).ConfigureAwait(false);
         }
 
-        _triviaCommentParser.Parse(interfaceContext, interfaceSyntax, model, options, cancellationToken);
+        await _triviaCommentParser.ParseAsync(interfaceContext, interfaceSyntax, model, options, cancellationToken);
 
         var methodSyntaxes = interfaceSyntax.Members.OfType<MethodDeclarationSyntax>();
 
-        _methodSyntaxParser.ParseMethodSyntax(interfaceContext, methodSyntaxes, model, cancellationToken);
+        await _methodSyntaxParser.ParseMethodSyntaxAsync(interfaceContext, methodSyntaxes, model, cancellationToken).ConfigureAwait(false);
     }
 }

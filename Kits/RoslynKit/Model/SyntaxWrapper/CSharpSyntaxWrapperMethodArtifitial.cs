@@ -26,6 +26,7 @@ public record CSharpSyntaxWrapperMethodArtifitial : ISyntaxWrapper
 
     public IContextInfo ContextOwner { get; set; }
 
+#warning incorrect mapping for void Console.Writeline(string? value)
     public CSharpSyntaxWrapperMethodArtifitial(ISyntaxWrapper wrapper, IContextInfo contextOwner)
     {
         ContextOwner = contextOwner;

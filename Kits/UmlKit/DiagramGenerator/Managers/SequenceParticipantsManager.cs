@@ -16,6 +16,7 @@ public static partial class SequenceParticipantsManager
     {
         ctx.Logger.WriteLog(AppLevel.P_Rnd, LogLevel.Trace, $"Adding participants for context: {ctx.RunContext}", LogLevelNode.Start);
 
+#warning namespace is expected
         var callerName = ctx.Transition.CallerClassName.AlphanumericOnly();
         var calleeName = ctx.Transition.CalleeClassName.AlphanumericOnly();
 

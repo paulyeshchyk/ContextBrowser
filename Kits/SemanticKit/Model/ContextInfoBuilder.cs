@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -12,14 +13,16 @@ public interface IContextInfoBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     ContextInfoElementType ElementType { get; }
+
     bool CanBuild(object syntax);
+
     bool CanBuild(ISyntaxWrapper syntax);
 
     // context: ContextInfo, build
-    TContext BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken);
+    Task<TContext> BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken);
 
     // context: ContextInfo, build
-    TContext BuildContextInfo(TContext? ownerContext, IContextInfo dto);
+    Task<TContext> BuildContextInfo(TContext? ownerContext, IContextInfo dto);
 }
 
 // context: ContextInfo, build
@@ -47,7 +50,6 @@ public abstract class ContextInfoBuilder<TContext, TSyntaxNode, TWrapper> : ICon
         _logger = logger;
         _symbolWrapperConverter = symbolWrapperConverter;
         _contextInfoDtoConverter = contextInfoDtoConverter;
-
     }
 
     public abstract ContextInfoElementType ElementType { get; }
@@ -57,27 +59,27 @@ public abstract class ContextInfoBuilder<TContext, TSyntaxNode, TWrapper> : ICon
     public abstract bool CanBuild(ISyntaxWrapper contextInfo);
 
     // context: ContextInfo, build
-    public virtual TContext BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
+    public virtual async Task<TContext> BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var syntaxNodeWrapper = new TWrapper();
         syntaxNodeWrapper.SetSyntax(syntaxNode);
 
-        var symbolInfo = _symbolWrapperConverter.Convert(semanticModel, syntaxNodeWrapper, cancellationToken);
+        var symbolInfo = await _symbolWrapperConverter.ConvertAsync(semanticModel, syntaxNodeWrapper, cancellationToken).ConfigureAwait(false);
         var dto = _contextInfoDtoConverter.Convert(ownerContext, syntaxNodeWrapper, symbolInfo, ElementType);
 
-        return BuildContextInfo(ownerContext, dto);
+        return await BuildContextInfo(ownerContext, dto).ConfigureAwait(false);
     }
 
     // context: ContextInfo, build
-    public virtual TContext BuildContextInfo(TContext? ownerContext, IContextInfo dto)
+    public virtual Task<TContext> BuildContextInfo(TContext? ownerContext, IContextInfo dto)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");
 
         var availableItem = _collector.GetItem(dto.FullName);
         if (availableItem != null)
-            return availableItem;
+            return Task.FromResult(availableItem);
 
         var result = _factory.Create(contextInfo: dto);
         lock (_lock)
@@ -86,7 +88,7 @@ public abstract class ContextInfoBuilder<TContext, TSyntaxNode, TWrapper> : ICon
 
             _collector.Add(result);
         }
-        return result;
+        return Task.FromResult(result);
     }
 }
 

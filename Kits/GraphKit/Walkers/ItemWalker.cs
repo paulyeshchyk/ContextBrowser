@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ContextKit.Model;
+using ContextKit.Model.Service;
 
 namespace GraphKit.Walkers;
 
@@ -17,13 +18,13 @@ public sealed class ItemWalker : Walker<ContextInfo>
 
     private readonly GetDescendantsFunction _onGetDescendants;
     private readonly GetDomainItemsFunction _onGetDomainItems;
-    private readonly ExportItem _onExportItem;
+    private readonly ExportItem _exportItem;
 
-    public ItemWalker(GetDescendantsFunction onGetDescendants, GetDomainItemsFunction onGetDomainItems, ExportItem onExportItem, Action<ContextInfo>? visitCallback = null) : base(visitCallback)
+    public ItemWalker(GetDescendantsFunction onGetDescendants, GetDomainItemsFunction onGetDomainItems, ExportItem exportItem, IContextInfoManager<ContextInfo> contextInfoManager, Action<ContextInfo>? visitCallback = null) : base(contextInfoManager, visitCallback)
     {
         _onGetDescendants = onGetDescendants;
         _onGetDomainItems = onGetDomainItems;
-        _onExportItem = onExportItem;
+        _exportItem = exportItem;
     }
 
     // context: build, Walker, graph
@@ -65,7 +66,7 @@ public sealed class ItemWalker : Walker<ContextInfo>
             var domainItems = _onGetDomainItems.Invoke(domain);
             foreach (var itemForDomain in domainItems)
             {
-                _onExportItem(caller, callee, itemForDomain, domain);
+                _exportItem(caller, callee, itemForDomain, domain);
 
                 if (!Visited.Contains(itemForDomain))
                     Walk(itemForDomain, true);

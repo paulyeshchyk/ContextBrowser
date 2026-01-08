@@ -22,12 +22,12 @@ public class RoslynCompilationBuilder : ICompilationBuilder<RoslynSyntaxTreeWrap
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IAssemblyFetcher<MetadataReference> _assemblyFetcher;
     private readonly ISyntaxCompiler<MetadataReference, RoslynSyntaxTreeWrapper, CSharpCompilation> _compiler;
-    private readonly ICompilationDiagnosticsInspector<CSharpCompilation> _diagnosticsInspector;
+    private readonly ICompilationDiagnosticsInspector<CSharpCompilation, Diagnostic> _diagnosticsInspector;
 
     public RoslynCompilationBuilder(
         IAppLogger<AppLevel> logger,
         ISyntaxCompiler<MetadataReference, RoslynSyntaxTreeWrapper, CSharpCompilation> compiler,
-        ICompilationDiagnosticsInspector<CSharpCompilation> diagnosticsInspector,
+        ICompilationDiagnosticsInspector<CSharpCompilation, Diagnostic> diagnosticsInspector,
         IAssemblyFetcher<MetadataReference> assemblyFetcher)
     {
         _logger = logger;
@@ -37,14 +37,14 @@ public class RoslynCompilationBuilder : ICompilationBuilder<RoslynSyntaxTreeWrap
     }
 
     // context: roslyn, build, compilationFlow
-    public ICompilationWrapper Build(SemanticOptions options, IEnumerable<RoslynSyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name, CancellationToken cancellationToken)
+    public async Task<ICompilationWrapper> BuildAsync(SemanticOptions options, IEnumerable<RoslynSyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name, CancellationToken cancellationToken)
     {
         var assemblies = _assemblyFetcher.Fetch(options.SemanticFilters);
 
         var compilation = _compiler.CreateCompilation(options, syntaxTrees, name, assemblies);
 
-        _diagnosticsInspector.LogAndFilterDiagnostics(compilation, cancellationToken);
+        var diagnostics = await _diagnosticsInspector.LogAndFilterDiagnosticsAsync(compilation, cancellationToken).ConfigureAwait(false);
 
-        return new RoslynCompilationWrapper(compilation, _logger);
+        return new RoslynCompilationWrapper(compilation, diagnostics, _logger);
     }
 }

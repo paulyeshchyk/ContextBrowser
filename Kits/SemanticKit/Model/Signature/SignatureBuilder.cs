@@ -1,9 +1,10 @@
-using Microsoft.CodeAnalysis;
+using SemanticKit.Model.Signature;
 
-namespace RoslynKit.Signature.SignatureBuilder;
+namespace SemanticKit.Model.Signature;
 
 // context: signature, build
-public abstract class SignatureBuilder
+public abstract class SignatureBuilder<TSymbol>
+    where TSymbol: notnull
 {
     public bool IncludeGenerics;
     public bool IncludeParameters;
@@ -16,7 +17,7 @@ public abstract class SignatureBuilder
     {
     }
 
-    protected SignatureBuilder(SignatureBuilder source)
+    protected SignatureBuilder(SignatureBuilder<TSymbol> source)
     {
         IncludeContainingType = source.IncludeContainingType;
         IncludeParameters = source.IncludeParameters;
@@ -25,42 +26,42 @@ public abstract class SignatureBuilder
         QualifyTypes = source.QualifyTypes;
     }
 
-    public SignatureBuilder SetIncludeGenerics(bool value)
+    public SignatureBuilder<TSymbol> SetIncludeGenerics(bool value)
     {
         IncludeGenerics = value;
         return this;
     }
 
-    public SignatureBuilder SetIncludeParameters(bool value)
+    public SignatureBuilder<TSymbol> SetIncludeParameters(bool value)
     {
         IncludeParameters = value;
         return this;
     }
 
-    public SignatureBuilder SetIncludeReturnType(bool value)
+    public SignatureBuilder<TSymbol> SetIncludeReturnType(bool value)
     {
         IncludeReturnType = value;
         return this;
     }
 
-    public SignatureBuilder SetIncludeNamespace(bool value)
+    public SignatureBuilder<TSymbol> SetIncludeNamespace(bool value)
     {
         IncludeNamespace = value;
         return this;
     }
 
-    public SignatureBuilder SetIncludeContainingType(bool value)
+    public SignatureBuilder<TSymbol> SetIncludeContainingType(bool value)
     {
         IncludeContainingType = value;
         return this;
     }
 
-    public SignatureBuilder SetTypeQualification(bool value)
+    public SignatureBuilder<TSymbol> SetTypeQualification(bool value)
     {
         QualifyTypes = value;
         return this;
     }
 
     // context: signature, build
-    public abstract string Build(ISymbol symbol);
+    public abstract string Build(TSymbol symbol);
 }

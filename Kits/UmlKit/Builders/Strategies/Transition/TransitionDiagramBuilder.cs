@@ -14,18 +14,18 @@ using UmlKit.Infrastructure.Options;
 namespace UmlKit.Builders.Strategies;
 
 // context: builder, transition
-public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
+public class TransitionDiagramBuilder : IContextDiagramBuilder
 {
     private readonly List<ITransitionBuilder> _transitionBuilders;
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly ContextTransitionDiagramBuilderCache _cache;
+    private readonly TransitionDiagramBuilderCache _cache;
     private readonly ITensorClassifierDomainPerActionContext<ContextInfo> _contextClassifier;
 
-    public ContextTransitionDiagramBuilder(DiagramBuilderOptions options, IEnumerable<ITransitionBuilder> transitionBuilders, IAppLogger<AppLevel> logger, IAppOptionsStore optionsStore)
+    public TransitionDiagramBuilder(DiagramBuilderOptions options, IEnumerable<ITransitionBuilder> transitionBuilders, IAppLogger<AppLevel> logger, IAppOptionsStore optionsStore)
     {
         _transitionBuilders = transitionBuilders.Where(b => b.Direction == options.DiagramDirection).ToList();
         _logger = logger;
-        _cache = new ContextTransitionDiagramBuilderCache(_logger);
+        _cache = new TransitionDiagramBuilderCache(_logger);
         _contextClassifier = optionsStore.GetOptions<ITensorClassifierDomainPerActionContext<ContextInfo>>();
     }
 
@@ -62,7 +62,7 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
     internal GrouppedSortedTransitionList? FetchAndBuildTransitions(string name, FetchType fetchType, List<ContextInfo> allContexts)
     {
         var methods = FetchAllMethods(name, fetchType, allContexts, _contextClassifier);
-        if (!methods.Any())
+        if (methods.Count == 0)
         {
             _logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, $"[MISS] Fetch Не найдено методов для {fetchType} [{name}]");
             return null;
@@ -117,12 +117,12 @@ public class ContextTransitionDiagramBuilder : IContextDiagramBuilder
 }
 
 // context: share, transition, cache
-internal class ContextTransitionDiagramBuilderCache
+internal class TransitionDiagramBuilderCache
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly ConcurrentDictionary<string, GrouppedSortedTransitionList> _cache = new();
 
-    public ContextTransitionDiagramBuilderCache(IAppLogger<AppLevel> logger)
+    public TransitionDiagramBuilderCache(IAppLogger<AppLevel> logger)
     {
         _logger = logger;
     }

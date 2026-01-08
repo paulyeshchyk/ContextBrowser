@@ -173,20 +173,21 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
             var classesInNamespace = classes.Where(c => c.Namespace == ns).Distinct().ToList();
 
-            foreach (var cls in classesInNamespace)
+            foreach (var contextInfo in classesInNamespace)
             {
-                var htmlUrl = namingProcessor.ClassOnlyHtmlFilename(cls.FullName);
+                var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
+                var htmlUrl = namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace);
 
-                var entityType = cls.ElementType.ConvertToUmlEntityType();
-                var umlClass = new UmlEntity(entityType, cls.Name.PadRight(maxLength), cls.FullName.AlphanumericOnly(), url: htmlUrl);
-                var propsList = propssonly.Where(p => p.ClassOwner?.FullName.Equals(cls.FullName) ?? false).Distinct();
+                var entityType = contextInfo.ElementType.ConvertToUmlEntityType();
+                var umlClass = new UmlEntity(entityType, contextInfo.Name.PadRight(maxLength), contextInfo.FullName.AlphanumericOnly(), url: htmlUrl);
+                var propsList = propssonly.Where(p => p.ClassOwner?.FullName.Equals(contextInfo.FullName) ?? false).Distinct();
                 foreach (var element in propsList)
                 {
                     string? url = null;// UmlUrlBuilder.BuildUrl(element);
                     umlClass.Add(new UmlProperty(element.ShortName.PadRight(maxLength), visibility: UmlMemberVisibility.@public, url: url));
                 }
 
-                var methodList = methodsonly.Where(m => m.ClassOwner?.FullName.Equals(cls.FullName) ?? false).Distinct();
+                var methodList = methodsonly.Where(m => m.ClassOwner?.FullName.Equals(contextInfo.FullName) ?? false).Distinct();
                 foreach (var element in methodList)
                 {
                     string? url = null;//UmlUrlBuilder.BuildUrl(element);

@@ -1,4 +1,6 @@
-﻿using ContextBrowserKit.Log.Options;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
@@ -17,7 +19,7 @@ namespace RoslynKit.Lookup;
 /// <typeparam name="TContext">Тип возвращаемого контекста.</typeparam>
 /// <typeparam name="TSemanticModel"></typeparam>
 public class SymbolLookupHandlerMethod<TContext, TSemanticModel> : SymbolLookupHandler<TContext, TSemanticModel>
-    where TContext : class, IContextWithReferences<TContext>
+    where TContext : IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper
 
 {
@@ -39,12 +41,12 @@ public class SymbolLookupHandlerMethod<TContext, TSemanticModel> : SymbolLookupH
     /// </summary>
     /// <param name="symbolDto">Обертка над синтаксическим узлом вызова.</param>
     /// <returns>Найденный контекст или null, если не найден.</returns>
-    public override TContext? Handle(ISyntaxWrapper symbolDto)
+    public override async Task<TContext?> Handle(ISyntaxWrapper symbolDto)
     {
         if (!symbolDto.IsValid || string.IsNullOrWhiteSpace(symbolDto.FullName))
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol is not IMethodSymbol: {symbolDto.FullName}");
-            return base.Handle(symbolDto);
+            return await base.Handle(symbolDto);
         }
 
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[FALLBACK] Trying full signature: {symbolDto.FullName}");
@@ -54,7 +56,7 @@ public class SymbolLookupHandlerMethod<TContext, TSemanticModel> : SymbolLookupH
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol exists but fallback lookup failed: {symbolDto.FullName}");
 
             // Если не применимо или не найдено, передаем запрос следующему обработчику.
-            return base.Handle(symbolDto);
+            return await base.Handle(symbolDto);
         }
 
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[HIT] Recovered callee via full symbol: {symbolDto.FullName}");

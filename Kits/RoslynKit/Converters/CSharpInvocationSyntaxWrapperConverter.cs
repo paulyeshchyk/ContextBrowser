@@ -5,19 +5,34 @@ using RoslynKit.Model.SyntaxWrapper;
 using RoslynKit.Signature;
 using RoslynKit.Signature.SignatureBuilder;
 using SemanticKit.Model.Options;
+using SemanticKit.Model.Signature;
 using SemanticKit.Model.SyntaxWrapper;
 
 namespace RoslynKit.Converters;
 
-public static class CSharpInvocationSyntaxWrapperConverter
+public interface ICSharpInvocationSyntaxWrapperConverter
 {
-    public static CSharpSyntaxWrapperInvocation FromSymbols(ISymbol symbol, ExpressionSyntax syntax)
+    ISyntaxWrapper? FromExpression(ExpressionSyntax byInvocation, SemanticOptions options);
+    CSharpSyntaxWrapperInvocation FromSymbols(ExpressionSyntax syntax, ISymbol symbol);
+}
+
+
+public class CSharpInvocationSyntaxWrapperConverter : ICSharpInvocationSyntaxWrapperConverter
+{
+
+    private readonly ISignatureParser<CSharpIdentifier> _signatureParser;
+
+    public CSharpInvocationSyntaxWrapperConverter(ISignatureParser<CSharpIdentifier> signatureParser) => _signatureParser = signatureParser;
+
+
+    public CSharpSyntaxWrapperInvocation FromSymbols(ExpressionSyntax syntax, ISymbol symbol)
     {
+#warning do double check for Name = symbol.BuildNameAndClassOwnerName()
         var wrapper = new CSharpSyntaxWrapperInvocation()
         {
             ShortName = symbol.BuildShortName(),
             FullName = symbol.BuildFullMemberName(),
-            Name = symbol.BuildNameAndClassOwnerName(),
+            Name = symbol.BuildShortName(),
             Namespace = symbol.GetNamespaceOrGlobal(),
             Identifier = symbol.BuildFullMemberName(),
 
@@ -28,15 +43,13 @@ public static class CSharpInvocationSyntaxWrapperConverter
         return wrapper;
     }
 
-    public static ISyntaxWrapper? FromExpression(
-        ExpressionSyntax byInvocation,
-        SemanticOptions options)
+    public ISyntaxWrapper? FromExpression(ExpressionSyntax byInvocation, SemanticOptions options)
     {
         var raw = byInvocation.ConvertToMethodRawSignature(options);
         if (string.IsNullOrEmpty(raw))
             return null;
 
-        var signature = CSharpSignatureUtils.Parse(raw);
+        var signature = _signatureParser.Parse(raw);
 
         return new CSharpSyntaxWrapperInvocation()
         {

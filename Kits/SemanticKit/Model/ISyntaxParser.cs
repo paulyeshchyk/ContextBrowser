@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using ContextKit.Model;
 using SemanticKit.Model.Options;
 
@@ -11,5 +12,5 @@ public interface ISyntaxParser<TContext>
     bool CanParseSyntax(object syntax);
 
     // Выполняет парсинг синтаксического узла.
-    void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
+    Task ParseAsync(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
 }

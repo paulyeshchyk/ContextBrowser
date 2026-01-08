@@ -27,7 +27,7 @@ public class RoslynCompilationMapMapper : ICompilationMapMapper<RoslynSyntaxTree
     // context: roslyn, build, compilation
     public SemanticCompilationMap<RoslynSyntaxTreeWrapper> MapSemanticModelToCompilationMap(IEnumerable<RoslynSyntaxTreeWrapper> syntaxTrees, ICompilationWrapper compilation)
     {
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Making semantic models for {syntaxTrees.Count()} syntax tries", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Making semantic models for {syntaxTrees.Count()} syntax trees", LogLevelNode.Start);
 
         var compiledMaps = syntaxTrees
             .Select(tree => MapSemanticModelToSingleMap(compilation, tree))

@@ -22,6 +22,7 @@ internal static class MemberDeclarationSyntaxExtensions
             RecordDeclarationSyntax r => r.Identifier.Text,
             EnumDeclarationSyntax e => e.Identifier.Text,
             MethodDeclarationSyntax m => m.Identifier.Text,
+            InterfaceDeclarationSyntax i => i.Identifier.Text,
             BaseNamespaceDeclarationSyntax nn => nn.Name.ToFullString(),
             _ => SFakeIdentifier
         };
@@ -34,6 +35,7 @@ internal static class MemberDeclarationSyntaxExtensions
             RecordDeclarationSyntax r => r.Identifier.Text,
             EnumDeclarationSyntax e => e.Identifier.Text,
             MethodDeclarationSyntax m => m.Identifier.Text,
+            InterfaceDeclarationSyntax i => i.Identifier.Text,
             BaseNamespaceDeclarationSyntax nn => nn.Name.ToFullString(),
             _ => SFakeName
         };

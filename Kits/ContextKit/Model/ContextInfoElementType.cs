@@ -1,4 +1,6 @@
-﻿namespace ContextKit.Model;
+﻿using System;
+
+namespace ContextKit.Model;
 
 // context: model, ContextInfo
 public enum ContextInfoElementType

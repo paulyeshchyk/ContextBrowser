@@ -1,4 +1,5 @@
-﻿using UmlKit.Infrastructure.Options.Activation;
+﻿using System;
+using UmlKit.Infrastructure.Options.Activation;
 using UmlKit.Infrastructure.Options.Indication;
 
 namespace UmlKit.Infrastructure.Options;

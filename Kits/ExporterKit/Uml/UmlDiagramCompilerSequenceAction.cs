@@ -7,6 +7,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
+using ContextKit.Model.Service;
 using ExporterKit.Uml.DiagramCompileOptions;
 using LoggerKit;
 using TensorKit.Model;
@@ -25,15 +26,18 @@ public class UmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
     private readonly IContextInfoMapperProvider<DomainPerActionTensor> _mapperProvider;
     private readonly IAppOptionsStore _optionsStore;
     private readonly INamingProcessor _namingProcessor;
+    private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
+    private readonly IContextDiagramBuildersFactory _diagramBuildersFactory;
 
-    public UmlDiagramCompilerSequenceAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IContextInfoMapperProvider<DomainPerActionTensor> mapperProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor)
+    public UmlDiagramCompilerSequenceAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IContextInfoMapperProvider<DomainPerActionTensor> mapperProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IContextInfoManager<ContextInfo> contextInfoManager, IContextDiagramBuildersFactory diagramBuildersFactory)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _mapperProvider = mapperProvider;
         _optionsStore = optionsStore;
         _namingProcessor = namingProcessor;
-
+        _contextInfoManager = contextInfoManager;
+        _diagramBuildersFactory = diagramBuildersFactory;
     }
 
     // context: uml, build
@@ -64,7 +68,8 @@ public class UmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
     protected bool GenerateSingle(ExportOptions exportOptions, DiagramBuilderOptions diagramBuildingOptions, IDiagramCompileOptions compileOptions, List<ContextInfo> allContexts)
     {
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling Sequence {compileOptions.FetchType} [{compileOptions.MetaItem}]", LogLevelNode.Start);
-        var bf = ContextDiagramBuildersFactory.TransitionBuilder(diagramBuildingOptions, _logger, _optionsStore);
+
+        var bf = _diagramBuildersFactory.BuilderForType(DiagramBuilderKeys.Transition, diagramBuildingOptions, _logger, _contextInfoManager, _optionsStore);
 
         var diagramCompilerSequence = new UmlDiagramCompilerSequence(logger: _logger, exportOptions, diagramBuildingOptions, bf, _namingProcessor);
         var rendered = diagramCompilerSequence.Compile(compileOptions.MetaItem, compileOptions.FetchType, compileOptions.DiagramId, compileOptions.DiagramTitle, compileOptions.OutputFileName, allContexts, CancellationToken.None);

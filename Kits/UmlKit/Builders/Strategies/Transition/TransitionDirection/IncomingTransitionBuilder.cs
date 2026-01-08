@@ -3,6 +3,7 @@ using System.Linq;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
+using ContextKit.Model.Service;
 using LoggerKit;
 using UmlKit.Builders.Model;
 using UmlKit.Infrastructure.Options;
@@ -12,10 +13,14 @@ namespace UmlKit.Builders.TransitionDirection;
 public class IncomingTransitionBuilder : ITransitionBuilder
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
 
-    public IncomingTransitionBuilder(IAppLogger<AppLevel> logger)
+
+    public IncomingTransitionBuilder(IAppLogger<AppLevel> logger, IContextInfoManager<ContextInfo> contextInfoManager)
     {
         _logger = logger;
+        _contextInfoManager = contextInfoManager;
+
     }
 
     public DiagramDirection Direction => DiagramDirection.Incoming;

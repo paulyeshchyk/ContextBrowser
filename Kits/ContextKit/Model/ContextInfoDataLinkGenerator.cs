@@ -12,11 +12,14 @@ public class ContextInfoDataLinkGenerator
 {
     private readonly IContextClassifier<ContextInfo> _wordRoleClassifier;
     private readonly IFakeDimensionClassifier _fakeDimensionClassifier;
+    private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
 
-    public ContextInfoDataLinkGenerator(IAppOptionsStore appOptionsStore)
+    public ContextInfoDataLinkGenerator(IAppOptionsStore appOptionsStore, IContextInfoManager<ContextInfo> contextInfoManager)
     {
         _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier<ContextInfo>>();
         _fakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
+        _contextInfoManager = contextInfoManager;
+
     }
 
     // context: ContextInfo, read
@@ -31,7 +34,7 @@ public class ContextInfoDataLinkGenerator
             if (string.IsNullOrWhiteSpace(callerId) || !methodToCell.TryGetValue(callerId, out var fromCell))
                 continue;
 
-            var references = ContextInfoService.GetReferencesSortedByInvocation(callerMethod);
+            var references = _contextInfoManager.GetReferencesSortedByInvocation(callerMethod);
             foreach (var calledName in references)
             {
                 var calleeMethod = elements.FirstOrDefault(m => string.Equals(m.Name, calledName.Name, StringComparison.OrdinalIgnoreCase));

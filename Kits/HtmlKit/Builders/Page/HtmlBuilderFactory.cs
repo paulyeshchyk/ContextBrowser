@@ -12,12 +12,14 @@ public static partial class HtmlBuilderFactory
     public static class JsScripts
     {
         public static readonly string JsShowTabsheetTabScript = Resources.JsShowTabseetTabScript;
+        public static readonly string JsScrollToTop = Resources.JsScrollToTop;
     }
 
     public static class CssStyles
     {
         public static readonly string CssBase = Resources.HtmlProducerContentStyle;
         public static readonly string CssTabsheet = Resources.CssTabsheetTabs;
+        public static readonly string CssScrollToTop = Resources.CssScrollToTop;
     }
 
     // Общие теги, поведение которых не сильно отличается от базового HtmlBuilderBase

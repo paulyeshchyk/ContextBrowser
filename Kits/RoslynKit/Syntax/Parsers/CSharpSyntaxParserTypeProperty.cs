@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -36,7 +37,7 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
 
     public override bool CanParseSyntax(object syntax) => syntax is PropertyDeclarationSyntax;
 
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
+    public override async Task ParseAsync(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (syntax is not PropertyDeclarationSyntax propertySyntax)
         {
@@ -49,7 +50,7 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, "Parsing files: phase 1 - property syntax");
 
         //1.Создание контекста для самого свойства
-        var propertyContext = _contextInfoBuilderDispatcher.DispatchAndBuild(parent, propertySyntax, model, cancellationToken);
+        var propertyContext = await _contextInfoBuilderDispatcher.DispatchAndBuildAsync(parent, propertySyntax, model, cancellationToken).ConfigureAwait(false);
         if (propertyContext == null)
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Err, "Failed to build context for property.", LogLevelNode.End);
@@ -60,7 +61,7 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"{parent?.Name}.{propertyContext.Name} added");
 
         // 2. Парсинг комментариев
-        _triviaCommentParser.Parse(propertyContext, propertySyntax, model, options, cancellationToken);
+        await _triviaCommentParser.ParseAsync(propertyContext, propertySyntax, model, options, cancellationToken).ConfigureAwait(false);
 
         // 3. Обработка типа свойства (рекурсивный обход)
         var propertyTypeSyntax = propertySyntax.Type;
@@ -98,6 +99,6 @@ public class CSharpSyntaxParserTypeProperty<TContext> : SyntaxParser<TContext>
             return;
         }
 
-        _contextInfoBuilderDispatcher.DispatchAndBuild(default, declarationSyntax, model, cancellationToken);
+        await _contextInfoBuilderDispatcher.DispatchAndBuildAsync(default, declarationSyntax, model, cancellationToken).ConfigureAwait(false);
     }
 }

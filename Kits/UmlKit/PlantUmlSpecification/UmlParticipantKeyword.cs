@@ -1,4 +1,6 @@
-﻿namespace UmlKit.PlantUmlSpecification;
+﻿using System;
+
+namespace UmlKit.PlantUmlSpecification;
 
 public enum UmlParticipantKeyword
 {

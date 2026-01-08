@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Options;
+﻿using System.Threading.Tasks;
+using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
 using RoslynKit;
@@ -15,7 +16,7 @@ namespace RoslynKit.Lookup;
 /// <typeparam name="TContext">Тип возвращаемого контекста.</typeparam>
 /// <typeparam name="TSemanticModel"></typeparam>
 public abstract class SymbolLookupHandler<TContext, TSemanticModel> : ISymbolLookupHandler<TContext, TSemanticModel>
-    where TContext : class, IContextWithReferences<TContext>
+    where TContext : IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper
 {
     protected ISymbolLookupHandler<TContext, TSemanticModel>? _nextHandler;
@@ -47,8 +48,10 @@ public abstract class SymbolLookupHandler<TContext, TSemanticModel> : ISymbolLoo
     /// </summary>
     /// <param name="symbolDto">Обертка над синтаксическим узлом вызова.</param>
     /// <returns>Найденный контекст или null.</returns>
-    public virtual TContext? Handle(ISyntaxWrapper symbolDto)
+    public virtual async Task<TContext?> Handle(ISyntaxWrapper symbolDto)
     {
-        return _nextHandler?.Handle(symbolDto);
+        if (_nextHandler == null)
+            return default;
+        return await _nextHandler.Handle(symbolDto);
     }
 }

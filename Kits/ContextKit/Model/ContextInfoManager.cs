@@ -3,10 +3,20 @@ using System.Linq;
 
 namespace ContextKit.Model.Service;
 
-public static class ContextInfoService
+public interface IContextInfoManager<T>
+    where T : IContextWithReferences<T>
 {
-    public static bool AddToReferences<T>(T? source, T? callee)
-        where T : IContextWithReferences<T>
+    bool AddToInvokedBy(T caller, T callee);
+    bool AddToOwns(T source, T property);
+    bool AddToProperties(T source, T property);
+    bool AddToReferences(T? source, T? callee);
+    IEnumerable<ContextInfo> GetReferencesSortedByInvocation(T source);
+}
+
+public class ContextInfoManager<T> : IContextInfoManager<T>
+    where T : IContextWithReferences<T>
+{
+    public bool AddToReferences(T? source, T? callee)
     {
         if (source == null)
             return false;
@@ -23,29 +33,25 @@ public static class ContextInfoService
         return true;
     }
 
-    public static bool AddToInvokedBy<T>(T caller, T callee)
-        where T : IContextWithReferences<T>
+    public bool AddToInvokedBy(T caller, T callee)
     {
         _ = callee.InvokedBy.Add(caller);
         return true;
     }
 
-    public static bool AddToProperties<T>(T source, T property)
-        where T : IContextWithReferences<T>
+    public bool AddToProperties(T source, T property)
     {
         _ = source.Properties.Add(property);
         return true;
     }
 
-    public static bool AddToOwns<T>(T source, T property)
-        where T : IContextWithReferences<T>
+    public bool AddToOwns(T source, T property)
     {
         _ = source.Owns.Add(property);
         return true;
     }
 
-    public static IEnumerable<ContextInfo> GetReferencesSortedByInvocation<T>(T source)
-        where T : IContextInfo, IContextWithReferences<T>
+    public IEnumerable<ContextInfo> GetReferencesSortedByInvocation(T source)
     {
         return (IEnumerable<ContextInfo>)source.References.OrderBy(t => t.SpanStart);
     }

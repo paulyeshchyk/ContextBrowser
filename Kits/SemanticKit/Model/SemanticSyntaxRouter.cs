@@ -37,7 +37,7 @@ public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
                 continue;
             }
 
-            parser.Parse(default, item, model, options, cancellationToken);
+            parser.ParseAsync(default, item, model, options, cancellationToken);
         }
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);

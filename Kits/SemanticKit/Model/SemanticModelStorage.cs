@@ -9,7 +9,7 @@ namespace SemanticKit.Model;
 
 //context: roslyn, read, create, update, delete
 public class SemanticModelStorage<TSyntaxTreeWrapper> : ISemanticModelStorage<TSyntaxTreeWrapper, ISemanticModelWrapper>
-    where TSyntaxTreeWrapper: ISyntaxTreeWrapper
+    where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
     private readonly LRUCache<string, CompilationMap<TSyntaxTreeWrapper>> _cache;
     private readonly IAppLogger<AppLevel> _logger;
@@ -48,8 +48,7 @@ public class SemanticModelStorage<TSyntaxTreeWrapper> : ISemanticModelStorage<TS
         return _cache.TryGetValue(filePath, out var map) ? map?.SemanticModel : null;
     }
 
-    public IEnumerable<TSyntaxTreeWrapper> GetAllSyntaxTrees()
-        => _cache.Values.Select(v => v.SyntaxTree);
+    public IEnumerable<TSyntaxTreeWrapper> GetAllSyntaxTrees() => _cache.Values.Select(v => v.SyntaxTree);
 
     public void Flush() => _cache.Clear();
 

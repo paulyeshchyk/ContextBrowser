@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -17,7 +18,7 @@ using SemanticKit.Model.Options;
 namespace RoslynKit.Assembly;
 
 // context: roslyn, read
-public class RoslynDiagnosticsInspector : ICompilationDiagnosticsInspector<CSharpCompilation>
+public class RoslynDiagnosticsInspector : ICompilationDiagnosticsInspector<CSharpCompilation, Diagnostic>
 {
     private readonly IAppLogger<AppLevel> _logger;
 
@@ -27,7 +28,7 @@ public class RoslynDiagnosticsInspector : ICompilationDiagnosticsInspector<CShar
     }
 
     // context: roslyn, read
-    public void LogAndFilterDiagnostics(CSharpCompilation compilation, CancellationToken cancellationToken)
+    public Task<ImmutableArray<Diagnostic>> LogAndFilterDiagnosticsAsync(CSharpCompilation compilation, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Preparing diagnostics", LogLevelNode.Start);
         var diagnostics = compilation.GetDiagnostics(cancellationToken);
@@ -43,5 +44,7 @@ public class RoslynDiagnosticsInspector : ICompilationDiagnosticsInspector<CShar
             }
         }
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+
+        return Task.FromResult(diagnostics);
     }
 }

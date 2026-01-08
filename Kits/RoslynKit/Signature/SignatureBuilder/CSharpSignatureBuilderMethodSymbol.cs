@@ -3,13 +3,14 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using RoslynKit.AWrappers;
+using SemanticKit.Model.Signature;
 
 namespace RoslynKit.Signature.SignatureBuilder;
 
 // context: roslyn, signature, build
-internal class CSharpSignatureBuilderMethodSymbol : SignatureBuilder
+internal class CSharpSignatureBuilderMethodSymbol : SignatureBuilder<ISymbol>
 {
-    public CSharpSignatureBuilderMethodSymbol(SignatureBuilder sb) : base(sb)
+    public CSharpSignatureBuilderMethodSymbol(SignatureBuilder<ISymbol> sb) : base(sb)
     {
 
     }

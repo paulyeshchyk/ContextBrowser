@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;
@@ -13,21 +14,33 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Assembly;
 
+public interface ISymbolLoader<TMemberDeclarationSyntax, TSymbol>
+where TMemberDeclarationSyntax : MemberDeclarationSyntax
+where TSymbol : class, ISymbol
+{
+    Task<TSymbol?> LoadSymbolAsync(TMemberDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken);
+}
+
 // context: roslyn, read
-public static class RoslynSymbolLoader
+
+public class RoslynSymbolLoader<TMemberDeclarationSyntax, TSymbol> : ISymbolLoader<TMemberDeclarationSyntax, TSymbol>
+    where TMemberDeclarationSyntax : MemberDeclarationSyntax
+    where TSymbol : class, ISymbol
 {
 
-    // context: roslyn, read
-    public static ISymbol? LoadSymbol(MemberDeclarationSyntax? syntax, ISemanticModelWrapper model, IAppLogger<AppLevel> logger, CancellationToken cancellationToken)
-    {
-        if (syntax == null)
-        {
-            return default;
-        }
+    private readonly IAppLogger<AppLevel> _logger;
 
+    public RoslynSymbolLoader(IAppLogger<AppLevel> logger) => _logger = logger;
+
+
+    // context: roslyn, read
+
+    public async Task<TSymbol?> LoadSymbolAsync(TMemberDeclarationSyntax syntax, ISemanticModelWrapper model, CancellationToken cancellationToken)
+    {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var declaredSymbol = model.GetDeclaredSymbol(syntax, cancellationToken);
-        return declaredSymbol as ISymbol ?? default;
+        var declaredSymbol = await model.GetDeclaredSymbolAsync(syntax, cancellationToken).ConfigureAwait(false);
+
+        return (TSymbol?)declaredSymbol;
     }
 }

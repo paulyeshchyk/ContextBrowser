@@ -1,209 +1,186 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+    <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
+    <resheader name="resmimetype">text/microsoft-resx</resheader><resheader name="version">2.0</resheader><resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader><resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader><data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data><data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data><data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64"><value>[base64 mime encoded serialized .NET Framework object]</value></data><data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64"><value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value><comment>This is a comment</comment></data>
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
+    <xsd:schema id="root"
+        xmlns=""
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+        <xsd:element name="root" msdata:IsDataSet="true">
             <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string" />
+                            <xsd:attribute name="type" type="xsd:string" />
+                            <xsd:attribute name="mimetype" type="xsd:string" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                        <xsd:complexType>
+                            <xsd:attribute name="alias" type="xsd:string" />
+                            <xsd:attribute name="name" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
             </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="HtmlProducerContentStyle" xml:space="preserve">
-    <value>
-:root {
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="HtmlProducerContentStyle" xml:space="preserve">
+        <value>:root {
   --link-color: #0077cc;
   --cell-border-color: #cccccc;
   --cell-border-color-dark: #c0c0c0;
   --border-summary: #f3f3f3;
   --border-metadata: #f3f3f3;
-
   --cell-background-light: #f0f0f0;
   --cell-background-dark: #e0e0e0;
-
   --cell-padding: 6px 10px;
   --alt-cell-padding: 1px 1px;
-
   --link-text-decoration: none;
   --link-text-align: inherit;
   --link-color-inherit: inherit;
   --link-white-space: nowrap;
   --link-overflow: hidden;
   --link-text-overflow: ellipsis;
-}
-
-/* Встраиваемая таблица: полностью занимает контейнер */
+} /* Встраиваемая таблица: полностью занимает контейнер */
 .embedded-table {
-    width: 100%;
-    height: 100%;
-    table-layout: fixed;           /* важен для ограничения размеров */
-    border-collapse: collapse;
-    font-size: 0.65em;             /* масштабируем шрифт */
-    overflow: hidden;
-    border: none;
-    background-color: inherit;
-}
-
-/* Ячейки подтаблицы */
+  width: 100%;
+  height: 100%;
+  table-layout: fixed; /* важен для ограничения размеров */
+  border-collapse: collapse;
+  font-size: 0.65em; /* масштабируем шрифт */
+  overflow: hidden;
+  border: none;
+  background-color: inherit;
+} /* Ячейки подтаблицы */
 .embedded-table td {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 1px 2px;
-    font-size: inherit;
-    background-color: inherit;     /* наследовать фон от родителя */
-    border: none;                  /* убираем границы, чтобы визуально не рвали контейнер */
-}
-
-/* Строки */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 1px 2px;
+  font-size: inherit;
+  background-color: inherit; /* наследовать фон от родителя */
+  border: none; /* убираем границы, чтобы визуально не рвали контейнер */
+} /* Строки */
 .embedded-table tr {
-    background-color: inherit;     /* наследуем фон */
-    border: none;
+  background-color: inherit; /* наследуем фон */
+  border: none;
 }
-
 .cell_data a {
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-    color: inherit;
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
 }
 .some_special_cell_class a {
   padding: var(--alt-cell-padding);
 }
-
 .cell_data a:hover {
-  background-color: color-mix(in srgb, var(--original-background-color) 90%, black 10%) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--original-background-color) 90%,
+    black 10%
+  ) !important;
 }
-
 .cell_data .embedded-table tr {
-    pointer-events: none;
+  pointer-events: none;
 }
-
 .cell_data .embedded-table td {
-    pointer-events: none;
-}
-
-/* Отключаем hover-подсветку внутри встраиваемой таблицы */
+  pointer-events: none;
+} /* Отключаем hover-подсветку внутри встраиваемой таблицы */
 .cell_data:hover .embedded-table td,
 .cell_data:hover .embedded-table tr {
-    background-color: inherit !important;
+  background-color: inherit !important;
 }
-
 tr:hover td .embedded-table th,
 tr:hover td .embedded-table td,
 tr:hover td .embedded-table tr {
   background-color: inherit !important;
 }
-
 a:link,
 a:visited,
 a:hover,
@@ -211,7 +188,6 @@ a:active {
   color: var(--link-color);
   text-decoration: var(--link-text-decoration);
 }
-
 table {
   border-collapse: collapse;
   border-spacing: 0;
@@ -219,18 +195,15 @@ table {
   width: auto;
   font-family: sans-serif;
 }
-
 th,
 td {
   border: 1px solid var(--cell-border-color);
 }
-
 table,
 th,
 td {
   user-select: none;
 }
-
 th {
   font-weight: normal;
   border: 1px solid var(--cell-border-color);
@@ -238,18 +211,15 @@ th {
   text-align: center;
   position: relative;
 }
-
 th.hover-col {
   background-color: var(--cell-background-light);
 }
-
 td {
   border: 1px solid var(--cell-border-color);
   padding: 0;
   text-align: center;
   position: relative;
 }
-
 th a,
 td a {
   display: block;
@@ -263,231 +233,203 @@ td a {
   overflow: var(--link-overflow);
   text-overflow: var(--link-text-overflow);
 }
-
 th:hover,
 td:hover {
   background-color: var(--cell-background-light);
   cursor: pointer;
 }
-
 tr:hover td {
   background-color: var(--cell-background-light);
 }
-
 tr:hover th {
   background-color: var(--cell-background-light);
 }
-
 td.hover-col {
   background-color: var(--cell-background-light);
 }
-
 td.hover-col.hover-cell {
   background-color: var(--cell-background-dark);
 }
-
 .row_meta {
-  border-top: 1px solid var(--cell-border-color);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-  border-left: 1px solid var(--cell-border-color);    /* Лево */
-  border-right: 1px solid var(--cell-border-color);   /* Право */
+  border-top: 1px solid var(--cell-border-color); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color); /* Низ */
+  border-left: 1px solid var(--cell-border-color); /* Лево */
+  border-right: 1px solid var(--cell-border-color); /* Право */
   background-color: var(--border-metadata);
 }
-
 .cell_summary_caption {
-  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  border-top: 1px solid var(--cell-border-color-dark); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark); /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark); /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark); /* Право */
   background-color: var(--border-summary);
 }
-
 .cell_col_meta {
-  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-  border-left: 1px solid var(--cell-border-color);    /* Лево */
-  border-right: 1px solid var(--cell-border-color);   /* Право */
+  border-top: 1px solid var(--cell-border-color-dark); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark); /* Низ */
+  border-left: 1px solid var(--cell-border-color); /* Лево */
+  border-right: 1px solid var(--cell-border-color); /* Право */
 }
-
 .cell_row_meta {
-  border-top: 1px solid var(--cell-border-color);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  border-top: 1px solid var(--cell-border-color); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color); /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark); /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark); /* Право */
   background-color: var(--border-metadata);
 }
-
 .row_summary {
-  border-top: 1px solid var(--cell-border-color);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-  border-left: 1px solid var(--cell-border-color);    /* Лево */
-  border-right: 1px solid var(--cell-border-color);   /* Право */
+  border-top: 1px solid var(--cell-border-color); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color); /* Низ */
+  border-left: 1px solid var(--cell-border-color); /* Лево */
+  border-right: 1px solid var(--cell-border-color); /* Право */
 }
-
 .cell_total_summary {
-  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
-  background-color: var(--border-summary);
-}
-
-.cell_data {
-  border-top: 1px solid var(--cell-border-color);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-  border-left: 1px solid var(--cell-border-color);    /* Лево */
-  border-right: 1px solid var(--cell-border-color);   /* Право */
-}
-
-.row_data {
-  border-top: 1px solid var(--cell-border-color);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color);  /* Низ */
-  border-left: 1px solid var(--cell-border-color);    /* Лево */
-  border-right: 1px solid var(--cell-border-color);   /* Право */
-}
-
-.cell_colsummary {
-  border-top: 1px solid var(--cell-border-color-dark);    /* Верх */
+  border-top: 1px solid var(--cell-border-color-dark); /* Верх */
   border-bottom: 1px solid var(--cell-border-color-dark); /* Низ */
-  border-left: 1px solid var(--cell-border-color);        /* Лево */
-  border-right: 1px solid var(--cell-border-color);       /* Право */
+  border-left: 1px solid var(--cell-border-color-dark); /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark); /* Право */
   background-color: var(--border-summary);
 }
-
+.cell_data {
+  border-top: 1px solid var(--cell-border-color); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color); /* Низ */
+  border-left: 1px solid var(--cell-border-color); /* Лево */
+  border-right: 1px solid var(--cell-border-color); /* Право */
+}
+.row_data {
+  border-top: 1px solid var(--cell-border-color); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color); /* Низ */
+  border-left: 1px solid var(--cell-border-color); /* Лево */
+  border-right: 1px solid var(--cell-border-color); /* Право */
+}
+.cell_colsummary {
+  border-top: 1px solid var(--cell-border-color-dark); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark); /* Низ */
+  border-left: 1px solid var(--cell-border-color); /* Лево */
+  border-right: 1px solid var(--cell-border-color); /* Право */
+  background-color: var(--border-summary);
+}
 .cell_rowsummary {
-  border-top: 1px solid var(--cell-border-color);         /* Верх */
-  border-bottom: 1px solid var(--cell-border-color);      /* Низ */
-  border-left: 1px solid var(--cell-border-color-dark);   /* Лево */
-  border-right: 1px solid var(--cell-border-color-dark);  /* Право */
+  border-top: 1px solid var(--cell-border-color); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color); /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark); /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark); /* Право */
   background-color: var(--border-summary);
 }
-
 .cell_actiondomain {
-  border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-  border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-  border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-  border-right: 1px solid var(--cell-border-color-dark);   /* Право */
+  border-top: 1px solid var(--cell-border-color-dark); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark); /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark); /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark); /* Право */
   background-color: var(--border-summary);
 }
-
-.nav-link-span
-{
-    display: none;
+.nav-link-span {
+  display: none;
 }
-
 .nav-link {
-    border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-    border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-    border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-    border-right: 0px solid var(--cell-border-color-dark);   /* Право */
-    background-color: var(--border-summary);
-    border-radius: 0px;
+  border-top: 1px solid var(--cell-border-color-dark); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark); /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark); /* Лево */
+  border-right: 0px solid var(--cell-border-color-dark); /* Право */
+  background-color: var(--border-summary);
+  border-radius: 0px;
 }
-
 .nav-link-current {
-    border-top: 1px solid var(--cell-border-color-dark);     /* Верх */
-    border-bottom: 1px solid var(--cell-border-color-dark);  /* Низ */
-    border-left: 1px solid var(--cell-border-color-dark);    /* Лево */
-    border-right: 1px solid var(--cell-border-color-dark);   /* Право */
-    background-color: var(--border-summary);
-    border-radius: 0px;
-    border-radius: 0px;
+  border-top: 1px solid var(--cell-border-color-dark); /* Верх */
+  border-bottom: 1px solid var(--cell-border-color-dark); /* Низ */
+  border-left: 1px solid var(--cell-border-color-dark); /* Лево */
+  border-right: 1px solid var(--cell-border-color-dark); /* Право */
+  background-color: var(--border-summary);
+  border-radius: 0px;
+  border-radius: 0px;
 }
-
 .nav-link,
 .nav-link-current {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    display: inline-block; /* Чтобы элемент мог принимать отступы и размеры */
-    padding: 5px 10px; /* Отступ внутри прямоугольника */
-    margin: 5px 0px; /* Отступ между элементами */
-    text-decoration: none; /* Убираем подчёркивание */
-    color: inherit; /* Наследуем цвет текста от родителя */
-    cursor: pointer; /* Делаем курсор "указатель" для всех элементов */
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  display: inline-block; /* Чтобы элемент мог принимать отступы и размеры */
+  padding: 5px 10px; /* Отступ внутри прямоугольника */
+  margin: 5px 0px; /* Отступ между элементами */
+  text-decoration: none; /* Убираем подчёркивание */
+  color: inherit; /* Наследуем цвет текста от родителя */
+  cursor: pointer; /* Делаем курсор "указатель" для всех элементов */
 }
-
 .nav-link:hover,
 .nav-link:active,
 .nav-link:visited {
-    background-color: var(--cell-background-light);
-    color: var(--link-color);
-    text-decoration: none;
+  background-color: var(--cell-background-light);
+  color: var(--link-color);
+  text-decoration: none;
 }
 .nav-link:hover {
-    background-color: var(--cell-background-dark);
-}
-
-/* Стили для текущего, некликабельного элемента */
+  background-color: var(--cell-background-dark);
+} /* Стили для текущего, некликабельного элемента */
 .nav-link-current {
-    background-color: var(--cell-background-dark);
-    cursor: default;
-    pointer-events: none; /* Полностью отключаем события мыши, чтобы нельзя было нажать */
+  background-color: var(--cell-background-dark);
+  cursor: default;
+  pointer-events: none; /* Полностью отключаем события мыши, чтобы нельзя было нажать */
 }
-
 .left-aligned {
-    text-align: left;
+  text-align: left;
 }
-
 .center-aligned {
-    text-align: center;
+  text-align: center;
 }
-
 .right-aligned {
-    text-align: right;
+  text-align: right;
 }
-
-    </value>
-  </data>
-  <data name="HtmlProducerContentStyleScript" xml:space="preserve">
-    <value>
+        </value>
+    </data>
+    <data name="HtmlProducerContentStyleScript" xml:space="preserve">
+        <value>
 document.addEventListener('DOMContentLoaded', () =&gt; {
-	const table = document.querySelector('table');
-	const rows = Array.from(table.rows);
-	const headerRow = rows[0];
+    const table = document.querySelector('table');
+    const rows = Array.from(table.rows);
+    const headerRow = rows[0];
 
-	rows.forEach(row =&gt; {
-		Array.from(row.cells).forEach((cell, colIndex) =&gt; {
-			// Здесь переменная cell доступна
+    rows.forEach(row =&gt; {
+        Array.from(row.cells).forEach((cell, colIndex) =&gt; {
+            // Здесь переменная cell доступна
 
-			cell.addEventListener('mouseenter', () =&gt; {
-				// Логика подсветки колонок в теле
-				rows.forEach(r =&gt; {
-					if (r.cells[colIndex]) {
-						r.cells[colIndex].classList.add('hover-col');
-					}
-				});
+            cell.addEventListener('mouseenter', () =&gt; {
+                // Логика подсветки колонок в теле
+                rows.forEach(r =&gt; {
+                    if (r.cells[colIndex]) {
+                        r.cells[colIndex].classList.add('hover-col');
+                    }
+                });
 
-				// Логика подсветки заголовка
-				if (headerRow.cells[colIndex]) {
-					headerRow.cells[colIndex].classList.add('hover-col');
-				}
+                // Логика подсветки заголовка
+                if (headerRow.cells[colIndex]) {
+                    headerRow.cells[colIndex].classList.add('hover-col');
+                }
 
-				// Логика подсветки самой ячейки
-				cell.classList.add('hover-cell');
-			});
+                // Логика подсветки самой ячейки
+                cell.classList.add('hover-cell');
+            });
 
-			cell.addEventListener('mouseleave', () =&gt; {
-				// Логика снятия подсветки колонок в теле
-				rows.forEach(r =&gt; {
-					if (r.cells[colIndex]) {
-						r.cells[colIndex].classList.remove('hover-col');
-					}
-				});
+            cell.addEventListener('mouseleave', () =&gt; {
+                // Логика снятия подсветки колонок в теле
+                rows.forEach(r =&gt; {
+                    if (r.cells[colIndex]) {
+                        r.cells[colIndex].classList.remove('hover-col');
+                    }
+                });
 
-				// Логика снятия подсветки заголовка
-				if (headerRow.cells[colIndex]) {
-					headerRow.cells[colIndex].classList.remove('hover-col');
-				}
+                // Логика снятия подсветки заголовка
+                if (headerRow.cells[colIndex]) {
+                    headerRow.cells[colIndex].classList.remove('hover-col');
+                }
 
-				// Логика снятия подсветки самой ячейки
-				cell.classList.remove('hover-cell');
-			});
-		});
-	});
+                // Логика снятия подсветки самой ячейки
+                cell.classList.remove('hover-cell');
+            });
+        });
+    });
 });
     </value>
-  </data>
-  <data name="ScriptAutoFontShrink" xml:space="preserve">
-    <value>
+    </data>
+    <data name="ScriptAutoFontShrink" xml:space="preserve">
+        <value>
 (function shrinkEmbeddedFonts() {
     const tables = document.querySelectorAll(".embedded-table");
     tables.forEach(table =&gt; {
@@ -518,9 +460,9 @@ document.addEventListener('DOMContentLoaded', () =&gt; {
     });
 })();
     </value>
-  </data>
-  <data name="JsBreadcrumbScript" xml:space="preserve">
-    <value>
+    </data>
+    <data name="JsBreadcrumbScript" xml:space="preserve">
+        <value>
 // This script will be included on every page
 document.addEventListener('DOMContentLoaded', (event) =&gt; {
     const pageDataElement = document.getElementById('page-data');
@@ -612,10 +554,10 @@ document.addEventListener('DOMContentLoaded', (event) =&gt; {
         }
     });
 });
-		</value>
-  </data>
-  <data name="ScriptAutoShrinkEmbeddedTable" xml:space="preserve">
-    <value>
+        </value>
+    </data>
+    <data name="ScriptAutoShrinkEmbeddedTable" xml:space="preserve">
+        <value>
 function autoResizeEmbeddedTables() {
     const tables = document.querySelectorAll(".embedded-table");
     tables.forEach(table =&gt; {
@@ -634,9 +576,9 @@ function autoResizeEmbeddedTables() {
 }
 document.addEventListener("DOMContentLoaded", autoResizeEmbeddedTables);
     </value>
-  </data>
-  <data name="JsShowTabseetTabScript" xml:space="preserve">
-    <value>
+    </data>
+    <data name="JsShowTabseetTabScript" xml:space="preserve">
+        <value>
 function showTab(tabId, clickedButton) {
     document.querySelectorAll(".tab-content").forEach(content =&gt; {
         content.classList.remove("active");
@@ -650,9 +592,9 @@ function showTab(tabId, clickedButton) {
     clickedButton.classList.add("active");
 }
     </value>
-  </data>
-  <data name="CssTabsheetTabs" xml:space="preserve">
-    <value>
+    </data>
+    <data name="CssTabsheetTabs" xml:space="preserve">
+        <value>
 /* Общие стили для контейнеров */
 .tabs-container {
     position: relative;
@@ -700,16 +642,16 @@ function showTab(tabId, clickedButton) {
     display: block;
 }
     </value>
-  </data>
-  <data name="JsOpenRequestedTab" xml:space="preserve">
-    <value>
-document.addEventListener(&apos;DOMContentLoaded&apos;, () =&gt; {
+    </data>
+    <data name="JsOpenRequestedTab" xml:space="preserve">
+        <value>
+document.addEventListener('DOMContentLoaded', () =&gt; {
         const urlParams = new URLSearchParams(window.location.search);
-        const tabIdFromUrl = urlParams.get(&apos;t&apos;);
+        const tabIdFromUrl = urlParams.get('t');
 
         if (tabIdFromUrl) {
-            // Найдите кнопку, которая соответствует ID из URL (например, &apos;MethodsTab&apos;).
-            const targetButton = document.querySelector(`[onclick*=&quot;${tabIdFromUrl}&quot;]`);
+            // Найдите кнопку, которая соответствует ID из URL (например, 'MethodsTab').
+            const targetButton = document.querySelector(`[onclick*="${tabIdFromUrl}"]`);
 
             if (targetButton) {
                 // Если кнопка найдена, напрямую вызываем вашу функцию showTab()
@@ -719,5 +661,131 @@ document.addEventListener(&apos;DOMContentLoaded&apos;, () =&gt; {
         }
     });
 </value>
-  </data>
+    </data>
+    <data name="CssScrollToTop" xml:space="preserve">
+        <value>
+/* style.css */
+#scroll-to-top {
+    /* Фиксированное позиционирование, чтобы элемент всегда оставался на виду */
+    position: fixed;
+    /* Размещаем в левом нижнем углу */
+    bottom: 20px;
+    left: 20px;
+    /* Выше всего остального контента (даже canvas, если он есть) */
+    z-index: 1000;
+
+    background-color: #f2f2f2;
+    border: 1px solid #c0c0c0; /* cell-border-color-dark*/
+    color: #0077cc; /* Цвет текста --link-color: #0077cc;*/
+    padding: 8px 12px; /* Внутренние отступы */
+    font-size: 16px;
+    cursor: pointer; /* Курсор-указатель, чтобы показать, что элемент кликабельный */
+    user-select: none; /* Предотвратить выделение текста */
+
+    /* Дополнительные улучшения: плавность и немного тени */
+    transition: background-color 0.7s, opacity 0.7s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+    /* Изначально скрываем его, чтобы он не мешал, когда мы уже вверху */
+    opacity: 0;
+    pointer-events: none;
+}
+
+#scroll-to-top:hover {
+    background-color: silver; /* Небольшое изменение при наведении */
+}
+        </value>
+    </data>
+    <data name="JsScrollToTop" xml:space="preserve">
+        <value>  
+// Оборачиваем весь код в немедленно вызываемую функцию (IIFE)
+(function() {
+    // === Настройки ===
+    const SCROLL_THRESHOLD = 300;     // Порог прокрутки
+    const SCROLL_STOP_DELAY = 100;    // Задержка для регистрации "остановки" скролла (100 мс)
+    const AUTO_HIDE_DELAY = 2000;     // Задержка перед автоматическим скрытием
+
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+    
+    let scrollStopTimeout; // Таймер для отслеживания паузы в скролле
+    let hideTimeout;       // Таймер для автоматического скрытия кнопки
+
+    if (!scrollToTopBtn) {
+        return; 
+    }
+
+    // --- 1. Вспомогательные функции видимости ---
+
+    // Функция для немедленного скрытия (когда достигли верха)
+    function hideButton() {
+        clearTimeout(hideTimeout);
+        scrollToTopBtn.style.opacity = '0';
+        scrollToTopBtn.style.pointerEvents = 'none';
+    }
+
+    // Функция для показа кнопки
+    function showButton() {
+        // 1. Обязательно сбрасываем таймер скрытия, если он был активен
+        clearTimeout(hideTimeout);
+
+        scrollToTopBtn.style.opacity = '1';
+        scrollToTopBtn.style.pointerEvents = 'auto';
+
+        // 2. Устанавливаем таймер на автоматическое скрытие
+        hideTimeout = setTimeout(hideButton, AUTO_HIDE_DELAY);
+    }
+    
+    // --- 2. Функция прокрутки наверх ---
+    function scrollToTop() {
+        // При клике сбрасываем все таймеры
+        clearTimeout(scrollStopTimeout);
+        clearTimeout(hideTimeout);
+        
+        // Скрываем кнопку, так как начинаем движение к 0
+        hideButton(); 
+        
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    // --- 3. Единый обработчик события прокрутки ---
+    function handleScroll() {
+        const scrollTop = document.documentElement.scrollTop;
+        const isBelowThreshold = scrollTop > SCROLL_THRESHOLD;
+
+        // A. Сбрасываем таймер "остановки" при каждом скролле
+        clearTimeout(scrollStopTimeout);
+        
+        // B. Отменяем автоматическое скрытие, пока пользователь активно скроллит
+        clearTimeout(hideTimeout);
+
+        // C. Если мы вверху, гарантируем, что кнопка скрыта
+        if (!isBelowThreshold) {
+            hideButton();
+            return;
+        }
+
+        // D. Если мы ниже порога, но активно скроллим:
+        // Устанавливаем таймер для проверки, когда прокрутка остановится.
+        scrollStopTimeout = setTimeout(() => {
+            // Этот код выполнится только после того, как событие 'scroll' 
+            // не вызывалось в течение SCROLL_STOP_DELAY (100 мс).
+            
+            // Если скролл остановился и мы все еще ниже порога, показываем кнопку
+            // (которая тут же запустит таймер на скрытие через AUTO_HIDE_DELAY).
+            showButton();
+        }, SCROLL_STOP_DELAY);
+    }
+
+    // --- Инициализация ---
+    scrollToTopBtn.addEventListener('click', scrollToTop);
+    window.addEventListener('scroll', handleScroll);
+
+    // Устанавливаем начальное состояние
+    hideButton();
+})();
+          </value>
+    </data>
 </root>

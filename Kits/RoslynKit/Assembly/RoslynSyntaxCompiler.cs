@@ -37,7 +37,7 @@ public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference, RoslynSyn
             usings: usings
         );
 
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Creating compilation for {syntaxTrees.Count()} tries", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Creating compilation for {syntaxTrees.Count()} trees", LogLevelNode.Start);
 
         var compilation = CSharpCompilation.Create(name, options: compilationOptions)
                                            .AddSyntaxTrees(syntaxTrees.Select(st => st.Tree).Cast<SyntaxTree>())

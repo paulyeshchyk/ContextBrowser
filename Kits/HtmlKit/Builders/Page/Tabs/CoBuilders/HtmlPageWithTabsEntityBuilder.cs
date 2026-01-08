@@ -28,11 +28,13 @@ public class HtmlPageWithTabsEntityBuilder<TDto, TTensor> : HtmlPageWithTabsBuil
 
         foreach (var contextInfoItem in entitiesList)
         {
-            var filename = _onGetFileName(contextInfoItem.FullName);
+            var classNameWithNameSpace = $"{contextInfoItem.Namespace}.{contextInfoItem.ShortName}";
+
+            var filename = _onGetFileName(classNameWithNameSpace);
             var title = $" Class {contextInfoItem.FullName}";
             var cellData = new ContextInfoKeyContainerEntityName(
                 contextInfoList: new List<IContextInfo>() { contextInfoItem },
-                contextKey: contextInfoItem.FullName);
+                contextKey: classNameWithNameSpace);
 
             await _tabbedPageBuilder.GenerateFileAsync(title, filename, (TDto)cellData, cancellationToken).ConfigureAwait(false);
         }

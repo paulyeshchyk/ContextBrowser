@@ -17,8 +17,9 @@ public class UmlUrlBuilder : IUmlUrlBuilder
         {
             return null;
         }
+        var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
         return contextInfo.ElementType.IsEntityDefinition()
-            ? _namingProcessor.ClassOnlyHtmlFilename(contextInfo.FullName)
+            ? _namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace)
             : null;
     }
 

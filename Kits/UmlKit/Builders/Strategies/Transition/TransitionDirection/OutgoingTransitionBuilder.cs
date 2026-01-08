@@ -13,10 +13,13 @@ namespace UmlKit.Builders.TransitionDirection;
 public class OutgoingTransitionBuilder : ITransitionBuilder
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
 
-    public OutgoingTransitionBuilder(IAppLogger<AppLevel> logger)
+
+    public OutgoingTransitionBuilder(IAppLogger<AppLevel> logger, IContextInfoManager<ContextInfo> contextInfoManager)
     {
         _logger = logger;
+        _contextInfoManager = contextInfoManager;
     }
 
     public DiagramDirection Direction => DiagramDirection.Outgoing;
@@ -30,7 +33,7 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
             var theKey = ctx.Identifier;
 
             _logger.WriteLog(AppLevel.P_Tran, LogLevel.Dbg, $"Getting references for method [{ctx.Name}]", LogLevelNode.Start);
-            var references = ContextInfoService.GetReferencesSortedByInvocation(ctx);
+            var references = _contextInfoManager.GetReferencesSortedByInvocation(ctx);
             foreach (var callee in references)
             {
                 if (callee.ElementType != ContextInfoElementType.method)

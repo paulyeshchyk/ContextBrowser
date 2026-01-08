@@ -65,7 +65,7 @@ internal static class CSharpExpressionSyntaxExtensionConverter
         else
         {
             // В этом случае namespace и ownerName не могут быть надежно определены.
-            string namespaceName = options.ExternalNamespaceName;
+            string namespaceName = options.ExternalNaming.NamespaceName;
             var raw = $"{namespaceName}.{manualFullName}()";
             return raw;
         }

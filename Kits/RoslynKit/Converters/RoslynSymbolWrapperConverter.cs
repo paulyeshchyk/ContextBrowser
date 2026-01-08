@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Assembly;
 using RoslynKit.AWrappers;
@@ -12,17 +14,19 @@ using SemanticKit.Model;
 
 namespace RoslynKit.Converters;
 
-public class SymbolWrapperConverter : ISymbolWrapperConverter
+public class RoslynSymbolWrapperConverter : ISymbolWrapperConverter
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly ISymbolLoader<MemberDeclarationSyntax, ISymbol> _symbolLoader;
 
-    public SymbolWrapperConverter(IAppLogger<AppLevel> logger)
+    public RoslynSymbolWrapperConverter(IAppLogger<AppLevel> logger, ISymbolLoader<MemberDeclarationSyntax, ISymbol> symbolLoader)
     {
         _logger = logger;
+        _symbolLoader = symbolLoader;
     }
 
 
-    public CSharpISymbolWrapper Convert(ISemanticModelWrapper semanticModel, ISyntaxNodeWrapper syntaxWrapper, CancellationToken cancellationToken)
+    public async Task<ISymbolInfo> ConvertAsync(ISemanticModelWrapper semanticModel, ISyntaxNodeWrapper syntaxWrapper, CancellationToken cancellationToken)
     {
         if (semanticModel is null)
         {
@@ -34,8 +38,9 @@ public class SymbolWrapperConverter : ISymbolWrapperConverter
             throw new InvalidOperationException("Syntax is not a MemberDeclarationSyntax.");
         }
 
-        var wrapper = new CSharpISymbolWrapper();
-        var symbol = RoslynSymbolLoader.LoadSymbol(syntax, semanticModel, _logger, cancellationToken);
+        var symbol = await _symbolLoader.LoadSymbolAsync(syntax, semanticModel, cancellationToken).ConfigureAwait(false);
+
+        var wrapper = new CSharpSymbolInfoWrapper();
 
 #warning refactor this
         if (symbol == null)
@@ -55,6 +60,7 @@ public class SymbolWrapperConverter : ISymbolWrapperConverter
             wrapper.SetShortName(symbol.BuildShortName());
         }
         wrapper.SetSyntax(syntaxWrapper.GetSyntax());
+
         return wrapper;
     }
 }

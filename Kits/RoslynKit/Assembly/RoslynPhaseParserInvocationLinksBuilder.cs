@@ -1,9 +1,11 @@
-﻿using ContextBrowserKit.Log.Options;
+﻿using System.Threading.Tasks;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Service;
 using LoggerKit;
 using RoslynKit.Lookup;
+using RoslynKit.Model.SyntaxWrapper;
 using SemanticKit.Model;
 using SemanticKit.Model.Options;
 using SemanticKit.Model.SyntaxWrapper;
@@ -11,29 +13,35 @@ using SemanticKit.Model.SyntaxWrapper;
 namespace RoslynKit.Assembly;
 
 // context: roslyn, build
-public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLinksBuilder<TContext>
-    where TContext : class, IContextWithReferences<TContext>
+public class RoslynPhaseParserInvocationLinksBuilder : IInvocationLinksBuilder<ContextInfo>
 {
-    private readonly IContextCollector<TContext> _collector;
+    private readonly IContextCollector<ContextInfo> _collector;
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
+    private readonly ContextInfoBuilderDispatcher<ContextInfo> _contextInfoBuilderDispatcher;
+    private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
+    private readonly ICSharpSyntaxWrapperTypeBuilder _syntaxWrapperTypeBuilder;
+
     private readonly object _lock = new();
 
     public RoslynPhaseParserInvocationLinksBuilder(
-        IContextCollector<TContext> collector,
-        ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
-        IAppLogger<AppLevel> logger)
+        IContextCollector<ContextInfo> collector,
+        ContextInfoBuilderDispatcher<ContextInfo> contextInfoBuilderDispatcher,
+        IAppLogger<AppLevel> logger,
+        IContextInfoManager<ContextInfo> contextInfoManager,
+        ICSharpSyntaxWrapperTypeBuilder syntaxWrapperTypeBuilder)
     {
         _collector = collector;
         _logger = logger;
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
+        _contextInfoManager = contextInfoManager;
+        _syntaxWrapperTypeBuilder = syntaxWrapperTypeBuilder;
     }
 
     // context: roslyn, update
-    public TContext? LinkInvocation(TContext callerContextInfo, ISyntaxWrapper symbolDto, SemanticOptions options)
+    public async Task<ContextInfo?> LinkInvocationAsync(ContextInfo callerContextInfo, ISyntaxWrapper symbolDto, SemanticOptions options)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Linking invocation caller: [{callerContextInfo.FullName}]]", LogLevelNode.Start);
-        var calleeContextInfo = FindOrCreateCalleeNode(symbolDto, options);
+        var calleeContextInfo = await FindOrCreateCalleeNode(symbolDto, options);
         if (calleeContextInfo != null)
         {
             AddReferences(callerContextInfo, calleeContextInfo);
@@ -51,11 +59,11 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
     }
 
     // context: roslyn, build
-    internal void AddInvokedBy(TContext callerContextInfo, TContext calleeContextInfo)
+    internal void AddInvokedBy(ContextInfo callerContextInfo, ContextInfo calleeContextInfo)
     {
         lock (_lock)
         {
-            var addedInvokedBy = ContextInfoService.AddToInvokedBy(callerContextInfo, calleeContextInfo);
+            var addedInvokedBy = _contextInfoManager.AddToInvokedBy(callerContextInfo, calleeContextInfo);
 
             var message = addedInvokedBy
                 ? $"[DONE] Adding invokedBy for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]"
@@ -68,11 +76,11 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
     }
 
     // context: roslyn, build
-    internal void AddReferences(TContext callerContextInfo, TContext calleeContextInfo)
+    internal void AddReferences(ContextInfo callerContextInfo, ContextInfo calleeContextInfo)
     {
         lock (_lock)
         {
-            var addedReference = ContextInfoService.AddToReferences(callerContextInfo, calleeContextInfo);
+            var addedReference = _contextInfoManager.AddToReferences(callerContextInfo, calleeContextInfo);
 
             var message = (addedReference)
                 ? $"[DONE] Adding reference for [{callerContextInfo.FullName}] with [{calleeContextInfo.FullName}]"
@@ -86,13 +94,13 @@ public class RoslynPhaseParserInvocationLinksBuilder<TContext> : IInvocationLink
 
     // Класс: RoslynPhaseParserInvocationLinksBuilder<TContext>
     // context: syntax, read
-    internal TContext? FindOrCreateCalleeNode(ISyntaxWrapper symbolDto, SemanticOptions options)
+    internal Task<ContextInfo?> FindOrCreateCalleeNode(ISyntaxWrapper symbolDto, SemanticOptions options)
     {
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Looking for callee by symbol [{symbolDto.FullName}]");
 
-        var fullNameHandler = new SymbolLookupHandlerFullName<TContext, ISemanticModelWrapper>(_collector, _logger);
-        var methodSymbolHandler = new SymbolLookupHandlerMethod<TContext, ISemanticModelWrapper>(_collector, _logger);
-        var fakeNodeHandler = new RoslynInvocationLookupHandler<TContext, ISemanticModelWrapper>(_collector, _contextInfoBuilderDispatcher, _logger, options);
+        var fullNameHandler = new SymbolLookupHandlerFullName<ContextInfo, ISemanticModelWrapper>(_collector, _logger);
+        var methodSymbolHandler = new SymbolLookupHandlerMethod<ContextInfo, ISemanticModelWrapper>(_collector, _logger);
+        var fakeNodeHandler = new RoslynInvocationLookupHandler<ContextInfo, ISemanticModelWrapper>(_collector, _contextInfoBuilderDispatcher, _logger, options, _syntaxWrapperTypeBuilder);
 
         // Сначала FullName, затем MethodSymbol, затем FakeNode
         fullNameHandler

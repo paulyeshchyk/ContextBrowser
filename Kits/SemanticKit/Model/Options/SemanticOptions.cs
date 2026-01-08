@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SemanticKit.Model.Options;
 
@@ -6,11 +7,8 @@ namespace SemanticKit.Model.Options;
 // context: semantic, model
 public record SemanticOptions
 {
-    public string ExternalNamespaceName { get; set; }
-
-    public string FakeOwnerName { get; set; }
-
-    public string FakeMethodName { get; set; }
+    public SemanticExternalNaming ExternalNaming { get; set; }
+    public SemanticFakeNaming FakeNaming { get; set; }
 
     public HashSet<SemanticAccessorModifierType> MethodModifierTypes { get; set; }
 
@@ -37,9 +35,8 @@ public record SemanticOptions
     public bool IncludePseudoCode { get; set; }
 
     public SemanticOptions(
-        string externalNamespaceName,
-        string fakeOwnerName,
-        string fakeMethodName,
+        SemanticExternalNaming externalNaming,
+        SemanticFakeNaming fakeNaming,
         HashSet<SemanticAccessorModifierType> methodModifierTypes,
         HashSet<SemanticAccessorModifierType> classModifierTypes,
         HashSet<SemanticMemberType> memberTypes,
@@ -50,9 +47,6 @@ public record SemanticOptions
         AssemblyPathFilterPatterns semanticFilters,
         int maxDegreeOfParallelism)
     {
-        ExternalNamespaceName = externalNamespaceName;
-        FakeOwnerName = fakeOwnerName;
-        FakeMethodName = fakeMethodName;
         MethodModifierTypes = methodModifierTypes;
         ClassModifierTypes = classModifierTypes;
         MemberTypes = memberTypes;
@@ -62,6 +56,43 @@ public record SemanticOptions
         GlobalUsings = globalUsings;
         SemanticFilters = semanticFilters;
         MaxDegreeOfParallelism = maxDegreeOfParallelism;
+        ExternalNaming = externalNaming;
+        FakeNaming = fakeNaming;
+    }
+}
+
+public record SemanticExternalNaming
+{
+    public string NamespaceName { get; set; }
+    public string ClassName { get; set; }
+    public string MethodName { get; set; }
+    public string ResultTypeName { get; set; }
+
+    public SemanticExternalNaming(string namespaceName, string className, string methodName, string resultTypeName)
+    {
+        NamespaceName = namespaceName;
+        ClassName = className;
+        MethodName = methodName;
+        ResultTypeName = resultTypeName;
+    }
+}
+
+public record SemanticFakeNaming
+{
+    public string OwnerName { get; set; }
+    public string MethodName { get; set; }
+    public string NamespaceName { get; set; }
+    public string ClassName { get; set; }
+    public string ResultTypeName { get; set; }
+
+    public SemanticFakeNaming(string ownerName, string methodName, string namespaceName, string className, string resultTypeName)
+    {
+        OwnerName = ownerName;
+        MethodName = methodName;
+        NamespaceName = namespaceName;
+        ClassName = className;
+        ResultTypeName = resultTypeName;
+
     }
 }
 

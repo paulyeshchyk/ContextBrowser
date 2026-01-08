@@ -55,21 +55,27 @@ public class HtmlTabbedPageBuilder<DTO>
                 await HtmlBuilderFactory.Script.CellAsync(writer, innerHtml: Resources.JsOpenRequestedTab, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
                 await HtmlBuilderFactory.Style.CellAsync(writer, innerHtml: HtmlBuilderFactory.CssStyles.CssBase, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
                 await HtmlBuilderFactory.Style.CellAsync(writer, innerHtml: HtmlBuilderFactory.CssStyles.CssTabsheet, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+                await HtmlBuilderFactory.Style.CellAsync(writer, innerHtml: HtmlBuilderFactory.CssStyles.CssScrollToTop, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
             }, token).ConfigureAwait(false);
 
             var navItem = new BreadcrumbNavigationItem(filename, title);
             await HtmlBuilderFactory.Body.WithAsync(writer, async (token) =>
             {
+                var attributesScrollToTop = new HtmlTagAttributes() { { "id", "scroll-to-top" } };
+                await HtmlBuilderFactory.Div.CellAsync(writer, attributes: attributesScrollToTop, innerHtml: "Вверх", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+
+                await HtmlBuilderFactory.Script.CellAsync(writer, innerHtml: Resources.JsScrollToTop, isEncodable: false, cancellationToken: token).ConfigureAwait(false);
+
                 await HtmlBuilderFactory.Breadcrumb(navItem).CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
 
                 await HtmlBuilderFactory.P.CellAsync(writer, cancellationToken: token).ConfigureAwait(false);
 
                 var attributes = new HtmlTagAttributes() { { "class", "tabs-container" } };
-
                 await HtmlBuilderFactory.Div.WithAsync(writer, attributes, (token) =>
                 {
                     return HtmlTabsheetBuilder.BuildAsync(writer, _tabsheetDataProvider, cellData, token);
                 }, token).ConfigureAwait(false);
+
             }, token).ConfigureAwait(false);
         }, cancellationToken).ConfigureAwait(false);
     }

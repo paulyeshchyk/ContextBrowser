@@ -1,10 +1,12 @@
 using ContextKit.Model;
+using Microsoft.CodeAnalysis;
+using SemanticKit.Model.Signature;
 
 namespace RoslynKit.Signature.SignatureBuilder;
 
-public static class SignatureBuilderFactory
+public static class CSharpSignatureBuilderFactory
 {
-    public static SignatureBuilder Create(MethodRepresentationStyle style)
+    public static SignatureBuilder<ISymbol> Create(MethodRepresentationStyle style)
     {
         var builder = new CSharpSignatureBuilder();
 

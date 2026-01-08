@@ -7,6 +7,7 @@ using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
+using ContextKit.Model.Service;
 using ExporterKit.Uml.Exporters;
 using LoggerKit;
 using TensorKit.Model;
@@ -23,12 +24,16 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
+        private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
 
-    public UmlDiagramCompilerClassRelation(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+
+    public UmlDiagramCompilerClassRelation(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, IContextInfoManager<ContextInfo> contextInfoManager)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
+        _contextInfoManager = contextInfoManager;
+
     }
 
     //context: build, uml, links
@@ -42,7 +47,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         var contextInfoList = dataset.GetAll().ToList();
-        var linkGenerator = new ContextInfoDataLinkGenerator(_optionsStore);
+        var linkGenerator = new ContextInfoDataLinkGenerator(_optionsStore,_contextInfoManager);
         var links = linkGenerator.Generate(contextInfoList);
 
         await UmlDiagramExporter_4_links.ExportAsync(exportOptions, diagramBuilderOptions, links, cancellationToken).ConfigureAwait(false);

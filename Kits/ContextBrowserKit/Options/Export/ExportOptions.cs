@@ -1,4 +1,6 @@
-﻿namespace ContextBrowserKit.Options.Export;
+﻿using System;
+
+namespace ContextBrowserKit.Options.Export;
 
 // context: settings, model
 public record ExportOptions

@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -20,10 +21,11 @@ public class CSharpSyntaxParserEnum<TContext> : SyntaxParser<TContext>
 
     public override bool CanParseSyntax(object syntax) => syntax is EnumDeclarationSyntax;
 
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
+    public override Task ParseAsync(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Trace, $"Syntax type is not parsed yet: {syntax.GetType()}");
+        return Task.CompletedTask;
     }
 }

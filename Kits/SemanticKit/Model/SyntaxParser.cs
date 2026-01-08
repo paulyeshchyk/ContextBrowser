@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
@@ -18,5 +19,5 @@ public abstract class SyntaxParser<TContext> : ISyntaxParser<TContext>
 
     public abstract bool CanParseSyntax(object syntax);
 
-    public abstract void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
+    public abstract Task ParseAsync(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
 }

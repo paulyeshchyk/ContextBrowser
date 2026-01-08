@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +10,9 @@ public interface ISemanticModelWrapper
 
     object? GetSymbolForInvocation(object invocationNode);
 
-    object? GetDeclaredSymbol(object syntax, CancellationToken cancellationToken);
+    Task<object?> GetDeclaredSymbolAsync(object syntax, CancellationToken cancellationToken);
 
     object? GetTypeInfo(object syntax);
+
+    object GetSemanticModel();
 }

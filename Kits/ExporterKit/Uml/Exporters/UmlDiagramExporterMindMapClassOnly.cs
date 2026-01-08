@@ -16,7 +16,8 @@ public class UmlDiagramExporterMindMapClassOnly
 {
     public static void Export(IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, ContextInfo classContextInfo, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
-        var fileName = namingProcessor.MindmapClassOnlyPumlFilename(classContextInfo.Name);
+        var classNameWithNameSpace = $"{classContextInfo.Namespace}.{classContextInfo.ShortName}";
+        var fileName = namingProcessor.MindmapClassOnlyPumlFilename(classNameWithNameSpace);
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, fileName);
         var diagramId = namingProcessor.MindmapActionDiagramId(outputPath);
 
@@ -27,7 +28,7 @@ public class UmlDiagramExporterMindMapClassOnly
         diagram.AddStyle(UmlStyle.Builder("green").BackgroundColor("#90de90").LineColor("#60d060").HyperlinkColor("#1d601d").HyperlinkUnderlineThickness(0).Build());
         diagram.AddStyle(UmlStyle.Builder("selected").BackgroundColor("#ff9500").LineColor("#d47c00").HyperlinkColor("#1f1510").HyperlinkUnderlineThickness(0).Build());
 
-        var node = new UmlNode(classContextInfo.Name, url: umlUrlBuilder.BuildActionUrl(classContextInfo.Name))
+        var node = new UmlNode(classContextInfo.Name, url: umlUrlBuilder.BuildActionUrl(classNameWithNameSpace))
         {
             Stylename = "selected"
         };

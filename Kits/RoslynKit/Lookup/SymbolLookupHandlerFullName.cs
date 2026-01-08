@@ -1,4 +1,5 @@
-﻿using ContextBrowserKit.Log.Options;
+﻿using System.Threading.Tasks;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
@@ -16,7 +17,7 @@ namespace RoslynKit.Lookup;
 /// <typeparam name="TContext">Тип возвращаемого контекста.</typeparam>
 /// <typeparam name="TSemanticModel"></typeparam>
 public class SymbolLookupHandlerFullName<TContext, TSemanticModel> : SymbolLookupHandler<TContext, TSemanticModel>
-    where TContext : class, IContextWithReferences<TContext>
+    where TContext : IContextWithReferences<TContext>
     where TSemanticModel : class, ISemanticModelWrapper
 
 {
@@ -38,7 +39,7 @@ public class SymbolLookupHandlerFullName<TContext, TSemanticModel> : SymbolLooku
     /// </summary>
     /// <param name="symbolDto">Обертка над синтаксическим узлом вызова.</param>
     /// <returns>Найденный контекст или null, если не найден.</returns>
-    public override TContext? Handle(ISyntaxWrapper symbolDto)
+    public override async Task<TContext?> Handle(ISyntaxWrapper symbolDto)
     {
         if (_collector.Collection.TryGetValue(symbolDto.FullName, out var calleeContextInfo))
         {
@@ -49,6 +50,6 @@ public class SymbolLookupHandlerFullName<TContext, TSemanticModel> : SymbolLooku
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] ContextInfo not found for {symbolDto.FullName}");
 
         // Если не найдено, передаем запрос следующему обработчику в цепочке.
-        return base.Handle(symbolDto);
+        return await base.Handle(symbolDto);
     }
 }

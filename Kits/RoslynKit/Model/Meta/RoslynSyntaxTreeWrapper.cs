@@ -17,8 +17,6 @@ public class RoslynSyntaxTreeWrapper : ISyntaxTreeWrapper
         _syntaxTree = syntaxTree;
     }
 
-    public object GetRoot() => _syntaxTree.GetCompilationUnitRoot();
-
     public string FilePath => _syntaxTree.FilePath;
 
     public object Tree => _syntaxTree;

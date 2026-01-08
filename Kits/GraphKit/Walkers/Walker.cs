@@ -12,11 +12,14 @@ namespace GraphKit.Walkers;
 public class Walker<T>
     where T : ContextInfo, IContextWithReferences<T>
 {
+    private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
+
     public readonly HashSet<T> Visited = new();
 
-    public Walker(Action<T>? visitCallback = null)
+    public Walker(IContextInfoManager<ContextInfo> contextInfoManager, Action<T>? visitCallback = null)
     {
         VisitCallback = visitCallback;
+        _contextInfoManager = contextInfoManager;
     }
 
     protected Action<T>? VisitCallback { get; }
@@ -30,7 +33,7 @@ public class Walker<T>
             return false;
 
         VisitCallback?.Invoke(item);
-        var references = ContextInfoService.GetReferencesSortedByInvocation(item);
+        var references = _contextInfoManager.GetReferencesSortedByInvocation(item);
         foreach (var reference in references.OfType<T>())
             AddToVisited(reference, visited);
         return true;

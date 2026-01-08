@@ -90,7 +90,9 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
             {
                 foreach (var cls in classGroup)
                 {
-                    var htmlUrl = _namingProcessor.ClassOnlyHtmlFilename(cls.FullName);
+                    var classNameWithNameSpace = $"{cls.ContextInfo.Namespace}.{cls.ContextInfo.ShortName}";
+
+                    var htmlUrl = _namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace);
                     var umlClass = new UmlEntity(UmlEntityType.@class, classGroup.Key.PadRight(maxLength), classGroup.Key.AlphanumericOnly(), url: htmlUrl);
                     package.Add(umlClass);
 

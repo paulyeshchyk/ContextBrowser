@@ -16,9 +16,9 @@ public record CSharpSyntaxWrapperType : ISyntaxWrapper
 
     public string Namespace { get; set; }
 
-    public int SpanEnd { get; }
+    public int SpanEnd { get; set; }
 
-    public int SpanStart { get; }
+    public int SpanStart { get; set; }
 
     public string FullName { get; set; }
 
@@ -30,49 +30,9 @@ public record CSharpSyntaxWrapperType : ISyntaxWrapper
 
     public ISignature? Signature { get; set; }
 
-    public CSharpSyntaxWrapperType(ISymbol symbol, TypeDeclarationSyntax syntax)
+    public CSharpSyntaxWrapperType()
     {
-        Identifier = symbol.BuildFullMemberName();
-        Name = symbol.BuildNameAndClassOwnerName();
-        FullName = symbol.BuildFullMemberName();
-        SpanStart = syntax.Span.Start;
-        SpanEnd = syntax.Span.End;
-        Namespace = symbol.GetNamespaceOrGlobal();
-        ShortName = symbol.BuildShortName();
-    }
 
-    public CSharpSyntaxWrapperType(ISyntaxWrapper syntaxWrapper)
-    {
-        SpanStart = syntaxWrapper.SpanStart;
-        SpanEnd = syntaxWrapper.SpanEnd;
-
-        if (syntaxWrapper.Signature is not null)
-        {
-            Name = syntaxWrapper.Signature.ClassName;
-            ShortName = syntaxWrapper.Signature.ClassName;
-            Namespace = syntaxWrapper.Signature.Namespace;
-            Identifier = $"{syntaxWrapper.Signature.Namespace}.{syntaxWrapper.Signature.ClassName}";
-            FullName = $"{syntaxWrapper.Signature.Namespace}.{syntaxWrapper.Signature.ClassName}";
-
-            Signature = new SignatureDefault
-            (
-                ResultType: syntaxWrapper.Signature.ResultType,
-                Namespace: syntaxWrapper.Signature.Namespace,
-                ClassName: syntaxWrapper.Signature.ClassName,
-                MethodName: syntaxWrapper.Signature.MethodName,
-                Arguments: syntaxWrapper.Signature.Arguments,
-                Raw: syntaxWrapper.Signature.Raw);
-        }
-        else
-        {
-            var parsedSignature = CSharpSignatureUtils.Parse(syntaxWrapper.FullName);
-
-            FullName = $"{parsedSignature.Namespace}.{parsedSignature.ClassName}";
-            Identifier = $"{parsedSignature.Namespace}.{parsedSignature.ClassName}";
-            ShortName = parsedSignature.ClassName;
-            Name = parsedSignature.ClassName;
-            Namespace = parsedSignature.Namespace;
-        }
     }
 
     public IContextInfo GetContextInfoDto()

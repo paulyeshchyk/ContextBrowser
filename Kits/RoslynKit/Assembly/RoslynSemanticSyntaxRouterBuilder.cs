@@ -3,6 +3,8 @@ using ContextBrowserKit.Options;
 using ContextKit.ContextData.Comment;
 using ContextKit.Model;
 using LoggerKit;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit;
 using RoslynKit.Assembly;
 using RoslynKit.Phases.Syntax.Parsers;
@@ -18,20 +20,23 @@ public class RoslynSemanticSyntaxRouterBuilder<TContext> : ISemanticSyntaxRouter
     private readonly IContextInfoCommentProcessor<TContext> _commentProcessor;
     private readonly IAppLogger<AppLevel> _logger;
     private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
+    private readonly ISymbolLoader<MemberDeclarationSyntax, ISymbol> _symbolLoader;
 
     public RoslynSemanticSyntaxRouterBuilder(
         IContextCollector<TContext> collector,
         IContextInfoCommentProcessor<TContext> commentProcessor,
         ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
-        IAppLogger<AppLevel> logger)
+        IAppLogger<AppLevel> logger,
+        ISymbolLoader<MemberDeclarationSyntax, ISymbol> symbolLoader)
     {
         _collector = collector;
         _commentProcessor = commentProcessor;
         _logger = logger;
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
+        _symbolLoader = symbolLoader;
+
     }
 
-#warning do async asap
     // context: roslyn, build, syntax
     public ISemanticSyntaxRouter<TContext> CreateRouter()
     {
@@ -54,7 +59,8 @@ public class RoslynSemanticSyntaxRouterBuilder<TContext> : ISemanticSyntaxRouter
         var methodSyntaxParser = new CSharpSyntaxParserMethod<TContext>(
             triviaCommentParser,
             _contextInfoBuilderDispatcher,
-            _logger);
+            _logger,
+            _symbolLoader);
 
         var interfaceSyntaxParser = new CSharpSyntaxParserInterface<TContext>(
             propertySyntaxParser,
@@ -68,7 +74,8 @@ public class RoslynSemanticSyntaxRouterBuilder<TContext> : ISemanticSyntaxRouter
             methodSyntaxParser,
             triviaCommentParser,
             _contextInfoBuilderDispatcher,
-            _logger);
+            _logger,
+            _symbolLoader);
 
         var recordSyntaxParser = new CSharpSyntaxParserTypeRecord<TContext>(
             propertySyntaxParser,

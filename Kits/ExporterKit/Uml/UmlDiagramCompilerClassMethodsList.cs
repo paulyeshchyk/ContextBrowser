@@ -24,12 +24,15 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
+    private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
 
-    public UmlDiagramCompilerClassMethodsList(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore)
+    public UmlDiagramCompilerClassMethodsList(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, IContextInfoManager<ContextInfo> contextInfoManager)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
+        _contextInfoManager = contextInfoManager;
+
     }
 
     // context: build, uml, links
@@ -59,7 +62,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
 
         foreach (var method in methods)
         {
-            var references = ContextInfoService.GetReferencesSortedByInvocation(method);
+            var references = _contextInfoManager.GetReferencesSortedByInvocation(method);
             foreach (var callee in references)
             {
                 if (methods.All(m => m.Name != callee.Name))

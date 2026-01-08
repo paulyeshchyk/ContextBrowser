@@ -1,4 +1,6 @@
-﻿namespace SemanticKit.Model.Signature;
+﻿using System;
+
+namespace SemanticKit.Model.Signature;
 
 public interface ISignature
 {

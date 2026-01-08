@@ -46,22 +46,21 @@ public class SemanticTreeModelBuilder<TSyntaxTreeWrapper> : ISemanticTreeModelBu
     public async Task<SemanticCompilationView> BuildCompilationViewAsync(string code, string filePath, SemanticOptions options, CancellationToken cancellationToken)
     {
         var syntaxTreeWrapper = await _treeWrapperBuilder.BuildAsync(code, filePath, cancellationToken).ConfigureAwait(false);
-        return BuildCompilationView(syntaxTreeWrapper, options, cancellationToken);
+        return await BuildCompilationView(syntaxTreeWrapper, options, cancellationToken);
     }
 
     // context: roslyn, build, contextInfo
-    internal SemanticCompilationView BuildCompilationView(TSyntaxTreeWrapper syntaxTreeWrapper, SemanticOptions options, CancellationToken cancellationToken)
+    internal async Task<SemanticCompilationView> BuildCompilationView(TSyntaxTreeWrapper syntaxTreeWrapper, SemanticOptions options, CancellationToken cancellationToken)
     {
         var root = syntaxTreeWrapper.GetCompilationUnitRoot(cancellationToken);
 
         var model = _modelStorage.GetModel(syntaxTreeWrapper);
         if (model == null)
         {
-#warning Distinct?????
             // Добавляем текущий syntaxTree во временный список всех деревьев
             var allSyntaxTrees = _modelStorage.GetAllSyntaxTrees().Concat([syntaxTreeWrapper]).Distinct();
 
-            var compilationWrapper = _compilationBuilder.Build(options, allSyntaxTrees, options.CustomAssembliesPaths, "Parser", cancellationToken);
+            var compilationWrapper = await _compilationBuilder.BuildAsync(options, allSyntaxTrees, options.CustomAssembliesPaths, "Parser", cancellationToken).ConfigureAwait(false);
             var themodel = compilationWrapper.GetSemanticModel(syntaxTreeWrapper);
 
             _modelStorage.Add(syntaxTreeWrapper, themodel);

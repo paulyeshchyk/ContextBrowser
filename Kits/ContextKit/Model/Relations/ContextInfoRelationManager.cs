@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using ContextKit.Model.Factory;
+using ContextKit.Model.Service;
 using LoggerKit;
 
 namespace ContextKit.Model.CacheManager;
@@ -19,10 +20,14 @@ public interface IContextInfoRelationManager
 public class ContextInfoRelationManager : IContextInfoRelationManager
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
+    private readonly IContextInfoRelationBuilder<ContextInfo> _contextInfoRelationBuilder;
 
-    public ContextInfoRelationManager(IAppLogger<AppLevel> logger)
+    public ContextInfoRelationManager(IAppLogger<AppLevel> logger, IContextInfoManager<ContextInfo> contextInfoManager, IContextInfoRelationBuilder<ContextInfo> contextInfoRelationBuilder)
     {
         _logger = logger;
+        _contextInfoManager = contextInfoManager;
+        _contextInfoRelationBuilder = contextInfoRelationBuilder;
     }
 
     // context: relations, build
@@ -37,10 +42,9 @@ public class ContextInfoRelationManager : IContextInfoRelationManager
             var context = contexts[i];
             var contextInfoSerializableModel = serializableModelList[i];
 
-            ContextInfoRelationBuilder.BuildRelation(
+            _contextInfoRelationBuilder.BuildRelation(
                 contextInfoSerializableModel: contextInfoSerializableModel,
                 context: context,
-                _logger,
                 lookupDictionary);
         }
 

@@ -1,4 +1,6 @@
-﻿namespace UmlKit.Infrastructure.Options.Activation;
+﻿using System;
+
+namespace UmlKit.Infrastructure.Options.Activation;
 
 public record DiagramInvocationOption
 {

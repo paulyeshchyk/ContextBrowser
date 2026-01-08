@@ -1,4 +1,6 @@
-﻿namespace TensorKit.Model;
+﻿using System;
+
+namespace TensorKit.Model;
 
 // context: model, matrix
 public enum TensorPermutationType

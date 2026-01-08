@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.ContextData.Comment;
@@ -24,7 +25,7 @@ public class CSharpSyntaxParserCommentTrivia<TContext> : CSharpSyntaxParserComme
     }
 
     // context: comment, build
-    public override void Parse(TContext? parent, object node, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
+    public override Task ParseAsync(TContext? parent, object node, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (node is not MemberDeclarationSyntax memberDeclaration)
         {
@@ -40,5 +41,6 @@ public class CSharpSyntaxParserCommentTrivia<TContext> : CSharpSyntaxParserComme
             string comment = ExtractComment(trivia);
             _commentAdapter.Process(parent, comment);
         }
+        return Task.CompletedTask;
     }
 }

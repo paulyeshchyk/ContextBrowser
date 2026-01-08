@@ -12,10 +12,12 @@ public static class UmlNodeTraverseBuilder
         // 1. Создание родительской ноды
         var ownerName = startNode.ClassOwner == null
             ? string.Format("{0}", startNode.ShortName)
-            : string.Format("{0}.{1}", startNode.ClassOwner.ShortName, startNode.ShortName); //startNode.ClassOwner?.FullName ?? startNode.FullName;
+            : string.Format("{0}.{1}", startNode.ClassOwner.ShortName, startNode.ShortName);
 
 
-        var resultNode = new UmlNode(ownerName, url: namingProcessor.ClassOnlyHtmlFilename(startNode.ClassOwner?.FullName))
+        var contextInfo = startNode.ClassOwner ?? startNode;
+        var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
+        var resultNode = new UmlNode(ownerName, url: namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace))
         {
             Stylename = "grey"
         };

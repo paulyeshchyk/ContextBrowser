@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using ContextKit.ContextData.Comment;
 using ContextKit.Model;
@@ -25,7 +26,7 @@ public abstract class CSharpSyntaxParserComment<TContext> : ISyntaxParser<TConte
         _logger = logger;
     }
 
-    public abstract void Parse(TContext? parent, object node, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
+    public abstract Task ParseAsync(TContext? parent, object node, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken);
 
     internal string ExtractComment(SyntaxTrivia trivia)
     {

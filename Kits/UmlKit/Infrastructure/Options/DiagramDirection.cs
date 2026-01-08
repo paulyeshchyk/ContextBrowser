@@ -1,4 +1,6 @@
-﻿namespace UmlKit.Infrastructure.Options;
+﻿using System;
+
+namespace UmlKit.Infrastructure.Options;
 
 // parsing: error
 public enum DiagramDirection

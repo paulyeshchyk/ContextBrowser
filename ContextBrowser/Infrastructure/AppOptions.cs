@@ -48,8 +48,8 @@ public class AppOptions
         SemanticOptions: new(
             semanticFilters: new(
                 trustedFilters: new(included: string.Empty, excluded: string.Empty),
-                domainFilters: new(included: "**/*", excluded: "**/net8.0/System.Text.Json.dll;**/ContextBrowser.dll;**/SemanticKit*;**/CommandlineKit*;**/ContextBrowserKit*;**/ContextKit*;**/ExporterKit*;**/GraphKit*;**/HtmlKit*;**/LoggerKit*;**/RoslynKit*;**/UmlKit*;**/api-ms-*;"),
-                runtimeFilters: new(included: "**/System.Diagnostics.Process.dll;**/System.Net.NetworkInformation.dll;**/System.Net.Primitives.dll;", excluded: string.Empty)////**/ System.Resources.ResourceManager.dll;**/System.Globalization.dll
+                domainFilters: new(included: "**/*", excluded: "**/net8.0/System.Text.Json.dll;**/ContextBrowser.dll;**/ContextSamples.dll;**/SemanticKit.dll;**/TensorKit.dll;**/CommandlineKit.dll;**/ContextBrowserKit.dll;**/ContextKit.dll;**/CustomServers.dll;**/ExporterKit.dll;**/GraphKit.dll;**/HtmlKit.dll;**/LoggerKit.dll;**/RoslynKit.dll;**/UmlKit.dll;**/api-ms-*;"),
+                runtimeFilters: new(included: "**/*", excluded: string.Empty)//"**/System.Diagnostics.Process.dll;**/System.Net.NetworkInformation.dll;**/System.Net.Primitives.dll;"
                 ),
             methodModifierTypes: new()
             {
@@ -74,10 +74,20 @@ public class AppOptions
                 SemanticMemberType.@record,
                 SemanticMemberType.@struct
             },
-            maxDegreeOfParallelism: 4,
-            externalNamespaceName: "ExternalNS",
-            fakeOwnerName: "privateTYPE",
-            fakeMethodName: "privateMETHOD",
+            maxDegreeOfParallelism: 12,
+            externalNaming: new SemanticExternalNaming(
+                namespaceName: "ExternalNamespace",
+                className: "ExternalClass",
+                methodName: "ExternalMethod",
+                resultTypeName: "void"
+            ),
+            fakeNaming: new SemanticFakeNaming(
+                ownerName: "privateTYPE",
+                methodName: "privateMETHOD",
+                namespaceName: "FakeNamespace",
+                className: "FakeClass",
+                resultTypeName: "void"
+            ),
             customAssembliesPaths: new List<string>() { "." },
             createFailedCallees: true,
             includePseudoCode: false,
@@ -91,7 +101,8 @@ public class AppOptions
         //".//..//..//..//"
         //".//..//..//..//ContextBrowser//Program.cs"
         //".//..//..//..//..//ContextBrowser//Kits//"
-        //".//..//..//..//ContextSamples//ContextSamples//S3//FourContextsSample.cs"
+        //".//..//..//..//ContextBrowser//ContextBrowser"
+        //".//..//..//..//..//ContextBrowser//ContextSamples//ContextSamples//S6//"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
         searchPaths: [".//..//..//..//"]);
@@ -107,16 +118,16 @@ public class AppOptions
         filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
-                 cacheModel: new CacheJsonModel(renewCache: false,
+                 cacheModel: new CacheJsonModel(renewCache: true,
                                                      input: ".//cache//roslyn.json",
                                                     output: ".//cache//roslyn.json")),
         webPaths: new ExportWebPaths(
             outputDirectory: "http://localhost:5500",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
-                 cacheModel: new CacheJsonModel(renewCache: false,
+                 cacheModel: new CacheJsonModel(renewCache: true,
                                                      input: ".//cache//roslyn.json",
                                                     output: ".//cache//roslyn.json")),
-        pumlOptions: new ExportPumlOptions(injectionType: PumlInjectionType.inject));
+        pumlOptions: new ExportPumlOptions(injectionType: PumlInjectionType.reference));
 
     [CommandLineArgument("contexttransition-diagram-options", "Представление контекстной диаграммы")]
     public DiagramBuilderOptions DiagramBuilder { get; set; } = new(

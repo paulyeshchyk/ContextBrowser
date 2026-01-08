@@ -1,4 +1,5 @@
-﻿using ContextKit.Model;
+﻿using System.Threading.Tasks;
+using ContextKit.Model;
 using SemanticKit.Model.SyntaxWrapper;
 
 namespace SemanticKit.Model;
@@ -24,5 +25,5 @@ public interface ISymbolLookupHandler<TContext, TSemanticModel>
     /// </summary>
     /// <param name="symbolDto">Обертка над синтаксическим узлом вызова.</param>
     /// <returns>Найденный контекст или null, если обработчик не смог обработать запрос.</returns>
-    TContext? Handle(ISyntaxWrapper symbolDto);
+    Task<TContext?> Handle(ISyntaxWrapper symbolDto);
 }

@@ -122,14 +122,18 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
         lock (_lock)
         {
             _existing.Clear();
-            foreach (var item in byItems)
-                _existing.Add(item);
-
             Collection.Clear();
 
-            var names = ContextInfoFullNameIndexBuilder.Build(_existing);
-            foreach (var key in names.Keys)
-                Collection[key] = names[key];
+            if (byItems.Any())
+            {
+                foreach (var item in byItems)
+                    _existing.Add(item);
+
+
+                var names = ContextInfoFullNameIndexBuilder.Build(_existing);
+                foreach (var key in names.Keys)
+                    Collection[key] = names[key];
+            }
         }
     }
 

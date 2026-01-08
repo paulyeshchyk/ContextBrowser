@@ -41,9 +41,9 @@ public class RoslynCompilationMapBuilder : ISemanticMapExtractor<RoslynSyntaxTre
     {
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Building compilation map for {codeFiles.Count()} files", LogLevelNode.None);
 
-        var syntaxTrees = await _syntaxTreeParser.ParseFilesToSyntaxTreesAsync(options, codeFiles, cancellationToken);
+        var syntaxTrees = await _syntaxTreeParser.ParseFilesToSyntaxTreesAsync(options, codeFiles, cancellationToken).ConfigureAwait(false);
 
-        var compilation = _compilationMapBuilder.Build(options, syntaxTrees, options.CustomAssembliesPaths, "Parser", cancellationToken);
+        var compilation = await _compilationMapBuilder.BuildAsync(options, syntaxTrees, options.CustomAssembliesPaths, "Parser", cancellationToken).ConfigureAwait(false);
 
         var result = _compilationMapMapper.MapSemanticModelToCompilationMap(syntaxTrees, compilation);
 

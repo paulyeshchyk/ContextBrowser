@@ -33,7 +33,9 @@ public class UmlDiagramExporterClassDiagramNamespace
 
         foreach (var contextInfo in classesList)
         {
-            var htmlUrl = namingProcessor.ClassOnlyHtmlFilename(contextInfo.FullName);
+            var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
+
+            var htmlUrl = namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace);
             var entityType = contextInfo.ElementType.ConvertToUmlEntityType();
             var umlClass = new UmlEntity(entityType, contextInfo.Name.PadRight(maxLength), contextInfo.Name.AlphanumericOnly(), url: htmlUrl);
             package.Add(umlClass);

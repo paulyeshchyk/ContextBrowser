@@ -76,7 +76,8 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     internal async Task BuildAsync(IContextInfo contextInfo, ExportOptions exportOptions, DiagramBuilderOptions options, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties, CancellationToken cancellationToken)
     {
         var fullName = $"{contextInfo.FullName.AlphanumericOnly()}";
-        var pumlFileName = _namingProcessor.ClassOnlyPumlFilename(fullName);
+        var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
+        var pumlFileName = _namingProcessor.ClassOnlyPumlFilename(classNameWithNameSpace);
         var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, pumlFileName);
 
         var diagramId = _namingProcessor.ClassOnlyDiagramId(fullName);

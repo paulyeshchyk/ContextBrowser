@@ -41,10 +41,12 @@ public class HtmlDataCellBuilderMethodList<TDataTensor> : IHtmlDataCellBuilder<M
         // Логика отрисовки ячейки
         await HtmlBuilderFactory.HtmlBuilderTableCell.Data.WithAsync(textWriter, attributes: attrs, (token) =>
         {
-            var methodOwner = contextInfo.MethodOwner?.FullName ?? contextInfo.Name;
+            var methodContextInfo = contextInfo.MethodOwner ?? contextInfo;
+            var methodOwner = contextInfo.MethodOwner ?? contextInfo;
+            var classNameWithNameSpace = $"{methodOwner.Namespace}.{methodOwner.ShortName}";
 
             //var attrs = new HtmlTagAttributes() { { "href", _hRefManager.GetHrefCell(cell, options) } };
-            var htmlPage = _namingProcessor.ClassOnlyHtmlFilename(methodOwner);
+            var htmlPage = _namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace);
             var tagAttrs = new HtmlTagAttributes() { { "href", $"{htmlPage}?m={contextInfo.Name}" } };
 
             HtmlBuilderFactory.A.CellAsync(textWriter, tagAttrs, contextInfo.Name, isEncodable: false, cancellationToken: token);

@@ -53,6 +53,6 @@ public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, Invo
             return;
         }
 
-        linksInvocationBuilder.LinkInvocation(callerContextInfo, symbolDto, options);
+        await linksInvocationBuilder.LinkInvocationAsync(callerContextInfo, symbolDto, options).ConfigureAwait(false);
     }
 }

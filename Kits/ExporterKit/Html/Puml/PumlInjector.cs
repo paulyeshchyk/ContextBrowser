@@ -25,7 +25,7 @@ public static class PumlInjector
     {
         return exportOptions.PumlOptions.InjectionType switch
         {
-            PumlInjectionType.include => throw new NotImplementedException(),
+            PumlInjectionType.reference => throw new NotImplementedException(),
             PumlInjectionType.inject => ReadPumlContent(pumlFilePath),
             _ => string.Empty
         };
@@ -35,14 +35,14 @@ public static class PumlInjector
     {
         var src = exportOptions.PumlOptions.InjectionType switch
         {
-            PumlInjectionType.include => $"{pumlFilePath}",
+            PumlInjectionType.reference => $"{pumlFilePath}",
             PumlInjectionType.inject => string.Empty,
             _ => $"{pumlFilePath}"
         };
 
         var data = exportOptions.PumlOptions.InjectionType switch
         {
-            PumlInjectionType.include => string.Empty,
+            PumlInjectionType.reference => string.Empty,
             PumlInjectionType.inject => ReadPumlContent(pumlFilePath),
             _ => string.Empty
         };

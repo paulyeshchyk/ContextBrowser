@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -26,7 +27,7 @@ public class ContextInfoBuilderDispatcher<TContext>
     }
 
     // context: ContextInfo, build
-    public TContext? DispatchAndBuild(TContext? parent, object syntax, ISemanticModelWrapper semanticModelWrapper, CancellationToken cancellationToken)
+    public async Task<TContext?> DispatchAndBuildAsync(TContext? parent, object syntax, ISemanticModelWrapper semanticModelWrapper, CancellationToken cancellationToken)
     {
         var builder = _builders.FirstOrDefault(b => b.CanBuild(syntax));
 
@@ -37,10 +38,10 @@ public class ContextInfoBuilderDispatcher<TContext>
         }
 
         // Вызываем универсальный метод, который вызывает специфичный BuildContextInfo внутри
-        return builder.BuildContextInfo(parent, syntax, semanticModelWrapper, cancellationToken);
+        return await builder.BuildContextInfo(parent, syntax, semanticModelWrapper, cancellationToken).ConfigureAwait(false);
     }
 
-    public TContext? DispatchAndBuild(TContext? ownerContext, ISyntaxWrapper syntaxWrapper)
+    public async Task<TContext?> DispatchAndBuild(TContext? ownerContext, ISyntaxWrapper syntaxWrapper)
     {
         var builder = _builders.FirstOrDefault(b => b.CanBuild(syntaxWrapper));
 
@@ -50,6 +51,6 @@ public class ContextInfoBuilderDispatcher<TContext>
             return default;
         }
 
-        return builder.BuildContextInfo(ownerContext, syntaxWrapper.GetContextInfoDto());
+        return await builder.BuildContextInfo(ownerContext, syntaxWrapper.GetContextInfoDto()).ConfigureAwait(false);
     }
 }

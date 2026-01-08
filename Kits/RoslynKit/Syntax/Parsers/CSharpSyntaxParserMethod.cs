@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Assembly;
 using RoslynKit.AWrappers;
@@ -23,19 +25,22 @@ public class CSharpSyntaxParserMethod<TContext>
     private readonly IAppLogger<AppLevel> _logger;
     private readonly CSharpSyntaxParserCommentTrivia<TContext> _triviaCommentParser;
     private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
+    private readonly ISymbolLoader<MemberDeclarationSyntax, ISymbol> _symbolLoader;
 
     public CSharpSyntaxParserMethod(
         CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
         ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
-        IAppLogger<AppLevel> logger)
+        IAppLogger<AppLevel> logger,
+        ISymbolLoader<MemberDeclarationSyntax, ISymbol> symbolLoader)
     {
         _logger = logger;
         _triviaCommentParser = triviaCommentParser;
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
+        _symbolLoader = symbolLoader;
     }
 
     //context: roslyn, build, ContextInfo
-    public void ParseMethodSyntax(MemberDeclarationSyntax availableSyntax, ISemanticModelWrapper semanticModel, TContext typeContext, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task ParseMethodSyntaxAsync(MemberDeclarationSyntax availableSyntax, ISemanticModelWrapper semanticModel, TContext typeContext, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (availableSyntax is not TypeDeclarationSyntax typeSyntax)
         {
@@ -47,37 +52,37 @@ public class CSharpSyntaxParserMethod<TContext>
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - method syntax");
 
         var methodDeclarationSyntaxies = typeSyntax.FilteredMethodsList(options).ToList();
-        if (!methodDeclarationSyntaxies.Any())
+        if (methodDeclarationSyntaxies.Count == 0)
         {
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"[{typeContext.Name}]:Syntax has no methods in List");
             return;
         }
 
-        var buildItems = ParseMethodSyntax(typeContext, methodDeclarationSyntaxies, semanticModel, cancellationToken);
+        var buildItems = await ParseMethodSyntaxAsync(typeContext, methodDeclarationSyntaxies, semanticModel, cancellationToken).ConfigureAwait(false);
         var extraDomains = new List<string>();
         foreach (var (context, syntax) in buildItems)
         {
-            _triviaCommentParser.Parse(context, syntax, semanticModel, options, cancellationToken);
+            await _triviaCommentParser.ParseAsync(context, syntax, semanticModel, options, cancellationToken).ConfigureAwait(false);
             extraDomains.AddRange(context.Domains);
         }
         typeContext.MergeDomains(extraDomains);
     }
 
-    public List<(TContext context, MethodDeclarationSyntax syntax)> ParseMethodSyntax(TContext parent, IEnumerable<MethodDeclarationSyntax> methods, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
+    public async Task<List<(TContext context, MethodDeclarationSyntax syntax)>> ParseMethodSyntaxAsync(TContext parent, IEnumerable<MethodDeclarationSyntax> methods, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
     {
         var result = new List<(TContext, MethodDeclarationSyntax)>();
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, $"Iterating methods [{parent.Name}]", LogLevelNode.Start);
 
         foreach (var methodSyntax in methods)
         {
-            var methodModel = BuildWrapper(methodSyntax, semanticModel, cancellationToken);
+            var methodModel = await BuildWrapper(methodSyntax, semanticModel, cancellationToken).ConfigureAwait(false);
             if (methodModel == null)
             {
                 _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Warn, $"[{parent.Name}]: не найден символ для метода [{methodSyntax}]");
                 continue;
             }
 
-            var context = _contextInfoBuilderDispatcher.DispatchAndBuild(parent, methodSyntax, semanticModel, cancellationToken);
+            var context = await _contextInfoBuilderDispatcher.DispatchAndBuildAsync(parent, methodSyntax, semanticModel, cancellationToken).ConfigureAwait(false);
             if (context != null)
             {
                 result.Add((context, methodSyntax));
@@ -88,9 +93,9 @@ public class CSharpSyntaxParserMethod<TContext>
         return result;
     }
 
-    private CSharpSyntaxWrapperMethod? BuildWrapper(MethodDeclarationSyntax methodSyntax, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
+    private async Task<CSharpSyntaxWrapperMethod?> BuildWrapper(MethodDeclarationSyntax methodSyntax, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
     {
-        var roslynSymbol = RoslynSymbolLoader.LoadSymbol(methodSyntax, semanticModel, _logger, cancellationToken);
+        var roslynSymbol = await _symbolLoader.LoadSymbolAsync(methodSyntax, semanticModel, cancellationToken).ConfigureAwait(false);
         return roslynSymbol != null
             ? new CSharpSyntaxWrapperMethod(symbol: roslynSymbol, syntax: methodSyntax)
             : null;

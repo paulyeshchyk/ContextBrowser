@@ -39,8 +39,8 @@ public class RoslynAssemblyFetcher : IAssemblyFetcher<MetadataReference>
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Загрузится {filteredDomainPaths.Count()} domain сборок");
 
         var runtimeDirectoryPaths = FetchRuntimeDirectoryAssemblyPaths();
-        var filteredRuntimePaths = ApplyFilters(runtimeDirectoryPaths, assemblyPathsFilter.DomainFilters);
-        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Загрузится {filteredRuntimePaths.Count()} domain сборок");
+        var filteredRuntimePaths = ApplyFilters(runtimeDirectoryPaths, assemblyPathsFilter.RuntimeFilters);
+        _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Загрузится {filteredRuntimePaths.Count()} runtime сборок");
 
         var allAssemblyPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {

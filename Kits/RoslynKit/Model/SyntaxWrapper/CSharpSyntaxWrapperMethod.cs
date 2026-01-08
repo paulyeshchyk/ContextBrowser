@@ -47,28 +47,6 @@ public record CSharpSyntaxWrapperMethod : ISyntaxWrapper
         }
     }
 
-    public CSharpSyntaxWrapperMethod(ISyntaxWrapper wrapper)
-    {
-        Identifier = wrapper.Identifier;
-        Name = wrapper.Name;
-        FullName = wrapper.FullName;
-        SpanStart = wrapper.SpanStart;
-        SpanEnd = wrapper.SpanEnd;
-        Namespace = wrapper.Namespace;
-        ShortName = wrapper.ShortName;
-        if (wrapper.Signature is not null)
-        {
-            Signature = new SignatureDefault
-            (
-                ResultType: wrapper.Signature.ResultType,
-                Namespace: wrapper.Signature.Namespace,
-                ClassName: wrapper.Signature.ClassName,
-                MethodName: wrapper.Signature.MethodName,
-                Arguments: wrapper.Signature.Arguments,
-                Raw: wrapper.Signature.Raw);
-        }
-    }
-
     public IContextInfo GetContextInfoDto()
     {
         return new ContextInfoDto(

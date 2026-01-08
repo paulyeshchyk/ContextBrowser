@@ -1,4 +1,6 @@
-﻿namespace HtmlKit.Model.Tabsheet;
+﻿using System;
+
+namespace HtmlKit.Model.Tabsheet;
 
 public interface ITabsheetTabInfo
 {

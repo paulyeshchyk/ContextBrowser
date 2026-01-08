@@ -14,13 +14,6 @@ using SemanticKit.Parsers.File;
 namespace ContextBrowser.Services.Parsing;
 
 // context: parsing, build
-public interface ICodeParseService
-{
-    // context: parsing, build
-    Task<IEnumerable<ContextInfo>> ParseAsync(IFileParserPipeline<ContextInfo> pipeline, CancellationToken cancellationToken);
-}
-
-// context: parsing, build
 public class CodeParseService : ICodeParseService
 {
     private readonly IAppLogger<AppLevel> _logger;

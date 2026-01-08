@@ -1,9 +1,11 @@
+using System.Collections.Immutable;
 using System.Threading;
+using System.Threading.Tasks;
 using SemanticKit.Model;
 
 namespace SemanticKit.Model;
 
-public interface ICompilationDiagnosticsInspector<TCompilation>
+public interface ICompilationDiagnosticsInspector<TCompilation, TDiagnostic>
 {
-    void LogAndFilterDiagnostics(TCompilation compilation, CancellationToken cancellationToken);
+    Task<ImmutableArray<TDiagnostic>> LogAndFilterDiagnosticsAsync(TCompilation compilation, CancellationToken cancellationToken);
 }

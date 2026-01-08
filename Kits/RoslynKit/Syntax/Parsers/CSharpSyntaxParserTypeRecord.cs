@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -35,7 +36,7 @@ public class CSharpSyntaxParserTypeRecord<TContext> : SyntaxParser<TContext>
 
     public override bool CanParseSyntax(object syntax) => syntax is RecordDeclarationSyntax;
 
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
+    public override async Task ParseAsync(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (syntax is not RecordDeclarationSyntax recordSyntax)
         {
@@ -46,7 +47,7 @@ public class CSharpSyntaxParserTypeRecord<TContext> : SyntaxParser<TContext>
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - record syntax");
 
-        var recordContext = _contextInfoBuilderDispatcher.DispatchAndBuild(parent, recordSyntax, model, cancellationToken);
+        var recordContext = await _contextInfoBuilderDispatcher.DispatchAndBuildAsync(parent, recordSyntax, model, cancellationToken).ConfigureAwait(false);
         if (recordContext == null)
         {
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, $"Syntax \"{recordSyntax}\" was not resolved");
@@ -56,11 +57,11 @@ public class CSharpSyntaxParserTypeRecord<TContext> : SyntaxParser<TContext>
         var propertySyntaxes = recordSyntax.Members.OfType<PropertyDeclarationSyntax>();
         foreach (var propertySyntax in propertySyntaxes)
         {
-            _propertyDeclarationParser.Parse(recordContext, propertySyntax, model, options, cancellationToken);
+            await _propertyDeclarationParser.ParseAsync(recordContext, propertySyntax, model, options, cancellationToken).ConfigureAwait(false);
         }
 
-        _triviaCommentParser.Parse(recordContext, recordSyntax, model, options, cancellationToken);
+        await _triviaCommentParser.ParseAsync(recordContext, recordSyntax, model, options, cancellationToken).ConfigureAwait(false);
 
-        _methodSyntaxParser.ParseMethodSyntax(recordSyntax, model, recordContext, options, cancellationToken);
+        await _methodSyntaxParser.ParseMethodSyntaxAsync(recordSyntax, model, recordContext, options, cancellationToken).ConfigureAwait(false);
     }
 }

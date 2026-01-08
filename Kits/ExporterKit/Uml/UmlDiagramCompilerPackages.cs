@@ -77,14 +77,14 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
         return new Dictionary<ILabeledValue, bool>();
     }
 
-    private static void AddPackage(IUmlUrlBuilder umlUrlBuilder, UmlDiagramClass diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> nsGroup)
+    private static void AddPackage(IUmlUrlBuilder umlUrlBuilder, UmlDiagramClass diagram, List<ContextInfo> methods, IGrouping<string, ContextInfo> namespaceContexts)
     {
-        var packageUrl = umlUrlBuilder.BuildNamespaceUrl(nsGroup.Key);
-        var package = new UmlPackage(nsGroup.Key, alias: nsGroup.Key.AlphanumericOnly(), url: packageUrl);
+        var packageUrl = umlUrlBuilder.BuildNamespaceUrl(namespaceContexts.Key);
+        var package = new UmlPackage(namespaceContexts.Key, alias: namespaceContexts.Key.AlphanumericOnly(), url: packageUrl);
 
-        foreach (var cls in nsGroup)
+        foreach (var contextInfo in namespaceContexts)
         {
-            AddComponentGroup(methods, package, cls);
+            AddComponentGroup(methods, package, contextInfo);
         }
 
         diagram.Add(package);

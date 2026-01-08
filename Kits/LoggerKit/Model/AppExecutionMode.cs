@@ -1,3 +1,5 @@
+using System;
+
 namespace LoggerKit.Model;
 
 public enum AppExecutionMode

@@ -1,11 +1,12 @@
 using Microsoft.CodeAnalysis;
+using SemanticKit.Model.Signature;
 
 namespace RoslynKit.Signature.SignatureBuilder;
 
 // context: roslyn, signature, build
-internal class CSharpSignatureBuilderDefault : SignatureBuilder
+internal class CSharpSignatureBuilderDefault : SignatureBuilder<ISymbol>
 {
-    public CSharpSignatureBuilderDefault(SignatureBuilder sb) : base(sb)
+    public CSharpSignatureBuilderDefault(SignatureBuilder<ISymbol> sb) : base(sb)
     {
 
     }

@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using LoggerKit;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Assembly;
 using RoslynKit.AWrappers;
@@ -24,24 +26,28 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
     private readonly CSharpSyntaxParserMethod<TContext> _methodSyntaxParser;
     private readonly CSharpSyntaxParserTypeProperty<TContext> _propertyDeclarationParser;
     private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
+    private readonly ISymbolLoader<MemberDeclarationSyntax, ISymbol> _symbolLoader;
 
     public CSharpSyntaxParserTypeClass(
         CSharpSyntaxParserTypeProperty<TContext> propertyDeclarationParser,
         CSharpSyntaxParserMethod<TContext> methodSyntaxParser,
         CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
         ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
-        IAppLogger<AppLevel> logger) : base(logger)
+        IAppLogger<AppLevel> logger,
+        ISymbolLoader<MemberDeclarationSyntax, ISymbol> symbolLoader) : base(logger)
     {
         _triviaCommentParser = triviaCommentParser;
         _propertyDeclarationParser = propertyDeclarationParser;
         _methodSyntaxParser = methodSyntaxParser;
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
+        _symbolLoader = symbolLoader;
+
     }
 
     public override bool CanParseSyntax(object syntax) => syntax is ClassDeclarationSyntax;
 
     // context: syntax, build
-    public override void Parse(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
+    public override async Task ParseAsync(TContext? parent, object syntax, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         if (syntax is not ClassDeclarationSyntax typeSyntax)
         {
@@ -53,9 +59,9 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, "Parsing files: phase 1 - type syntax");
 
-        _ = RoslynSymbolLoader.LoadSymbol(typeSyntax, model, _logger, cancellationToken);
+        _ = await _symbolLoader.LoadSymbolAsync(typeSyntax, model, cancellationToken).ConfigureAwait(false);
 
-        var typeContext = _contextInfoBuilderDispatcher.DispatchAndBuild(parent, typeSyntax, model, cancellationToken);
+        var typeContext = await _contextInfoBuilderDispatcher.DispatchAndBuildAsync(parent, typeSyntax, model, cancellationToken).ConfigureAwait(false);
         if (typeContext == null)
         {
             _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Err, string.Format(SErrorNullTypeContext, typeSyntax, typeSyntax.GetNamespaceOrGlobal()));
@@ -65,11 +71,11 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
         var propertySyntaxes = typeSyntax.Members.OfType<PropertyDeclarationSyntax>();
         foreach (var propertySyntax in propertySyntaxes)
         {
-            _propertyDeclarationParser.Parse(typeContext, propertySyntax, model, options, cancellationToken);
+            await _propertyDeclarationParser.ParseAsync(typeContext, propertySyntax, model, options, cancellationToken).ConfigureAwait(false);
         }
 
-        _triviaCommentParser.Parse(typeContext, typeSyntax, model, options, cancellationToken);
+        await _triviaCommentParser.ParseAsync(typeContext, typeSyntax, model, options, cancellationToken).ConfigureAwait(false);
 
-        _methodSyntaxParser.ParseMethodSyntax(typeSyntax, model, typeContext, options, cancellationToken);
+        await _methodSyntaxParser.ParseMethodSyntaxAsync(typeSyntax, model, typeContext, options, cancellationToken).ConfigureAwait(false);
     }
 }

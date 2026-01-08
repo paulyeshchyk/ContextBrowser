@@ -84,7 +84,6 @@ public class UmlNode : IUmlParticipant
 
         list.Add(nodeJoint);
 
-#warning do check .AlphanumericOnly()
         list.Add(Url != null
             ? $"[[{data.Url} {data.Name}]]" // [[http://www.google.com Поисковая_система]]
             : $"{data.Name}"// Поисковая_система

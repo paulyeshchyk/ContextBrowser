@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using ContextBrowserKit.Options;
 using LoggerKit;
 using Microsoft.CodeAnalysis;
@@ -12,18 +13,20 @@ public class RoslynCompilationWrapper : ICompilationWrapper
 
     private readonly Compilation _compilation;
 
-    public RoslynCompilationWrapper(Compilation compilation, IAppLogger<AppLevel> logger)
+    private readonly ImmutableArray<Diagnostic> _diagnostics;
+
+    public RoslynCompilationWrapper(Compilation compilation, ImmutableArray<Diagnostic> diagnostics, IAppLogger<AppLevel> logger)
     {
         _compilation = compilation;
         _logger = logger;
-
+        _diagnostics = diagnostics;
     }
 
     // context: roslyn, compilation, build
     public ISemanticModelWrapper GetSemanticModel(ISyntaxTreeWrapper wrapper)
     {
         var semanticModel = _compilation.GetSemanticModel((SyntaxTree)wrapper.Tree);
-        return new RoslynSemanticModelWrapper(semanticModel, _logger);
+        return new RoslynSemanticModelWrapper(_diagnostics, semanticModel, _logger);
     }
 }
 

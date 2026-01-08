@@ -16,6 +16,4 @@ public record UmlClassDiagramElementDto
         ClassName = className;
         ContextInfo = contextInfo;
     }
-
-    public string FullName { get { return $"{Namespace}.{ClassName}"; } }
 }

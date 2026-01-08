@@ -1,8 +1,9 @@
 ﻿using System;
+using ContextKit.Model;
 
-namespace ContextKit.Model;
+namespace RoslynKit.AWrappers;
 
-public class CSharpISymbolWrapper : ISymbolInfo
+public class CSharpSymbolInfoWrapper : ISymbolInfo
 {
     private string _name = string.Empty;
     private string _fullname = string.Empty;
@@ -60,5 +61,5 @@ public class CSharpISymbolWrapper : ISymbolInfo
         return coSyntax;
     }
 
-    public CSharpISymbolWrapper() { }
+    public CSharpSymbolInfoWrapper() { }
 }

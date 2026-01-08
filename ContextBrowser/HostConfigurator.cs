@@ -11,6 +11,7 @@ using ContextKit.Model;
 using ContextKit.Model.CacheManager;
 using ContextKit.Model.Collector;
 using ContextKit.Model.Factory;
+using ContextKit.Model.Service;
 using ContextKit.Model.WordTensorBuildStrategy;
 using ExporterKit.Csv;
 using ExporterKit.Html.Containers;
@@ -32,15 +33,23 @@ using Microsoft.Extensions.DependencyInjection;
 using RoslynKit.Assembly;
 using RoslynKit.Converters;
 using RoslynKit.Model.Meta;
+using RoslynKit.Model.SyntaxWrapper;
 using RoslynKit.Phases;
 using RoslynKit.Phases.ContextInfoBuilder;
 using RoslynKit.Phases.Syntax;
+using RoslynKit.Signature;
+using RoslynKit.Signature.SignatureParser;
 using SemanticKit.Model;
+using SemanticKit.Model.Signature;
 using TensorKit.Factories;
 using TensorKit.Model;
+using UmlKit.Builders;
+using UmlKit.Builders.Strategies;
+using UmlKit.Builders.TransitionDirection;
 using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Compiler.Orchestrant;
+using UmlKit.Infrastructure.Options;
 
 namespace ContextBrowser;
 
@@ -63,12 +72,21 @@ public class HostConfigurator
         services.AddSingleton<INamingProcessor, NamingProcessor>();
 
         // --- Службы, связанные с ContextInfo и анализом кода ---
-
+        services.AddTransient<IContextInfoManager<ContextInfo>, ContextInfoManager<ContextInfo>>();
+        services.AddTransient<IContextInfoRelationBuilder<ContextInfo>, ContextInfoRelationBuilder>();
         services.AddSingleton<IContextCollector<ContextInfo>, ContextInfoCollector<ContextInfo>>();
         services.AddSingleton<ISemanticModelStorage<RoslynSyntaxTreeWrapper, ISemanticModelWrapper>, SemanticModelStorage<RoslynSyntaxTreeWrapper>>();
         services.AddTransient<ISemanticTreeModelBuilder<RoslynSyntaxTreeWrapper, ISemanticModelWrapper>, SemanticTreeModelBuilder<RoslynSyntaxTreeWrapper>>();
         services.AddSingleton<IContextFactory<ContextInfo>, ContextInfoFactory>();
         services.AddTransient<ISyntaxTreeWrapperBuilder<RoslynSyntaxTreeWrapper>, RoslynSyntaxTreeWrapperBuilder<RoslynSyntaxTreeWrapper>>();
+
+        services.AddTransient<IContextInfoRelationOwnerInjector, ContextInfoRelationClassOwnerInjector>();
+        services.AddTransient<IContextInfoRelationOwnerInjector, ContextInfoRelationMethodOwnerInjector>();
+
+        services.AddTransient<IContextInfoRelationInjector, ContextInfoRelationReferenceInjector>();
+        services.AddTransient<IContextInfoRelationInjector, ContextInfoRelationInvokedByInjector>();
+        services.AddTransient<IContextInfoRelationInjector, ContextInfoRelationPropertyInjector>();
+        services.AddTransient<IContextInfoRelationInjector, ContextInfoRelationOwnsInjector>();
 
         services.AddSingleton<IContextInfoIndexerProvider, ContextInfoIndexerProvider>();
         services.AddTransient<ICsvGenerator<DomainPerActionTensor>, CsvGenerator<DomainPerActionTensor>>();
@@ -91,8 +109,17 @@ public class HostConfigurator
         services.AddSingleton<IContextInfo2DMap<ContextInfo, DomainPerActionTensor>, ContextInfo2DMap<DomainPerActionTensor, ContextInfo>>();
         services.AddTransient<IContextInfoMapperFactory<DomainPerActionTensor>, ContextInfoMapperFactory<DomainPerActionTensor>>();
         services.AddTransient<IContextInfoDtoConverter<ContextInfo, ISyntaxNodeWrapper>, ContextInfoDtoConverter<ContextInfo>>();
+
         // --- Code parsing
         services.AddTransient<ICodeParseService, CodeParseService>();
+        services.AddSingleton<SignatureChainFactory>();
+
+        services.AddSingleton<ISignatureParser<CSharpIdentifier>, CSharpSignatureParser>();
+        services.AddSingleton<ISignatureParserChain, CSharpSignatureParserChain>();
+        services.AddSingleton<ISignatureRegexMatcher, CSharpSignatureRegexMatcher>();
+
+        services.AddTransient<ICSharpInvocationSyntaxWrapperConverter, CSharpInvocationSyntaxWrapperConverter>();
+        services.AddTransient<ICSharpSyntaxWrapperTypeBuilder, CSharpSyntaxWrapperTypeBuilder>();
 
         // --- language selector
         // использует RoslynSemanticSyntaxRouterBuilder
@@ -110,9 +137,10 @@ public class HostConfigurator
         services.AddTransient<ISemanticMapExtractor<RoslynSyntaxTreeWrapper>, RoslynCompilationMapBuilder>();
         services.AddTransient<ISyntaxTreeParser<RoslynSyntaxTreeWrapper>, RoslynSyntaxTreeParser>();
         services.AddTransient<ICompilationMapMapper<RoslynSyntaxTreeWrapper>, RoslynCompilationMapMapper>();
-        services.AddTransient<ICompilationDiagnosticsInspector<CSharpCompilation>, RoslynDiagnosticsInspector>();
+        services.AddTransient<ICompilationDiagnosticsInspector<CSharpCompilation, Diagnostic>, RoslynDiagnosticsInspector>();
         services.AddTransient<ICodeInjector, RoslynCodeInjector>();
 
+        services.AddTransient<ISymbolLoader<MemberDeclarationSyntax, ISymbol>, RoslynSymbolLoader<MemberDeclarationSyntax, ISymbol>>();
         services.AddTransient<ISemanticInvocationResolver<RoslynSyntaxTreeWrapper>, RoslynSemanticInvocationResolver>();
         services.AddTransient<IInvocationSyntaxResolver, RoslynInvocationSyntaxExtractor>();
         services.AddTransient<IReferenceParserFactory<RoslynSyntaxTreeWrapper>, RoslynReferenceParserFactory<RoslynSyntaxTreeWrapper>>();
@@ -129,9 +157,9 @@ public class HostConfigurator
         services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderRecord<ContextInfo>>();
         services.AddTransient<ContextInfoBuilderDispatcher<ContextInfo>>();
 
-        services.AddTransient<IInvocationLinksBuilder<ContextInfo>, RoslynPhaseParserInvocationLinksBuilder<ContextInfo>>();
+        services.AddTransient<IInvocationLinksBuilder<ContextInfo>, RoslynPhaseParserInvocationLinksBuilder>();
         services.AddTransient<IInvocationLinker<ContextInfo, InvocationExpressionSyntax>, RoslynInvocationLinker<ContextInfo>>();
-        services.AddTransient<ISymbolWrapperConverter, SymbolWrapperConverter>();
+        services.AddTransient<ISymbolWrapperConverter, RoslynSymbolWrapperConverter>();
         // ---
 
         services.AddSingleton<IContextInfoCommentProcessor<ContextInfo>, ContextInfoCommentProcessor<ContextInfo>>();
@@ -207,5 +235,13 @@ public class HostConfigurator
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapAction>();
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapClassOnly>();
         services.AddTransient<IUmlDiagramCompilerOrchestrator, UmlDiagramCompilerOrchestrator>();
+
+        services.AddTransient<ITransitionBuilder, OutgoingTransitionBuilder>();
+        services.AddTransient<ITransitionBuilder, IncomingTransitionBuilder>();
+        services.AddTransient<ITransitionBuilder, BiDirectionalTransitionBuilder>();
+
+        services.AddSingleton<IDiagramBuilderRegistration, TransitionDiagramBuilderRegistration>();
+
+        services.AddSingleton<IContextDiagramBuildersFactory, ContextDiagramBuildersFactory>();
     }
 }

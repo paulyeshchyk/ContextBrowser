@@ -12,6 +12,6 @@ public record ExportPumlOptions
 
 public enum PumlInjectionType
 {
-    include,
+    reference,
     inject
 }

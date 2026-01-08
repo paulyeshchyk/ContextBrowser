@@ -24,11 +24,13 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly ISemanticInvocationResolver<RoslynSyntaxTreeWrapper> _semanticInvocationResolver;
+    private readonly ICSharpInvocationSyntaxWrapperConverter _invocationSyntaxWrapperConverter;
 
-    public RoslynInvocationSyntaxExtractor(ISemanticInvocationResolver<RoslynSyntaxTreeWrapper> semanticInvocationResolver, IAppLogger<AppLevel> logger)
+    public RoslynInvocationSyntaxExtractor(ISemanticInvocationResolver<RoslynSyntaxTreeWrapper> semanticInvocationResolver, IAppLogger<AppLevel> logger, ICSharpInvocationSyntaxWrapperConverter invocationSyntaxWrapperConverter)
     {
         _logger = logger;
         _semanticInvocationResolver = semanticInvocationResolver;
+        _invocationSyntaxWrapperConverter = invocationSyntaxWrapperConverter;
     }
 
     // context: roslyn, read
@@ -57,13 +59,13 @@ public class RoslynInvocationSyntaxExtractor : IInvocationSyntaxResolver
         if (invocationSemanticModel == null)
         {
             _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"[MISS] Semantic model was not defined for [{invocationWrapper.Expression}]");
-            return CSharpInvocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
+            return _invocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
         }
 
         var symbol = await RoslynInvocationSyntaxExtractor.GetMethodSymbolAsync(invocationWrapper, invocationSemanticModel, _logger, cancellationToken).ConfigureAwait(false);
         return (symbol != null)
-            ? CSharpInvocationSyntaxWrapperConverter.FromSymbols(symbol, byInvocation)
-            : CSharpInvocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
+            ? _invocationSyntaxWrapperConverter.FromSymbols(byInvocation, symbol)
+            : _invocationSyntaxWrapperConverter.FromExpression(byInvocation.Expression, options);
     }
 
     // context: roslyn, read

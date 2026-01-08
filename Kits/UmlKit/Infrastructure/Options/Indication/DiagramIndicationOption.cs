@@ -1,4 +1,5 @@
-﻿namespace UmlKit.Infrastructure.Options.Indication;
+﻿using System;
+namespace UmlKit.Infrastructure.Options.Indication;
 
 public record DiagramIndicationOption
 {
