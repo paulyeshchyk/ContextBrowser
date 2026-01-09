@@ -11,6 +11,7 @@ using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
+using ExporterKit.Uml.Builder;
 using LoggerKit;
 using TensorKit.Model;
 using UmlKit.Compiler;
@@ -92,35 +93,16 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
 
-        var packageUrl = _umlUrlBuilder.BuildNamespaceUrl(classownerInfo.Namespace);
-        var package = new UmlPackage(classownerInfo.Namespace, alias: classownerInfo.Namespace.AlphanumericOnly(), url: packageUrl);
+        var package = PumlBuilderHelper.BuildUmlPackage(classownerInfo, _umlUrlBuilder);
         diagram.Add(package);
 
-        var entityType = classownerInfo.ElementType.ConvertToUmlEntityType();
-        var umlClass = new UmlEntity(entityType, classownerInfo.Name, classownerInfo.Name.AlphanumericOnly(), url: null);
+        var umlClass = PumlBuilderHelper.BuildUmlEntity(classownerInfo);
         package.Add(umlClass);
 
-        AddPropertiesAndMethods(umlClass, classownerInfo, onGetMethods, onGetProperties);
+        PumlBuilderHelper.BuildUmlMethods(umlClass, classownerInfo, onGetMethods, onGetProperties);
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
         await diagram.WriteToFileAsync(fileName, writeOptons, cancellationToken);
-    }
-
-    internal static void AddPropertiesAndMethods(UmlEntity umlClass, IContextInfo classownerInfo, Func<IContextInfo, IEnumerable<IContextInfo>> onGetMethods, Func<IContextInfo, IEnumerable<IContextInfo>> onGetProperties)
-    {
-        var classMethods = onGetMethods(classownerInfo);
-        foreach (var element in classMethods)
-        {
-            var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
-            umlClass.Add(umlMethod);
-        }
-
-        var classProperties = onGetProperties(classownerInfo);
-        foreach (var element in classProperties)
-        {
-            var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
-            umlClass.Add(umlMethod);
-        }
     }
 
 }

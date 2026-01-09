@@ -9,6 +9,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData;
 using ContextKit.Model;
+using ExporterKit.Uml.Builder;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
@@ -88,7 +89,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
         }
 
         diagram.Add(package);
-        diagram.AddRelations(UmlSquaredLayout.Build(methods.Select(m => m.FullName)));
+        diagram.AddRelations(PumlBuilderSquaredLayout.Build(methods.Select(m => m.FullName)));
     }
 
     private static void AddComponentGroup(List<ContextInfo> methods, UmlPackage package, ContextInfo cls)

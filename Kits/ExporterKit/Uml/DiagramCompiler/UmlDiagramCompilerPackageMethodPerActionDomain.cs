@@ -10,6 +10,7 @@ using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ExporterKit.Infrastucture;
+using ExporterKit.Uml.Builder;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
@@ -23,7 +24,6 @@ namespace ExporterKit.Uml.DiagramCompiler;
 // pattern: Builder
 public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompiler
 {
-    private const string SParentheses = "()";
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
@@ -157,8 +157,8 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         ]);
 
         var classesonly = items.Where(item => item.ElementType == ContextInfoElementType.@class).ToList();
-        var methodsonly = items.Where(item => item.ElementType == ContextInfoElementType.@method).ToList();
-        var propssonly = items.Where(item => item.ElementType == ContextInfoElementType.property).ToList();
+        var methsonly = items.Where(item => item.ElementType == ContextInfoElementType.@method).ToList();
+        var propsonly = items.Where(item => item.ElementType == ContextInfoElementType.property).ToList();
         var propssonlyClassOwners = items.Where(item => item.ElementType == ContextInfoElementType.property).Select(i => i.ClassOwner).ToList();
         var methodsonlyClassOwners = items.Where(item => item.ElementType == ContextInfoElementType.@method).Select(i => i.ClassOwner).ToList();
 
@@ -174,40 +174,22 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
         foreach (var ns in namespaces)
         {
-            var namespaceUrl = umlUrlBuilder.BuildNamespaceUrl(ns);
-            var umlPackage = new UmlPackage(ns, alias: ns.AlphanumericOnly(), url: namespaceUrl);
+            var umlPackage = PumlBuilderHelper.BuildUmlPackage(umlUrlBuilder, ns);
 
             var classesInNamespace = classes.Where(c => c.Namespace == ns).Distinct().ToList();
 
             foreach (var contextInfo in classesInNamespace)
             {
-                var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
-                var htmlUrl = namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace);
-
-                var entityType = contextInfo.ElementType.ConvertToUmlEntityType();
-                var umlClass = new UmlEntity(entityType, contextInfo.Name.PadRight(maxLength), contextInfo.FullName.AlphanumericOnly(), url: htmlUrl);
-                var propsList = propssonly.Where(p => p.ClassOwner?.FullName.Equals(contextInfo.FullName) ?? false).Distinct();
-                foreach (var element in propsList)
-                {
-                    string? url = null;// UmlUrlBuilder.BuildUrl(element);
-                    umlClass.Add(new UmlProperty(element.ShortName.PadRight(maxLength), visibility: UmlMemberVisibility.@public, url: url));
-                }
-
-                var methodList = methodsonly.Where(m => m.ClassOwner?.FullName.Equals(contextInfo.FullName) ?? false).Distinct();
-                foreach (var element in methodList)
-                {
-                    string? url = null;//UmlUrlBuilder.BuildUrl(element);
-                    umlClass.Add(new UmlMethod(element.ShortName + SParentheses.PadRight(maxLength), visibility: UmlMemberVisibility.@public, url: url));
-                }
+                var umlClass = PumlBuilderHelper.BuildUmlEntityClass(contextInfo, methsonly, propsonly, maxLength, namingProcessor);
 
                 umlPackage.Add(umlClass);
             }
 
             diagram.Add(umlPackage);
-            diagram.AddRelations(UmlSquaredLayout.Build(classesInNamespace.Select(cls => cls.FullName.AlphanumericOnly())));
+            diagram.AddRelations(PumlBuilderSquaredLayout.Build(classesInNamespace.Select(cls => cls.FullName.AlphanumericOnly())));
         }
 
-        diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(ns => ns.AlphanumericOnly())));
+        diagram.AddRelations(PumlBuilderSquaredLayout.Build(namespaces.Select(ns => ns.AlphanumericOnly())));
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
         await diagram.WriteToFileAsync(outputPath, writeOptons, cancellationToken).ConfigureAwait(false);

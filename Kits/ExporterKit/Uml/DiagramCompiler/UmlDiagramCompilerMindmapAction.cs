@@ -32,7 +32,6 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
         _optionsStore = optionsStore;
         _namingProcessor = namingProcessor;
         _umlUrlBuilder = umlUrlBuilder;
-
     }
 
     // context: build, uml

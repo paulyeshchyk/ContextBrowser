@@ -8,6 +8,7 @@ using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Service;
+using ExporterKit.Uml.Builder;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
@@ -58,7 +59,10 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
         diagram.SetLayoutDirection(UmlLayoutDirection.Direction.LeftToRight);
 
         foreach (var method in methods)
-            diagram.Add(new UmlComponent(method.Name.PadRight(maxLength)));
+        {
+            var comp = PumlBuilderHelper.BuildUmlComponent(maxLength, method);
+            diagram.Add(comp);
+        }
 
         foreach (var method in methods)
         {
@@ -68,7 +72,8 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
                 if (methods.All(m => m.Name != callee.Name))
                     continue;
 
-                AddTransitionState(diagram, method, callee);
+                var transitionState = PumlBuilderHelper.BuildUmlTransitionState(method, callee);
+                diagram.Add(transitionState);
             }
         }
 
@@ -76,14 +81,5 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
         await diagram.WriteToFileAsync(outputPath, writeOptons, cancellationToken);
 
         return new Dictionary<ILabeledValue, bool>();
-    }
-
-    private static void AddTransitionState(UmlDiagramClass diagram, ContextInfo method, ContextInfo callee)
-    {
-        var state1 = new UmlState(string.IsNullOrWhiteSpace(method.Name) ? "<unknown method>" : method.Name, null);
-        var state2 = new UmlState(string.IsNullOrWhiteSpace(callee.Name) ? "<unknown callee>" : callee.Name, null);
-        var arrow = new UmlArrow();
-        var transitionState = new UmlTransitionState(state1, state2, arrow);
-        diagram.Add(transitionState);
     }
 }

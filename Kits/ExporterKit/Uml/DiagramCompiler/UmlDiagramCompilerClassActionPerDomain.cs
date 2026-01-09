@@ -9,9 +9,11 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
+using ExporterKit.Uml.Builder;
 using ExporterKit.Uml.Model;
 using LoggerKit;
 using TensorKit.Model;
+using UmlKit.Builders.Model;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
@@ -80,9 +82,7 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
 
         foreach (var nsGroup in namespaces)
         {
-            var namespaceUrl = _umlUrlBuilder.BuildNamespaceUrl(nsGroup.Key);
-            var package = new UmlPackage(nsGroup.Key.PadRight(maxLength), alias: nsGroup.Key.AlphanumericOnly(), url: namespaceUrl);
-            diagram.Add(package);
+            var package = PumlBuilderHelper.BuildUmlPackage(maxLength, nsGroup, _umlUrlBuilder);
 
             var classes = nsGroup.GroupBy(e => e.ClassName);
 
@@ -90,27 +90,17 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
             {
                 foreach (var cls in classGroup)
                 {
-                    var classNameWithNameSpace = $"{cls.ContextInfo.Namespace}.{cls.ContextInfo.ShortName}";
-
-                    var htmlUrl = _namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace);
-                    var umlClass = new UmlEntity(UmlEntityType.@class, classGroup.Key.PadRight(maxLength), classGroup.Key.AlphanumericOnly(), url: htmlUrl);
+                    var umlClass = PumlBuilderHelper.BuildUmlEntityClass(cls.ContextInfo, classGroup, maxLength, _namingProcessor);
                     package.Add(umlClass);
-
-                    foreach (var element in classGroup)
-                    {
-                        string? url = null;//UmlUrlBuilder.BuildUrl(element);
-                        var umlMethod = new UmlMethod(element.ContextInfo.Name + "()".PadRight(maxLength), visibility: UmlMemberVisibility.@public, url: url);
-                        umlClass.Add(umlMethod);
-                    }
                 }
             }
+            diagram.Add(package);
             diagram.AddRelations(package.Elements.OrderBy(e => e.Key).Select(e => e.Value));
         }
-        diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(g => g.Key.AlphanumericOnly())));
+        diagram.AddRelations(PumlBuilderSquaredLayout.Build(namespaces.Select(g => g.Key.AlphanumericOnly())));
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: maxLength);
 
         await diagram.WriteToFileAsync(fileName, writeOptons, cancellationToken).ConfigureAwait(false);
     }
 }
-

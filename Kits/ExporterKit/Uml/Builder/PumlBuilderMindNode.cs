@@ -3,11 +3,23 @@ using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using UmlKit.PlantUmlSpecification;
 
-namespace ExporterKit.Uml;
+namespace ExporterKit.Uml.Builder;
 
-public static class UmlNodeTraverseBuilder
+public static class PumlBuilderMindNode
 {
     public static UmlNode BuildMindNode(ContextInfo startNode, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
+    {
+        var resultNode = BuildNode(startNode, namingProcessor);
+
+        // Проверка, есть ли дочерние ноды
+        if (startNode.Domains.Count != 0)
+        {
+            BuildDomains(startNode, resultNode, umlUrlBuilder);
+        }
+        return resultNode;
+    }
+
+    private static UmlNode BuildNode(ContextInfo startNode, INamingProcessor namingProcessor)
     {
         // 1. Создание родительской ноды
         var ownerName = startNode.ClassOwner == null
@@ -21,14 +33,12 @@ public static class UmlNodeTraverseBuilder
         {
             Stylename = "grey"
         };
+        return resultNode;
+    }
 
-        // Проверка, есть ли дочерние ноды
-        if (startNode.Domains.Count == 0)
-        {
-            // Если доменов нет, то нода остаётся одна, без дочерних элементов
-            return resultNode;
-        }
 
+    private static void BuildDomains(ContextInfo startNode, UmlNode resultNode, IUmlUrlBuilder umlUrlBuilder)
+    {
         UmlNode? firstChild = null;
 
         foreach (var domain in startNode.Domains)
@@ -42,7 +52,5 @@ public static class UmlNodeTraverseBuilder
             firstChild ??= childNode;
 
         }
-
-        return resultNode;
     }
 }

@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ExporterKit;
+using ExporterKit.Uml;
+using ExporterKit.Uml.Builder;
+using ExporterKit.Uml.Model;
 using UmlKit.PlantUmlSpecification;
 
-namespace ExporterKit.Uml.Model;
+namespace ExporterKit.Uml.Builder;
 
-public static class UmlSquaredLayout
+public static class PumlBuilderSquaredLayout
 {
     public static IEnumerable<IUmlElement> Build(IEnumerable<string> allElements, int? columns = null, int? rows = null)
     {

@@ -5,6 +5,7 @@ using ContextBrowserKit.Options.Export;
 using ContextKit.ContextData;
 using ContextKit.ContextData.Naming;
 using ContextKit.Model;
+using ExporterKit.Uml.Builder;
 using GraphKit.Walkers;
 using TensorKit.Model;
 using UmlKit.Infrastructure.Options;
@@ -60,7 +61,7 @@ public class UmlDiagramExporterMindMapDomain
         return DfsWalker_Traversal.Run(
               startItems: startNodes,
             nextSelector: x => new HashSet<ContextInfo>(x.References.Union(x.Owns)),
-              createNode: UmlNodeTraverseBuilder.BuildMindNode,
+              createNode: PumlBuilderMindNode.BuildMindNode,
                linkNodes: (parent, child) => parent.Children.Add(child),
          namingProcessor: namingProcessor,
            umlUrlBuilder: umlUrlBuilder,
@@ -83,7 +84,7 @@ public class UmlDiagramExporterMindMapDomain
         return DfsWalker_Traversal.Run(
               startItems: startNodes,
             nextSelector: x => x.InvokedBy,
-              createNode: UmlNodeTraverseBuilder.BuildMindNode,
+              createNode: PumlBuilderMindNode.BuildMindNode,
                linkNodes: (child, parent) => child.Parents.Add(parent),
          namingProcessor: namingProcessor,
            umlUrlBuilder: umlUrlBuilder,
