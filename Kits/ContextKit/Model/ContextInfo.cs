@@ -12,13 +12,13 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public string Identifier { get; } = Guid.NewGuid().ToString();
 
-    public string Namespace { get; set; }
+    public string Namespace { get; set; } = string.Empty;
 
-    public string FullName { get; }
+    public string FullName { get; } = string.Empty;
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
-    public string ShortName { get; set; }
+    public string ShortName { get; set; } = string.Empty;
 
     public HashSet<string> Contexts { get; set; } = new();
 
@@ -38,6 +38,19 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     [JsonIgnore]
     public HashSet<ContextInfo> Owns { get; set; } = new();
+
+    [JsonIgnore]
+    public bool MethodOwnedByItSelf
+    {
+        get
+        {
+            if (MethodOwner != null)
+            {
+                return MethodOwner.FullName.Equals(FullName);
+            }
+            return false;
+        }
+    }
 
     [JsonIgnore]
     public HashSet<ContextInfo> Properties { get; set; } = new();
@@ -74,6 +87,11 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
         {
             Domains.Add(externalDomain);
         }
+    }
+
+    public ContextInfo()
+    {
+
     }
 
     public ContextInfo(

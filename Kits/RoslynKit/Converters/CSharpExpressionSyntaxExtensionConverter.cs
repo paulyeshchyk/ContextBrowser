@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.AWrappers;
 using RoslynKit.Syntax;
 using SemanticKit.Model.Options;
 

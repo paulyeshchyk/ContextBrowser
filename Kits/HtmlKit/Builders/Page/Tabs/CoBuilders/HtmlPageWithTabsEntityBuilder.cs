@@ -23,15 +23,21 @@ public class HtmlPageWithTabsEntityBuilder<TDto, TTensor> : HtmlPageWithTabsBuil
     public override async Task BuildAsync(CancellationToken cancellationToken)
     {
         var entitiesList = _contextInfoDataset.GetAll()
-            .Where(c => c.ElementType.IsEntityDefinition())
+            .Where(c => c.ElementType.IsEntityDefinition() || c.MethodOwnedByItSelf == true)
             .Cast<IContextInfo>();
 
         foreach (var contextInfoItem in entitiesList)
         {
-            var classNameWithNameSpace = $"{contextInfoItem.Namespace}.{contextInfoItem.ShortName}";
+
+            // грязный хак для получения информации о владельце
+            var classownerInfo = contextInfoItem.MethodOwnedByItSelf
+                ? (contextInfoItem.ClassOwner ?? contextInfoItem)
+                : contextInfoItem;
+
+            var classNameWithNameSpace = $"{classownerInfo.Namespace}.{classownerInfo.ShortName}";
 
             var filename = _onGetFileName(classNameWithNameSpace);
-            var title = $" Class {contextInfoItem.FullName}";
+            var title = $" Class {classownerInfo.FullName}";
             var cellData = new ContextInfoKeyContainerEntityName(
                 contextInfoList: new List<IContextInfo>() { contextInfoItem },
                 contextKey: classNameWithNameSpace);

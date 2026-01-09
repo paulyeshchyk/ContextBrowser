@@ -15,7 +15,7 @@ namespace ExporterKit.Uml.Exporters;
 public class UmlDiagramExporterClassDiagramNamespace
 {
     //context: uml, build
-    public static void Export(string nameSpace, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, List<IContextInfo> classesList)
+    public static void Export(string nameSpace, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, List<IContextInfo> classesList, Func<IContextInfo, IEnumerable<IContextInfo>> onGetMethods, Func<IContextInfo, IEnumerable<IContextInfo>> onGetProperties)
     {
         var maxLength = Math.Max(nameSpace.Length, classesList.Any() ? classesList.Max(ns => ns.Name.Length) : 0);
 
@@ -33,11 +33,17 @@ public class UmlDiagramExporterClassDiagramNamespace
 
         foreach (var contextInfo in classesList)
         {
-            var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
+            var classownerInfo = contextInfo.MethodOwnedByItSelf
+                ? (contextInfo.ClassOwner ?? contextInfo)
+                : contextInfo;
+            var classNameWithNameSpace = $"{classownerInfo.Namespace}.{classownerInfo.ShortName}";
 
             var htmlUrl = namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace);
-            var entityType = contextInfo.ElementType.ConvertToUmlEntityType();
-            var umlClass = new UmlEntity(entityType, contextInfo.Name.PadRight(maxLength), contextInfo.Name.AlphanumericOnly(), url: htmlUrl);
+            var entityType = classownerInfo.ElementType.ConvertToUmlEntityType();
+
+            var umlClass = new UmlEntity(entityType, classownerInfo.Name.PadRight(maxLength), classownerInfo.Name.AlphanumericOnly(), url: htmlUrl);
+            AddPropertiesAndMethods(umlClass, classownerInfo, onGetMethods, onGetProperties);
+
             package.Add(umlClass);
         }
 
@@ -45,5 +51,22 @@ public class UmlDiagramExporterClassDiagramNamespace
         var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, namingProcessor.NamespaceOnlyPumlFilename(nameSpace));
 
         diagram.WriteToFile(fileName, writeOptons);
+    }
+
+    internal static void AddPropertiesAndMethods(UmlEntity umlClass, IContextInfo classownerInfo, Func<IContextInfo, IEnumerable<IContextInfo>> onGetMethods, Func<IContextInfo, IEnumerable<IContextInfo>> onGetProperties)
+    {
+        var classMethods = onGetMethods(classownerInfo);
+        foreach (var element in classMethods)
+        {
+            var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
+            umlClass.Add(umlMethod);
+        }
+
+        var classProperties = onGetProperties(classownerInfo);
+        foreach (var element in classProperties)
+        {
+            var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
+            umlClass.Add(umlMethod);
+        }
     }
 }

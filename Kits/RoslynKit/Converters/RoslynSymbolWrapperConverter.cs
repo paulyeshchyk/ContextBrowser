@@ -7,7 +7,7 @@ using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Assembly;
-using RoslynKit.AWrappers;
+using RoslynKit.Model.Symbol;
 using RoslynKit.Signature.SignatureBuilder;
 using RoslynKit.Wrappers;
 using SemanticKit.Model;
@@ -17,9 +17,9 @@ namespace RoslynKit.Converters;
 public class RoslynSymbolWrapperConverter : ISymbolWrapperConverter
 {
     private readonly IAppLogger<AppLevel> _logger;
-    private readonly ISymbolLoader<MemberDeclarationSyntax, ISymbol> _symbolLoader;
+    private readonly IRoslynSymbolLoader<MemberDeclarationSyntax, ISymbol> _symbolLoader;
 
-    public RoslynSymbolWrapperConverter(IAppLogger<AppLevel> logger, ISymbolLoader<MemberDeclarationSyntax, ISymbol> symbolLoader)
+    public RoslynSymbolWrapperConverter(IAppLogger<AppLevel> logger, IRoslynSymbolLoader<MemberDeclarationSyntax, ISymbol> symbolLoader)
     {
         _logger = logger;
         _symbolLoader = symbolLoader;

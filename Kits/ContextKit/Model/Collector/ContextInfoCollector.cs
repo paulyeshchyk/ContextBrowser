@@ -178,7 +178,8 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
     {
         lock (_lock)
         {
-            if (FakeCollection.IsEmpty) return;
+            if (FakeCollection.IsEmpty)
+                return;
 
             // Шаг 1: Извлекаем все элементы из ConcurrentBag
             List<TContext> incomingItems = new List<TContext>();

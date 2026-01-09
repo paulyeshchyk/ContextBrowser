@@ -34,6 +34,7 @@ public class UmlTransitionDtoBuilder
         var callerInfo = ExtractParticipantInfo(caller);
         var calleeInfo = ExtractParticipantInfo(callee);
 
+        // переход работает из sequence diagram в html
         var runContext = callee.MethodOwner?.ClassOwner?.Name?.AlphanumericOnly() ?? string.Empty;//"STATIC";
         var ownerClass = caller.MethodOwner?.ClassOwner?.Name;
         var ownerMethod = caller.MethodOwner?.Name;
@@ -61,15 +62,18 @@ public class UmlTransitionDtoBuilder
     {
         if (contextInfo.ClassOwner is ContextInfo classOwner)
         {
-            return new ParticipantInfo(classOwner.FullName, classOwner.Name, classOwner.Name, contextInfo.Name);
+            var classOwnerId = $"{classOwner.Namespace}.{classOwner.ShortName}";
+            return new ParticipantInfo(Id: classOwnerId, Name: classOwner.Name, ClassName: classOwner.Name, MethodName: contextInfo.Name);
         }
         if (contextInfo?.MethodOwner?.ClassOwner is ContextInfo methodClassOwner)
         {
-            return new ParticipantInfo(methodClassOwner.FullName, methodClassOwner.Name, methodClassOwner.Name, contextInfo.Name);
+            var methodOwnerId = $"{methodClassOwner.Namespace}.{methodClassOwner.ShortName}";
+            return new ParticipantInfo(Id: methodOwnerId, Name: methodClassOwner.Name, ClassName: methodClassOwner.Name, MethodName: contextInfo.Name);
         }
 
         // Падение в fallback: или это класс, или что-то нераспарсенное
-        return new ParticipantInfo(contextInfo?.FullName, contextInfo?.Name ?? "unknown_context_info_name", contextInfo?.Name ?? "unknown_context_info_name", contextInfo?.Name);
+        var contextInfoId = $"{contextInfo?.Namespace}.{contextInfo?.ShortName}";
+        return new ParticipantInfo(contextInfoId, contextInfo?.Name ?? "unknown_context_info_name", contextInfo?.Name ?? "unknown_context_info_name", contextInfo?.Name);
     }
 }
 

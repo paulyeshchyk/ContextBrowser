@@ -44,7 +44,7 @@ public class UmlDiagramCompilerMindmapClassOnly : IUmlDiagramCompiler
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         var elements = dataset.GetAll();
-        var distinctClasses = elements.Where(e => e.ElementType == ContextInfoElementType.@class).Distinct();
+        var distinctClasses = elements.Where(e => e.ElementType.IsEntityDefinition() || e.MethodOwnedByItSelf == true).Distinct();
 
         foreach (var classItem in distinctClasses)
         {

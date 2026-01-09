@@ -50,6 +50,6 @@ public class SymbolLookupHandlerFullName<TContext, TSemanticModel> : SymbolLooku
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] ContextInfo not found for {symbolDto.FullName}");
 
         // Если не найдено, передаем запрос следующему обработчику в цепочке.
-        return await base.Handle(symbolDto);
+        return await base.Handle(symbolDto).ConfigureAwait(false);
     }
 }

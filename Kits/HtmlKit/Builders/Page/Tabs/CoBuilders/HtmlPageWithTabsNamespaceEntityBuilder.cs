@@ -24,7 +24,7 @@ public class HtmlPageWithTabsNamespaceEntityBuilder<DTO, TTensor> : HtmlPageWith
     public override async Task BuildAsync(CancellationToken cancellationToken)
     {
         var entitiesList = _contextInfoDataset.GetAll()
-            .Where(c => c.ElementType.IsEntityDefinition())
+            .Where(c => c.ElementType.IsEntityDefinition() || c.MethodOwnedByItSelf == true)
             .Cast<IContextInfo>()
             .ToList();
 

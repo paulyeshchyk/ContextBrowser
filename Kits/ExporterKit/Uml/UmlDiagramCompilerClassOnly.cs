@@ -47,13 +47,13 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
 
         var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
-        var classesOnly = contextInfoDataset.GetAll().Where(c => (c.ElementType.IsEntityDefinition()));
+        var classesOnly = contextInfoDataset.GetAll().Where(c => (c.ElementType.IsEntityDefinition() || c.MethodOwnedByItSelf == true));
 
         var tasks = classesOnly.Select(async context => await BuildAsync(contextInfo: context,
                                                                        exportOptions: exportOptions,
                                                                              options: diagramBuilderOptions,
-                                                                             methods: GetMethods(contextInfoDataset),
-                                                                          properties: GetProperties(contextInfoDataset),
+                                                                        onGetMethods: GetMethods(contextInfoDataset),
+                                                                     onGetProperties: GetProperties(contextInfoDataset),
                                                                    cancellationToken: cancellationToken)
         );
         await Task.WhenAll(tasks);
@@ -62,21 +62,25 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll()
-            .Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName);
+        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName).DistinctBy(e => e.FullName).OrderBy(e => e.ShortName);
     }
 
     private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo, DomainPerActionTensor> contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll()
-            .Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName);
+        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName).DistinctBy(e => e.FullName).OrderBy(e => e.ShortName);
     }
 
     //context: uml, build, heatmap, directory
-    internal async Task BuildAsync(IContextInfo contextInfo, ExportOptions exportOptions, DiagramBuilderOptions options, Func<IContextInfo, IEnumerable<IContextInfo>> methods, Func<IContextInfo, IEnumerable<IContextInfo>> properties, CancellationToken cancellationToken)
+    internal async Task BuildAsync(IContextInfo contextInfo, ExportOptions exportOptions, DiagramBuilderOptions options, Func<IContextInfo, IEnumerable<IContextInfo>> onGetMethods, Func<IContextInfo, IEnumerable<IContextInfo>> onGetProperties, CancellationToken cancellationToken)
     {
         var fullName = $"{contextInfo.FullName.AlphanumericOnly()}";
-        var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
+
+        // грязный хак для получения информации о владельце
+        var classownerInfo = contextInfo.MethodOwnedByItSelf
+            ? (contextInfo.ClassOwner ?? contextInfo)
+            : contextInfo;
+
+        var classNameWithNameSpace = $"{classownerInfo.Namespace}.{classownerInfo.ShortName}";
         var pumlFileName = _namingProcessor.ClassOnlyPumlFilename(classNameWithNameSpace);
         var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, pumlFileName);
 
@@ -88,29 +92,35 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
 
-        var packageUrl = _umlUrlBuilder.BuildNamespaceUrl(contextInfo.Namespace);
-        var package = new UmlPackage(contextInfo.Namespace, alias: contextInfo.Namespace.AlphanumericOnly(), url: packageUrl);
+        var packageUrl = _umlUrlBuilder.BuildNamespaceUrl(classownerInfo.Namespace);
+        var package = new UmlPackage(classownerInfo.Namespace, alias: classownerInfo.Namespace.AlphanumericOnly(), url: packageUrl);
         diagram.Add(package);
 
-        var entityType = contextInfo.ElementType.ConvertToUmlEntityType();
-        var umlClass = new UmlEntity(entityType, contextInfo.Name, contextInfo.Name.AlphanumericOnly(), url: null);
+        var entityType = classownerInfo.ElementType.ConvertToUmlEntityType();
+        var umlClass = new UmlEntity(entityType, classownerInfo.Name, classownerInfo.Name.AlphanumericOnly(), url: null);
         package.Add(umlClass);
 
-        var classMethods = methods(contextInfo);
+        AddPropertiesAndMethods(umlClass, classownerInfo, onGetMethods, onGetProperties);
+
+        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
+        await diagram.WriteToFileAsync(fileName, writeOptons, cancellationToken);
+    }
+
+    internal static void AddPropertiesAndMethods(UmlEntity umlClass, IContextInfo classownerInfo, Func<IContextInfo, IEnumerable<IContextInfo>> onGetMethods, Func<IContextInfo, IEnumerable<IContextInfo>> onGetProperties)
+    {
+        var classMethods = onGetMethods(classownerInfo);
         foreach (var element in classMethods)
         {
             var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
             umlClass.Add(umlMethod);
         }
 
-        var classProperties = properties(contextInfo);
+        var classProperties = onGetProperties(classownerInfo);
         foreach (var element in classProperties)
         {
             var umlMethod = new UmlMethod(element.Name + "()", visibility: UmlMemberVisibility.@public, url: null);
             umlClass.Add(umlMethod);
         }
-
-        var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
-        await diagram.WriteToFileAsync(fileName, writeOptons, cancellationToken);
     }
+
 }

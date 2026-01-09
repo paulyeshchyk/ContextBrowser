@@ -20,15 +20,20 @@ namespace RoslynKit.Assembly;
 public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference, RoslynSyntaxTreeWrapper, CSharpCompilation>
 {
     private readonly IAppLogger<AppLevel> _logger;
+    private readonly IAppOptionsStore _optionsStore;
 
-    public RoslynSyntaxCompiler(IAppLogger<AppLevel> logger)
+
+    public RoslynSyntaxCompiler(IAppLogger<AppLevel> logger, IAppOptionsStore optionsStore)
     {
         _logger = logger;
+        _optionsStore = optionsStore;
+
     }
 
     // context: roslyn, build
-    public CSharpCompilation CreateCompilation(SemanticOptions options, IEnumerable<RoslynSyntaxTreeWrapper> syntaxTrees, string name, IEnumerable<MetadataReference> referencesToLoad)
+    public CSharpCompilation CreateCompilation(IEnumerable<RoslynSyntaxTreeWrapper> syntaxTrees, string name, IEnumerable<MetadataReference> referencesToLoad)
     {
+        var options = _optionsStore.GetOptions<CodeParsingOptions>().SemanticOptions;
         var usings = GetValidatedUsingsFromOptions(options);
         var compilationOptions = new CSharpCompilationOptions
         (

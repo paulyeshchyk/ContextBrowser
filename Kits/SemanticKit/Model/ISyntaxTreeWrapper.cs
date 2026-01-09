@@ -10,6 +10,11 @@ public interface ISyntaxTreeWrapper
 
     object Tree { get; }
 
+    /// <summary>
+    /// for roslyn: CompilationUnitSyntax
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     object GetCompilationUnitRoot(CancellationToken cancellationToken);
 
     IEnumerable<object> GetAvailableSyntaxies(SemanticOptions options, CancellationToken cancellationToken);

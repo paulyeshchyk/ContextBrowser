@@ -21,16 +21,20 @@ public class RoslynSyntaxTreeParser : ISyntaxTreeParser<RoslynSyntaxTreeWrapper>
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly ICodeInjector _codeInjector;
+     private readonly IAppOptionsStore _optionsStore;
 
-    public RoslynSyntaxTreeParser(IAppLogger<AppLevel> logger, ICodeInjector codeInjector)
+    public RoslynSyntaxTreeParser(IAppLogger<AppLevel> logger, ICodeInjector codeInjector, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _codeInjector = codeInjector;
+        _optionsStore = optionsStore;
+
     }
 
     // context: roslyn, build
-    public async Task<IEnumerable<RoslynSyntaxTreeWrapper>> ParseFilesToSyntaxTreesAsync(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken)
+    public async Task<IEnumerable<RoslynSyntaxTreeWrapper>> ParseFilesToSyntaxTreesAsync(IEnumerable<string> codeFiles, CancellationToken cancellationToken)
     {
+        var options = _optionsStore.GetOptions<CodeParsingOptions>().SemanticOptions;
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Making syntax trees for {codeFiles.Count()} files", LogLevelNode.None);
 

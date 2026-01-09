@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model.Classifier;
@@ -30,10 +32,12 @@ public class ContextInfoFillerEmptyData<TTensor> : IContextInfoFiller<TTensor>
     public int Order { get; } = int.MaxValue;
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public void Fill(IContextInfoDataset<ContextInfo, TTensor> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions matrixOptions)
+    public Task FillAsync(IContextInfoDataset<ContextInfo, TTensor> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions matrixOptions, CancellationToken cancellationToken)
     {
         if (!matrixOptions.IncludeAllStandardActions)
-            return;
+            return Task.CompletedTask;
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         var allVerbs = _wordRoleClassifier.GetCombinedVerbs(elements.SelectMany(e => e.Contexts).Where(c => _wordRoleClassifier.IsVerb(c, _fakeDimensionClassifier)).Distinct()).ToList();
         var allNouns = elements.SelectMany(e => e.Contexts).Where(c => _wordRoleClassifier.IsNoun(c, _fakeDimensionClassifier)).Distinct().ToList();
@@ -64,5 +68,7 @@ public class ContextInfoFillerEmptyData<TTensor> : IContextInfoFiller<TTensor>
             var emptyKey = _keyBuilder.BuildTensor(TensorPermutationType.Standard, [_emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain], _keyFactory.Create);
             contextInfoData.Add(null, emptyKey);
         }
+
+        return Task.CompletedTask;
     }
 }

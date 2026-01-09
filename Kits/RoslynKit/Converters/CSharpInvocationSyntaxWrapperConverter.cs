@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.AWrappers;
+using RoslynKit.Model.Symbol;
 using RoslynKit.Model.SyntaxWrapper;
 using RoslynKit.Signature;
 using RoslynKit.Signature.SignatureBuilder;

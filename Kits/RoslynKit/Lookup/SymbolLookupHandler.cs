@@ -52,6 +52,6 @@ public abstract class SymbolLookupHandler<TContext, TSemanticModel> : ISymbolLoo
     {
         if (_nextHandler == null)
             return default;
-        return await _nextHandler.Handle(symbolDto);
+        return await _nextHandler.Handle(symbolDto).ConfigureAwait(false);
     }
 }

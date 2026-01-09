@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
 
 namespace ContextKit.Model;
@@ -24,8 +26,7 @@ public class ContextInfoFiller<TTensor> : IContextInfoFiller<TTensor>
     }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    public void Fill(IContextInfoDataset<ContextInfo, TTensor> contextInfoData, List<ContextInfo> elements,
-        ExportMatrixOptions matrixOptions)
+    public Task FillAsync(IContextInfoDataset<ContextInfo, TTensor> contextInfoData, List<ContextInfo> elements, ExportMatrixOptions matrixOptions, CancellationToken cancellationToken)
     {
         foreach (var item in elements)
         {
@@ -46,5 +47,7 @@ public class ContextInfoFiller<TTensor> : IContextInfoFiller<TTensor>
                 break;
             }
         }
+
+        return Task.CompletedTask;
     }
 }

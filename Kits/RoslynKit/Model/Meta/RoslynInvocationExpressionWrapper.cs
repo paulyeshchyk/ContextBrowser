@@ -4,18 +4,19 @@ using LoggerKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Model.Meta;
 using SemanticKit.Model;
+using SemanticKit.Parsers.Strategy.Invocation;
 
 namespace RoslynKit.Wrappers.Meta;
 
 public class RoslynInvocationExpressionWrapper : IInvocationNodeWrapper<RoslynSyntaxTreeWrapper>
 {
     private readonly InvocationExpressionSyntax _invocation;
-    private readonly ISemanticInvocationResolver<RoslynSyntaxTreeWrapper> _semanticInvocationResolver;
+    private readonly IInvocationResolver<RoslynSyntaxTreeWrapper> _semanticInvocationResolver;
     private readonly IAppLogger<AppLevel> _logger;
 
     public object Expression => _invocation.Expression;
 
-    public RoslynInvocationExpressionWrapper(InvocationExpressionSyntax invocation, ISemanticInvocationResolver<RoslynSyntaxTreeWrapper> semanticInvocationResolver, IAppLogger<AppLevel> logger)
+    public RoslynInvocationExpressionWrapper(InvocationExpressionSyntax invocation, IInvocationResolver<RoslynSyntaxTreeWrapper> semanticInvocationResolver, IAppLogger<AppLevel> logger)
     {
         _invocation = invocation;
         _semanticInvocationResolver = semanticInvocationResolver;

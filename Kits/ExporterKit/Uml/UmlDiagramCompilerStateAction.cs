@@ -10,6 +10,7 @@ using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using ContextKit.Model.Service;
 using ExporterKit.Uml.DiagramCompileOptions;
+using ExporterKit.Uml.DiagramCompileOptions.Strategies;
 using LoggerKit;
 using TensorKit.Model;
 using UmlKit.Builders;
@@ -33,9 +34,9 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
     private readonly INamingProcessor _namingProcessor;
     private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
     private readonly IContextDiagramBuildersFactory _diagramBuildersFactory;
+    private readonly IDiagramCompileOptionsFactory _compileOptionsFactory;
 
-
-    public UmlDiagramCompilerStateAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IContextInfoMapperProvider<DomainPerActionTensor> mapperProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IContextInfoManager<ContextInfo> contextInfoManager, IContextDiagramBuildersFactory diagramBuildersFactory)
+    public UmlDiagramCompilerStateAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IContextInfoMapperProvider<DomainPerActionTensor> mapperProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IContextInfoManager<ContextInfo> contextInfoManager, IContextDiagramBuildersFactory diagramBuildersFactory, IDiagramCompileOptionsFactory compileOptionsFactory)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -44,6 +45,7 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
         _namingProcessor = namingProcessor;
         _contextInfoManager = contextInfoManager;
         _diagramBuildersFactory = diagramBuildersFactory;
+        _compileOptionsFactory = compileOptionsFactory;
     }
 
     // context: uml, build
@@ -63,7 +65,7 @@ public class UmlDiagramCompilerStateAction : IUmlDiagramCompiler
 
         var tasks = actions.Select(async action =>
         {
-            var compileOptions = DiagramCompileOptionsFactory.ActionStateOptions(action, _namingProcessor);
+            var compileOptions = _compileOptionsFactory.Create(DiagramKind.ActionState, action);
             var wasCompiled = await GenerateSingleAsync(compileOptions, elements, contextClassifier, exportOptions, diagramBuilderOptions, cancellationToken).ConfigureAwait(false);
             return new { Action = action, Result = wasCompiled };
         });

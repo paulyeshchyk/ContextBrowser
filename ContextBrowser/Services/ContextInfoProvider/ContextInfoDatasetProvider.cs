@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using ContextBrowser.Services.Parsing;
 using ContextKit.Model;
+using SemanticKit.Parsers;
+using SemanticKit.Parsers.Strategy;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
 
@@ -48,6 +50,6 @@ public class ContextInfoDatasetProvider<TTensor> : BaseContextInfoProvider, ICon
     internal async Task<IContextInfoDataset<ContextInfo, TTensor>> BuildDatasetTaskAsync(CancellationToken cancellationToken)
     {
         var contextsList = await GetParsedContextsAsync(cancellationToken).ConfigureAwait(false);
-        return _datasetBuilder.Build(contextsList, cancellationToken);
+        return await _datasetBuilder.BuildAsync(contextsList, cancellationToken).ConfigureAwait(false);
     }
 }

@@ -64,7 +64,8 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         var actionContexts = contextInfoDataset
             .SelectMany(cell => cell.Value.Select(context => (action: cell.Key.Action, context: context)))
             .GroupBy(item => item.action)
-            .Where(group => !string.IsNullOrWhiteSpace(group.Key));
+            .Where(group => !string.IsNullOrWhiteSpace(group.Key))
+            .ToList();
 
         return actionContexts.Select(group =>
         {
@@ -93,7 +94,8 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
             .SelectMany(cell => cell.Value)
             .SelectMany(context => context.Domains, (context, domain) => new { Domain = domain, Context = context }) // Разворачиваем ContextInfo по всем его доменам
             .Where(item => !string.IsNullOrWhiteSpace(item.Domain))
-            .GroupBy(item => item.Domain);
+            .GroupBy(item => item.Domain)
+            .ToList();
 
         return domainContexts.Select(group =>
         {
@@ -137,7 +139,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         return BuildPackageDiagramAsync(diagramBuilderOptions, namingProcessor, umlUrlBuilder, items, actionOutputPath, actionDiagramId, cancellationToken);
     }
 
-    private static Task BuildPackageDiagramAsync(DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, List<ContextInfo> items, string outputPath, string diagramId, CancellationToken cancellationToken)
+    private static async Task BuildPackageDiagramAsync(DiagramBuilderOptions diagramBuilderOptions, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, List<ContextInfo> items, string outputPath, string diagramId, CancellationToken cancellationToken)
     {
         // Создаем новую диаграмму
         var diagram = new UmlDiagramClass(diagramBuilderOptions, diagramId: diagramId);
@@ -162,9 +164,13 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
 
         var classes = classesonly.Concat(methodsonlyClassOwners)
                                  .Concat(propssonlyClassOwners)
-                                 .Cast<ContextInfo>().Distinct().ToList();
+                                 .Where(c => c != null && c is ContextInfo)
+                                 .Cast<ContextInfo>()
+                                 .Where(c => !string.IsNullOrWhiteSpace(c.Namespace))
+                                 .Distinct()
+                                 .ToList();
 
-        var namespaces = classes.Select(c => c.Namespace).Where(ns => !string.IsNullOrWhiteSpace(ns)).Distinct().ToList();
+        var namespaces = classes.Select(c => c.Namespace).Distinct();
 
         foreach (var ns in namespaces)
         {
@@ -204,6 +210,7 @@ public class UmlDiagramCompilerPackageMethodPerActionDomain : IUmlDiagramCompile
         diagram.AddRelations(UmlSquaredLayout.Build(namespaces.Select(ns => ns.AlphanumericOnly())));
 
         var writeOptons = new UmlWriteOptions(alignMaxWidth: -1);
-        return diagram.WriteToFileAsync(outputPath, writeOptons, cancellationToken);
+        await diagram.WriteToFileAsync(outputPath, writeOptons, cancellationToken).ConfigureAwait(false);
+
     }
 }

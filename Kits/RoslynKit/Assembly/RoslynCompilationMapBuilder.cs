@@ -23,27 +23,32 @@ public class RoslynCompilationMapBuilder : ISemanticMapExtractor<RoslynSyntaxTre
     private readonly ISyntaxTreeParser<RoslynSyntaxTreeWrapper> _syntaxTreeParser;
     private readonly ICompilationMapMapper<RoslynSyntaxTreeWrapper> _compilationMapMapper;
     private readonly ICompilationBuilder<RoslynSyntaxTreeWrapper> _compilationMapBuilder;
+    private readonly IAppOptionsStore _optionsStore;
+
 
     public RoslynCompilationMapBuilder(
         IAppLogger<AppLevel> logger,
         ISyntaxTreeParser<RoslynSyntaxTreeWrapper> syntaxTreeParser,
         ICompilationMapMapper<RoslynSyntaxTreeWrapper> compilationMapMapper,
-        ICompilationBuilder<RoslynSyntaxTreeWrapper> compilationMapBuilder)
+        ICompilationBuilder<RoslynSyntaxTreeWrapper> compilationMapBuilder,
+        IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _syntaxTreeParser = syntaxTreeParser;
         _compilationMapMapper = compilationMapMapper;
         _compilationMapBuilder = compilationMapBuilder;
+        _optionsStore = optionsStore;
+
     }
 
     // context: roslyn, build, compilationFlow
-    public async Task<SemanticCompilationMap<RoslynSyntaxTreeWrapper>> CreateSemanticMapFromFilesAsync(SemanticOptions options, IEnumerable<string> codeFiles, CancellationToken cancellationToken)
+    public async Task<SemanticCompilationMap<RoslynSyntaxTreeWrapper>> CreateSemanticMapFromFilesAsync(IEnumerable<string> codeFiles, string compilationName, CancellationToken cancellationToken)
     {
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Building compilation map for {codeFiles.Count()} files", LogLevelNode.None);
 
-        var syntaxTrees = await _syntaxTreeParser.ParseFilesToSyntaxTreesAsync(options, codeFiles, cancellationToken).ConfigureAwait(false);
+        var syntaxTrees = await _syntaxTreeParser.ParseFilesToSyntaxTreesAsync(codeFiles, cancellationToken).ConfigureAwait(false);
 
-        var compilation = await _compilationMapBuilder.BuildAsync(options, syntaxTrees, options.CustomAssembliesPaths, "Parser", cancellationToken).ConfigureAwait(false);
+        var compilation = await _compilationMapBuilder.BuildAsync(syntaxTrees, compilationName, cancellationToken).ConfigureAwait(false);
 
         var result = _compilationMapMapper.MapSemanticModelToCompilationMap(syntaxTrees, compilation);
 
@@ -51,10 +56,10 @@ public class RoslynCompilationMapBuilder : ISemanticMapExtractor<RoslynSyntaxTre
     }
 
     // context: roslyn, build
-    public Task<SemanticCompilationMap<RoslynSyntaxTreeWrapper>> CreateSemanticMapFromFilesAsync(SemanticOptions options, string filePath, CancellationToken cancellationToken)
+    public Task<SemanticCompilationMap<RoslynSyntaxTreeWrapper>> CreateSemanticMapFromFilesAsync(string filePath, string compilationName, CancellationToken cancellationToken)
     {
         var codeFiles = new[] { filePath };
 
-        return CreateSemanticMapFromFilesAsync(options, codeFiles, cancellationToken);
+        return CreateSemanticMapFromFilesAsync(codeFiles, compilationName, cancellationToken);
     }
 }

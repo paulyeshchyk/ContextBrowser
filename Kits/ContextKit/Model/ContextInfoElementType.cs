@@ -19,21 +19,14 @@ public enum ContextInfoElementType
 
 public static class ContextInfoElementTypeExtensions
 {
-    public static bool IsTypeDefinition(this ContextInfoElementType elementType)
-    {
-        return elementType == ContextInfoElementType.@class
-               || elementType == ContextInfoElementType.@struct
-               || elementType == ContextInfoElementType.@record
-               || elementType == ContextInfoElementType.@interface
-               || elementType == ContextInfoElementType.@enum;
-    }
-
     public static bool IsEntityDefinition(this ContextInfoElementType elementType)
     {
         return elementType == ContextInfoElementType.@class
                || elementType == ContextInfoElementType.@struct
                || elementType == ContextInfoElementType.@record
-               || elementType == ContextInfoElementType.@interface;
+               || elementType == ContextInfoElementType.@interface
+               || elementType == ContextInfoElementType.@delegate
+               || elementType == ContextInfoElementType.@enum;
     }
 
     public static bool IsMemberDefinition(this ContextInfoElementType elementType)

@@ -3,25 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using ContextKit.Model;
 using RoslynKit.Assembly;
-using RoslynKit.Phases;
-using RoslynKit.Phases.Syntax;
 using SemanticKit.Model;
-
+using SemanticKit.Parsers.Syntax;
 
 namespace ContextBrowser.Services.Parsing;
 
-public class SemanticSyntaxRouterBuilderRegistry<TContext> : ISemanticSyntaxRouterBuilderRegistry<TContext>
+public class SemanticSyntaxRouterBuilderRegistry<TContext> : ISyntaxRouterBuilderRegistry<TContext>
 where TContext : IContextWithReferences<TContext>
 {
-    private readonly IEnumerable<ISemanticSyntaxRouterBuilder<TContext>> _builders;
+    private readonly IEnumerable<ISyntaxRouterBuilder<TContext>> _builders;
 
     // Внедряем ВСЮ коллекцию
-    public SemanticSyntaxRouterBuilderRegistry(IEnumerable<ISemanticSyntaxRouterBuilder<TContext>> builders)
+    public SemanticSyntaxRouterBuilderRegistry(IEnumerable<ISyntaxRouterBuilder<TContext>> builders)
     {
         _builders = builders;
     }
 
-    public ISemanticSyntaxRouterBuilder<TContext> GetRouterBuilder(string technology)
+    public ISyntaxRouterBuilder<TContext> GetRouterBuilder(string technology)
     {
         // Здесь потребуется логика, чтобы определить, какой именно билдер
         // является C# (например, через проверку типа или введение еще одного интерфейса)

@@ -46,7 +46,7 @@ public class SymbolLookupHandlerMethod<TContext, TSemanticModel> : SymbolLookupH
         if (!symbolDto.IsValid || string.IsNullOrWhiteSpace(symbolDto.FullName))
         {
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol is not IMethodSymbol: {symbolDto.FullName}");
-            return await base.Handle(symbolDto);
+            return await base.Handle(symbolDto).ConfigureAwait(false);
         }
 
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[FALLBACK] Trying full signature: {symbolDto.FullName}");
@@ -56,7 +56,7 @@ public class SymbolLookupHandlerMethod<TContext, TSemanticModel> : SymbolLookupH
             _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[MISS] Symbol exists but fallback lookup failed: {symbolDto.FullName}");
 
             // Если не применимо или не найдено, передаем запрос следующему обработчику.
-            return await base.Handle(symbolDto);
+            return await base.Handle(symbolDto).ConfigureAwait(false);
         }
 
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Trace, $"[HIT] Recovered callee via full symbol: {symbolDto.FullName}");

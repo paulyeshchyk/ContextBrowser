@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using ContextBrowser.Services.Parsing;
 using ContextKit.Model;
 using ExporterKit.Html.Containers;
+using SemanticKit.Parsers;
+using SemanticKit.Parsers.Strategy;
 using TensorKit.Model;
 
 namespace ContextBrowser.Services.ContextInfoProvider;
@@ -53,7 +55,7 @@ public class ContextInfoDatasetProviderMethodList<TDataTensor> : BaseContextInfo
             .Where(c => c.ElementType == ContextInfoElementType.@method)
             .ToList();
 
-        var newDataset = _datasetBuilder.Build(filteredContexts, cancellationToken);
+        var newDataset = await _datasetBuilder.BuildAsync(filteredContexts, cancellationToken).ConfigureAwait(false);
 
         lock (_lock)
         {

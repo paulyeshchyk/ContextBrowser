@@ -1,5 +1,4 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.AWrappers;
 using RoslynKit.Syntax;
 
 namespace RoslynKit.Phases.ContextInfoBuilder.SyntaxNodeWrapper;

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Options.Export;
 
 namespace ContextKit.Model;
@@ -13,5 +15,5 @@ public interface IContextInfoFiller<TTensor>
     int Order { get; }
 
     // context: ContextInfo, ContextInfoMatrix, build
-    void Fill(IContextInfoDataset<ContextInfo, TTensor> dataset, List<ContextInfo> elements, ExportMatrixOptions options);
+    Task FillAsync(IContextInfoDataset<ContextInfo, TTensor> dataset, List<ContextInfo> elements, ExportMatrixOptions options, CancellationToken cancellationToken);
 }

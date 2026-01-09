@@ -1,56 +1,33 @@
-﻿using ContextKit.ContextData.Naming;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ContextKit.ContextData.Naming;
 using ContextKit.Model;
+using ExporterKit.Uml.DiagramCompileOptions.Strategies;
 using UmlKit.Builders;
 
 namespace ExporterKit.Uml.DiagramCompileOptions;
 
-public static class DiagramCompileOptionsFactory
+public interface IDiagramCompileOptionsFactory
 {
-    public static IDiagramCompileOptions ActionStateOptions(ILabeledValue action, INamingProcessor namingProcessor)
+    IDiagramCompileOptions Create(DiagramKind kind, ILabeledValue meta);
+}
+
+public class DiagramCompileOptionsFactory : IDiagramCompileOptionsFactory
+{
+    private readonly IEnumerable<IDiagramCompileOptionsStrategy> _strategies;
+
+    public DiagramCompileOptionsFactory(IEnumerable<IDiagramCompileOptionsStrategy> strategies)
     {
-        var actionStr = (string)action.LabeledData;
-        return new PumlStateCompileOptions
-            (
-                metaItem: actionStr,
-                fetchType: FetchType.FetchAction,
-                diagramTitle: $"Action: {action}",
-                diagramId: namingProcessor.StateActionDiagramId(action.LabeledData.ToString()),
-                outputFileName: namingProcessor.StateActionPumlFilename(action.LabeledData.ToString()));
+        _strategies = strategies ?? throw new ArgumentNullException(nameof(strategies));
     }
 
-    public static IDiagramCompileOptions DomainStateCompileOptions(ILabeledValue domain, INamingProcessor namingProcessor)
+    public IDiagramCompileOptions Create(DiagramKind kind, ILabeledValue meta)
     {
-        var domainStr = (string)domain.LabeledData;
-        return new PumlStateCompileOptions
-            (
-                metaItem: domainStr,
-                fetchType: FetchType.FetchDomain,
-                diagramTitle: $"Domain: {domain}",
-                diagramId: namingProcessor.StateDomainDiagramId(domain.LabeledData.ToString()),
-                outputFileName: namingProcessor.StateDomainPumlFilename(domain.LabeledData.ToString()));
-    }
+        var strategy = _strategies.FirstOrDefault(s => s.CanHandle(kind));
+        if (strategy == null)
+            throw new InvalidOperationException($"No compile options strategy registered for kind: {kind}");
 
-    public static IDiagramCompileOptions DomainSequenceCompileOptions(ILabeledValue domain, INamingProcessor namingProcessor)
-    {
-        var domainStr = (string)domain.LabeledData;
-        return new PumlSequenceCompileOptions
-            (
-                metaItem: domainStr,
-                fetchType: FetchType.FetchDomain,
-                diagramId: namingProcessor.SequenceDomainDiagramId(domain.LabeledData.ToString()),
-                diagramTitle: $"Domain: {domain}",
-                outputFileName: namingProcessor.SequenceDomainPumlFilename(domain.LabeledData.ToString()));
-    }
-
-    public static IDiagramCompileOptions ActionSequenceCompileOptions(ILabeledValue action, INamingProcessor namingProcessor)
-    {
-        var actionStr = (string)action.LabeledData;
-        return new PumlSequenceCompileOptions
-            (
-                metaItem: actionStr,
-                fetchType: FetchType.FetchAction,
-                diagramId: namingProcessor.SequenceActionDiagramId(action.LabeledData.ToString()),
-                diagramTitle: $"Action: {action}",
-                outputFileName: namingProcessor.SequenceActionPumlFilename(action.LabeledData.ToString()));
+        return strategy.Create(meta);
     }
 }

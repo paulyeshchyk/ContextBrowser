@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ContextKit.Model;
 
@@ -8,5 +9,5 @@ public interface IContextInfoDatasetBuilder<TTensor>
     where TTensor : notnull
 {
     // context: ContextInfo, ContextInfoMatrix, build
-    IContextInfoDataset<ContextInfo, TTensor> Build(IEnumerable<ContextInfo> contextsList, CancellationToken cancellation);
+    Task<IContextInfoDataset<ContextInfo, TTensor>> BuildAsync(IEnumerable<ContextInfo> contextsList, CancellationToken cancellation);
 }

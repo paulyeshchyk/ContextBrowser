@@ -21,6 +21,8 @@ using ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
 using ExporterKit.Html.Pages.CoCompiler.DomainPerAction.Coverage;
 using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
+using ExporterKit.Uml.DiagramCompileOptions;
+using ExporterKit.Uml.DiagramCompileOptions.Strategies;
 using HtmlKit.Document;
 using HtmlKit.Helpers;
 using HtmlKit.Matrix;
@@ -31,6 +33,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using RoslynKit.Assembly;
+using RoslynKit.Assembly.Strategy;
+using RoslynKit.Assembly.Strategy.Declaration;
+using RoslynKit.Assembly.Strategy.Invocation;
 using RoslynKit.Converters;
 using RoslynKit.Model.Meta;
 using RoslynKit.Model.SyntaxWrapper;
@@ -41,6 +46,12 @@ using RoslynKit.Signature;
 using RoslynKit.Signature.SignatureParser;
 using SemanticKit.Model;
 using SemanticKit.Model.Signature;
+using SemanticKit.Parsers;
+using SemanticKit.Parsers.File;
+using SemanticKit.Parsers.Strategy;
+using SemanticKit.Parsers.Strategy.Declaration;
+using SemanticKit.Parsers.Strategy.Invocation;
+using SemanticKit.Parsers.Syntax;
 using TensorKit.Factories;
 using TensorKit.Model;
 using UmlKit.Builders;
@@ -68,7 +79,6 @@ public class HostConfigurator
             return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultConsoleWriter, dependencies: defaultDependencies);
         });
 
-
         services.AddSingleton<INamingProcessor, NamingProcessor>();
 
         // --- Службы, связанные с ContextInfo и анализом кода ---
@@ -76,7 +86,7 @@ public class HostConfigurator
         services.AddTransient<IContextInfoRelationBuilder<ContextInfo>, ContextInfoRelationBuilder>();
         services.AddSingleton<IContextCollector<ContextInfo>, ContextInfoCollector<ContextInfo>>();
         services.AddSingleton<ISemanticModelStorage<RoslynSyntaxTreeWrapper, ISemanticModelWrapper>, SemanticModelStorage<RoslynSyntaxTreeWrapper>>();
-        services.AddTransient<ISemanticTreeModelBuilder<RoslynSyntaxTreeWrapper, ISemanticModelWrapper>, SemanticTreeModelBuilder<RoslynSyntaxTreeWrapper>>();
+
         services.AddSingleton<IContextFactory<ContextInfo>, ContextInfoFactory>();
         services.AddTransient<ISyntaxTreeWrapperBuilder<RoslynSyntaxTreeWrapper>, RoslynSyntaxTreeWrapperBuilder<RoslynSyntaxTreeWrapper>>();
 
@@ -124,14 +134,18 @@ public class HostConfigurator
         // --- language selector
         // использует RoslynSemanticSyntaxRouterBuilder
         // будет использовать AngularSemanticSyntaxRouterBuilder
-        services.AddTransient<ISemanticSyntaxRouterBuilderRegistry<ContextInfo>, SemanticSyntaxRouterBuilderRegistry<ContextInfo>>();
+        services.AddTransient<ISyntaxRouterBuilderRegistry<ContextInfo>, SemanticSyntaxRouterBuilderRegistry<ContextInfo>>();
 
         services.AddTransient<IAssemblyFetcher<MetadataReference>, RoslynAssemblyFetcher>();
 
         // --- Roslyn ---
         services.AddTransient<IParsingOrchestrator, ParsingOrchestrator<RoslynSyntaxTreeWrapper>>();
-        services.AddTransient<ISemanticDeclarationParser<ContextInfo, RoslynSyntaxTreeWrapper>, RoslynSemanticDeclarationParser<ContextInfo>>();
-        services.AddTransient<ISemanticFileParser<ContextInfo>, SemanticFileParser<ContextInfo, RoslynSyntaxTreeWrapper>>();
+        services.AddTransient<IDeclarationParser<ContextInfo, RoslynSyntaxTreeWrapper>, RoslynDeclarationParser<ContextInfo>>();
+
+        services.AddTransient<ISemanticCompilationMapBuilder<RoslynSyntaxTreeWrapper, ISemanticModelWrapper>, SemanticCompilationMapBuilder<RoslynSyntaxTreeWrapper>>();
+        services.AddTransient<ISemanticCompilationViewBuilder<RoslynSyntaxTreeWrapper, ISemanticModelWrapper>, SemanticCompilationViewBuilder<RoslynSyntaxTreeWrapper>>();
+
+        services.AddTransient<IDeclarationFileParser<ContextInfo>, DeclarationFileParser<ContextInfo, RoslynSyntaxTreeWrapper>>();
         services.AddTransient<ICompilationBuilder<RoslynSyntaxTreeWrapper>, RoslynCompilationBuilder>();
         services.AddTransient<ISyntaxCompiler<MetadataReference, RoslynSyntaxTreeWrapper, CSharpCompilation>, RoslynSyntaxCompiler>();
         services.AddTransient<ISemanticMapExtractor<RoslynSyntaxTreeWrapper>, RoslynCompilationMapBuilder>();
@@ -140,12 +154,12 @@ public class HostConfigurator
         services.AddTransient<ICompilationDiagnosticsInspector<CSharpCompilation, Diagnostic>, RoslynDiagnosticsInspector>();
         services.AddTransient<ICodeInjector, RoslynCodeInjector>();
 
-        services.AddTransient<ISymbolLoader<MemberDeclarationSyntax, ISymbol>, RoslynSymbolLoader<MemberDeclarationSyntax, ISymbol>>();
-        services.AddTransient<ISemanticInvocationResolver<RoslynSyntaxTreeWrapper>, RoslynSemanticInvocationResolver>();
-        services.AddTransient<IInvocationSyntaxResolver, RoslynInvocationSyntaxExtractor>();
-        services.AddTransient<IReferenceParserFactory<RoslynSyntaxTreeWrapper>, RoslynReferenceParserFactory<RoslynSyntaxTreeWrapper>>();
+        services.AddTransient<IRoslynSymbolLoader<MemberDeclarationSyntax, ISymbol>, RoslynSymbolLoader<MemberDeclarationSyntax, ISymbol>>();
+        services.AddTransient<IInvocationResolver<RoslynSyntaxTreeWrapper>, RoslynInvocationResolver>();
+        services.AddTransient<IInvocationSyntaxResolver, RoslynInvocationSyntaxResolver>();
+        services.AddTransient<IReferenceParserFactory<RoslynSyntaxTreeWrapper>, RoslynInvocationParserFactory<RoslynSyntaxTreeWrapper>>();
 
-        services.AddTransient<ISemanticSyntaxRouterBuilder<ContextInfo>, RoslynSemanticSyntaxRouterBuilder<ContextInfo>>();
+        services.AddTransient<ISyntaxRouterBuilder<ContextInfo>, RoslynSemanticSyntaxRouterBuilder<ContextInfo>>();
 
         services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderProperty<ContextInfo>>();
         services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderDelegate<ContextInfo>>();
@@ -157,7 +171,7 @@ public class HostConfigurator
         services.AddTransient<IContextInfoBuilder<ContextInfo>, CSharpContextInfoBuilderRecord<ContextInfo>>();
         services.AddTransient<ContextInfoBuilderDispatcher<ContextInfo>>();
 
-        services.AddTransient<IInvocationLinksBuilder<ContextInfo>, RoslynPhaseParserInvocationLinksBuilder>();
+        services.AddTransient<IInvocationLinksBuilder<ContextInfo>, RoslynInvocationLinksBuilder>();
         services.AddTransient<IInvocationLinker<ContextInfo, InvocationExpressionSyntax>, RoslynInvocationLinker<ContextInfo>>();
         services.AddTransient<ISymbolWrapperConverter, RoslynSymbolWrapperConverter>();
         // ---
@@ -217,6 +231,14 @@ public class HostConfigurator
         services.AddScoped<ICoverageValueExtractor, CoverageValueExtractor>();
 
         // --- Службы, связанные с генерацией UML ---
+
+        services.AddTransient<IDiagramCompileOptionsStrategy, ActionStateCompileOptionsStrategy>();
+        services.AddTransient<IDiagramCompileOptionsStrategy, DomainStateCompileOptionsStrategy>();
+        services.AddTransient<IDiagramCompileOptionsStrategy, ActionSequenceCompileOptionsStrategy>();
+        services.AddTransient<IDiagramCompileOptionsStrategy, DomainSequenceCompileOptionsStrategy>();
+
+        // регистрация резолвера/фабрики
+        services.AddTransient<IDiagramCompileOptionsFactory, DiagramCompileOptionsFactory>();
 
         services.AddTransient<IUmlUrlBuilder, UmlUrlBuilder>();
 

@@ -2,9 +2,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit;
-using RoslynKit.AWrappers;
-using RoslynKit.Syntax;
 using SemanticKit.Model.Options;
 
 namespace RoslynKit.Syntax;

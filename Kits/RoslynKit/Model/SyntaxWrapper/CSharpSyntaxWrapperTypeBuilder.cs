@@ -2,7 +2,6 @@ using System;
 using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.AWrappers;
 using RoslynKit.Signature;
 using RoslynKit.Signature.SignatureBuilder;
 using SemanticKit.Model.Signature;
@@ -42,6 +41,12 @@ public class CSharpSyntaxWrapperTypeBuilder : ICSharpSyntaxWrapperTypeBuilder
         else
         {
             var parsedSignature = _signatureParser.Parse(syntaxWrapper.FullName);
+
+            // TODO: подмена namespace если парсер не смог найти правильный
+            // перенести в сам парсер
+            parsedSignature.Namespace = syntaxWrapper.Namespace.Equals(parsedSignature.Namespace, StringComparison.InvariantCulture)
+                ? parsedSignature.Namespace
+                : syntaxWrapper.Namespace;
 
             result.FullName = $"{parsedSignature.Namespace}.{parsedSignature.ClassName}";
             result.Identifier = $"{parsedSignature.Namespace}.{parsedSignature.ClassName}";

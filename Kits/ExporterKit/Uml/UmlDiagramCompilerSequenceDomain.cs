@@ -9,6 +9,7 @@ using ContextKit.ContextData.Naming;
 using ContextKit.Model;
 using ContextKit.Model.Service;
 using ExporterKit.Uml.DiagramCompileOptions;
+using ExporterKit.Uml.DiagramCompileOptions.Strategies;
 using LoggerKit;
 using TensorKit.Model;
 using UmlKit.Builders;
@@ -28,8 +29,9 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
     private readonly INamingProcessor _namingProcessor;
     private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
     private readonly IContextDiagramBuildersFactory _diagramBuildersFactory;
+    private readonly IDiagramCompileOptionsFactory _compileOptionsFactory;
 
-    public UmlDiagramCompilerSequenceDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IContextInfoMapperProvider<DomainPerActionTensor> mapperProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IContextInfoManager<ContextInfo> contextInfoManager, IContextDiagramBuildersFactory diagramBuildersFactory)
+    public UmlDiagramCompilerSequenceDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IContextInfoMapperProvider<DomainPerActionTensor> mapperProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IContextInfoManager<ContextInfo> contextInfoManager, IContextDiagramBuildersFactory diagramBuildersFactory, IDiagramCompileOptionsFactory compileOptionsFactory)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -38,7 +40,7 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
         _namingProcessor = namingProcessor;
         _contextInfoManager = contextInfoManager;
         _diagramBuildersFactory = diagramBuildersFactory;
-
+        _compileOptionsFactory = compileOptionsFactory;
     }
 
     // context: uml, build
@@ -58,7 +60,7 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
         var renderedCache = new Dictionary<ILabeledValue, bool>();
         foreach (var col in distinctCols)
         {
-            var compileOptions = DiagramCompileOptionsFactory.DomainSequenceCompileOptions(col, _namingProcessor);
+            var compileOptions = _compileOptionsFactory.Create(DiagramKind.DomainSequence, col);
             renderedCache[col] = GenerateSingle(exportOptions, compileOptions, diagramBuilderOptions, elements);
         }
         return renderedCache;

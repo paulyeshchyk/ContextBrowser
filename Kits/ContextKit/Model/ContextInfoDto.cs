@@ -26,6 +26,19 @@ public record ContextInfoDto : IContextInfo
 
     public IContextInfo? MethodOwner { get; set; }
 
+    public bool MethodOwnedByItSelf
+    {
+        get
+        {
+            if (MethodOwner != null)
+            {
+                return MethodOwner.FullName.Equals(FullName);
+            }
+            return false;
+
+        }
+    }
+
     public string NameWithClassOwnerName
     {
         get

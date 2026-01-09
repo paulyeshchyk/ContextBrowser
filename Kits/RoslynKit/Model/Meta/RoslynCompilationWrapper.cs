@@ -26,7 +26,7 @@ public class RoslynCompilationWrapper : ICompilationWrapper
     public ISemanticModelWrapper GetSemanticModel(ISyntaxTreeWrapper wrapper)
     {
         var semanticModel = _compilation.GetSemanticModel((SyntaxTree)wrapper.Tree);
-        return new RoslynSemanticModelWrapper(_diagnostics, semanticModel, _logger);
+        return new RoslynSemanticModelWrapper(semanticModel, _logger);
     }
 }
 

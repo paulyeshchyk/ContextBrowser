@@ -16,7 +16,13 @@ public class UmlDiagramExporterMindMapClassOnly
 {
     public static void Export(IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, ContextInfo classContextInfo, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
-        var classNameWithNameSpace = $"{classContextInfo.Namespace}.{classContextInfo.ShortName}";
+        // грязный хак для получения информации о владельце
+        var classownerInfo = classContextInfo.MethodOwnedByItSelf
+            ? (classContextInfo.ClassOwner ?? classContextInfo)
+            : classContextInfo;
+
+        var classNameWithNameSpace = $"{classownerInfo.Namespace}.{classownerInfo.ShortName}";
+
         var fileName = namingProcessor.MindmapClassOnlyPumlFilename(classNameWithNameSpace);
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, fileName);
         var diagramId = namingProcessor.MindmapActionDiagramId(outputPath);

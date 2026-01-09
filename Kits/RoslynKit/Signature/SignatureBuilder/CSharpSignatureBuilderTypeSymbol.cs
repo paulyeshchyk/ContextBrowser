@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
-using RoslynKit.AWrappers;
+using RoslynKit.Model.Symbol;
 using SemanticKit.Model.Signature;
 
 namespace RoslynKit.Signature.SignatureBuilder;

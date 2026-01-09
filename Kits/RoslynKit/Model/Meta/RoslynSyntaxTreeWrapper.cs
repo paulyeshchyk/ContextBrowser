@@ -21,7 +21,10 @@ public class RoslynSyntaxTreeWrapper : ISyntaxTreeWrapper
 
     public object Tree => _syntaxTree;
 
-    public object GetCompilationUnitRoot(CancellationToken cancellationToken) => _syntaxTree.GetCompilationUnitRoot(cancellationToken);
+    public object GetCompilationUnitRoot(CancellationToken cancellationToken)
+    {
+        return _syntaxTree.GetCompilationUnitRoot(cancellationToken);
+    }
 
     public IEnumerable<object> GetAvailableSyntaxies(SemanticOptions options, CancellationToken cancellationToken)
     {

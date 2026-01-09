@@ -8,7 +8,6 @@ using LoggerKit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RoslynKit.Assembly;
-using RoslynKit.AWrappers;
 using RoslynKit.Syntax;
 using RoslynKit.Wrappers;
 using SemanticKit.Model;
@@ -26,7 +25,7 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
     private readonly CSharpSyntaxParserMethod<TContext> _methodSyntaxParser;
     private readonly CSharpSyntaxParserTypeProperty<TContext> _propertyDeclarationParser;
     private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
-    private readonly ISymbolLoader<MemberDeclarationSyntax, ISymbol> _symbolLoader;
+    private readonly IRoslynSymbolLoader<MemberDeclarationSyntax, ISymbol> _symbolLoader;
 
     public CSharpSyntaxParserTypeClass(
         CSharpSyntaxParserTypeProperty<TContext> propertyDeclarationParser,
@@ -34,7 +33,7 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
         CSharpSyntaxParserCommentTrivia<TContext> triviaCommentParser,
         ContextInfoBuilderDispatcher<TContext> contextInfoBuilderDispatcher,
         IAppLogger<AppLevel> logger,
-        ISymbolLoader<MemberDeclarationSyntax, ISymbol> symbolLoader) : base(logger)
+        IRoslynSymbolLoader<MemberDeclarationSyntax, ISymbol> symbolLoader) : base(logger)
     {
         _triviaCommentParser = triviaCommentParser;
         _propertyDeclarationParser = propertyDeclarationParser;

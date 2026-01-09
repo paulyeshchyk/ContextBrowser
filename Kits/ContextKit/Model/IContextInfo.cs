@@ -10,6 +10,13 @@ public interface IContextInfo : ISemanticInfo, ISpanInfo, ISemanticContainer
     IContextInfo? MethodOwner { get; set; }
 
     string NameWithClassOwnerName { get; }
+
+    /// <summary>
+    /// индикатор того, что invocation не был корректно распарсен,
+    /// если true то MethodOwner эквивалентен объекту
+    /// однако, информацию о владельце можно взять из MethodOwner.Namespace & MethodOwner.ShortName
+    /// </summary>
+    bool MethodOwnedByItSelf { get; }
 }
 
 // context: ContextInfo, model

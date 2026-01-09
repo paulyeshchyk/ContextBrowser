@@ -61,8 +61,8 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
         //     UmlDiagramMaxNamelengthExtractorType.property
         // ]);
 
-        var classes = elements.Where(e => e.ElementType == ContextInfoElementType.@class).ToList();
-        var methods = elements.Where(e => e.ElementType == ContextInfoElementType.method).ToList();
+        var classes = elements.Where(e => e.ElementType.IsEntityDefinition()).ToList();
+        var methods = elements.Where(e => !e.ElementType.IsEntityDefinition()).ToList();
 
         var grouped = classes.GroupBy(c => c.Namespace);
 

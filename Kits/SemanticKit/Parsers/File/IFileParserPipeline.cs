@@ -7,5 +7,5 @@ namespace SemanticKit.Parsers.File;
 
 public interface IFileParserPipeline<TContext>
 {
-    Task<IEnumerable<TContext>> ParseAsync(string[] filePaths, SemanticOptions options, CancellationToken ct);
+    Task<IEnumerable<TContext>> ParseAsync(string[] filePaths, string compilationName, CancellationToken ct);
 }

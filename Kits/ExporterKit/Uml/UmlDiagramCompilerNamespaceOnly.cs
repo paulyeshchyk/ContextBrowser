@@ -56,15 +56,26 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
                                                                        nameSpace: nameSpace,
                                                                  namingProcessor: _namingProcessor,
                                                                      classesList: classesList,
-                                                                   umlUrlBuilder: _umlUrlBuilder);
+                                                                   umlUrlBuilder: _umlUrlBuilder,
+                                                                    onGetMethods: GetMethods(dataset),
+                                                                 onGetProperties: GetProperties(dataset));
         }
         return new Dictionary<ILabeledValue, bool>();
+    }
+    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
+    {
+        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName).DistinctBy(e => e.FullName).OrderBy(e => e.ShortName);
+    }
+
+    private static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
+    {
+        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName).DistinctBy(e => e.FullName).OrderBy(e => e.ShortName);
     }
 
     private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
         return (nameSpace) => contextInfoDataSet.GetAll()
-            .Where(c => c.ElementType.IsEntityDefinition())
+            .Where(c => c.ElementType.IsEntityDefinition() || c.MethodOwnedByItSelf == true)
             .Where(c => c.Namespace == nameSpace);
     }
 

@@ -57,7 +57,7 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
         cancellationToken.ThrowIfCancellationRequested();
 
         var contextInfoKey = cell.Key;
-        var contextInfoList = cell.Value.Distinct().ToList();
+        var contextInfoList = cell.Value.Distinct().Where(c => (c.ElementType.IsEntityDefinition())).ToList();
 
         var pumlClass = _namingProcessor.ClassActionDomainPumlFilename(contextInfoKey.Action, contextInfoKey.Domain);
         var fileName = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, pumlClass);

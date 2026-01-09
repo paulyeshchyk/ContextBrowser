@@ -22,7 +22,7 @@ public static partial class SequenceParticipantsManager
 
         var callerUrl = namingProcessor.ClassOnlyHtmlFilename(ctx.Transition.CallerId);
         var calleeUrl = namingProcessor.ClassOnlyHtmlFilename(ctx.Transition.CalleeId);
-        var runContextUrl = namingProcessor.ClassOnlyHtmlFilename(ctx.RunContext);
+        var runContextUrl = namingProcessor.ClassOnlyHtmlFilename(ctx.Transition.CalleeId);
 
         var runContextName = ctx.RunContext?.AlphanumericOnly();
 
@@ -37,6 +37,7 @@ public static partial class SequenceParticipantsManager
             AddParticipantIfApplicable(calleeName, url: calleeUrl, tempRunContextName, ctx, defaultKeywords);
         }
 
+#warning работает только для External_Namespace.*
         // Если RunContext был задан, добавляем его с ключевым словом "Control".
         if (!string.IsNullOrEmpty(runContextName))
         {

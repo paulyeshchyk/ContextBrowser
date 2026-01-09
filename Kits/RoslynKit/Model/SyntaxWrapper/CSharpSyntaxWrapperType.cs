@@ -2,7 +2,6 @@
 using ContextKit.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using RoslynKit.AWrappers;
 using RoslynKit.Signature;
 using RoslynKit.Signature.SignatureBuilder;
 using SemanticKit.Model.Signature;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -21,7 +22,7 @@ public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
         _parsers = parsers;
     }
 
-    public void Route(List<object> availableSyntaxies, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
+    public async Task RouteAsync(List<object> availableSyntaxies, ISemanticModelWrapper model, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -37,7 +38,7 @@ public class SemanticSyntaxRouter<TContext> : ISemanticSyntaxRouter<TContext>
                 continue;
             }
 
-            parser.ParseAsync(default, item, model, options, cancellationToken);
+            await parser.ParseAsync(default, item, model, options, cancellationToken);
         }
 
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Dbg, string.Empty, LogLevelNode.End);

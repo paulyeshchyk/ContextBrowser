@@ -28,7 +28,6 @@ public class SequenceDiagramRendererHierarchical<P> : ISequenceDiagramRenderer<P
 
     }
 
-    // Этот метод будет публичным, и именно его вы будете вызывать
     public void Render(UmlDiagram<P> diagram, GrouppedSortedTransitionList? allTransitions)
     {
         var rootTransitions = allTransitions?.GetTransitionList();

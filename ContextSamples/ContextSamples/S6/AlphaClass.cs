@@ -3,9 +3,20 @@
 namespace ContextSamples.ContextSamples;
 
 // context: S6, build
+public enum TheType
+{
+    alpha,
+    beta,
+    gamma
+}
+
+// context: S6, build
 public class Alpha
 {
     private readonly Beta beta = new Beta();
+
+    // context: S6, model
+    public TheType ItemType => TheType.alpha;
 
     // context: S6, build
     public void Method1()
@@ -25,6 +36,9 @@ public class Beta
 {
     private readonly Gamma gamma = new Gamma();
 
+    // context: S6.1, model
+    public TheType ItemType => TheType.beta;
+
     // context: S6.1, build
     public void Method2()
     {
@@ -36,6 +50,9 @@ public class Beta
 public class Gamma
 {
     private readonly Alpha alpha = new Alpha();
+
+    // context: S6.2, model
+    public TheType ItemType => TheType.gamma;
 
     // context: S6.2, build
     public void Method3()

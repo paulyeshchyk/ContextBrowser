@@ -10,7 +10,7 @@ namespace RoslynKit.Signature.SignatureParser;
 public partial class CSharpSignatureParser : ISignatureParser<CSharpIdentifier>
 {
     private readonly IAppOptionsStore _optionsStore;
-    private readonly IEnumerable<ISignatureParserRegex> _parsingAttempts;
+    private readonly IEnumerable<ISignatureParserRegex> _parsers;
 
     public CSharpSignatureParser(IAppOptionsStore optionsStore, SignatureChainFactory factory)
     {
@@ -19,14 +19,14 @@ public partial class CSharpSignatureParser : ISignatureParser<CSharpIdentifier>
         // Получаем СВОЮ цепочку, используя идентификатор C#
         var chain = factory.GetChain<CSharpIdentifier>();
 
-        _parsingAttempts = chain.Parsers;
+        _parsers = chain.Parsers;
     }
 
     public SignatureDefault Parse(string input)
     {
-        foreach (var attempt in _parsingAttempts)
+        foreach (var parser in _parsers)
         {
-            var result = attempt.Parse(input);
+            var result = parser.Parse(input);
             if (result.Success)
             {
                 return result.Result;

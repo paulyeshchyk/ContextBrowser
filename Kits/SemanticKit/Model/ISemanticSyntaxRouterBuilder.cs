@@ -2,7 +2,7 @@ using ContextKit.Model;
 
 namespace SemanticKit.Model;
 
-public interface ISemanticSyntaxRouterBuilder<TContext>
+public interface ISyntaxRouterBuilder<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     ISemanticSyntaxRouter<TContext> CreateRouter();

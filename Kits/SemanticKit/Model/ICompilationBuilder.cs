@@ -8,5 +8,5 @@ namespace SemanticKit.Model;
 public interface ICompilationBuilder<TSyntaxTreeWrapper>
     where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
-    Task<ICompilationWrapper> BuildAsync(SemanticOptions options, IEnumerable<TSyntaxTreeWrapper> syntaxTrees, IEnumerable<string> customAssembliesPaths, string name, CancellationToken cancellationToken);
+    Task<ICompilationWrapper> BuildAsync(IEnumerable<TSyntaxTreeWrapper> syntaxTrees, string name, CancellationToken cancellationToken);
 }
