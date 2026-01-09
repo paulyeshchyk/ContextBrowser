@@ -13,7 +13,9 @@ public enum TheType
 // context: S6, build
 public class Alpha
 {
-    private readonly Beta beta = new Beta();
+    internal readonly Beta beta = new Beta();
+
+    internal readonly bool Buildable = true;
 
     // context: S6, model
     public TheType ItemType => TheType.alpha;

@@ -15,7 +15,7 @@ using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
 
-namespace ExporterKit.Uml;
+namespace ExporterKit.Uml.DiagramCompiler;
 
 // context: uml, links, build
 // pattern: Builder

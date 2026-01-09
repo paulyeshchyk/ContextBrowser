@@ -15,7 +15,7 @@ using TensorKit.Model;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 
-namespace ExporterKit.Uml;
+namespace ExporterKit.Uml.DiagramCompiler;
 
 // context: uml, build
 public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler

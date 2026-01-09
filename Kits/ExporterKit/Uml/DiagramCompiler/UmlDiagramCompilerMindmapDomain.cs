@@ -14,7 +14,7 @@ using TensorKit.Model;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 
-namespace ExporterKit.Uml;
+namespace ExporterKit.Uml.DiagramCompiler;
 
 public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
 {

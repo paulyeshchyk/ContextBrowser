@@ -15,7 +15,7 @@ using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
 
-namespace ExporterKit.Uml;
+namespace ExporterKit.Uml.DiagramCompiler;
 
 // context: uml, links, build
 // pattern: Builder
@@ -24,7 +24,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
     private readonly IAppOptionsStore _optionsStore;
-        private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
+    private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
 
 
     public UmlDiagramCompilerClassRelation(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, IContextInfoManager<ContextInfo> contextInfoManager)
@@ -47,7 +47,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         var contextInfoList = dataset.GetAll().ToList();
-        var linkGenerator = new ContextInfoDataLinkGenerator(_optionsStore,_contextInfoManager);
+        var linkGenerator = new ContextInfoDataLinkGenerator(_optionsStore, _contextInfoManager);
         var links = linkGenerator.Generate(contextInfoList);
 
         await UmlDiagramExporter_4_links.ExportAsync(exportOptions, diagramBuilderOptions, links, cancellationToken).ConfigureAwait(false);

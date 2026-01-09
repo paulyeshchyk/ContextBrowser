@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,9 +14,9 @@ using TensorKit.Model;
 using UmlKit.Compiler;
 using UmlKit.Infrastructure.Options;
 
-namespace ExporterKit.Uml;
+namespace ExporterKit.Uml.DiagramCompiler;
 
-public class UmlDiagramCompilerMindmapClassOnly : IUmlDiagramCompiler
+public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
@@ -24,7 +24,8 @@ public class UmlDiagramCompilerMindmapClassOnly : IUmlDiagramCompiler
     private readonly INamingProcessor _namingProcessor;
     private readonly IUmlUrlBuilder _umlUrlBuilder;
 
-    public UmlDiagramCompilerMindmapClassOnly(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
+
+    public UmlDiagramCompilerMindmapAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -44,12 +45,18 @@ public class UmlDiagramCompilerMindmapClassOnly : IUmlDiagramCompiler
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         var elements = dataset.GetAll();
-        var distinctClasses = elements.Where(e => e.ElementType.IsEntityDefinition() || e.MethodOwnedByItSelf == true).Distinct();
+        var distinctAction = elements.Select(e => e.Action).Distinct().Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s!).Select(s => s.Split(';')).SelectMany(s => s).Distinct();
 
-        foreach (var classItem in distinctClasses)
-        {
-            UmlDiagramExporterMindMapClassOnly.Export(dataset, exportOptions, diagramBuilderOptions, classItem, _namingProcessor, _umlUrlBuilder);
-        }
+        var tasks = distinctAction.Select(async action => await UmlDiagramExporterMindMapAction.ExportAsync(
+            dataset,
+            exportOptions,
+            diagramBuilderOptions,
+            action,
+            _namingProcessor,
+            _umlUrlBuilder,
+            cancellationToken).ConfigureAwait(false)
+        );
+        await Task.WhenAll(tasks);
 
         return new Dictionary<ILabeledValue, bool>();
     }

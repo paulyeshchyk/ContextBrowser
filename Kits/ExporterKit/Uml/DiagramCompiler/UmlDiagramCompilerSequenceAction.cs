@@ -17,10 +17,10 @@ using UmlKit.Compiler;
 using UmlKit.Compiler.CoCompiler;
 using UmlKit.Infrastructure.Options;
 
-namespace ExporterKit.Uml;
+namespace ExporterKit.Uml.DiagramCompiler;
 
 // context: uml, sequence, build
-public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
+public class UmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
 {
     protected readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoDatasetProvider<DomainPerActionTensor> _datasetProvider;
@@ -31,7 +31,7 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
     private readonly IContextDiagramBuildersFactory _diagramBuildersFactory;
     private readonly IDiagramCompileOptionsFactory _compileOptionsFactory;
 
-    public UmlDiagramCompilerSequenceDomain(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IContextInfoMapperProvider<DomainPerActionTensor> mapperProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IContextInfoManager<ContextInfo> contextInfoManager, IContextDiagramBuildersFactory diagramBuildersFactory, IDiagramCompileOptionsFactory compileOptionsFactory)
+    public UmlDiagramCompilerSequenceAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IContextInfoMapperProvider<DomainPerActionTensor> mapperProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IContextInfoManager<ContextInfo> contextInfoManager, IContextDiagramBuildersFactory diagramBuildersFactory, IDiagramCompileOptionsFactory compileOptionsFactory)
     {
         _logger = logger;
         _datasetProvider = datasetProvider;
@@ -41,27 +41,27 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
         _contextInfoManager = contextInfoManager;
         _diagramBuildersFactory = diagramBuildersFactory;
         _compileOptionsFactory = compileOptionsFactory;
+
     }
 
     // context: uml, build
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile SequenceDomain");
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile SequenceAction");
 
-        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
-
+        var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken).ConfigureAwait(false);
-        var distinctCols = mapper.GetCols().Distinct();
+        var distinctRows = mapper.GetRows().Distinct();
 
         var renderedCache = new Dictionary<ILabeledValue, bool>();
-        foreach (var col in distinctCols)
+        foreach (var row in distinctRows)
         {
-            var compileOptions = _compileOptionsFactory.Create(DiagramKind.DomainSequence, col);
-            renderedCache[col] = GenerateSingle(exportOptions, compileOptions, diagramBuilderOptions, elements);
+            var compileOptions = _compileOptionsFactory.Create(DiagramKind.ActionSequence, row);
+            renderedCache[row] = GenerateSingle(exportOptions, diagramBuilderOptions, compileOptions, elements);
         }
         return renderedCache;
     }
@@ -69,13 +69,14 @@ public class UmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
     /// <summary>
     /// Компилирует диаграмму последовательностей.
     /// </summary>
-    protected bool GenerateSingle(ExportOptions exportOptions, IDiagramCompileOptions options, DiagramBuilderOptions diagramBuilderOptions, List<ContextInfo> allContexts)
+    protected bool GenerateSingle(ExportOptions exportOptions, DiagramBuilderOptions diagramBuildingOptions, IDiagramCompileOptions compileOptions, List<ContextInfo> allContexts)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling Sequence {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
-        var transitionBuilder = _diagramBuildersFactory.BuilderForType(DiagramBuilderKeys.Transition, diagramBuilderOptions, _logger, _contextInfoManager, _optionsStore);
+        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling Sequence {compileOptions.FetchType} [{compileOptions.MetaItem}]", LogLevelNode.Start);
 
-        var diagramCompilerSequence = new UmlDiagramCompilerSequence(logger: _logger, exportOptions, diagramBuilderOptions, transitionBuilder, _namingProcessor);
-        var rendered = diagramCompilerSequence.Compile(options.MetaItem, options.FetchType, options.DiagramId, options.DiagramTitle, options.OutputFileName, allContexts, CancellationToken.None);
+        var bf = _diagramBuildersFactory.BuilderForType(DiagramBuilderKeys.Transition, diagramBuildingOptions, _logger, _contextInfoManager, _optionsStore);
+
+        var diagramCompilerSequence = new UmlDiagramCompilerSequence(logger: _logger, exportOptions, diagramBuildingOptions, bf, _namingProcessor);
+        var rendered = diagramCompilerSequence.Compile(compileOptions.MetaItem, compileOptions.FetchType, compileOptions.DiagramId, compileOptions.DiagramTitle, compileOptions.OutputFileName, allContexts, CancellationToken.None);
 
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
         return rendered;

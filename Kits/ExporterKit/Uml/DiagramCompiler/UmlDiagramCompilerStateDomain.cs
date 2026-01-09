@@ -22,7 +22,7 @@ using UmlKit.DiagramGenerator.Renderer;
 using UmlKit.Infrastructure.Options;
 using UmlKit.PlantUmlSpecification;
 
-namespace ExporterKit.Uml;
+namespace ExporterKit.Uml.DiagramCompiler;
 
 // context: uml, state, build
 public class UmlDiagramCompilerStateDomain : IUmlDiagramCompiler

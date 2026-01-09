@@ -23,6 +23,7 @@ using ExporterKit.Infrastucture;
 using ExporterKit.Uml;
 using ExporterKit.Uml.DiagramCompileOptions;
 using ExporterKit.Uml.DiagramCompileOptions.Strategies;
+using ExporterKit.Uml.DiagramCompiler;
 using HtmlKit.Document;
 using HtmlKit.Helpers;
 using HtmlKit.Matrix;
