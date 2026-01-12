@@ -54,6 +54,7 @@ public record CSharpSyntaxWrapperMethodArtifitial : ISyntaxWrapper
     {
         var result = new ContextInfoDto(
             elementType: ContextInfoElementType.method,
+      elementVisibility: ContentInfoElementVisibility.@public,
                fullName: this.FullName,
                    name: this.Name,
               shortName: this.ShortName,

@@ -4,6 +4,7 @@ using ContextKit.Model;
 using ContextKit.Model.Service;
 using LoggerKit;
 using UmlKit.Builders.Model;
+using UmlKit.DataProviders;
 using UmlKit.Infrastructure.Options;
 
 namespace UmlKit.Builders.TransitionDirection;

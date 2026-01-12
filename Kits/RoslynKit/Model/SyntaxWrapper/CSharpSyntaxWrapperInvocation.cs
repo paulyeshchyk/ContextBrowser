@@ -24,10 +24,12 @@ public record CSharpSyntaxWrapperInvocation : ISyntaxWrapper
 
     public ISignature? Signature { get; init; }
 
+#warning add elementVisibilityParam
     public IContextInfo GetContextInfoDto()
     {
         return new ContextInfoDto(
             elementType: ContextInfoElementType.method,
+      elementVisibility: ContentInfoElementVisibility.@public,
                fullName: this.FullName,
                    name: this.Name,
               shortName: this.ShortName,

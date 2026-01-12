@@ -51,7 +51,7 @@ public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
         var builder = new HtmlPageWithTabsNamespaceEntityBuilder<ContextInfoKeyContainerNamespace, TDataTensor>(
             dataset,
             tabbedPageBuilder,
-            (ns) => _namingProcessor.NamespaceOnlyHtmlFilename(ns),
+            (ns) => _namingProcessor.NamespaceOnlyItemHtmlFilename(ns),
             (ns) => $" Namespace {ns}");
         await builder.BuildAsync(cancellationToken).ConfigureAwait(false);
     }

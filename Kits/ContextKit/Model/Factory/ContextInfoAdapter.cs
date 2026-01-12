@@ -10,6 +10,7 @@ public static class ContextInfoAdapter
     {
         return new ContextInfo(
             elementType: model.ElementType,
+      elementVisibility: model.ElementVisibility,
              identifier: model.Identifier,
                    name: model.Name,
                fullName: model.FullName,

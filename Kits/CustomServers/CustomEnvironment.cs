@@ -54,11 +54,11 @@ public static class CustomEnvironment
             System.Threading.Thread.Sleep(1000);
         }
 
-        if (!customServer.IsJvmPlantUmlProcessRunning(SPlantumlJarFilename))
-        {
-            customServer.StartJar(folder: httpServerPath, jarName: SPlantumlJarFilename, args: SPicowebJvmArgument);
-            System.Threading.Thread.Sleep(1000);
-        }
+        // if (!customServer.IsJvmPlantUmlProcessRunning(SPlantumlJarFilename))
+        // {
+        //     customServer.StartJar(folder: httpServerPath, jarName: SPlantumlJarFilename, args: SPicowebJvmArgument);
+        //     System.Threading.Thread.Sleep(1000);
+        // }
 
         long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         customServer.OpenHtmlPage($"http://localhost:{SLocalHttpServerPort}/index.html?v={timestamp}");

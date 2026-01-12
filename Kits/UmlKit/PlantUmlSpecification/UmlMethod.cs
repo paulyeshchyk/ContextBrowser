@@ -43,6 +43,7 @@ internal static class UmlMethodVisibilityExt
             UmlMemberVisibility.@private => "-",
             UmlMemberVisibility.@protected => "#",
             UmlMemberVisibility.@static => "{static}",
+            UmlMemberVisibility.@internal => string.Empty,
             _ => string.Empty
         };
     }
@@ -53,5 +54,6 @@ public enum UmlMemberVisibility
     @public,
     @private,
     @protected,
+    @internal,
     @static
 }

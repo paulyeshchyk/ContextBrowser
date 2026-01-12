@@ -12,9 +12,9 @@ namespace UmlKit.PlantUmlSpecification;
 public class UmlDiagramState : UmlDiagram<UmlState>
 {
     private readonly HashSet<UmlState> _states = new();
-    private readonly HashSet<UmlTransitionState> _transitions = new();
+    private readonly HashSet<UmlTransitionState<UmlState>> _transitions = new();
 
-    public UmlDiagramState(DiagramBuilderOptions options, string diagramId) : base(options, diagramId)
+    public UmlDiagramState(DiagramBuilderOptions options, string diagramId = "") : base(options, diagramId)
     {
     }
 
@@ -58,7 +58,7 @@ public class UmlDiagramState : UmlDiagram<UmlState>
             throw new ArgumentException($"неподдерживаемый тип {nameof(from)}");
         }
 
-        var result = new UmlTransitionState(theFrom, theTo, new UmlArrow(), label);
+        var result = new UmlTransitionState<UmlState>(theFrom, theTo, new UmlArrow(), label);
         _transitions.Add(result);
         return result;
     }
@@ -159,7 +159,7 @@ public class UmlDiagramState : UmlDiagram<UmlState>
 
     public override IUmlElement AddTransition(IUmlTransition<UmlState> transition)
     {
-        _transitions.Add((UmlTransitionState)transition);
+        _transitions.Add((UmlTransitionState<UmlState>)transition);
         Add(transition);
         return transition;
     }

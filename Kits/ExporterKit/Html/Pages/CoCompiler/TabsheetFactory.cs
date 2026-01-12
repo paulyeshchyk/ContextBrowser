@@ -399,7 +399,7 @@ internal class NamespaceOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TT
 
     protected override string GetPumlFileName(TTensor contextKey) => throw new NotImplementedException();
 
-    protected override string GetPumlFileName(string contextKey) => _namingProcessor.NamespaceOnlyPumlFilename(contextKey);
+    protected override string GetPumlFileName(string contextKey) => _namingProcessor.NamespaceOnlyItemPumlFilename(contextKey);
 }
 
 internal class DomainSummaryComponentsDatamodel<TDataTensor> : PumlEmbeddedContentDatamodel<TDataTensor>, IPumlEnbeddedInjectionDatamodel<TDataTensor>

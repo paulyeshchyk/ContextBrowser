@@ -5,7 +5,7 @@ export default function enableElement() {
     const umlText = el.textContent.trim();
     const encoded = plantumlEncoder.encode(umlText);
     const renderMode = el.getAttribute("renderMode") || "svg";
-    const url = `http://localhost:8080/${renderMode}/${encoded}`;
+    const url = `http://localhost:8081/${renderMode}/${encoded}`;
 
     const img = document.createElement("img");
     img.src = url;

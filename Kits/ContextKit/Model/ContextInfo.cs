@@ -9,6 +9,7 @@ namespace ContextKit.Model;
 public record ContextInfo : IContextWithReferences<ContextInfo>
 {
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
+    public ContentInfoElementVisibility ElementVisibility { get; set; } = ContentInfoElementVisibility.@internal;
 
     public string Identifier { get; } = Guid.NewGuid().ToString();
 
@@ -96,6 +97,7 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public ContextInfo(
         ContextInfoElementType elementType,
+        ContentInfoElementVisibility elementVisibility,
         string identifier,
         string name,
         string fullName,
@@ -112,6 +114,7 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
         IContextInfo? classOwner = null,
         IContextInfo? methodOwner = null)
     {
+        ElementVisibility = elementVisibility;
         ElementType = elementType;
         Identifier = identifier;
         Namespace = symbolInfo?.Namespace ?? nameSpace;

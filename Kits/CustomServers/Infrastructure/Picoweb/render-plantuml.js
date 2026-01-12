@@ -2,7 +2,7 @@
     constructor() {
         super();
 
-        const publicDemoServerAddress = "http://localhost:8080";
+        const publicDemoServerAddress = "http://localhost:8081";
         const validRenderModes = ["img", "png", "svg", "txt"];
 
         const externalDiagramSource = this.getAttribute("src");

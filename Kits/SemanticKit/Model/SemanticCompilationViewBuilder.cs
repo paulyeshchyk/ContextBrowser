@@ -37,7 +37,9 @@ public class SemanticCompilationViewBuilder<TSyntaxTreeWrapper> : ISemanticCompi
     // context: roslyn, build, contextInfo
     internal async Task<SemanticCompilationView> BuildCompilationView(TSyntaxTreeWrapper syntaxTreeWrapper, string compilationName, CancellationToken cancellationToken)
     {
-        var root = syntaxTreeWrapper.GetCompilationUnitRoot(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var root = await syntaxTreeWrapper.GetCompilationUnitRootAsync(cancellationToken).ConfigureAwait(false);
 
         var model = _modelStorage.GetModel(syntaxTreeWrapper)
             ?? await BuildModelWrapper(syntaxTreeWrapper, compilationName, cancellationToken).ConfigureAwait(false);

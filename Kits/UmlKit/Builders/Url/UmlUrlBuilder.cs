@@ -27,7 +27,7 @@ public class UmlUrlBuilder : IUmlUrlBuilder
     {
         return string.IsNullOrWhiteSpace(nameSpace)
             ? null
-            : _namingProcessor.NamespaceOnlyHtmlFilename(nameSpace);
+            : _namingProcessor.NamespaceOnlyItemHtmlFilename(nameSpace);
     }
 
     public string? BuildDomainUrl(string? domain)

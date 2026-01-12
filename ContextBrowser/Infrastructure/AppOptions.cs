@@ -105,7 +105,7 @@ public class AppOptions
         //".//..//..//..//..//ContextBrowser//ContextSamples//ContextSamples//S6//"
         //".//..//..//..//..//ContextBrowser//Kits//ContextBrowserKit//Extensions//FileUtils.cs"
         //"/Users/paul/projects/ContextBrowser/Kits/UmlKit/Builders/IUmlTransitionFactory.cs"
-        searchPaths: [".//..//..//..//..//ContextBrowser//ContextSamples//ContextSamples//S6//"]);
+        searchPaths: [".//..//..//..//"]);
 
     [CommandLineArgument("export-options", "Параметры экспорта")]
     public ExportOptions Export { get; set; } = new(
@@ -118,13 +118,13 @@ public class AppOptions
         filePaths: new ExportFilePaths(
             outputDirectory: ".//output",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
-                 cacheModel: new CacheJsonModel(renewCache: true,
+                 cacheModel: new CacheJsonModel(renewCache: false,
                                                      input: ".//cache//roslyn.json",
                                                     output: ".//cache//roslyn.json")),
         webPaths: new ExportWebPaths(
             outputDirectory: "http://localhost:5500",
                       paths: new Dictionary<ExportPathType, string>() { { ExportPathType.index, "." }, { ExportPathType.puml, "puml" }, { ExportPathType.pages, "pages" }, { ExportPathType.pumlExtra, "puml/extra" } },
-                 cacheModel: new CacheJsonModel(renewCache: true,
+                 cacheModel: new CacheJsonModel(renewCache: false,
                                                      input: ".//cache//roslyn.json",
                                                     output: ".//cache//roslyn.json")),
         pumlOptions: new ExportPumlOptions(injectionType: PumlInjectionType.reference));

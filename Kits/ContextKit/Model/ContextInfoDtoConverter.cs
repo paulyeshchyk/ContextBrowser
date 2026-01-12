@@ -27,8 +27,12 @@ public class ContextInfoDtoConverter<TContext> : IContextInfoDtoConverter<TConte
         string name = wrapper.GetName();
         string shortName = wrapper.GetShortName();
 
+#warning read it from wrapper.Modifiers
+        var elementVisibility = ContentInfoElementVisibility.@public;
+
         return new ContextInfoDto(
               elementType: elementType,
+        elementVisibility: elementVisibility,
                  fullName: fullName,
                      name: name,
                 shortName: shortName,

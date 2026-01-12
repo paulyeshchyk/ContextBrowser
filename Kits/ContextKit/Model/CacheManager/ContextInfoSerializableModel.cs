@@ -10,6 +10,7 @@ namespace ContextKit.Model.CacheManager;
 public record ContextInfoSerializableModel
 {
     public ContextInfoElementType ElementType { get; set; }
+    public ContentInfoElementVisibility ElementVisibility { get; set; }
 
     public string Name { get; set; }
 
@@ -45,7 +46,9 @@ public record ContextInfoSerializableModel
 
     public HashSet<string> OwnsFullNames { get; set; }
 
-    public ContextInfoSerializableModel(ContextInfoElementType elementType,
+    public ContextInfoSerializableModel(
+        ContextInfoElementType elementType,
+        ContentInfoElementVisibility elementVisibility,
         string name,
         string fullName,
         string shortName,
@@ -65,6 +68,7 @@ public record ContextInfoSerializableModel
         HashSet<string>? ownsFullNames)
     {
         ElementType = elementType;
+        ElementVisibility = elementVisibility;
         Name = name;
         FullName = fullName;
         ShortName = shortName;

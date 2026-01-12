@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
 using ContextKit.Model.Service;
 using LoggerKit;
+using Microsoft.CodeAnalysis;
 using RoslynKit.Assembly.Strategy.Invocation;
 using RoslynKit.Lookup;
 using RoslynKit.Model.SyntaxWrapper;
@@ -18,9 +21,12 @@ public class RoslynInvocationLinksBuilder : IInvocationLinksBuilder<ContextInfo>
 {
     private readonly IContextCollector<ContextInfo> _collector;
     private readonly IAppLogger<AppLevel> _logger;
+
     private readonly ContextInfoBuilderDispatcher<ContextInfo> _contextInfoBuilderDispatcher;
     private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
-    private readonly ICSharpSyntaxWrapperTypeBuilder _syntaxWrapperTypeBuilder;
+
+    private readonly ISymbolLookupHandlerChainFactory<ContextInfo, ISemanticModelWrapper> _symbolLookupChainFactory;
+    private readonly IAppOptionsStore _optionsStore;
 
     private readonly object _lock = new();
 
@@ -29,20 +35,25 @@ public class RoslynInvocationLinksBuilder : IInvocationLinksBuilder<ContextInfo>
         ContextInfoBuilderDispatcher<ContextInfo> contextInfoBuilderDispatcher,
         IAppLogger<AppLevel> logger,
         IContextInfoManager<ContextInfo> contextInfoManager,
-        ICSharpSyntaxWrapperTypeBuilder syntaxWrapperTypeBuilder)
+        IAppOptionsStore optionsStore,
+        ISymbolLookupHandlerChainFactory<ContextInfo, ISemanticModelWrapper> chainFactory)
     {
         _collector = collector;
         _logger = logger;
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
         _contextInfoManager = contextInfoManager;
-        _syntaxWrapperTypeBuilder = syntaxWrapperTypeBuilder;
+        _optionsStore = optionsStore;
+        _symbolLookupChainFactory = chainFactory;
     }
 
     // context: roslyn, update
-    public async Task<ContextInfo?> LinkInvocationAsync(ContextInfo callerContextInfo, ISyntaxWrapper symbolDto, SemanticOptions options)
+    public async Task<ContextInfo?> LinkInvocationAsync(ContextInfo callerContextInfo, ISyntaxWrapper symbolDto, SemanticOptions options, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Linking invocation caller: [{callerContextInfo.FullName}]]", LogLevelNode.Start);
-        var calleeContextInfo = await FindOrCreateCalleeNode(symbolDto, options).ConfigureAwait(false);
+        
+        var calleeContextInfo = await FindOrCreateCalleeNodeAsync(symbolDto, options, cancellationToken).ConfigureAwait(false);
         if (calleeContextInfo != null)
         {
             AddReferences(callerContextInfo, calleeContextInfo);
@@ -95,18 +106,16 @@ public class RoslynInvocationLinksBuilder : IInvocationLinksBuilder<ContextInfo>
 
     // Класс: RoslynPhaseParserInvocationLinksBuilder<TContext>
     // context: syntax, read
-    internal async Task<ContextInfo?> FindOrCreateCalleeNode(ISyntaxWrapper symbolDto, SemanticOptions options)
+    internal async Task<ContextInfo?> FindOrCreateCalleeNodeAsync(ISyntaxWrapper symbolDto, SemanticOptions options, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Looking for callee by symbol [{symbolDto.FullName}]");
 
-        var fullNameHandler = new SymbolLookupHandlerFullName<ContextInfo, ISemanticModelWrapper>(_collector, _logger);
-        var methodSymbolHandler = new SymbolLookupHandlerMethod<ContextInfo, ISemanticModelWrapper>(_collector, _logger);
-        var fakeNodeHandler = new RoslynInvocationLookupHandler<ContextInfo, ISemanticModelWrapper>(_collector, _contextInfoBuilderDispatcher, _logger, options, _syntaxWrapperTypeBuilder);
+        // получаем предустановленную цепочку обработчиков
+        var chain = _symbolLookupChainFactory.BuildChain();
 
-        // Сначала FullName, затем MethodSymbol, затем FakeNode
-        fullNameHandler
-            .SetNext(methodSymbolHandler)
-            .SetNext(fakeNodeHandler);
-        return await fullNameHandler.Handle(symbolDto).ConfigureAwait(false);
+        //запускаем первый и последующие в цепочке обработчики
+        return await chain.HandleAsync(symbolDto, cancellationToken).ConfigureAwait(false);
     }
 }

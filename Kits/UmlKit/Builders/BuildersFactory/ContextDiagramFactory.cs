@@ -20,7 +20,8 @@ public class ContextDiagramBuildersFactory : IContextDiagramBuildersFactory
 
     public IEnumerable<string> AvailableNames => _builderFactories.Keys;
 
-    public IContextDiagramBuilder BuilderForType(DiagramBuilderKeys key, DiagramBuilderOptions options, IAppLogger<AppLevel> logger, IContextInfoManager<ContextInfo> contextInfoManager, IAppOptionsStore optionsStore) => GetOrCreate(key, options, logger, contextInfoManager, optionsStore);
+    public IContextDiagramBuilder BuilderForType(DiagramBuilderKeys key, DiagramBuilderOptions options, IAppLogger<AppLevel> logger, IContextInfoManager<ContextInfo> contextInfoManager, IAppOptionsStore optionsStore)
+        => GetOrCreate(key, options, logger, contextInfoManager, optionsStore);
 
     public ContextDiagramBuildersFactory(IEnumerable<IDiagramBuilderRegistration> registrations)
     {

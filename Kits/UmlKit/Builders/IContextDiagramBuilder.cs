@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ContextKit.Model;
 using UmlKit.Builders.Model;
+using UmlKit.DataProviders;
 
 namespace UmlKit.Builders;
 

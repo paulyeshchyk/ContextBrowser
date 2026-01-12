@@ -53,12 +53,14 @@ public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, Invo
     // context: roslyn, invocation, syntax, read
     internal async Task<TContext?> ResolveSymbolThenLinkAsync(InvocationExpressionSyntax invocation, TContext callerContextInfo, IInvocationLinksBuilder<TContext> linksInvocationBuilder, SemanticOptions options, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var symbolDto = await _invocationSyntaxExtractor.ResolveInvocationSymbolAsync(invocation, options, cancellationToken).ConfigureAwait(false);
         if (symbolDto == null)
         {
             return default;
         }
 
-        return await linksInvocationBuilder.LinkInvocationAsync(callerContextInfo, symbolDto, options).ConfigureAwait(false);
+        return await linksInvocationBuilder.LinkInvocationAsync(callerContextInfo, symbolDto, options, cancellationToken).ConfigureAwait(false);
     }
 }

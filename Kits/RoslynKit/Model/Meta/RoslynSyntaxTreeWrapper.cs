@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using RoslynKit.Extensions;
@@ -21,9 +22,10 @@ public class RoslynSyntaxTreeWrapper : ISyntaxTreeWrapper
 
     public object Tree => _syntaxTree;
 
-    public object GetCompilationUnitRoot(CancellationToken cancellationToken)
+    public Task<object> GetCompilationUnitRootAsync(CancellationToken cancellationToken)
     {
-        return _syntaxTree.GetCompilationUnitRoot(cancellationToken);
+        object result = _syntaxTree.GetCompilationUnitRoot(cancellationToken);
+        return Task.FromResult(result);
     }
 
     public IEnumerable<object> GetAvailableSyntaxies(SemanticOptions options, CancellationToken cancellationToken)

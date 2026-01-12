@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using SemanticKit.Model.Options;
 
 namespace SemanticKit.Model;
@@ -15,7 +16,7 @@ public interface ISyntaxTreeWrapper
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    object GetCompilationUnitRoot(CancellationToken cancellationToken);
+    Task<object> GetCompilationUnitRootAsync(CancellationToken cancellationToken);
 
     IEnumerable<object> GetAvailableSyntaxies(SemanticOptions options, CancellationToken cancellationToken);
 }

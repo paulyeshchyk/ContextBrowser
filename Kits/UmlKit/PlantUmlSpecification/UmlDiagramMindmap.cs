@@ -10,7 +10,7 @@ public class UmlDiagramMindmap : UmlDiagram<UmlNode>
 
     protected override string SUmlEndTag { get => "@endmindmap"; }
 
-    public UmlDiagramMindmap(DiagramBuilderOptions options, string diagramId) : base(options, diagramId)
+    public UmlDiagramMindmap(DiagramBuilderOptions options, string diagramId = "") : base(options, diagramId)
     {
     }
 

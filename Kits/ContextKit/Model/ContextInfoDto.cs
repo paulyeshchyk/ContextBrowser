@@ -2,6 +2,8 @@
 
 public record ContextInfoDto : IContextInfo
 {
+    public ContentInfoElementVisibility ElementVisibility { get; set; }
+
     public ContextInfoElementType ElementType { get; set; }
 
     public string FullName { get; set; }
@@ -51,6 +53,7 @@ public record ContextInfoDto : IContextInfo
 
     public ContextInfoDto(
         ContextInfoElementType elementType,
+        ContentInfoElementVisibility elementVisibility,
         string fullName,
         string name,
         string shortName,
@@ -64,6 +67,7 @@ public record ContextInfoDto : IContextInfo
         ISyntaxNodeWrapper? syntaxWrapper = default)
     {
         ElementType = elementType;
+        ElementVisibility = elementVisibility;
         FullName = fullName;
         Name = name;
         ShortName = name;

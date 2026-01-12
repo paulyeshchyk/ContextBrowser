@@ -35,9 +35,13 @@ public class NamingProcessor : INamingProcessor
     public string MindmapDomainDiagramId(string? domain) => string.Format("mindmap_domain_{0}", domain?.AlphanumericOnly());
     public string MindmapDomainPumlFilename(string? domain) => string.Format("mindmap_domain_{0}.puml", domain?.AlphanumericOnly());
 
-    public string NamespaceOnlyDiagramId(string? nameSpace) => string.Format("namespace_only_{0}", nameSpace?.AlphanumericOnly());
-    public string NamespaceOnlyHtmlFilename(string? nameSpace) => string.Format("namespace_only_{0}.html", nameSpace?.AlphanumericOnly());
-    public string NamespaceOnlyPumlFilename(string? nameSpace) => string.Format("namespace_only_{0}.puml", nameSpace?.AlphanumericOnly());
+    public string NamespaceOnlyDiagramId() => "namespace_only";
+    public string NamespaceOnlyHtmlFilename() => "namespace_only.html";
+    public string NamespaceOnlyPumlFilename() => "namespace_only.puml";
+
+    public string NamespaceOnlyItemDiagramId(string? nameSpace) => string.Format("namespace_only_{0}", nameSpace?.AlphanumericOnly());
+    public string NamespaceOnlyItemHtmlFilename(string? nameSpace) => string.Format("namespace_only_{0}.html", nameSpace?.AlphanumericOnly());
+    public string NamespaceOnlyItemPumlFilename(string? nameSpace) => string.Format("namespace_only_{0}.puml", nameSpace?.AlphanumericOnly());
 
     public string SequenceActionDiagramId(string? action) => string.Format("sequence_action_{0}", action?.AlphanumericOnly());
     public string SequenceActionPumlFilename(string? action) => string.Format("sequence_action_{0}.puml", action?.AlphanumericOnly());

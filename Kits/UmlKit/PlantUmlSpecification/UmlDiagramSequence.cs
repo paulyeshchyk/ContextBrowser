@@ -12,11 +12,11 @@ namespace UmlKit.PlantUmlSpecification;
 public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
 {
     private readonly Dictionary<string, UmlParticipant> _participants = new();
-    private readonly List<UmlTransitionParticipant> _transitions = new();
+    private readonly List<UmlTransitionParticipant<UmlParticipant>> _transitions = new();
     private readonly List<UmlActivate> _activations = new();
     private readonly List<UmlDeactivate> _deactivations = new();
 
-    public UmlDiagramSequence(DiagramBuilderOptions options, string diagramId)
+    public UmlDiagramSequence(DiagramBuilderOptions options, string diagramId = "")
         : base(options, diagramId)
     {
     }
@@ -30,7 +30,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
     {
         var from = new UmlParticipant(name);
         var to = from;
-        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
+        var selfTransition = new UmlTransitionParticipant<UmlParticipant>(from, to, new UmlArrow(flowType: _options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync));
         Add(selfTransition);
     }
 
@@ -38,7 +38,7 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
     {
         var from = new UmlParticipant(string.Empty);
         var to = new UmlParticipant(name);
-        var selfTransition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: _options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), $"{methodName} - SelfC");
+        var selfTransition = new UmlTransitionParticipant<UmlParticipant>(from, to, new UmlArrow(flowType: _options.Indication.UseAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), $"{methodName} - SelfC");
         Add(selfTransition);
     }
 
@@ -68,14 +68,14 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
 
     public override IUmlElement AddTransition(IUmlTransition<UmlParticipant> transition)
     {
-        _transitions.Add((UmlTransitionParticipant)transition);
+        _transitions.Add((UmlTransitionParticipant<UmlParticipant>)transition);
         Add(transition);
         return transition;
     }
 
     public override IUmlElement AddTransition(UmlParticipant from, UmlParticipant to, bool isAsync = false, string? label = null)
     {
-        var transition = new UmlTransitionParticipant(from, to, new UmlArrow(flowType: isAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), label);
+        var transition = new UmlTransitionParticipant<UmlParticipant>(from, to, new UmlArrow(flowType: isAsync ? UmlArrowFlowType.Async : UmlArrowFlowType.Sync), label);
         _transitions.Add(transition);
         Add(transition);
         return transition;

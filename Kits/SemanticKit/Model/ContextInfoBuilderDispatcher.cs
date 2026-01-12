@@ -29,6 +29,8 @@ public class ContextInfoBuilderDispatcher<TContext>
     // context: ContextInfo, build
     public async Task<TContext?> DispatchAndBuildAsync(TContext? parent, object syntax, ISemanticModelWrapper semanticModelWrapper, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var builder = _builders.FirstOrDefault(b => b.CanBuild(syntax));
 
         if (builder == null)
@@ -38,11 +40,13 @@ public class ContextInfoBuilderDispatcher<TContext>
         }
 
         // Вызываем универсальный метод, который вызывает специфичный BuildContextInfo внутри
-        return await builder.BuildContextInfo(parent, syntax, semanticModelWrapper, cancellationToken).ConfigureAwait(false);
+        return await builder.BuildContextInfoAsync(parent, syntax, semanticModelWrapper, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<TContext?> DispatchAndBuild(TContext? ownerContext, ISyntaxWrapper syntaxWrapper)
+    public async Task<TContext?> DispatchAndBuildAsync(TContext? ownerContext, ISyntaxWrapper syntaxWrapper, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var builder = _builders.FirstOrDefault(b => b.CanBuild(syntaxWrapper));
 
         if (builder == null)
@@ -51,6 +55,6 @@ public class ContextInfoBuilderDispatcher<TContext>
             return default;
         }
 
-        return await builder.BuildContextInfo(ownerContext, syntaxWrapper.GetContextInfoDto()).ConfigureAwait(false);
+        return await builder.BuildContextInfoAsync(ownerContext, syntaxWrapper.GetContextInfoDto(), cancellationToken).ConfigureAwait(false);
     }
 }

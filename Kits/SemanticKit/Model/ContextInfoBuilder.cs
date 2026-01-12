@@ -19,10 +19,10 @@ public interface IContextInfoBuilder<TContext>
     bool CanBuild(ISyntaxWrapper syntax);
 
     // context: ContextInfo, build
-    Task<TContext> BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken);
+    Task<TContext> BuildContextInfoAsync(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken);
 
     // context: ContextInfo, build
-    Task<TContext> BuildContextInfo(TContext? ownerContext, IContextInfo dto);
+    Task<TContext> BuildContextInfoAsync(TContext? ownerContext, IContextInfo dto, CancellationToken cancellationToken);
 }
 
 // context: ContextInfo, build
@@ -59,7 +59,7 @@ public abstract class ContextInfoBuilder<TContext, TSyntaxNode, TWrapper> : ICon
     public abstract bool CanBuild(ISyntaxWrapper contextInfo);
 
     // context: ContextInfo, build
-    public virtual async Task<TContext> BuildContextInfo(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
+    public virtual async Task<TContext> BuildContextInfoAsync(TContext? ownerContext, object syntaxNode, ISemanticModelWrapper semanticModel, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -69,12 +69,14 @@ public abstract class ContextInfoBuilder<TContext, TSyntaxNode, TWrapper> : ICon
         var symbolInfo = await _symbolWrapperConverter.ConvertAsync(semanticModel, syntaxNodeWrapper, cancellationToken).ConfigureAwait(false);
         var dto = _contextInfoDtoConverter.Convert(ownerContext, syntaxNodeWrapper, symbolInfo, ElementType);
 
-        return await BuildContextInfo(ownerContext, dto).ConfigureAwait(false);
+        return await BuildContextInfoAsync(ownerContext, dto, cancellationToken).ConfigureAwait(false);
     }
 
     // context: ContextInfo, build
-    public virtual Task<TContext> BuildContextInfo(TContext? ownerContext, IContextInfo dto)
+    public virtual Task<TContext> BuildContextInfoAsync(TContext? ownerContext, IContextInfo dto, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Creating method ContextInfo: {dto.Name}");
 
         var availableItem = _collector.GetItem(dto.FullName);

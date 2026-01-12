@@ -3,17 +3,18 @@ using ContextBrowserKit.Extensions;
 
 namespace UmlKit.PlantUmlSpecification;
 
-public class UmlTransitionState : IUmlTransition<UmlState>
+public class UmlTransitionState<P> : IUmlTransition<P>
+    where P : IUmlParticipant
 {
-    public UmlState From { get; }
+    public P From { get; }
 
-    public UmlState To { get; }
+    public P To { get; }
 
     public readonly string? Label;
 
     private readonly UmlArrow _arrow;
 
-    public UmlTransitionState(UmlState from, UmlState to, UmlArrow arrow, string? label = null)
+    public UmlTransitionState(P from, P to, UmlArrow arrow, string? label = null)
     {
         From = from;
         To = to;
@@ -32,14 +33,14 @@ public class UmlTransitionState : IUmlTransition<UmlState>
     }
 }
 
-public class UmlTransitionStateEnd : UmlTransitionState
+public class UmlTransitionStateEnd : UmlTransitionState<UmlState>
 {
     public UmlTransitionStateEnd(UmlState from, UmlArrow arrow, string? label = null) : base(from, UmlStateFactory.AsterixState, arrow, label)
     {
     }
 }
 
-public class UmlTransitionStateStart : UmlTransitionState
+public class UmlTransitionStateStart : UmlTransitionState<UmlState>
 {
     public UmlTransitionStateStart(UmlArrow arrow, UmlState to, string? label = null) : base(UmlStateFactory.AsterixState, to, arrow, label)
     {

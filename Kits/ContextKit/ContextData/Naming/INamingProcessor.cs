@@ -37,9 +37,13 @@ public interface INamingProcessor
     string MindmapDomainDiagramId(string? domain);
     string MindmapDomainPumlFilename(string? domain);
 
-    string NamespaceOnlyDiagramId(string? nameSpace);
-    string NamespaceOnlyHtmlFilename(string? nameSpace);
-    string NamespaceOnlyPumlFilename(string? nameSpace);
+    string NamespaceOnlyDiagramId();
+    string NamespaceOnlyHtmlFilename();
+    string NamespaceOnlyPumlFilename();
+
+    string NamespaceOnlyItemDiagramId(string? nameSpace);
+    string NamespaceOnlyItemHtmlFilename(string? nameSpace);
+    string NamespaceOnlyItemPumlFilename(string? nameSpace);
 
     string SequenceActionDiagramId(string? action);
     string SequenceActionPumlFilename(string? action);

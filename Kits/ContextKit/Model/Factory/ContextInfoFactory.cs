@@ -9,6 +9,7 @@ public class ContextInfoFactory : IContextFactory<ContextInfo>
         var result = new ContextInfo
             (
             elementType: dto.ElementType,
+      elementVisibility: dto.ElementVisibility,
              identifier: dto.Identifier,
                    name: dto.Name,
                fullName: dto.FullName,

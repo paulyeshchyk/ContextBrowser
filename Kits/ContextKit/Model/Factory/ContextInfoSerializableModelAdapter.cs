@@ -18,6 +18,7 @@ public static class ContextInfoSerializableModelAdapter
         return new ContextInfoSerializableModel
         (
                     elementType: contextInfo.ElementType,
+              elementVisibility: contextInfo.ElementVisibility,
                            name: contextInfo.Name,
                        fullName: contextInfo.FullName,
                       shortName: contextInfo.ShortName,

@@ -26,11 +26,11 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
     //none; . ; :;
     protected string? _separator; //по-умолчанию null
     protected string? _title;
-    protected readonly DiagramBuilderOptions _options;
+    protected DiagramBuilderOptions _options { get; private set; }
 
     protected readonly UmlStyleDiagramMindmap Styles = new UmlStyleDiagramMindmap();
 
-    public string DiagramId { get; private set; }
+    public string DiagramId { get; set; }
 
     public SortedList<int, IUmlElement> Elements { get; } = new();
 
@@ -117,6 +117,12 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
     public void Add(IUmlElement element)
     {
         Elements.Add(_nextOrder++, element);
+    }
+
+    public void AddRange(IEnumerable<IUmlElement> elements)
+    {
+        foreach (var element in elements)
+            Elements.Add(_nextOrder++, element);
     }
 
     public void AddRelations(IEnumerable<IUmlElement> relations)

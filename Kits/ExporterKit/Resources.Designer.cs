@@ -61,7 +61,7 @@ namespace ExporterKit {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;script type=&quot;module&quot;&gt;import enableElement from &quot;./../render-plantuml.js&quot;;enableElement({serverURL: &quot;http://localhost:8080&quot;});&lt;/script&gt;.
+        ///   Looks up a localized string similar to &lt;script type=&quot;module&quot;&gt;import enableElement from &quot;./../render-plantuml.js&quot;;enableElement({serverURL: &quot;http://localhost:8081&quot;});&lt;/script&gt;.
         /// </summary>
         internal static string PlantUmlInjectScript {
             get {

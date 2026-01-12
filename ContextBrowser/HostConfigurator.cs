@@ -24,6 +24,11 @@ using ExporterKit.Uml;
 using ExporterKit.Uml.DiagramCompileOptions;
 using ExporterKit.Uml.DiagramCompileOptions.Strategies;
 using ExporterKit.Uml.DiagramCompiler;
+using ExporterKit.Uml.DiagramCompiler.ActionPerDomainPackage;
+using ExporterKit.Uml.DiagramCompiler.CoCompiler;
+using ExporterKit.Uml.DiagramCompiler.CoCompiler.Class;
+using ExporterKit.Uml.DiagramCompiler.CoCompiler.Mindmap;
+using ExporterKit.Uml.DiagramCompiler.CoCompiler.Package;
 using HtmlKit.Document;
 using HtmlKit.Helpers;
 using HtmlKit.Matrix;
@@ -38,6 +43,7 @@ using RoslynKit.Assembly.Strategy;
 using RoslynKit.Assembly.Strategy.Declaration;
 using RoslynKit.Assembly.Strategy.Invocation;
 using RoslynKit.Converters;
+using RoslynKit.Lookup;
 using RoslynKit.Model.Meta;
 using RoslynKit.Model.SyntaxWrapper;
 using RoslynKit.Phases;
@@ -58,10 +64,14 @@ using TensorKit.Model;
 using UmlKit.Builders;
 using UmlKit.Builders.Strategies;
 using UmlKit.Builders.TransitionDirection;
+using UmlKit.Builders.TransitionFactory;
 using UmlKit.Builders.Url;
 using UmlKit.Compiler;
 using UmlKit.Compiler.Orchestrant;
+using UmlKit.DiagramGenerator.Renderer;
 using UmlKit.Infrastructure.Options;
+using UmlKit.PlantUmlSpecification;
+using UmlKit.Renderer;
 
 namespace ContextBrowser;
 
@@ -130,7 +140,9 @@ public class HostConfigurator
         services.AddSingleton<ISignatureRegexMatcher, CSharpSignatureRegexMatcher>();
 
         services.AddTransient<ICSharpInvocationSyntaxWrapperConverter, CSharpInvocationSyntaxWrapperConverter>();
-        services.AddTransient<ICSharpSyntaxWrapperTypeBuilder, CSharpSyntaxWrapperTypeBuilder>();
+
+        services.AddTransient<ICSharpSyntaxWrapperTypeBuilderDefault, CSharpSyntaxWrapperTypeBuilderDefault>();
+        services.AddTransient<ICSharpSyntaxWrapperTypeBuilderSigned, CSharpSyntaxWrapperTypeBuilderSigned>();
 
         // --- language selector
         // использует RoslynSemanticSyntaxRouterBuilder
@@ -154,6 +166,14 @@ public class HostConfigurator
         services.AddTransient<ICompilationMapMapper<RoslynSyntaxTreeWrapper>, RoslynCompilationMapMapper>();
         services.AddTransient<ICompilationDiagnosticsInspector<CSharpCompilation, Diagnostic>, RoslynDiagnosticsInspector>();
         services.AddTransient<ICodeInjector, RoslynCodeInjector>();
+
+        // invocation resolver
+        services.AddTransient<ISymbolLookupHandlerChainFactory<ContextInfo, ISemanticModelWrapper>, RoslynSymbolLookupHandlerChainFactory>();
+        services.AddTransient<ISymbolLookupHandler<ContextInfo, ISemanticModelWrapper>, RoslynSymbolLookupHandlerFullname<ContextInfo, ISemanticModelWrapper>>();
+        services.AddTransient<ISymbolLookupHandler<ContextInfo, ISemanticModelWrapper>, RoslynSymbolLookupHandlerMethod<ContextInfo, ISemanticModelWrapper>>();       
+        services.AddTransient<ISymbolLookupHandler<ContextInfo, ISemanticModelWrapper>, RoslynSymbolLookupHandlerInvocation<ContextInfo, ISemanticModelWrapper>>();
+
+        //
 
         services.AddTransient<IRoslynSymbolLoader<MemberDeclarationSyntax, ISymbol>, RoslynSymbolLoader<MemberDeclarationSyntax, ISymbol>>();
         services.AddTransient<IInvocationResolver<RoslynSyntaxTreeWrapper>, RoslynInvocationResolver>();
@@ -239,21 +259,44 @@ public class HostConfigurator
         services.AddTransient<IDiagramCompileOptionsStrategy, DomainSequenceCompileOptionsStrategy>();
 
         // регистрация резолвера/фабрики
+
+        services.AddTransient<IUmlTransitionFactory<UmlState>, UmlTransitionStateFactory<UmlState>>();
+        services.AddTransient<IUmlTransitionFactory<UmlParticipant>, UmlTransitionParticipantFactory<UmlParticipant>>();
+
         services.AddTransient<IDiagramCompileOptionsFactory, DiagramCompileOptionsFactory>();
 
         services.AddTransient<IUmlUrlBuilder, UmlUrlBuilder>();
+
+        // renderer
+        services.AddTransient<UmlTransitionRendererFlat<UmlParticipant>, UmlTransitionRendererFlatParticipant>();
+        services.AddTransient<UmlTransitionRendererFlat<UmlState>, UmlTransitionRendererFlatState>();
+        services.AddTransient<UmlClassRendererActionPerDomainPackageMethod>();
+        services.AddTransient<UmlClassRendererActionPerDomainClass>();
+        services.AddTransient<UmlClassRendererMethods>();
+        services.AddTransient<UmlClassRendererClassOnly>();
+        services.AddTransient<UmlClassRendererLinks>();
+        services.AddTransient<UmlMindmapRendererAction>();
+        services.AddTransient<UmlMindmapRendererClassOnly>();
+        services.AddTransient<UmlMindmapRendererDomain>();
+        services.AddTransient<UmlClassRendererPackages>();
+        services.AddTransient(typeof(UmlClassRendererNamespace<>));
 
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassActionPerDomain<DomainPerActionTensor>>();
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerNamespaceOnly<DomainPerActionTensor>>();
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassMethodsList>();
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassRelation>();
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerClassOnly>();
-        services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerPackageMethodPerActionDomain>();
+
+        services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerActionPerDomainPackageDomainGroup>();
+        services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerActionPerDomainPackageNoDomainGroup>();
+        services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerActionPerDomainPackageActionGroup>();
+        services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerActionPerDomainPackageNoActionGroup>();
+
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerPackages>();
-        services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerSequenceAction>();
-        services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerSequenceDomain>();
-        services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerStateAction>();
-        services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerStateDomain>();
+        services.AddTransient<IUmlDiagramCompiler, CompositeUmlDiagramCompilerSequenceAction>();
+        services.AddTransient<IUmlDiagramCompiler, CompositeUmlDiagramCompilerSequenceDomain>();
+        services.AddTransient<IUmlDiagramCompiler, CompositeUmlDiagramCompilerStateAction>();
+        services.AddTransient<IUmlDiagramCompiler, CompositeUmlDiagramCompilerStateDomain>();
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapDomain>();
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapAction>();
         services.AddTransient<IUmlDiagramCompiler, UmlDiagramCompilerMindmapClassOnly>();

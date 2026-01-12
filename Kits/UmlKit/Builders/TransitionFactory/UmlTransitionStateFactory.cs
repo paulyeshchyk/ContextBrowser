@@ -2,25 +2,28 @@
 
 namespace UmlKit.Builders.TransitionFactory;
 
-public class UmlTransitionStateFactory : IUmlTransitionFactory<UmlState>
+public class UmlTransitionStateFactory<P> : IUmlTransitionFactory<P>
+    where P : IUmlParticipant
 {
-    public IUmlTransition<UmlState> CreateTransition(IUmlParticipant from, IUmlParticipant to, string? label)
+    public IUmlTransition<P> CreateTransition(P from, P to, string? label)
     {
-        return new UmlTransitionState((UmlState)from, (UmlState)to, new UmlArrow(), label);
+        return new UmlTransitionState<P>(from, to, new UmlArrow(), label);
     }
 
-    public IUmlTransition<UmlState> CreateTransition(IUmlParticipant from, IUmlParticipant to, UmlArrow arrow, string? label)
+    public IUmlTransition<P> CreateTransition(P from, P to, UmlArrow arrow, string? label)
     {
-        return new UmlTransitionState((UmlState)from, (UmlState)to, arrow, label);
+        return new UmlTransitionState<P>(from, to, arrow, label);
     }
 
-    public IUmlParticipant CreateTransitionObject(string name)
+    public P CreateTransitionObject(string name)
     {
-        return new UmlState(name, null);
+        IUmlParticipant p = new UmlState(name, null);
+        return (P)p;
     }
 
-    public IUmlParticipant CreateTransitionObject(string name, string? alias)
+    public P CreateTransitionObject(string name, string? alias)
     {
-        return new UmlState(name, alias);
+        IUmlParticipant p = new UmlState(name, alias);
+        return (P)p;
     }
 }

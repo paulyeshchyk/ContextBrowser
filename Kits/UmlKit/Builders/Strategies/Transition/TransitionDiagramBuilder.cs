@@ -9,11 +9,12 @@ using ContextKit.Model.Classifier;
 using LoggerKit;
 using TensorKit.Model;
 using UmlKit.Builders.Model;
+using UmlKit.DataProviders;
 using UmlKit.Infrastructure.Options;
 
 namespace UmlKit.Builders.Strategies;
 
-// context: builder, transition
+// context: build, transition
 public class TransitionDiagramBuilder : IContextDiagramBuilder
 {
     private readonly List<ITransitionBuilder> _transitionBuilders;
@@ -29,7 +30,7 @@ public class TransitionDiagramBuilder : IContextDiagramBuilder
         _contextClassifier = optionsStore.GetOptions<ITensorClassifierDomainPerActionContext<ContextInfo>>();
     }
 
-    // context: builder, transition
+    // context: build, transition
     public GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts)
     {
         if (allContexts.Count == 0)
@@ -58,7 +59,7 @@ public class TransitionDiagramBuilder : IContextDiagramBuilder
     /// <summary>
     /// Унифицированный метод для выборки и построения переходов.
     /// </summary>
-    // context: builder, transition
+    // context: build, transition
     internal GrouppedSortedTransitionList? FetchAndBuildTransitions(string name, FetchType fetchType, List<ContextInfo> allContexts)
     {
         var methods = FetchAllMethods(name, fetchType, allContexts, _contextClassifier);
@@ -70,7 +71,7 @@ public class TransitionDiagramBuilder : IContextDiagramBuilder
         return BuildAllTransitions(name, allContexts, methods);
     }
 
-    // context: builder, transition
+    // context: build, transition
     internal static List<ContextInfo> FetchAllMethods(string name, FetchType fetchType, List<ContextInfo> allContexts, ITensorClassifierDomainPerActionContext<ContextInfo> contextClassifier)
     {
         Func<ContextInfo, string, bool> filterFunc = fetchType switch
@@ -86,7 +87,7 @@ public class TransitionDiagramBuilder : IContextDiagramBuilder
         return result;
     }
 
-    // context: builder, transition
+    // context: build, transition
     internal GrouppedSortedTransitionList BuildAllTransitions(string metaItem, List<ContextInfo> allContexts, List<ContextInfo> methods)
     {
         var allTransitions = new GrouppedSortedTransitionList();

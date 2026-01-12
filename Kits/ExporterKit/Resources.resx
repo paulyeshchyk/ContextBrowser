@@ -112,7 +112,7 @@
 		<value>
 &lt;script type="module"&gt;
 import enableElement from "./../render-plantuml.js";
-enableElement({serverURL: "http://localhost:8080"});
+enableElement({serverURL: "http://localhost:8081"});
 &lt;/script&gt;
     </value>
 	</data>

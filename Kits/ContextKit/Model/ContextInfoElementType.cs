@@ -17,6 +17,14 @@ public enum ContextInfoElementType
     @delegate
 }
 
+public enum ContentInfoElementVisibility
+{ 
+    @private,
+    @protected,
+    @public,
+    @internal
+}
+
 public static class ContextInfoElementTypeExtensions
 {
     public static bool IsEntityDefinition(this ContextInfoElementType elementType)

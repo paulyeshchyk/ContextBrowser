@@ -29,15 +29,24 @@ public record CSharpSyntaxWrapperType : ISyntaxWrapper
 
     public ISignature? Signature { get; set; }
 
-    public CSharpSyntaxWrapperType()
+    public CSharpSyntaxWrapperType(string name, string @namespace, int spanEnd, int spanStart, string fullName, string identifier, string shortName, bool isValid, ISignature? signature = null)
     {
-
+        Name = name;
+        Namespace = @namespace;
+        SpanEnd = spanEnd;
+        SpanStart = spanStart;
+        FullName = fullName;
+        Identifier = identifier;
+        ShortName = shortName;
+        IsValid = isValid;
+        Signature = signature;
     }
 
     public IContextInfo GetContextInfoDto()
     {
         return new ContextInfoDto(
             elementType: ContextInfoElementType.@class,
+      elementVisibility: ContentInfoElementVisibility.@public,
                fullName: FullName,
                    name: Name,
               shortName: ShortName,

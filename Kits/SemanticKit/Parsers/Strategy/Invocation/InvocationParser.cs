@@ -79,7 +79,7 @@ public class InvocationParser<TContext, TSyntaxTreeWrapper> : IInvocationParser<
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, $"Building invocatons {filePath}", LogLevelNode.Start);
         var semanticOptions = _optionsStore.GetOptions<CodeParsingOptions>().SemanticOptions;
 
-        var tasks = theCollection.Select(method => _invocationReferenceBuilder.BuildReferencesAsync(method, semanticOptions, cancellationToken));
+        var tasks = theCollection.Select(async method => await _invocationReferenceBuilder.BuildReferencesAsync(method, semanticOptions, cancellationToken).ConfigureAwait(false));
         await Task.WhenAll(tasks);
         _logger.WriteLog(AppLevel.R_Invocation, LogLevel.Dbg, string.Empty, LogLevelNode.End);
     }

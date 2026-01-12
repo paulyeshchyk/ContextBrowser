@@ -2,17 +2,18 @@
 
 namespace UmlKit.PlantUmlSpecification;
 
-public class UmlTransitionParticipant : IUmlTransition<UmlParticipant>
+public class UmlTransitionParticipant<P> : IUmlTransition<P>
+    where P : IUmlParticipant
 {
-    public UmlParticipant From { get; }
+    public P From { get; }
 
-    public UmlParticipant To { get; }
+    public P To { get; }
 
     public readonly string? Label;
 
     public readonly UmlArrow Arrow;
 
-    public UmlTransitionParticipant(UmlParticipant from, UmlParticipant to, UmlArrow arrow, string? label = null)
+    public UmlTransitionParticipant(P from, P to, UmlArrow arrow, string? label = null)
     {
         From = from;
         To = to;

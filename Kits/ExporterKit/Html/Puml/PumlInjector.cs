@@ -46,6 +46,6 @@ public static class PumlInjector
             PumlInjectionType.inject => ReadPumlContent(pumlFilePath),
             _ => string.Empty
         };
-        return string.Format(SPlantUmlScript, src, "http://localhost:8080", data);
+        return string.Format(SPlantUmlScript, src, "http://localhost:8081", data);
     }
 }
