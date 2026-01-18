@@ -17,7 +17,7 @@ public static class CommandLineHelpProducer
 {
     public static bool ShowHelp<T>(string[] args, T? referenceInstance = null) where T : class
     {
-        var appVersion = AppVersionReader.GetVersionFromGit();
+        var appVersion = AppVersionReader.GetVersionFromGitNoComitHash;
         var helpPattern = $"{CommandLineDefaults.SArgumentPrefix}{CommandLineDefaults.SHelpKeyword}";
         int helpIndex = Array.FindIndex(args, a => a.Equals(helpPattern, StringComparison.OrdinalIgnoreCase));
 

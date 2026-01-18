@@ -1,4 +1,10 @@
-## [2.8.2.3] - 2026-01-18
+## [unreleased]
+
+### 🐛 Bug Fixes
+
+- Release-notes generation included
+- Removed hash comit from version number in help
+## [2.8.2.2] - 2026-01-18
 
 ### 🐛 Bug Fixes
 

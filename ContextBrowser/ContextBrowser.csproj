@@ -45,7 +45,7 @@
 	</ItemGroup>
     <PropertyGroup>
         <MinVerTagPrefix>v</MinVerTagPrefix>
-        <MinVerDefaultPreReleaseIdentifiers>patch.0</MinVerDefaultPreReleaseIdentifiers>
+        <MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
     </PropertyGroup>
     <Target Name="GenerateChangelog" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
         <Message Importance="high" Text="--- Генерация логов (git-cliff) ---" />
