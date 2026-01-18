@@ -47,7 +47,10 @@
         <MinVerTagPrefix>v</MinVerTagPrefix>
         <MinVerDefaultPreReleaseIdentifiers>patch.0</MinVerDefaultPreReleaseIdentifiers>
     </PropertyGroup>
-    <Target Name="GenerateChangelog" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
-        <Exec Command="git cliff --latest -o CHANGELOG.md" IgnoreExitCode="true" />
-    </Target>    
+    <Target Name="GenerateChangelog" BeforeTargets="Build">
+        <Message Importance="high" Text="--- Генерация CHANGELOG (git-cliff) ---" />
+        <Exec Command="git cliff -v -o CHANGELOG.md"
+              WorkingDirectory="$(ProjectDir)"
+              IgnoreExitCode="true" />
+    </Target>
 </Project>
