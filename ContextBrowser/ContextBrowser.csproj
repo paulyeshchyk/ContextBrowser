@@ -46,5 +46,8 @@
     <PropertyGroup>
         <MinVerTagPrefix>v</MinVerTagPrefix>
         <MinVerDefaultPreReleaseIdentifiers>patch.0</MinVerDefaultPreReleaseIdentifiers>
-    </PropertyGroup>    
+    </PropertyGroup>
+    <Target Name="GenerateChangelog" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+        <Exec Command="git cliff --latest -o CHANGELOG.md" IgnoreExitCode="true" />
+    </Target>    
 </Project>
