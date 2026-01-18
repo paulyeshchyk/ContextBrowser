@@ -58,7 +58,6 @@ public class CompositeUmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
         _diagramBuildersFactory = diagramBuildersFactory;
         _compileOptionsFactory = compileOptionsFactory;
         _renderer = renderer;
-
     }
 
     // context: uml, build

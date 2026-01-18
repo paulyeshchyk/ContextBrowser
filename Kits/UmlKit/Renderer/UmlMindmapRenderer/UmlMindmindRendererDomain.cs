@@ -23,7 +23,6 @@ public class UmlMindmapRendererDomain
     private readonly IUmlUrlBuilder _umlUrlBuilder;
     private readonly IAppOptionsStore _optionsStore;
 
-
     public UmlMindmapRendererDomain(IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, IAppOptionsStore optionsStore)
     {
         _datasetProvider = datasetProvider;
@@ -54,7 +53,6 @@ public class UmlMindmapRendererDomain
         var result = new UmlRendererResult<UmlDiagramMindmap>(diagram, new UmlWriteOptions(alignMaxWidth: -1));
         return result;
     }
-
 
     /// <summary>
     /// Получает все "дочерние" домены, обходя граф по свойству References.

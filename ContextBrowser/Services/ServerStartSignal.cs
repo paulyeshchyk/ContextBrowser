@@ -5,6 +5,7 @@ namespace ContextBrowser.Services;
 public interface IServerStartSignal
 {
     Task WaitForSignalAsync();
+
     void Signal();
 }
 

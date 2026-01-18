@@ -29,11 +29,11 @@ public class UmlDiagramCompilerMindmapClassOnly : IUmlDiagramCompiler
     private readonly UmlMindmapRendererClassOnly _renderer;
 
     public UmlDiagramCompilerMindmapClassOnly(
-        IAppLogger<AppLevel> logger, 
-        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, 
-        IAppOptionsStore optionsStore, 
-        INamingProcessor namingProcessor, 
-        IUmlUrlBuilder umlUrlBuilder, 
+        IAppLogger<AppLevel> logger,
+        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider,
+        IAppOptionsStore optionsStore,
+        INamingProcessor namingProcessor,
+        IUmlUrlBuilder umlUrlBuilder,
         UmlMindmapRendererClassOnly renderer)
     {
         _logger = logger;

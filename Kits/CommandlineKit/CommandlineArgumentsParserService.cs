@@ -5,7 +5,8 @@ namespace CommandlineKit;
 
 public interface ICommandlineArgumentsParserService
 {
-    T? Parse<T>(string[] args);
+    T? Parse<T>(string[] args)
+        where T : class;
 }
 
 // context: commandline, build
@@ -13,6 +14,7 @@ public class CommandlineArgumentsParserService : ICommandlineArgumentsParserServ
 {
     // context: commandline, build
     public T? Parse<T>(string[] args)
+        where T : class
     {
         var parser = new CommandLineParser();
 
@@ -28,7 +30,7 @@ public class CommandlineArgumentsParserService : ICommandlineArgumentsParserServ
         }
 
         Console.WriteLine("Что-то пошло не так))");
-        Console.WriteLine(CommandLineHelpProducer.GenerateHelpText<T>(CommandLineDefaults.SArgumentPrefix));
+        CommandLineHelpProducer.ShowHelp<T>(args);
         return default;
     }
 }

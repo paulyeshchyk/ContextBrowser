@@ -16,7 +16,6 @@ public class OutgoingTransitionBuilder : ITransitionBuilder
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
 
-
     public OutgoingTransitionBuilder(IAppLogger<AppLevel> logger, IContextInfoManager<ContextInfo> contextInfoManager)
     {
         _logger = logger;

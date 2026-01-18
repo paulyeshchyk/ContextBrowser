@@ -20,7 +20,6 @@ public class CSharpSignatureParserFake : ISignatureParserRegex
 
     public SignatureParsingResult Parse(string input)
     {
-
         var _semanticOptions = _optionsStore.GetOptions<CodeParsingOptions>().SemanticOptions;
         return SignatureParsingResult.SuccessResult(new SignatureDefault(
             ResultType: _semanticOptions.FakeNaming.ResultTypeName,

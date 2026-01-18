@@ -25,7 +25,6 @@ public class HtmlDataCellBuilderMethodList<TDataTensor> : IHtmlDataCellBuilder<M
         _hRefManager = hRefManager;
         _dataProducer = dataProducer;
         _namingProcessor = namingProcessor;
-
     }
 
     public async Task BuildDataCell(TextWriter textWriter, MethodListTensor<TDataTensor> cell, HtmlTableOptions options, CancellationToken cancellationToken)
@@ -41,7 +40,6 @@ public class HtmlDataCellBuilderMethodList<TDataTensor> : IHtmlDataCellBuilder<M
         // Логика отрисовки ячейки
         await HtmlBuilderFactory.HtmlBuilderTableCell.Data.WithAsync(textWriter, attributes: attrs, (token) =>
         {
-            var methodContextInfo = contextInfo.MethodOwner ?? contextInfo;
             var methodOwner = contextInfo.MethodOwner ?? contextInfo;
             var classNameWithNameSpace = $"{methodOwner.Namespace}.{methodOwner.ShortName}";
 

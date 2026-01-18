@@ -16,6 +16,7 @@ public interface ISignatureParserChain
 {
     // Обязательное свойство, которое позволит Фабрике получить TIdentifier
     Type IdentifierType { get; }
+
     IEnumerable<ISignatureParserRegex> Parsers { get; }
 }
 

@@ -1,37 +1,30 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
-using CommandlineKit;
 using ContextBrowser.Infrastructure;
-using LoggerKit.Model;
+using ContextBrowser.Infrastructure.Options;
+using ContextBrowserKit.Model;
 
 namespace ContextBrowser;
 
 // context: app, model
 public static class Program
 {
-    // context: app, execute
     public static async Task Main(string[] args)
     {
-
-        var parser = new CommandlineArgumentsParserService();
-        var options = parser.Parse<AppOptions>(args);
-
-        if (options == null)
+        var appOptions = await AppOptionsResolver.ResolveOptionsAsync(args, CancellationToken.None);
+        if (appOptions == null)
         {
-            // Не удалось распарсить аргументы или была запрошена справка
-            return;
+            Environment.Exit(1);
         }
 
-        switch (options.ExecutionMode)
+        var runnerTask = appOptions.ExecutionMode switch
         {
-            case AppExecutionMode.Console:
-                await ConsoleRunner.Run(args, options).ConfigureAwait(false);
-                break;
-            case AppExecutionMode.WebApp:
-                await WebAppRunner.Run(args, options).ConfigureAwait(false);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+            AppExecutionMode.Console => ConsoleRunner.Run(args, appOptions),
+            AppExecutionMode.WebApp => WebAppRunner.Run(args, appOptions),
+            _ => throw new ArgumentOutOfRangeException(nameof(appOptions.ExecutionMode))
+        };
+
+        await runnerTask.ConfigureAwait(false);
     }
 }

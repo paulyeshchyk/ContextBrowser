@@ -24,5 +24,6 @@ public class CSharpContextInfoBuilderMethodArtifitial<TContext> : ContextInfoBui
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@method;
+
     public override bool CanBuild(ISyntaxWrapper contextInfo) => contextInfo is CSharpSyntaxWrapperMethodArtifitial;
 }

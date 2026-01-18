@@ -1,10 +1,13 @@
-﻿namespace ContextKit.Model.Classifier;
+﻿using System.Text.Json.Serialization;
 
+namespace ContextKit.Model.Classifier;
+
+//[JsonDerivedType(typeof(EmptyDimensionClassifierDomainPerAction), "default")]
 public interface IEmptyDimensionClassifier
 {
-    string EmptyAction { get; }
+    string EmptyAction { get; init; }
 
-    string EmptyDomain { get; }
+    string EmptyDomain { get; init; }
 
     bool IsEmptyAction(string actionName);
 
@@ -13,10 +16,11 @@ public interface IEmptyDimensionClassifier
 
 public record EmptyDimensionClassifierDomainPerAction : IEmptyDimensionClassifier
 {
-    public string EmptyAction { get; }
+    public string EmptyAction { get; init; }
 
-    public string EmptyDomain { get; }
+    public string EmptyDomain { get; init; }
 
+    [JsonConstructor]
     public EmptyDimensionClassifierDomainPerAction(string emptyAction, string emptyDomain)
     {
         EmptyAction = emptyAction;

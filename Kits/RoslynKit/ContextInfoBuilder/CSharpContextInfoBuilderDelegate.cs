@@ -25,5 +25,4 @@ public class CSharpContextInfoBuilderDelegate<TContext> : ContextInfoBuilder<TCo
     public override ContextInfoElementType ElementType => ContextInfoElementType.@delegate;
 
     public override bool CanBuild(ISyntaxWrapper contextInfo) => false;
-
 }

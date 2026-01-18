@@ -4,7 +4,7 @@ namespace SemanticKit.Model.Signature;
 
 // context: signature, build
 public abstract class SignatureBuilder<TSymbol>
-    where TSymbol: notnull
+    where TSymbol : notnull
 {
     public bool IncludeGenerics;
     public bool IncludeParameters;

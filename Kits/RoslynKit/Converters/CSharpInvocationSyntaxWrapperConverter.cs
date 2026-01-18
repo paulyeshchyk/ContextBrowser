@@ -13,17 +13,15 @@ namespace RoslynKit.Converters;
 public interface ICSharpInvocationSyntaxWrapperConverter
 {
     ISyntaxWrapper? FromExpression(ExpressionSyntax byInvocation, SemanticOptions options);
+
     CSharpSyntaxWrapperInvocation FromSymbols(ExpressionSyntax syntax, ISymbol symbol);
 }
 
-
 public class CSharpInvocationSyntaxWrapperConverter : ICSharpInvocationSyntaxWrapperConverter
 {
-
     private readonly ISignatureParser<CSharpIdentifier> _signatureParser;
 
     public CSharpInvocationSyntaxWrapperConverter(ISignatureParser<CSharpIdentifier> signatureParser) => _signatureParser = signatureParser;
-
 
     public CSharpSyntaxWrapperInvocation FromSymbols(ExpressionSyntax syntax, ISymbol symbol)
     {

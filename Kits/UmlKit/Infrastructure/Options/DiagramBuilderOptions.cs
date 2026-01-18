@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using UmlKit.Infrastructure.Options.Activation;
 using UmlKit.Infrastructure.Options.Indication;
 
@@ -23,22 +24,23 @@ public partial record DiagramBuilderOptions
 
     public DiagramBuilderKeys DiagramType { get; set; }
 
+    [JsonConstructor]
     public DiagramBuilderOptions(
         bool debug,
         DiagramDetailLevel diagramDetailLevel,
         DiagramDirection diagramDirection,
         DiagramBuilderKeys diagramType,
         DiagramActivationOptions activation,
-        DiagramTransitionOptions transitionOptions,
-        DiagramInvocationOption invocationOption,
+        DiagramTransitionOptions calleeTransitionOptions,
+        DiagramInvocationOption invocationOptions,
         DiagramIndicationOption indication)
     {
         DiagramDetailLevel = diagramDetailLevel;
         DiagramDirection = diagramDirection;
         DiagramType = diagramType;
         Activation = activation;
-        CalleeTransitionOptions = transitionOptions;
-        InvocationOptions = invocationOption;
+        CalleeTransitionOptions = calleeTransitionOptions;
+        InvocationOptions = invocationOptions;
         Indication = indication;
         Debug = debug;
     }

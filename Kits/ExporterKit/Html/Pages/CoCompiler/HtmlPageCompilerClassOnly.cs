@@ -50,7 +50,7 @@ public class HtmlPageCompilerClassOnly<TDataTensor> : IHtmlPageCompiler
         var tabbedPageBuilder = new HtmlTabbedPageBuilder<ContextInfoKeyContainerEntityName>(exportOptions, tabsheetDataProvider);
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
-        var builder = new HtmlPageWithTabsEntityBuilder<ContextInfoKeyContainerEntityName, TDataTensor>(dataset, tabbedPageBuilder, (contextInfo) => _namingProcessor.ClassOnlyHtmlFilename(contextInfo));
+        var builder = new HtmlPageWithTabsEntityBuilder<ContextInfoKeyContainerEntityName, TDataTensor>(dataset, tabbedPageBuilder, _namingProcessor.ClassOnlyHtmlFilename);
         await builder.BuildAsync(cancellationToken).ConfigureAwait(false);
     }
 }

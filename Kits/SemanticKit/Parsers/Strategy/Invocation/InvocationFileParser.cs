@@ -27,7 +27,6 @@ public class InvocationFileParser<TContext, TSyntaxTreeWrapper> : IInvocationFil
     private readonly IInvocationParser<TContext, TSyntaxTreeWrapper> _invocationParser;
     private readonly IAppOptionsStore _optionsStore;
 
-
     public InvocationFileParser(
         IContextCollector<TContext> collector,
         ISemanticModelStorage<TSyntaxTreeWrapper,

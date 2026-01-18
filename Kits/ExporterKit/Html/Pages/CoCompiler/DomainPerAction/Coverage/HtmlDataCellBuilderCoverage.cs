@@ -43,7 +43,6 @@ public class HtmlDataCellBuilderCoverage<TTensor> : IHtmlDataCellBuilder<TTensor
 
         _coverageIndexer = coverageIndexer;
         _namingProcessor = namingProcessor;
-
     }
 
     public async Task BuildDataCell(TextWriter textWriter, TTensor cell, HtmlTableOptions options, CancellationToken cancellationToken)

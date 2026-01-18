@@ -65,8 +65,8 @@ public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
             var rows = new List<string> { _emptyDimensionClassifier.EmptyAction };
 
             // Заполняем пустыми значениями для всех доменов
-            foreach (var _ in domains)
-                rows.Add("0");
+            rows.AddRange(from _ in domains
+                select "0");
 
             // Добавим колонку "NoDomain" в конец, если она не была в списке
             rows.Add(unclassifiedCount.ToString());

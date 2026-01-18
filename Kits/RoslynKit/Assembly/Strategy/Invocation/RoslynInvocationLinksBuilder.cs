@@ -52,7 +52,7 @@ public class RoslynInvocationLinksBuilder : IInvocationLinksBuilder<ContextInfo>
         cancellationToken.ThrowIfCancellationRequested();
 
         _logger.WriteLog(AppLevel.R_Cntx, LogLevel.Dbg, $"Linking invocation caller: [{callerContextInfo.FullName}]]", LogLevelNode.Start);
-        
+
         var calleeContextInfo = await FindOrCreateCalleeNodeAsync(symbolDto, options, cancellationToken).ConfigureAwait(false);
         if (calleeContextInfo != null)
         {

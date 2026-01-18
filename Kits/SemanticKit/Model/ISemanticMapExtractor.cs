@@ -9,5 +9,6 @@ public interface ISemanticMapExtractor<TSyntaxTreeWrapper>
     where TSyntaxTreeWrapper : ISyntaxTreeWrapper
 {
     Task<SemanticCompilationMap<TSyntaxTreeWrapper>> CreateSemanticMapFromFilesAsync(IEnumerable<string> codeFiles, string compilationName, CancellationToken cancellationToken);
+
     Task<SemanticCompilationMap<TSyntaxTreeWrapper>> CreateSemanticMapFromFilesAsync(string filePath, string compilationName, CancellationToken cancellationToken);
 }

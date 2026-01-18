@@ -63,9 +63,7 @@ public class UmlClassRendererActionPerDomainClass
         var result = new UmlRendererResult<UmlDiagramClass>(diagram, new UmlWriteOptions(alignMaxWidth: maxLength));
         return await Task.FromResult(result);
     }
-
 }
-
 
 public static class UmlClassDiagramDataMapper
 {

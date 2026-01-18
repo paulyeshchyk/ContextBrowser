@@ -8,7 +8,6 @@ internal class CSharpSignatureBuilderDefault : SignatureBuilder<ISymbol>
 {
     public CSharpSignatureBuilderDefault(SignatureBuilder<ISymbol> sb) : base(sb)
     {
-
     }
 
     // context: roslyn, signature, build

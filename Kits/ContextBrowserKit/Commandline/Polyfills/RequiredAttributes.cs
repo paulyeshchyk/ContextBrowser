@@ -1,7 +1,7 @@
 ﻿using System;
 
-
 namespace ContextBrowserKit.Commandline.Polyfills;
+
 //namespace System.Runtime.CompilerServices
 
 // Атрибут, необходимый компилятору для функции 'required'

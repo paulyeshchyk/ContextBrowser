@@ -11,7 +11,6 @@ public class ActionSequenceCompileOptionsStrategy : IDiagramCompileOptionsStrate
 
     public ActionSequenceCompileOptionsStrategy(INamingProcessor namingProcessor) => _namingProcessor = namingProcessor;
 
-
     public bool CanHandle(DiagramKind kind) => kind == DiagramKind.ActionSequence;
 
     public IDiagramCompileOptions Create(ILabeledValue action)

@@ -12,7 +12,6 @@ internal class CSharpSignatureBuilderTypeSymbol : SignatureBuilder<ISymbol>
 {
     public CSharpSignatureBuilderTypeSymbol(SignatureBuilder<ISymbol> sb) : base(sb)
     {
-
     }
 
     // context: roslyn, signature, build

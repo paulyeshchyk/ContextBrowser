@@ -28,10 +28,10 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
     private readonly UmlClassRendererMethods _renderer;
 
     public UmlDiagramCompilerClassMethodsList(
-        IAppLogger<AppLevel> logger, 
-        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, 
-        IAppOptionsStore optionsStore, 
-        IContextInfoManager<ContextInfo> contextInfoManager, 
+        IAppLogger<AppLevel> logger,
+        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider,
+        IAppOptionsStore optionsStore,
+        IContextInfoManager<ContextInfo> contextInfoManager,
         UmlClassRendererMethods renderer)
     {
         _logger = logger;

@@ -23,5 +23,6 @@ public class CSharpContextInfoBuilderRecord<TContext> : ContextInfoBuilder<TCont
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@record;
+
     public override bool CanBuild(ISyntaxWrapper contextInfo) => false;
 }

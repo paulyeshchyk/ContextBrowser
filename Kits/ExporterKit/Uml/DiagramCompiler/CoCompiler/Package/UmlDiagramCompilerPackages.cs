@@ -32,11 +32,11 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
     private readonly UmlClassRendererPackages _renderer;
 
     public UmlDiagramCompilerPackages(
-        IAppLogger<AppLevel> logger, 
-        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, 
-        IAppOptionsStore optionsStore, 
-        IUmlUrlBuilder umlUrlBuilder, 
-        INamingProcessor namingProcessor, 
+        IAppLogger<AppLevel> logger,
+        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider,
+        IAppOptionsStore optionsStore,
+        IUmlUrlBuilder umlUrlBuilder,
+        INamingProcessor namingProcessor,
         UmlClassRendererPackages renderer)
     {
         _logger = logger;
@@ -55,7 +55,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
         var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
         var elements = contextInfoDataset.GetAll().ToList();
 
-        var renderResult = await _renderer.RenderAsync(elements , cancellationToken).ConfigureAwait(false);
+        var renderResult = await _renderer.RenderAsync(elements, cancellationToken).ConfigureAwait(false);
 
         var diagram = renderResult.Diagram;
         if (diagram == null)

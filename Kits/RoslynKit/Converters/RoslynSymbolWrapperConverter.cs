@@ -25,7 +25,6 @@ public class RoslynSymbolWrapperConverter : ISymbolWrapperConverter
         _symbolLoader = symbolLoader;
     }
 
-
     public async Task<ISymbolInfo> ConvertAsync(ISemanticModelWrapper semanticModel, ISyntaxNodeWrapper syntaxWrapper, CancellationToken cancellationToken)
     {
         if (semanticModel is null)

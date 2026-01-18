@@ -10,6 +10,7 @@ namespace ContextKit.Model.CacheManager;
 public record ContextInfoSerializableModel
 {
     public ContextInfoElementType ElementType { get; set; }
+
     public ContentInfoElementVisibility ElementVisibility { get; set; }
 
     public string Name { get; set; }

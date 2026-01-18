@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
+using ContextBrowserKit.Commandline.Polyfills;
 
 namespace ContextKit.Model.Classifier;
 
+//[JsonDerivedType(typeof(ContextClassifier), "default")]
 public interface IContextClassifier<TContext>
     where TContext : IContextWithReferences<TContext>
 {
@@ -12,7 +15,8 @@ public interface IContextClassifier<TContext>
     /// Если в описании есть только домен(ы), т.е. любые слова, но нет тех слов, что описаны в ContextClassifier.StandardActions, <br/>
     /// тогда описание будет трактоваться как с осутствующим действием.
     /// </summary>
-    IEnumerable<string> StandardActions { get; }
+    [CommandLineArgument("standardActions", "Действия")]
+    IEnumerable<string> StandardActions { get; init; }
 
     /// <summary>
     /// Возвращает переданные действия вместе со стандартными
@@ -62,9 +66,10 @@ public interface IContextClassifier<TContext>
 
 public record ContextClassifier : IContextClassifier<ContextInfo>
 {
-    public IEnumerable<string> StandardActions { get; }
+    public IEnumerable<string> StandardActions { get; init; }
 
-    public ContextClassifier(string[] standardActions)
+    [JsonConstructor]
+    public ContextClassifier(IEnumerable<string> standardActions)
     {
         StandardActions = standardActions;
     }

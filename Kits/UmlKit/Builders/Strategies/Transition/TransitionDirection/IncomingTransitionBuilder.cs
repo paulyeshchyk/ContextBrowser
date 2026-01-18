@@ -16,12 +16,10 @@ public class IncomingTransitionBuilder : ITransitionBuilder
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IContextInfoManager<ContextInfo> _contextInfoManager;
 
-
     public IncomingTransitionBuilder(IAppLogger<AppLevel> logger, IContextInfoManager<ContextInfo> contextInfoManager)
     {
         _logger = logger;
         _contextInfoManager = contextInfoManager;
-
     }
 
     public DiagramDirection Direction => DiagramDirection.Incoming;

@@ -33,11 +33,11 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
     private readonly UmlClassRendererActionPerDomainClass _renderer;
 
     public UmlDiagramCompilerClassActionPerDomain(
-        IAppLogger<AppLevel> logger, 
-        IContextInfoDatasetProvider<TDataTensor> datasetProvider, 
-        IAppOptionsStore optionsStore, 
-        INamingProcessor namingProcessor, 
-        IUmlUrlBuilder umlUrlBuilder, 
+        IAppLogger<AppLevel> logger,
+        IContextInfoDatasetProvider<TDataTensor> datasetProvider,
+        IAppOptionsStore optionsStore,
+        INamingProcessor namingProcessor,
+        IUmlUrlBuilder umlUrlBuilder,
         UmlClassRendererActionPerDomainClass renderer)
     {
         _logger = logger;

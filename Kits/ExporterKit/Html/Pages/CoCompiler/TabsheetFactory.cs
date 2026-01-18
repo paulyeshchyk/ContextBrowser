@@ -354,7 +354,6 @@ internal class ActionPerDomainMethodListDataModel<TTensor> : IMethodListDatamode
         // _namingProcessor = namingProcessor;
     }
 
-
     public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList.Where(c => c.ElementType == ContextInfoElementType.method);
 }
 
@@ -367,7 +366,6 @@ internal class DomainOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTe
     {
         // _namingProcessor = namingProcessor;
     }
-
 
     public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList.Where(c => c.ElementType == ContextInfoElementType.method);
 }
@@ -382,7 +380,6 @@ internal class ActionOnlyMethodListDataModel<TTensor> : IMethodListDatamodel<TTe
         // _namingProcessor = namingProcessor;
     }
 
-
     public IEnumerable<IContextInfo> GetMethodsList(ContextInfoKeyContainerTensor<TTensor> dto) => dto.ContextInfoList.Where((c => c.ElementType == ContextInfoElementType.method));
 }
 
@@ -395,7 +392,6 @@ internal class NamespaceOnlyDatamodel<TTensor> : PumlEmbeddedContentDatamodel<TT
     {
         _namingProcessor = namingProcessor;
     }
-
 
     protected override string GetPumlFileName(TTensor contextKey) => throw new NotImplementedException();
 
@@ -471,7 +467,6 @@ internal class DomainOnlySequenceDatamodel<TDataTensor> : PumlEmbeddedContentDat
     {
         _namingProcessor = namingProcessor;
     }
-
 
     protected override string GetPumlFileName(TDataTensor contextKey) => _namingProcessor.SequenceDomainPumlFilename(contextKey.Domain);
 

@@ -11,6 +11,7 @@ public class CommandLineParser
 
     // context: commandline, build
     public bool TryParse<T>(string[] args, out T? options, out string? errorMessage)
+        where T : class
     {
         options = default;
 
@@ -35,6 +36,7 @@ public class CommandLineParser
 
     // context: commandline, read
     internal bool FindHelpParameter<T>(string[] args, out string? errorMessage)
+        where T : class
     {
         errorMessage = null;
         var helpPattern = $"{CommandLineDefaults.SArgumentPrefix}{CommandLineDefaults.SHelpKeyword}";
@@ -48,7 +50,8 @@ public class CommandLineParser
 
         var specificParamName = FindParameterNameForHelp(args, helpIndex);
 
-        errorMessage = CommandLineHelpProducer.GenerateHelpText<T>(CommandLineDefaults.SArgumentPrefix, specificParamName);
+        errorMessage = "??";
+        CommandLineHelpProducer.ShowHelp<T>(args);
         return true;
     }
 

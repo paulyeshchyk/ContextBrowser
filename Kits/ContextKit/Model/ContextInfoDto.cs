@@ -37,7 +37,6 @@ public record ContextInfoDto : IContextInfo
                 return MethodOwner.FullName.Equals(FullName);
             }
             return false;
-
         }
     }
 

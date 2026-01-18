@@ -23,5 +23,6 @@ public class CSharpContextInfoBuilderInterface<TContext> : ContextInfoBuilder<TC
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@interface;
+
     public override bool CanBuild(ISyntaxWrapper contextInfo) => false;
 }

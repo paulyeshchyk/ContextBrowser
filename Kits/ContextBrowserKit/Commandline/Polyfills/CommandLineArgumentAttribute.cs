@@ -10,9 +10,12 @@ public class CommandLineArgumentAttribute : Attribute
 
     public string? Description { get; }
 
-    public CommandLineArgumentAttribute(string name, string? description = null)
+    public Type? ImplementationType { get; } // Тип для раскрытия деталей в справке
+
+    public CommandLineArgumentAttribute(string name, string? description = null, Type? implementationType = null)
     {
         Name = name;
         Description = description;
+        ImplementationType = implementationType;
     }
 }

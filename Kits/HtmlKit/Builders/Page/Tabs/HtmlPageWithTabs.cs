@@ -75,7 +75,6 @@ public class HtmlTabbedPageBuilder<DTO>
                 {
                     return HtmlTabsheetBuilder.BuildAsync(writer, _tabsheetDataProvider, cellData, token);
                 }, token).ConfigureAwait(false);
-
             }, token).ConfigureAwait(false);
         }, cancellationToken).ConfigureAwait(false);
     }

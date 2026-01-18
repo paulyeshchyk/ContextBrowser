@@ -53,5 +53,4 @@ public class UmlClassRendererMethods
         var result = new UmlRendererResult<UmlDiagramClass>(diagram, new UmlWriteOptions(alignMaxWidth: -1));
         return result;
     }
-
 }

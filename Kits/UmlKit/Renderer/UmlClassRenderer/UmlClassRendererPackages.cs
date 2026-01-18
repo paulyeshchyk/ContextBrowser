@@ -31,7 +31,6 @@ public class UmlClassRendererPackages
 
     public Task<UmlRendererResult<UmlDiagramClass>> RenderAsync(List<ContextInfo> elements, CancellationToken cancellationToken)
     {
-
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
         var diagram = new UmlDiagramClass(diagramBuilderOptions);
 

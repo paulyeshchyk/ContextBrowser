@@ -12,5 +12,6 @@ public interface IContextElementExtractor<TContext>
 public class ContextElementGroups
 {
     public List<string> Verbs { get; init; } = new List<string>();
+
     public List<string> Nouns { get; init; } = new List<string>();
 }

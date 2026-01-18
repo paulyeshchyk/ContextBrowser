@@ -36,7 +36,6 @@ public class RoslynInvocationParserFactory<TSyntaxTreeWrapper> : IReferenceParse
         _contextInfoCollector = contextInfoCollector;
         _invocationLinker = invocationLinker;
         _optionsStore = optionsStore;
-
     }
 
     // context: roslyn, build

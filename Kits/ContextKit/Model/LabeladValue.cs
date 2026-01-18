@@ -5,13 +5,12 @@ namespace ContextKit.Model;
 public interface ILabeledValue
 {
     string LabeledCaption { get; }
+
     object LabeledData { get; }
 }
 
-
 public class StringColumnWrapper : ILabeledValue
 {
-
     public string LabeledCaption { get; }
 
     public object LabeledData { get; }
@@ -41,12 +40,12 @@ public class StringColumnWrapper : ILabeledValue
     {
         return HashCode.Combine(LabeledCaption, LabeledData);
     }
-
 }
 
 public class IntColumnWrapper : ILabeledValue
 {
     public string LabeledCaption { get; }
+
     public object LabeledData { get; }
 
     public IntColumnWrapper(string caption, int data)
@@ -59,6 +58,7 @@ public class IntColumnWrapper : ILabeledValue
     {
         return $"{LabeledData}";
     }
+
     public override bool Equals(object? obj)
     {
         if (obj is not ILabeledValue other)
@@ -72,7 +72,5 @@ public class IntColumnWrapper : ILabeledValue
     public override int GetHashCode()
     {
         return HashCode.Combine(LabeledCaption, LabeledData);
-
     }
-
 }

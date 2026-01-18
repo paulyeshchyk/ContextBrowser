@@ -88,7 +88,6 @@ public class HtmlTensorWriter<TTensor> : IHtmlTensorWriter<TTensor>
         _keyBuilder = keyBuilder;
         _logger = logger;
         _namingProcessor = namingProcessor;
-
     }
 
     public async Task WriteAsync(TextWriter writer, IHtmlMatrix matrix, HtmlMatrixSummary? summary, HtmlTableOptions originalOptions, CancellationToken cancellationToken)

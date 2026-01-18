@@ -29,6 +29,7 @@ public static class CommandLineParamsValidator
             {
                 continue;
             }
+
             // Дополнительно можно проверить, является ли тип Value-типом (struct)
             // Для примера оставим так.
 

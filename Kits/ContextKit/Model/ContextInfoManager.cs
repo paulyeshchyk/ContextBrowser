@@ -7,9 +7,13 @@ public interface IContextInfoManager<T>
     where T : IContextWithReferences<T>
 {
     bool AddToInvokedBy(T caller, T callee);
+
     bool AddToOwns(T source, T property);
+
     bool AddToProperties(T source, T property);
+
     bool AddToReferences(T? source, T? callee);
+
     IEnumerable<ContextInfo> GetReferencesSortedByInvocation(T source);
 }
 

@@ -51,6 +51,5 @@ public class RoslynDeclarationParser<TContext> : IDeclarationParser<TContext, Ro
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, $"Phase 1: Parsing declarations - {tree.FilePath}", LogLevelNode.Start);
         await router.RouteAsync(availableSyntaxies, model, options, cancellationToken);
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Cntx, string.Empty, LogLevelNode.End);
-
     }
 }

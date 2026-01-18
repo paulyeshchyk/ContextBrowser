@@ -30,7 +30,6 @@ public class UmlMindmapRendererAction
         _namingProcessor = namingProcessor;
         _umlUrlBuilder = umlUrlBuilder;
         _optionsStore = optionsStore;
-
     }
 
     public async Task<UmlRendererResult<UmlDiagramMindmap>> RenderAsync(string action, CancellationToken cancellationToken)
@@ -55,7 +54,6 @@ public class UmlMindmapRendererAction
         var result = new UmlRendererResult<UmlDiagramMindmap>(diagram, new UmlWriteOptions(alignMaxWidth: -1));
         return result;
     }
-
 
     /// <summary>
     /// Получает все "дочерние" домены, обходя граф по свойству References.

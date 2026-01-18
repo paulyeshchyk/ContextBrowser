@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ContextBrowser.Infrastructure;
+using ContextBrowser.Infrastructure.Options;
 using ContextBrowserKit.Options;
 
 namespace ContextBrowser.Services;

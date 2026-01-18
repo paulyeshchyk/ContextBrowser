@@ -52,7 +52,6 @@ public class UmlParticipant : IUmlParticipant
     public override int GetHashCode()
     {
         return HashCode.Combine(_raw, Keyword);
-
     }
 
     public override bool Equals(object? obj)

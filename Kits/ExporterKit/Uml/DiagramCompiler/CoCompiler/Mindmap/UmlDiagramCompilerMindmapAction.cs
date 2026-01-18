@@ -29,11 +29,11 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
     private readonly UmlMindmapRendererAction _renderer;
 
     public UmlDiagramCompilerMindmapAction(
-        IAppLogger<AppLevel> logger, 
-        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, 
-        IAppOptionsStore optionsStore, 
-        INamingProcessor namingProcessor, 
-        IUmlUrlBuilder umlUrlBuilder, 
+        IAppLogger<AppLevel> logger,
+        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider,
+        IAppOptionsStore optionsStore,
+        INamingProcessor namingProcessor,
+        IUmlUrlBuilder umlUrlBuilder,
         UmlMindmapRendererAction renderer)
     {
         _logger = logger;
@@ -60,7 +60,6 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
         return new Dictionary<ILabeledValue, bool>();
     }
 
-
     public async Task ExportAsync(string action, CancellationToken cancellationToken)
     {
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
@@ -68,7 +67,6 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
         var fileName = _namingProcessor.MindmapActionPumlFilename(action);
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, fileName);
         var diagramId = _namingProcessor.MindmapActionDiagramId(outputPath);
-
 
         var renderResult = await _renderer.RenderAsync(action, cancellationToken).ConfigureAwait(false);
         var diagram = renderResult.Diagram;

@@ -19,6 +19,7 @@ namespace UmlKit.Builders;
 public static class PumlBuilderHelper
 {
     private const string SParentheses = "()";
+
     public static UmlEntity BuildUmlEntityClass(IContextInfo contextInfo, IGrouping<string, UmlClassDiagramElementDto> classGroup, int maxLength, INamingProcessor _namingProcessor)
     {
         var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
@@ -120,7 +121,7 @@ public static class PumlBuilderHelper
         PumlBuilderHelper.AddUmlMethods(umlClass, classMethods);
 
         var classProperties = onGetProperties(classownerInfo);
-        PumlBuilderHelper.AddUmlProperties(umlClass, classProperties,0);
+        PumlBuilderHelper.AddUmlProperties(umlClass, classProperties, 0);
 
         return umlClass;
     }

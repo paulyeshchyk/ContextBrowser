@@ -25,7 +25,6 @@ public class RoslynCompilationMapBuilder : ISemanticMapExtractor<RoslynSyntaxTre
     private readonly ICompilationBuilder<RoslynSyntaxTreeWrapper> _compilationMapBuilder;
     private readonly IAppOptionsStore _optionsStore;
 
-
     public RoslynCompilationMapBuilder(
         IAppLogger<AppLevel> logger,
         ISyntaxTreeParser<RoslynSyntaxTreeWrapper> syntaxTreeParser,
@@ -38,7 +37,6 @@ public class RoslynCompilationMapBuilder : ISemanticMapExtractor<RoslynSyntaxTre
         _compilationMapMapper = compilationMapMapper;
         _compilationMapBuilder = compilationMapBuilder;
         _optionsStore = optionsStore;
-
     }
 
     // context: roslyn, build, compilationFlow

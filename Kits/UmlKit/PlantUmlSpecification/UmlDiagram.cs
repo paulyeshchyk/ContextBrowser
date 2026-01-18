@@ -26,6 +26,7 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
     //none; . ; :;
     protected string? _separator; //по-умолчанию null
     protected string? _title;
+
     protected DiagramBuilderOptions _options { get; private set; }
 
     protected readonly UmlStyleDiagramMindmap Styles = new UmlStyleDiagramMindmap();

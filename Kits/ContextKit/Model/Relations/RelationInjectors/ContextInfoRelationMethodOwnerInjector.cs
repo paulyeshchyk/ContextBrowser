@@ -18,5 +18,4 @@ public class ContextInfoRelationMethodOwnerInjector : IContextInfoRelationOwnerI
             context.MethodOwner = lookupDictionary[contextInfoSerializableModel.MethodOwnerFullName];
         }
     }
-
 }

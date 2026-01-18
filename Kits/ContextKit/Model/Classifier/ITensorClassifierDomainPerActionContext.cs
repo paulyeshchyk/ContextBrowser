@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using ContextBrowserKit.Commandline.Polyfills;
 using TensorKit.Model;
 
 namespace ContextKit.Model.Classifier;
@@ -7,26 +9,31 @@ namespace ContextKit.Model.Classifier;
 public interface ITensorClassifierDomainPerActionContext<TContext> : ITensorClassifier<TContext>
     where TContext : IContextWithReferences<TContext>
 {
-    IEnumerable<string> MetaItems { get; }
+    [CommandLineArgument("metaItems", "Контексты")]
+    IEnumerable<string> MetaItems { get; init; }
 }
 
 // context: model, ContextInfo
 // pattern: Strategy
 // parsing: error
-public record DomainPerActionContextTensorClassifier<TContext> : ITensorClassifierDomainPerActionContext<TContext>
-    where TContext : IContextWithReferences<TContext>
+public record DomainPerActionContextTensorClassifier : ITensorClassifierDomainPerActionContext<ContextInfo>
 {
-    public IEnumerable<string> MetaItems { get; }
+    [CommandLineArgument("metaItems", "Контексты")]
+    public IEnumerable<string> MetaItems { get; init; }
 
-    public IContextClassifier<TContext> WordRoleClassifier { get; }
+    [CommandLineArgument("wordRoleClassifier", "Контексты слов")]
+    public IContextClassifier<ContextInfo> WordRoleClassifier { get; }
 
+    [CommandLineArgument("wordRoleClassifier", "Контексты пустых измерений")]
     public IEmptyDimensionClassifier EmptyDimensionClassifier { get; }
 
+    [CommandLineArgument("fakeDimensionClassifier", "Контексты несуществующих измерений")]
     public IFakeDimensionClassifier FakeDimensionClassifier { get; }
 
-    public DomainPerActionContextTensorClassifier(string[] metaItems, IContextClassifier<TContext> wordRoleClassifier, IEmptyDimensionClassifier emptyDimensionClassifier, IFakeDimensionClassifier fakeDimensionClassifier)
+    [JsonConstructor]
+    public DomainPerActionContextTensorClassifier(IEnumerable<string> metaItems, IContextClassifier<ContextInfo> wordRoleClassifier, IEmptyDimensionClassifier emptyDimensionClassifier, IFakeDimensionClassifier fakeDimensionClassifier)
     {
-        MetaItems = new List<string>(metaItems);
+        MetaItems = metaItems;
         WordRoleClassifier = wordRoleClassifier;
         EmptyDimensionClassifier = emptyDimensionClassifier;
         FakeDimensionClassifier = fakeDimensionClassifier;
@@ -42,7 +49,7 @@ public record DomainPerActionContextTensorClassifier<TContext> : ITensorClassifi
         };
     }
 
-    public bool IsDimensionApplicable(TContext ctx, string? dimensionName, int dimensionType)
+    public bool IsDimensionApplicable(ContextInfo ctx, string? dimensionName, int dimensionType)
     {
         if (string.IsNullOrWhiteSpace(dimensionName) || GetEmptyDimensionValue(dimensionType) == dimensionName)
         {

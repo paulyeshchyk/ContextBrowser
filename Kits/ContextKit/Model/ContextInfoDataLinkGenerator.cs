@@ -19,7 +19,6 @@ public class ContextInfoDataLinkGenerator
         _wordRoleClassifier = appOptionsStore.GetOptions<IContextClassifier<ContextInfo>>();
         _fakeDimensionClassifier = appOptionsStore.GetOptions<IFakeDimensionClassifier>();
         _contextInfoManager = contextInfoManager;
-
     }
 
     // context: ContextInfo, read

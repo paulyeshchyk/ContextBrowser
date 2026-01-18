@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using ContextBrowser.Infrastructure.Options;
 using ContextBrowser.Services;
 using ContextBrowserKit.Options;
 using LoggerKit;
@@ -13,10 +14,10 @@ namespace ContextBrowser.Infrastructure;
 // context: app, execute
 internal static class ConsoleRunner
 {
+#warning args to be checked
     // context: app, execute, compilationFlow
-    public static async Task Run(string[] args, AppOptions options)
+    public static async Task Run(string[]? args, AppOptions options)
     {
-
         Directory.SetCurrentDirectory(AppContext.BaseDirectory);
 
         var hab = Host.CreateApplicationBuilder(args);
@@ -38,7 +39,6 @@ internal static class ConsoleRunner
             e.Cancel = true;
             lifetime.StopApplication();
         };
-
 
         var optionsStore = host.Services.GetRequiredService<IAppOptionsStore>();
         optionsStore.SetOptions(options);
@@ -69,5 +69,4 @@ internal static class ConsoleRunner
             tokenSource.Dispose();
         }
     }
-
 }

@@ -38,6 +38,7 @@ public class TensorColumnWrapper<TTensor> : ILabeledValue
     private readonly ContextInfoKeyContainerTensor<TTensor> _keyContainer;
 
     public string LabeledCaption => "методы";
+
     public object LabeledData => _keyContainer;
 
     public TensorColumnWrapper(ContextInfoKeyContainerTensor<TTensor> keyContainer)
@@ -63,6 +64,5 @@ public class TensorColumnWrapper<TTensor> : ILabeledValue
     public override int GetHashCode()
     {
         return HashCode.Combine(LabeledCaption, LabeledData);
-
     }
 }

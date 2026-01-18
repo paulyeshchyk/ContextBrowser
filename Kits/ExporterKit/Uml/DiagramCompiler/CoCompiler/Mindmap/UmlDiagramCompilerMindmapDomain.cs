@@ -29,11 +29,11 @@ public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
     private readonly UmlMindmapRendererDomain _renderer;
 
     public UmlDiagramCompilerMindmapDomain(
-        IAppLogger<AppLevel> logger, 
-        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, 
-        IAppOptionsStore optionsStore, 
-        INamingProcessor namingProcessor, 
-        IUmlUrlBuilder umlUrlBuilder, 
+        IAppLogger<AppLevel> logger,
+        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider,
+        IAppOptionsStore optionsStore,
+        INamingProcessor namingProcessor,
+        IUmlUrlBuilder umlUrlBuilder,
         UmlMindmapRendererDomain renderer)
     {
         _logger = logger;
@@ -68,7 +68,6 @@ public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
         var fileName = namingProcessor.MindmapDomainPumlFilename(domain);
         var outputPath = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, fileName);
         var diagramId = namingProcessor.MindmapDomainDiagramId(outputPath);
-
 
         var renderResult = await _renderer.RenderAsync(domain, cancellationToken).ConfigureAwait(false);
 

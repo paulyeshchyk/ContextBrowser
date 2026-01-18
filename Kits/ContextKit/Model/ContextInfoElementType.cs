@@ -18,7 +18,7 @@ public enum ContextInfoElementType
 }
 
 public enum ContentInfoElementVisibility
-{ 
+{
     @private,
     @protected,
     @public,

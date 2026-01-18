@@ -63,7 +63,6 @@ public partial class CSharpSignatureRegexMatcher : ISignatureRegexMatcher
         return DelegateSignatureOnlyRegex().Match(input);
     }
 
-
     public Match MatchNamespace(string input)
     {
         return NamespaceOnlyRegex().Match(input);

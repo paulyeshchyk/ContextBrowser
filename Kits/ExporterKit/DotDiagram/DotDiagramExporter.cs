@@ -9,7 +9,6 @@ public static class DotDiagramExporter
 {
     private const string SDiGraphItem = "  \"{0}\" -> \"{1}\" [label=\"{2}\"];";
 
-
     public static void Export(IEnumerable<UmlTransitionDto> transitions, string filePath)
     {
         using var writer = new StreamWriter(filePath);

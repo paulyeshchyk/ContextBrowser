@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace UmlKit.Infrastructure.Options.Activation;
 
@@ -23,6 +24,7 @@ public record DiagramActivationOptions
 
     public bool UseActivationCall => UseActivation ? _useActivationCallRaw : false;
 
+    [JsonConstructor]
     public DiagramActivationOptions(bool useActivation, bool useActivationCall)
     {
         _useActivation = useActivation;

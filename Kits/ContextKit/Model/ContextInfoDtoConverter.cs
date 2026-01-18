@@ -10,7 +10,6 @@ public interface IContextInfoDtoConverter<TContext, TWrapper>
     IContextInfo Convert(TContext? ownerContext, TWrapper syntaxWrap, ISymbolInfo wrapper, ContextInfoElementType elementType);
 }
 
-
 public class ContextInfoDtoConverter<TContext> : IContextInfoDtoConverter<TContext, ISyntaxNodeWrapper>
         where TContext : IContextWithReferences<TContext>
 {

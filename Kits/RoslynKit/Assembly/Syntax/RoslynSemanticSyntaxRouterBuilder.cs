@@ -34,7 +34,6 @@ public class RoslynSemanticSyntaxRouterBuilder<TContext> : ISyntaxRouterBuilder<
         _logger = logger;
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
         _symbolLoader = symbolLoader;
-
     }
 
     // context: roslyn, build, syntax

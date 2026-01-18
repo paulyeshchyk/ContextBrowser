@@ -25,7 +25,6 @@ public class RoslynCompilationBuilder : ICompilationBuilder<RoslynSyntaxTreeWrap
     private readonly ICompilationDiagnosticsInspector<CSharpCompilation, Diagnostic> _diagnosticsInspector;
     private readonly IAppOptionsStore _optionsStore;
 
-
     public RoslynCompilationBuilder(
         IAppLogger<AppLevel> logger,
         ISyntaxCompiler<MetadataReference, RoslynSyntaxTreeWrapper, CSharpCompilation> compiler,
@@ -38,7 +37,6 @@ public class RoslynCompilationBuilder : ICompilationBuilder<RoslynSyntaxTreeWrap
         _diagnosticsInspector = diagnosticsInspector;
         _assemblyFetcher = assemblyFetcher;
         _optionsStore = optionsStore;
-
     }
 
     // context: roslyn, build, compilationFlow

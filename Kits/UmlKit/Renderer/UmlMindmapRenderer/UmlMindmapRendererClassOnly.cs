@@ -23,7 +23,6 @@ public class UmlMindmapRendererClassOnly
     private readonly IUmlUrlBuilder _umlUrlBuilder;
     private readonly IAppOptionsStore _optionsStore;
 
-
     public UmlMindmapRendererClassOnly(IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, IAppOptionsStore optionsStore)
     {
         _datasetProvider = datasetProvider;
@@ -47,7 +46,6 @@ public class UmlMindmapRendererClassOnly
         diagram.Add(node);
         return new UmlRendererResult<UmlDiagramMindmap>(diagram, new UmlWriteOptions(alignMaxWidth: -1));
     }
-
 
     /// <summary>
     /// Получает все "родительские" домены, обходя граф по свойству InvokedBy.

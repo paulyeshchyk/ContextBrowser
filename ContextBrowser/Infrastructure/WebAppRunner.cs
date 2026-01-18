@@ -2,11 +2,13 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
+using ContextBrowser.Infrastructure.Options;
 using ContextBrowserKit.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 namespace ContextBrowser.Infrastructure;
 
 // context: app, execute
@@ -18,12 +20,13 @@ internal static class WebAppRunner
     private const int Port5000 = 5000;
 
     // context: app, execute
-    public static async Task Run(string[] args, AppOptions options)
+    public static async Task Run(string[]? args, AppOptions options)
     {
         var customUrl = options.Export.WebPaths.OutputDirectory;
         (string host, int port) = ParseUrl(customUrl);
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+#warning args to be checked
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();//args
 
         builder.WebHost.ConfigureKestrel(serverOptions =>
         {
@@ -77,7 +80,6 @@ internal static class WebAppRunner
                 Console.WriteLine($"Error launching browser: {ex.Message}");
             }
         });
-
 
         // --- Настройка HTTP-конвейера ---
         if (app.Environment.IsDevelopment())

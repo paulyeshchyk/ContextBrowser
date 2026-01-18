@@ -23,5 +23,6 @@ public class CSharpContextInfoBuilderEnum<TContext> : ContextInfoBuilder<TContex
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@enum;
+
     public override bool CanBuild(ISyntaxWrapper contextInfo) => false;
 }

@@ -40,7 +40,6 @@ public class UmlClassRendererNamespace<TDataTensor>
         var package = PumlBuilderHelper.BuildUmlPackage(nameSpace, _umlUrlBuilder, maxLength);
         foreach (var contextInfo in classesList)
         {
-
             var umlClass = PumlBuilderHelper.BuildUmlEntityClass(contextInfo, GetMethods(dataset), GetProperties(dataset), maxLength, _namingProcessor);
 
             package.Add(umlClass);
@@ -60,12 +59,11 @@ public class UmlClassRendererNamespace<TDataTensor>
 
     internal static Func<IContextInfo, IEnumerable<IContextInfo>> GetProperties(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName).DistinctBy(e => e.FullName).OrderBy(e => e.ShortName);
+        return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.property && c.ClassOwner?.FullName == contextInfo.FullName).DistinctBy(e => e.FullName).OrderBy(e => e.ShortName);
     }
 
     internal static Func<IContextInfo, IEnumerable<IContextInfo>> GetMethods(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
-        return (contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName).DistinctBy(e => e.FullName).OrderBy(e => e.ShortName);
+        return(contextInfo) => contextInfoDataSet.GetAll().Where(c => c.ElementType == ContextInfoElementType.method && c.ClassOwner?.FullName == contextInfo.FullName).DistinctBy(e => e.FullName).OrderBy(e => e.ShortName);
     }
-
 }

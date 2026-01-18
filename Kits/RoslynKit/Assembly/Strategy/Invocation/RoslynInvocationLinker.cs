@@ -44,7 +44,6 @@ public class RoslynInvocationLinker<TContext> : IInvocationLinker<TContext, Invo
             var resolvedItem = await ResolveSymbolThenLinkAsync(invocation, callerContextInfo, _linksInvocationBuilder, options, cancellationToken).ConfigureAwait(false);
             if (resolvedItem != null)
                 result.Add(resolvedItem);
-
         }
         _logger.WriteLog(AppLevel.R_Syntax, LogLevel.Trace, string.Empty, LogLevelNode.End);
         return result;

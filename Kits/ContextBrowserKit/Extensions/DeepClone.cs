@@ -21,10 +21,12 @@ public static class DeepCloneExtension
 
     public static object DeepClone(this object self, DeepCloneRequest? request = null)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        if (self == null)
+            throw new ArgumentNullException(nameof(self));
 
         var result = Activator.CreateInstance(self.GetType());
-        if (result == null) throw new ArgumentNullException(nameof(self));
+        if (result == null)
+            throw new ArgumentNullException(nameof(self));
 
         result.DeepClone(self, request);
         return result;
@@ -33,10 +35,12 @@ public static class DeepCloneExtension
     public static T DeepClone<T>(this object self, DeepCloneRequest? request = null)
     where T : notnull
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        if (self == null)
+            throw new ArgumentNullException(nameof(self));
 
         var result = Activator.CreateInstance(typeof(T));
-        if (result == null) throw new ArgumentNullException(nameof(self));
+        if (result == null)
+            throw new ArgumentNullException(nameof(self));
 
         result.DeepClone(self, request);
         return (T)result;
@@ -44,8 +48,10 @@ public static class DeepCloneExtension
 
     private static void DeepCloneInternal(object self, object from, DeepCloneRequest request)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (from == null) throw new ArgumentNullException(nameof(from));
+        if (self == null)
+            throw new ArgumentNullException(nameof(self));
+        if (from == null)
+            throw new ArgumentNullException(nameof(from));
 
         var settings = new JsonSerializerSettings
         {
@@ -96,6 +102,7 @@ public static class DeepCloneExtension
 public readonly struct DeepCloneRequest
 {
     public IEnumerable<string>? ExceptFieldNames { get; }
+
     public PropertyComparisonMode Mode { get; }
 
     public DeepCloneRequest(IEnumerable<string>? exceptFieldNames, PropertyComparisonMode mode)

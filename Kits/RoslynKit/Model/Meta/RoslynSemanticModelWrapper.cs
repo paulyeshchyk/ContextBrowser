@@ -85,7 +85,6 @@ internal static class RoslynSymbolInfoManager
         try
         {
             result = (TSymbol?)currentModel.GetDeclaredSymbol(node, cancellationToken);
-
         }
         catch (Exception ex)
         {
@@ -126,5 +125,4 @@ internal static class RoslynSymbolInfoManager
             return null;
         }
     }
-
 }

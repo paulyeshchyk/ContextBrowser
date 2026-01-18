@@ -36,6 +36,7 @@ public interface IContextWithReferences<T> : IContextInfo, IContextDataContainer
     HashSet<T> Owns { get; }
 
     HashSet<string> Contexts { get; }
+
     Dictionary<string, string> Dimensions { get; }
 }
 

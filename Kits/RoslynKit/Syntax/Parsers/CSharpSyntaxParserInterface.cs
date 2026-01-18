@@ -21,7 +21,6 @@ public class CSharpSyntaxParserInterface<TContext> : SyntaxParser<TContext>
     private readonly CSharpSyntaxParserMethod<TContext> _methodSyntaxParser;
     private readonly ContextInfoBuilderDispatcher<TContext> _contextInfoBuilderDispatcher;
 
-
     public CSharpSyntaxParserInterface(
         CSharpSyntaxParserTypeProperty<TContext> propertyDeclarationParser,
         CSharpSyntaxParserMethod<TContext> methodSyntaxParser,

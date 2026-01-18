@@ -47,7 +47,6 @@ public class UmlNode : IUmlParticipant
             this.Url = Url;
             this.Depth = Depth;
         }
-
     }
 
     public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)

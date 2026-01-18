@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ContextBrowserKit.Commandline.Polyfills;
 
 namespace SemanticKit.Model.Options;
 
@@ -7,7 +8,9 @@ namespace SemanticKit.Model.Options;
 // context: semantic, model
 public record SemanticOptions
 {
+    [CommandLineArgument("externalNaming", "External Naming")]
     public SemanticExternalNaming ExternalNaming { get; set; }
+
     public SemanticFakeNaming FakeNaming { get; set; }
 
     public HashSet<SemanticAccessorModifierType> MethodModifierTypes { get; set; }
@@ -64,8 +67,11 @@ public record SemanticOptions
 public record SemanticExternalNaming
 {
     public string NamespaceName { get; set; }
+
     public string ClassName { get; set; }
+
     public string MethodName { get; set; }
+
     public string ResultTypeName { get; set; }
 
     public SemanticExternalNaming(string namespaceName, string className, string methodName, string resultTypeName)
@@ -80,9 +86,13 @@ public record SemanticExternalNaming
 public record SemanticFakeNaming
 {
     public string OwnerName { get; set; }
+
     public string MethodName { get; set; }
+
     public string NamespaceName { get; set; }
+
     public string ClassName { get; set; }
+
     public string ResultTypeName { get; set; }
 
     public SemanticFakeNaming(string ownerName, string methodName, string namespaceName, string className, string resultTypeName)
@@ -92,7 +102,6 @@ public record SemanticFakeNaming
         NamespaceName = namespaceName;
         ClassName = className;
         ResultTypeName = resultTypeName;
-
     }
 }
 
@@ -100,6 +109,9 @@ public record SemanticFakeNaming
 // context: model, semantic
 public record CodeParsingOptions(SemanticOptions SemanticOptions, string SemanticLanguage)
 {
+    [CommandLineArgument("semanticLanguage", "Language semantic")]
     public string SemanticLanguage { get; set; } = SemanticLanguage;
+
+    [CommandLineArgument("semanticOptions", "Language semantic options")]
     public SemanticOptions SemanticOptions { get; set; } = SemanticOptions;
 }

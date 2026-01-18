@@ -10,5 +10,6 @@ namespace RoslynKit.Signature;
 public class CSharpIdentifier : ISignatureTypeIdentifier
 {
     public string Key => "csharp";
+
     public string DisplayName => "C# Signature";
 }

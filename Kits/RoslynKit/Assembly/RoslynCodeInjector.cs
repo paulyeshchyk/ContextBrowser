@@ -10,7 +10,6 @@ namespace RoslynKit.Assembly;
 // context: roslyn, update
 public class RoslynCodeInjector : ICodeInjector
 {
-
     // context: roslyn, update
     public async Task<string> ReadAndInjectPseudoCodeAsync(SemanticOptions options, string filePath, CancellationToken cancellationToken)
     {

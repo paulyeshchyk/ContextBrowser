@@ -33,5 +33,4 @@ public class WordTensorBuildStrategyVerbOnly<TTensor> : IWordTensorBuildStrategy
     {
         return contextElementGroups.Verbs.Any() && !contextElementGroups.Nouns.Any();
     }
-
 }

@@ -15,6 +15,7 @@ public abstract class ContextInfoKeyContainerBase<Key> : IContextInfoKeyContaine
         ContextKey = contextKey;
         ContextInfoList = contextInfoList;
     }
+
     public override int GetHashCode()
     {
         int hash = 17;
@@ -26,5 +27,4 @@ public abstract class ContextInfoKeyContainerBase<Key> : IContextInfoKeyContaine
         hash = hash * 31 + ContextKey.GetHashCode();
         return hash;
     }
-
 }

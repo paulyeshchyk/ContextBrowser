@@ -102,5 +102,4 @@ public class RoslynInvocationSyntaxResolver : IInvocationSyntaxResolver
         logger?.WriteLog(AppLevel.R_Invocation, LogLevel.Warn, $"[FAIL]: No symbol for expression: {invocation.Expression}");
         return null;
     }
-
 }

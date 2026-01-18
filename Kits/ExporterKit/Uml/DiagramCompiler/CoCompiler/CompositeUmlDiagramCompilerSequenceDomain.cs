@@ -58,7 +58,6 @@ public class CompositeUmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
-
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken).ConfigureAwait(false);
         var distinctCols = mapper.GetCols().Distinct();

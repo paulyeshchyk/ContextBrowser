@@ -16,10 +16,10 @@ public class BiDirectionalTransitionBuilder : ITransitionBuilder
     private readonly OutgoingTransitionBuilder _outgoing;
     private readonly IncomingTransitionBuilder _incoming;
 
-    public BiDirectionalTransitionBuilder(IAppLogger<AppLevel> logger,IContextInfoManager<ContextInfo> _contextInfoManager)
+    public BiDirectionalTransitionBuilder(IAppLogger<AppLevel> logger, IContextInfoManager<ContextInfo> _contextInfoManager)
     {
-        _outgoing = new OutgoingTransitionBuilder(logger,_contextInfoManager);
-        _incoming = new IncomingTransitionBuilder(logger,_contextInfoManager);
+        _outgoing = new OutgoingTransitionBuilder(logger, _contextInfoManager);
+        _incoming = new IncomingTransitionBuilder(logger, _contextInfoManager);
     }
 
     public GrouppedSortedTransitionList BuildTransitions(List<ContextInfo> methodsList, List<ContextInfo> allContexts)

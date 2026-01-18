@@ -30,11 +30,11 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     private readonly UmlClassRendererClassOnly _renderer;
 
     public UmlDiagramCompilerClassOnly(
-        IAppLogger<AppLevel> logger, 
-        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, 
-        IAppOptionsStore optionsStore, 
-        INamingProcessor namingProcessor, 
-        IUmlUrlBuilder umlUrlBuilder, 
+        IAppLogger<AppLevel> logger,
+        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider,
+        IAppOptionsStore optionsStore,
+        INamingProcessor namingProcessor,
+        IUmlUrlBuilder umlUrlBuilder,
         UmlClassRendererClassOnly renderer)
     {
         _logger = logger;
@@ -48,7 +48,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        
+
         _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassOnly");
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
@@ -69,7 +69,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     internal async Task ExportAsync(IContextInfo contextInfo, ExportOptions exportOptions, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        
+
         var fullName = $"{contextInfo.FullName.AlphanumericOnly()}";
 
         // грязный хак для получения информации о владельце
@@ -95,7 +95,6 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
         diagram.SetTitle(diagramTitle);
         diagram.SetSkinParam("componentStyle", "rectangle");
         diagram.SetSeparator("none");
-
 
         await diagram.WriteToFileAsync(fileName, renderResult.WriteOptions, cancellationToken).ConfigureAwait(false);
     }

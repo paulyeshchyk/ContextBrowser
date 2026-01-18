@@ -22,12 +22,10 @@ public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference, RoslynSyn
     private readonly IAppLogger<AppLevel> _logger;
     private readonly IAppOptionsStore _optionsStore;
 
-
     public RoslynSyntaxCompiler(IAppLogger<AppLevel> logger, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _optionsStore = optionsStore;
-
     }
 
     // context: roslyn, build
@@ -64,7 +62,6 @@ public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference, RoslynSyn
         }
     }
 
-
     private static string[] GetValidatedUsingsFromOptions(SemanticOptions options)
     {
         string[] sDefaultUsing = ["System"];
@@ -76,5 +73,4 @@ public class RoslynSyntaxCompiler : ISyntaxCompiler<MetadataReference, RoslynSyn
             ? sDefaultUsing
             : result;
     }
-
 }

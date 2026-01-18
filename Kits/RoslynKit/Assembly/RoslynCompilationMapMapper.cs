@@ -23,7 +23,6 @@ public class RoslynCompilationMapMapper : ICompilationMapMapper<RoslynSyntaxTree
         _logger = logger;
     }
 
-
     // context: roslyn, build, compilation
     public SemanticCompilationMap<RoslynSyntaxTreeWrapper> MapSemanticModelToCompilationMap(IEnumerable<RoslynSyntaxTreeWrapper> syntaxTrees, ICompilationWrapper compilation)
     {

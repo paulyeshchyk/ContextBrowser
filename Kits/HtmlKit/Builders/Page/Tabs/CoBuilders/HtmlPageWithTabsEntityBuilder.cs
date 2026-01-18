@@ -28,7 +28,6 @@ public class HtmlPageWithTabsEntityBuilder<TDto, TTensor> : HtmlPageWithTabsBuil
 
         foreach (var contextInfoItem in entitiesList)
         {
-
             // грязный хак для получения информации о владельце
             var classownerInfo = contextInfoItem.MethodOwnedByItSelf
                 ? (contextInfoItem.ClassOwner ?? contextInfoItem)

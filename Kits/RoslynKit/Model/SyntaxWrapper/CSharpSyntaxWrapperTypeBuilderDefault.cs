@@ -27,7 +27,6 @@ public class CSharpSyntaxWrapperTypeBuilderSigned : ICSharpSyntaxWrapperTypeBuil
 
     public CSharpSyntaxWrapperType BuildSignedWrapper(ISyntaxWrapper syntaxWrapper, ISignature signature)
     {
-
         var args = BuildArgumentsFromExistingSignature(syntaxWrapper, signature);
 
         return new CSharpSyntaxWrapperType(
@@ -103,7 +102,6 @@ public class CSharpSyntaxWrapperTypeBuilderSigned : ICSharpSyntaxWrapperTypeBuil
             Raw: signature.Raw
         );
     }
-
 }
 
 public class CSharpSyntaxWrapperTypeBuilderDefault : ICSharpSyntaxWrapperTypeBuilderDefault
@@ -154,9 +152,7 @@ public class CSharpSyntaxWrapperTypeBuilderDefault : ICSharpSyntaxWrapperTypeBui
             Signature: null // Если мы парсили, то Signature здесь нет
         );
     }
-
 }
-
 
 internal record CSharpSyntaxWrapperTypeArguments(
     string Name,

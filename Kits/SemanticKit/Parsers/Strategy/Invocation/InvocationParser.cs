@@ -11,7 +11,6 @@ using SemanticKit.Model.Options;
 
 namespace SemanticKit.Parsers.Strategy.Invocation;
 
-
 public class InvocationParser<TContext, TSyntaxTreeWrapper> : IInvocationParser<TContext, TSyntaxTreeWrapper>
     where TContext : IContextWithReferences<TContext>
     where TSyntaxTreeWrapper : ISyntaxTreeWrapper

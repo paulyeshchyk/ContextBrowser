@@ -29,7 +29,6 @@ public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
         _datasetProvider = datasetProvider;
         _optionsStore = optionsStore;
         _namingProcessor = namingProcessor;
-
     }
 
     // context: ContextInfo, build, html
@@ -51,7 +50,7 @@ public class HtmlPageCompilerNamespaceOnly<TDataTensor> : IHtmlPageCompiler
         var builder = new HtmlPageWithTabsNamespaceEntityBuilder<ContextInfoKeyContainerNamespace, TDataTensor>(
             dataset,
             tabbedPageBuilder,
-            (ns) => _namingProcessor.NamespaceOnlyItemHtmlFilename(ns),
+            _namingProcessor.NamespaceOnlyItemHtmlFilename,
             (ns) => $" Namespace {ns}");
         await builder.BuildAsync(cancellationToken).ConfigureAwait(false);
     }

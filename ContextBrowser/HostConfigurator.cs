@@ -84,10 +84,7 @@ public class HostConfigurator
 
         services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(_ =>
         {
-            var defaultLogLevels = new AppLoggerLevelStore<AppLevel>();
-            var defaultConsoleWriter = new ConsoleLogWriter();
-            var defaultDependencies = new Dictionary<AppLevel, AppLevel>();
-            return new IndentedAppLogger<AppLevel>(defaultLogLevels, defaultConsoleWriter, dependencies: defaultDependencies);
+            return AppLoggerFactory.DefaultIndentedLogger<AppLevel>();
         });
 
         services.AddSingleton<INamingProcessor, NamingProcessor>();
@@ -170,7 +167,7 @@ public class HostConfigurator
         // invocation resolver
         services.AddTransient<ISymbolLookupHandlerChainFactory<ContextInfo, ISemanticModelWrapper>, RoslynSymbolLookupHandlerChainFactory>();
         services.AddTransient<ISymbolLookupHandler<ContextInfo, ISemanticModelWrapper>, RoslynSymbolLookupHandlerFullname<ContextInfo, ISemanticModelWrapper>>();
-        services.AddTransient<ISymbolLookupHandler<ContextInfo, ISemanticModelWrapper>, RoslynSymbolLookupHandlerMethod<ContextInfo, ISemanticModelWrapper>>();       
+        services.AddTransient<ISymbolLookupHandler<ContextInfo, ISemanticModelWrapper>, RoslynSymbolLookupHandlerMethod<ContextInfo, ISemanticModelWrapper>>();
         services.AddTransient<ISymbolLookupHandler<ContextInfo, ISemanticModelWrapper>, RoslynSymbolLookupHandlerInvocation<ContextInfo, ISemanticModelWrapper>>();
 
         //
@@ -195,6 +192,7 @@ public class HostConfigurator
         services.AddTransient<IInvocationLinksBuilder<ContextInfo>, RoslynInvocationLinksBuilder>();
         services.AddTransient<IInvocationLinker<ContextInfo, InvocationExpressionSyntax>, RoslynInvocationLinker<ContextInfo>>();
         services.AddTransient<ISymbolWrapperConverter, RoslynSymbolWrapperConverter>();
+
         // ---
 
         services.AddSingleton<IContextInfoCommentProcessor<ContextInfo>, ContextInfoCommentProcessor<ContextInfo>>();

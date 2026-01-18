@@ -10,6 +10,7 @@ public class ContextInfoCollector<TContext> : IContextCollector<TContext>
     where TContext : IContextWithReferences<TContext>
 {
     public ConcurrentDictionary<string, TContext> Collection { get; } = new(StringComparer.Ordinal);
+
     private readonly ConcurrentBag<TContext> FakeCollection = new ConcurrentBag<TContext>();
 
     private readonly object _lock = new();
@@ -98,7 +99,6 @@ public class ContextInfoCollector<TContext> : IContextCollector<TContext>
     {
         // намеренно ничего не делаем — коллектор необновляемый здесь
     }
-
 }
 
 public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContext>
@@ -110,7 +110,6 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
 
     private readonly ConcurrentBag<TContext> _existing = new ConcurrentBag<TContext>();
     private readonly object _lock = new();
-
 
     public ContextInfoReferenceCollector(IEnumerable<TContext> existing)
     {
@@ -128,7 +127,6 @@ public class ContextInfoReferenceCollector<TContext> : IContextCollector<TContex
             {
                 foreach (var item in byItems)
                     _existing.Add(item);
-
 
                 var names = ContextInfoFullNameIndexBuilder.Build(_existing);
                 foreach (var key in names.Keys)

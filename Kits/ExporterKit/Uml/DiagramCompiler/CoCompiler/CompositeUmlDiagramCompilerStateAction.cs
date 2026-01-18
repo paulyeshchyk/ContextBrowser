@@ -41,7 +41,6 @@ public class CompositeUmlDiagramCompilerStateAction : IUmlDiagramCompiler
     private readonly IDiagramCompileOptionsFactory _compileOptionsFactory;
     private readonly UmlTransitionRendererFlat<UmlState> _renderer;
 
-
     public CompositeUmlDiagramCompilerStateAction(IAppLogger<AppLevel> logger, IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, IContextInfoMapperProvider<DomainPerActionTensor> mapperProvider, IAppOptionsStore optionsStore, INamingProcessor namingProcessor, IContextInfoManager<ContextInfo> contextInfoManager, IContextDiagramBuildersFactory diagramBuildersFactory, IDiagramCompileOptionsFactory compileOptionsFactory, UmlTransitionRendererFlat<UmlState> renderer)
     {
         _logger = logger;
@@ -53,7 +52,6 @@ public class CompositeUmlDiagramCompilerStateAction : IUmlDiagramCompiler
         _diagramBuildersFactory = diagramBuildersFactory;
         _compileOptionsFactory = compileOptionsFactory;
         _renderer = renderer;
-
     }
 
     // context: uml, build

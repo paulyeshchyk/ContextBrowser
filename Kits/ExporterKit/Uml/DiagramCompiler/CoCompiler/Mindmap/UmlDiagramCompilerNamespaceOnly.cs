@@ -30,11 +30,11 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
     private readonly UmlClassRendererNamespace<TDataTensor> _renderer;
 
     public UmlDiagramCompilerNamespaceOnly(
-        IAppLogger<AppLevel> logger, 
-        IContextInfoDatasetProvider<TDataTensor> datasetProvider, 
-        IAppOptionsStore optionsStore, 
-        INamingProcessor namingProcessor, 
-        IUmlUrlBuilder umlUrlBuilder, 
+        IAppLogger<AppLevel> logger,
+        IContextInfoDatasetProvider<TDataTensor> datasetProvider,
+        IAppOptionsStore optionsStore,
+        INamingProcessor namingProcessor,
+        IUmlUrlBuilder umlUrlBuilder,
         UmlClassRendererNamespace<TDataTensor> renderer)
     {
         _logger = logger;
@@ -52,7 +52,6 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
-
         var namespaces = GetNamespaces(dataset).ToList();
         foreach (var nameSpace in namespaces)
         {
@@ -63,7 +62,7 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
 
     private static Func<string, IEnumerable<IContextInfo>> GetClassesForNamespace(IContextInfoDataset<ContextInfo, TDataTensor> contextInfoDataSet)
     {
-        return (nameSpace) => contextInfoDataSet.GetAll()
+        return(nameSpace) => contextInfoDataSet.GetAll()
             .Where(c => c.ElementType.IsEntityDefinition() || c.MethodOwnedByItSelf == true)
             .Where(c => c.Namespace == nameSpace);
     }

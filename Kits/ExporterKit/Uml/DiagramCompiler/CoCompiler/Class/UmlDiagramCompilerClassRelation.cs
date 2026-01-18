@@ -28,10 +28,10 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
     private readonly UmlClassRendererLinks _renderer;
 
     public UmlDiagramCompilerClassRelation(
-        IAppLogger<AppLevel> logger, 
-        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider, 
-        IAppOptionsStore optionsStore, 
-        IContextInfoManager<ContextInfo> contextInfoManager, 
+        IAppLogger<AppLevel> logger,
+        IContextInfoDatasetProvider<DomainPerActionTensor> datasetProvider,
+        IAppOptionsStore optionsStore,
+        IContextInfoManager<ContextInfo> contextInfoManager,
         UmlClassRendererLinks renderer)
     {
         _logger = logger;

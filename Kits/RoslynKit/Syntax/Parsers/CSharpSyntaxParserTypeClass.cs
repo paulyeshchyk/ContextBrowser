@@ -40,7 +40,6 @@ public class CSharpSyntaxParserTypeClass<TContext> : SyntaxParser<TContext>
         _methodSyntaxParser = methodSyntaxParser;
         _contextInfoBuilderDispatcher = contextInfoBuilderDispatcher;
         _symbolLoader = symbolLoader;
-
     }
 
     public override bool CanParseSyntax(object syntax) => syntax is ClassDeclarationSyntax;

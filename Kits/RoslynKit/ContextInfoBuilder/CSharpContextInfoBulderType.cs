@@ -24,5 +24,6 @@ public class CSharpContextInfoBulderType<TContext> : ContextInfoBuilder<TContext
     }
 
     public override ContextInfoElementType ElementType => ContextInfoElementType.@class;
+
     public override bool CanBuild(ISyntaxWrapper contextInfo) => contextInfo is CSharpSyntaxWrapperType;
 }

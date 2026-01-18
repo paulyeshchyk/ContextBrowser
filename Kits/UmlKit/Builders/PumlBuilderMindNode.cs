@@ -27,7 +27,6 @@ public static class PumlBuilderMindNode
             ? string.Format("{0}", startNode.ShortName)
             : string.Format("{0}.{1}", startNode.ClassOwner.ShortName, startNode.ShortName);
 
-
         var contextInfo = startNode.ClassOwner ?? startNode;
         var classNameWithNameSpace = $"{contextInfo.Namespace}.{contextInfo.ShortName}";
         var resultNode = new UmlNode(ownerName, url: namingProcessor.ClassOnlyHtmlFilename(classNameWithNameSpace))
@@ -36,7 +35,6 @@ public static class PumlBuilderMindNode
         };
         return resultNode;
     }
-
 
     private static void BuildDomains(ContextInfo startNode, UmlNode resultNode, IUmlUrlBuilder umlUrlBuilder)
     {
@@ -51,7 +49,6 @@ public static class PumlBuilderMindNode
             resultNode.Children.Add(childNode);
 
             firstChild ??= childNode;
-
         }
     }
 }

@@ -42,6 +42,7 @@ public class CSharpSignatureParserStandardWithoutNamespace : ISignatureParserReg
             return SignatureParsingResult.FailureResult();
         }
         var semanticOptions = _optionsStore.GetOptions<CodeParsingOptions>().SemanticOptions;
+
         // 5. Если TypeAndClass не содержит точки (например, просто "Console").
         return SignatureParsingResult.SuccessResult(new SignatureDefault(
             ResultType: resultType,

@@ -17,12 +17,10 @@ public class ContextInfoFiller<TTensor> : IContextInfoFiller<TTensor>
 
     public ContextInfoFiller(IEnumerable<IWordTensorBuildStrategy<TTensor>> strategies, IContextElementExtractor<ContextInfo> contextElementExtractor)
     {
-
         // СОРТИРОВКА: Сортируем стратегии по приоритету (чем меньше число, тем раньше она будет обработана)
         _strategies = strategies.OrderBy(s => s.Priority).ToList();
 
         _contextElementExtractor = contextElementExtractor;
-
     }
 
     // context: ContextInfo, ContextInfoMatrix, build

@@ -13,7 +13,6 @@ namespace RoslynKit.Assembly;
 public class RoslynSyntaxTreeWrapperBuilder<TSyntaxTreeWrapper> : ISyntaxTreeWrapperBuilder<TSyntaxTreeWrapper>
     where TSyntaxTreeWrapper : RoslynSyntaxTreeWrapper
 {
-
     // context: roslyn, build
     public Task<TSyntaxTreeWrapper> BuildAsync(string code, string filePath, CancellationToken cancellationToken)
     {

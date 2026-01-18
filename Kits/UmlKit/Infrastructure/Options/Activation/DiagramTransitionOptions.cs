@@ -1,4 +1,6 @@
-﻿namespace UmlKit.Infrastructure.Options.Activation;
+﻿using System.Text.Json.Serialization;
+
+namespace UmlKit.Infrastructure.Options.Activation;
 
 public record DiagramTransitionOptions : IActivationObserver
 {
@@ -9,6 +11,7 @@ public record DiagramTransitionOptions : IActivationObserver
 
     public bool UseDone { get; set; }
 
+    [JsonConstructor]
     public DiagramTransitionOptions(bool useCall, bool useDone)
     {
         _useCall = useCall;

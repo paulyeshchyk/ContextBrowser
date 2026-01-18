@@ -21,14 +21,13 @@ public class RoslynSyntaxTreeParser : ISyntaxTreeParser<RoslynSyntaxTreeWrapper>
 {
     private readonly IAppLogger<AppLevel> _logger;
     private readonly ICodeInjector _codeInjector;
-     private readonly IAppOptionsStore _optionsStore;
+    private readonly IAppOptionsStore _optionsStore;
 
     public RoslynSyntaxTreeParser(IAppLogger<AppLevel> logger, ICodeInjector codeInjector, IAppOptionsStore optionsStore)
     {
         _logger = logger;
         _codeInjector = codeInjector;
         _optionsStore = optionsStore;
-
     }
 
     // context: roslyn, build

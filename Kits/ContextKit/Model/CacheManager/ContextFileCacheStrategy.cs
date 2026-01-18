@@ -71,7 +71,6 @@ public class ContextFileCacheStrategy : IFileCacheStrategy
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
 
-
             File.Move(tempFilePath, cacheModel.Output);
         }
         catch (Exception ex)

@@ -15,7 +15,7 @@ namespace UmlKit.DiagramGenerator.Renderer;
 
 public class UmlTransitionRendererFlatState : UmlTransitionRendererFlat<UmlState>
 {
-    public UmlTransitionRendererFlatState(IAppLogger<AppLevel> logger, INamingProcessor namingProcessor, IAppOptionsStore optionsStore,IUmlTransitionFactory<UmlState> factory)
+    public UmlTransitionRendererFlatState(IAppLogger<AppLevel> logger, INamingProcessor namingProcessor, IAppOptionsStore optionsStore, IUmlTransitionFactory<UmlState> factory)
     : base(logger, factory, namingProcessor, optionsStore)
     {
     }

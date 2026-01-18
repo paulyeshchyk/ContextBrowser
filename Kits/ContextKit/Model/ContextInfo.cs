@@ -9,6 +9,7 @@ namespace ContextKit.Model;
 public record ContextInfo : IContextWithReferences<ContextInfo>
 {
     public ContextInfoElementType ElementType { get; set; } = ContextInfoElementType.none;
+
     public ContentInfoElementVisibility ElementVisibility { get; set; } = ContentInfoElementVisibility.@internal;
 
     public string Identifier { get; } = Guid.NewGuid().ToString();
@@ -92,7 +93,6 @@ public record ContextInfo : IContextWithReferences<ContextInfo>
 
     public ContextInfo()
     {
-
     }
 
     public ContextInfo(

@@ -35,7 +35,6 @@ public class HtmlPageCompilerActionPerDomainSummary<TDataTensor> : IHtmlPageComp
         _matrixWriter = matrixWriter;
         _keyFactory = keyFactory;
         _namingProcessor = namingProcessor;
-
     }
 
     // context: html, build

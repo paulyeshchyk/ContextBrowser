@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using SemanticKit.Model.Signature;
 
-
 namespace SemanticKit.Model.Signature;
 
 public record SignatureParsingResult
 {
     public SignatureDefault Result { get; }
+
     public bool Success { get; }
 
     private SignatureParsingResult(SignatureDefault result, bool success)
