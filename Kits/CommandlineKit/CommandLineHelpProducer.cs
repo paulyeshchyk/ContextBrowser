@@ -26,7 +26,7 @@ public static class CommandLineHelpProducer
         {
             string? path = (helpIndex != -1 && helpIndex + 1 < args.Length) ? args[helpIndex + 1] : null;
             bool expand = GetExpandFlag(args);
-            HelpGenerator.GenerateHelp(referenceInstance, path, appVersion, expand);
+            HelpGenerator.GenerateHelp(referenceInstance, appVersion, path, expand);
             return true;
         }
 
