@@ -8,6 +8,7 @@ using ContextBrowser.Infrastructure.Options.Projects;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using LoggerKit;
+using LoggerKit.Writers;
 
 namespace ContextBrowser.Infrastructure.Options;
 
@@ -28,7 +29,7 @@ public static class AppOptionsResolver
             return null;
         }
 
-        var logger = AppLoggerFactory.DefaultIndentedLogger<AppLevel>();
+        var logger = AppLoggerFactory.CreateIndentedLogger<AppLevel>(new ConsoleLogWriter());
         logger.Configure(AppOptions.DefaultLogConfiguration());
 
         var parser = new CommandlineArgumentsParserService();

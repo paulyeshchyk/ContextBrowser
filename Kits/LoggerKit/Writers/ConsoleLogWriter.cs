@@ -1,6 +1,8 @@
 ﻿using System;
+using LoggerKit;
+using LoggerKit.Writers;
 
-namespace LoggerKit;
+namespace LoggerKit.Writers;
 
 // context: log, share
 public class ConsoleLogWriter : ILogWriter

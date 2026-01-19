@@ -15,7 +15,7 @@ public record RunOptions
     public string Project { get; set; } = "Default";
 
     [CommandLineArgument("appOptionsFilePath", "Путь и имя к конфигурационному файлу")]
-    public string AppOptionsFilePath { get; set; } = string.Empty;
+    public string AppOptionsFilePath { get; set; } = "settings.json";
 
     [CommandLineArgument("renewAppOptions", "Записывает введённые значения в указанный конфигурационный файл")]
     public bool RenewAppOptions { get; set; } = false;

@@ -9,12 +9,11 @@ namespace LoggerKit;
 
 public static class AppLoggerFactory
 {
-    public static IndentedAppLogger<TAppLevel> DefaultIndentedLogger<TAppLevel>()
-        where TAppLevel : notnull
+    public static IndentedAppLogger<TAppLevel> CreateIndentedLogger<TAppLevel>(ILogWriter writer)
+            where TAppLevel : notnull
     {
         var defaultLogLevels = new AppLoggerLevelStore<TAppLevel>();
-        var defaultConsoleWriter = new ConsoleLogWriter();
         var defaultDependencies = new Dictionary<TAppLevel, TAppLevel>();
-        return new IndentedAppLogger<TAppLevel>(defaultLogLevels, defaultConsoleWriter, dependencies: defaultDependencies);
+        return new IndentedAppLogger<TAppLevel>(defaultLogLevels, writer, defaultDependencies);
     }
 }

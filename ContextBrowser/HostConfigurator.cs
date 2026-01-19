@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using ContextBrowser.Infrastructure;
 using ContextBrowser.Services;
 using ContextBrowser.Services.ContextInfoProvider;
 using ContextBrowser.Services.Parsing;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.ContextData;
 using ContextKit.ContextData.Comment;
@@ -34,6 +36,7 @@ using HtmlKit.Helpers;
 using HtmlKit.Matrix;
 using LoggerKit;
 using LoggerKit.Model;
+using LoggerKit.Writers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -82,9 +85,28 @@ public class HostConfigurator
         // --- Общие службы и настройки приложения (Options) ---
         services.AddSingleton<IAppOptionsStore, AppSettingsStore>();
 
-        services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(_ =>
+        services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(serviceProvider =>
         {
-            return AppLoggerFactory.DefaultIndentedLogger<AppLevel>();
+
+            var options = serviceProvider.GetService<IAppOptionsStore>();
+
+            var writers = new List<ILogWriter>();
+
+            // 1. Всегда в консоль (или по условию)
+            writers.Add(new ConsoleLogWriter());
+
+            // 2. В файл
+            var logConfiguration = options?.GetOptions<LogConfiguration<AppLevel, LogLevel>>();
+            if (logConfiguration?.LogOutputPath is { } logOutputPath)
+            {
+
+                writers.Add(new FileLogWriter(logOutputPath));
+            }
+
+            // Объединяем их
+            var compositeWriter = new CompositeLogWriter(writers.ToArray());
+
+            return AppLoggerFactory.CreateIndentedLogger<AppLevel>(compositeWriter);
         });
 
         services.AddSingleton<INamingProcessor, NamingProcessor>();

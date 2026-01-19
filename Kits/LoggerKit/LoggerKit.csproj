@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<BaseOutputPath>../../bin</BaseOutputPath>
 		<OutputType>library</OutputType>
@@ -6,6 +6,9 @@
 		<Nullable>enable</Nullable>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ContextBrowserKit\ContextBrowserKit.csproj" />
 	</ItemGroup>

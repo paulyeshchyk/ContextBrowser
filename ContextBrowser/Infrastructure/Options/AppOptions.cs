@@ -153,6 +153,10 @@ public class AppOptions
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Tran, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err } };
-        return new LogConfiguration<AppLevel, LogLevel>() { LogLevels = levels };
+        return new LogConfiguration<AppLevel, LogLevel>() 
+        { 
+            LogLevels = levels,
+            LogOutputPath = ".//output//logs"
+        };
     }
 }

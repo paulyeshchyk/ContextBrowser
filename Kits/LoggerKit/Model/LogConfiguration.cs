@@ -11,4 +11,6 @@ public class LogConfiguration<TAppLevel, TLogLevel>
 {
     [CommandLineArgument("LogLevels", "Доступные уровни логирования")]
     public List<LogConfigEntry<TAppLevel, TLogLevel>> LogLevels { get; set; } = new List<LogConfigEntry<TAppLevel, TLogLevel>>();
+
+    public string LogOutputPath { get; set; } = string.Empty;
 }
