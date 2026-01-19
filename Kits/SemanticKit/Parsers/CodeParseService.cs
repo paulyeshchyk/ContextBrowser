@@ -43,7 +43,8 @@ public class CodeParseService : ICodeParseService
 
         if (filtered.Length == 0)
         {
-            throw new Exception("No files to parse");
+            var searchPaths = string.Join(';',importOptions.SearchPaths);
+            throw new Exception($"No files to parse ({searchPaths})");
         }
         return pipeline.ParseAsync(filtered, "Compilation_1", cancellationToken);
     }

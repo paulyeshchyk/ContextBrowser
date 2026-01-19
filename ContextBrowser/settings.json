@@ -1,0 +1,211 @@
+{
+  "ExecutionMode": "Console",
+  "LogConfiguration": {
+    "LogLevels": [
+      {
+        "AppLevel": "App",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "file",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "R_Symbol",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "R_Syntax",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "R_Cntx",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "R_Dll",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "R_Invocation",
+        "LogLevel": "Err"
+      },
+      {
+        "AppLevel": "P_Bld",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "P_Rnd",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "P_Cpl",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "P_Tran",
+        "LogLevel": "Warn"
+      },
+      {
+        "AppLevel": "Html",
+        "LogLevel": "Err"
+      }
+    ]
+  },
+  "ParsingOptions": {
+    "SemanticLanguage": "csharp",
+    "SemanticOptions": {
+      "ExternalNaming": {
+        "NamespaceName": "ExternalNamespace",
+        "ClassName": "ExternalClass",
+        "MethodName": "ExternalMethod",
+        "ResultTypeName": "void"
+      },
+      "FakeNaming": {
+        "OwnerName": "privateTYPE",
+        "MethodName": "privateMETHOD",
+        "NamespaceName": "FakeNamespace",
+        "ClassName": "FakeClass",
+        "ResultTypeName": "void"
+      },
+      "MethodModifierTypes": [
+        "public",
+        "protected",
+        "private",
+        "internal"
+      ],
+      "ClassModifierTypes": [
+        "public",
+        "protected",
+        "private",
+        "internal"
+      ],
+      "MemberTypes": [
+        "enum",
+        "class",
+        "interface",
+        "delegate",
+        "record",
+        "struct"
+      ],
+      "CustomAssembliesPaths": [
+        "."
+      ],
+      "CreateFailedCallees": true,
+      "SemanticFilters": {
+        "TrustedFilters": {
+          "Excluded": "",
+          "Included": ""
+        },
+        "RuntimeFilters": {
+          "Excluded": "",
+          "Included": "**/*"
+        },
+        "DomainFilters": {
+          "Excluded": "**/net8.0/System.Text.Json.dll;**/ContextBrowser.dll;**/ContextSamples.dll;**/SemanticKit.dll;**/TensorKit.dll;**/CommandlineKit.dll;**/ContextBrowserKit.dll;**/ContextKit.dll;**/CustomServers.dll;**/ExporterKit.dll;**/GraphKit.dll;**/HtmlKit.dll;**/LoggerKit.dll;**/RoslynKit.dll;**/UmlKit.dll;**/api-ms-*;",
+          "Included": "**/*"
+        }
+      },
+      "GlobalUsings": "System.Text.Json; System.Diagnostics; System.Diagnostics.Process; System.Collections; System.Collections.Immutable; System.Collections.Generic; System.IO; System.Linq; System.Net.Http; System.Threading; System.Threading.Tasks",
+      "MaxDegreeOfParallelism": 12,
+      "IncludePseudoCode": false
+    }
+  },
+  "Import": {
+    "SearchPaths": [
+      ".//..//..//..//"
+    ],
+    "Exclude": "**/obj/**;",
+    "FileExtensions": ".cs"
+  },
+  "Export": {
+    "ExportMatrix": {
+      "UnclassifiedPriority": "Highest",
+      "IncludeAllStandardActions": false,
+      "HtmlTable": {
+        "SummaryPlacement": "AfterFirst",
+        "Orientation": "Transposed"
+      }
+    },
+    "FilePaths": {
+      "OutputDirectory": ".//output//ContextBrowser//site",
+      "CacheModel": {
+        "Output": ".//output//ContextBrowser//cache//roslyn.json",
+        "Input": ".//output//ContextBrowser//cache//roslyn.json",
+        "RenewCache": false
+      },
+      "RelativePaths": {
+        "index": ".",
+        "puml": "puml",
+        "pages": "pages",
+        "pumlExtra": "puml/extra"
+      }
+    },
+    "WebPaths": {
+      "OutputDirectory": "http://localhost:5500",
+      "CacheModel": {
+        "Output": ".//output//ContextBrowser//cache//roslyn.json",
+        "Input": ".//output//ContextBrowser//cache//roslyn.json",
+        "RenewCache": false
+      },
+      "RelativePaths": {
+        "index": ".",
+        "puml": "puml",
+        "pages": "pages",
+        "pumlExtra": "puml/extra"
+      }
+    },
+    "PumlOptions": {
+      "InjectionType": "reference"
+    }
+  },
+  "DiagramBuilder": {
+    "Debug": false,
+    "DiagramDetailLevel": "Method",
+    "DiagramDirection": "BiDirectional",
+    "Activation": {
+      "UseActivation": true,
+      "UseActivationCall": true
+    },
+    "CalleeTransitionOptions": {
+      "UseCall": true,
+      "UseDone": true
+    },
+    "InvocationOptions": {
+      "UseInvocation": true,
+      "UseReturn": false
+    },
+    "Indication": {
+      "UseAsync": true
+    },
+    "DiagramType": "Transition"
+  },
+  "Classifier": {
+    "MetaItems": [
+      "Action;Domain;Elements"
+    ],
+    "WordRoleClassifier": {
+      "StandardActions": [
+        "create",
+        "read",
+        "update",
+        "delete",
+        "validate",
+        "share",
+        "build",
+        "model",
+        "execute",
+        "convert",
+        "_fakeAction"
+      ]
+    },
+    "EmptyDimensionClassifier": {
+      "EmptyAction": "EmptyAction",
+      "EmptyDomain": "EmptyDomain"
+    },
+    "FakeDimensionClassifier": {
+      "FakeAction": "_fakeAction",
+      "FakeDomain": "_fakeDomain"
+    }
+  }
+}

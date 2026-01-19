@@ -138,7 +138,8 @@ public class WindowsServer : CustomServer
 
     public override System.Diagnostics.Process? StartHttpServer(int port, string folder)
     {
-        return StartShell($"cd /d \"{folder}\" && start http-server -p {port} --no-cache", true);
+        //return StartShell($"cd /d \"{folder}\" && start http-server -p {port} --no-cache", true);
+        return StartShell($"cd /d \"{folder}\" && start %USERPROFILE%\\AppData\\Roaming\\npm\\http-server.cmd -p {port} --no-cache", true);
     }
 
     public override System.Diagnostics.Process? OpenHtmlPage(string page)

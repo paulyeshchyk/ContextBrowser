@@ -42,6 +42,13 @@
 #! /usr/bin/env sh
 npx http-server -p 5500 --no-cache
 ```
+#### Установка Http сервера
+[https://www.npmjs.com/package/http-server]
+
+##### Установка node.js и пакетного менеджера npm
+[https://docs.npmjs.com/downloading-and-installing-node-js-and-npm]
+##### Устранение ошибок после установки npm
+[https://stackoverflow.com/questions/31694646/http-server-command-not-found-after-install-in-npm]
 
 ### Запуск PlantUml транслятора
 Выполнить команду

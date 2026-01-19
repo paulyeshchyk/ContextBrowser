@@ -57,9 +57,14 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
 
         var classesOnly = contextInfoDataset.GetAll().Where(c => (c.ElementType.IsEntityDefinition() || c.MethodOwnedByItSelf == true));
 
+        var diplicatedClasses = classesOnly.GroupBy(x => x)
+              .Where(g => g.Count() > 1)
+              .Select(y => y.Key)
+              .ToList();
+
         var tasks = classesOnly.Select(async context => await ExportAsync(contextInfo: context,
-                                                                       exportOptions: exportOptions,
-                                                                   cancellationToken: cancellationToken).ConfigureAwait(false)
+                                                                        exportOptions: exportOptions,
+                                                                    cancellationToken: cancellationToken).ConfigureAwait(false)
         );
         await Task.WhenAll(tasks);
         return new Dictionary<ILabeledValue, bool>();
