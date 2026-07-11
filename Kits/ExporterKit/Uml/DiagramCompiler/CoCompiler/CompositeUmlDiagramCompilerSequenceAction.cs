@@ -71,7 +71,11 @@ public class CompositeUmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
 
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken).ConfigureAwait(false);
-        var distinctRows = mapper.GetRows().Distinct();
+        var distinctRows = mapper.GetRows()?.Distinct();
+        if (distinctRows == null)
+        {
+            return new Dictionary<ILabeledValue, bool>();
+        }
 
         var renderedCache = new Dictionary<ILabeledValue, bool>();
         foreach (var row in distinctRows)

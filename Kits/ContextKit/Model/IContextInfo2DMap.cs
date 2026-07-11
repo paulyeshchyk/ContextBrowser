@@ -8,8 +8,8 @@ public interface IContextInfo2DMap<TContext, TTensor> : IContextInfoMap<TContext
     where TTensor : notnull
 {
     // context: ContextInfoMatrix, read
-    IEnumerable<ILabeledValue> GetRows();
+    IEnumerable<ILabeledValue>? GetRows();
 
     // context: ContextInfoMatrix, read
-    IEnumerable<ILabeledValue> GetCols();
+    IEnumerable<ILabeledValue>? GetCols();
 }

@@ -60,7 +60,12 @@ public class CompositeUmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
 
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken).ConfigureAwait(false);
-        var distinctCols = mapper.GetCols().Distinct();
+        var distinctCols = mapper.GetCols()?.Distinct();
+
+        if (distinctCols == null)
+        {
+            return new Dictionary<ILabeledValue, bool>();
+        }
 
         var renderedCache = new Dictionary<ILabeledValue, bool>();
         foreach (var col in distinctCols)

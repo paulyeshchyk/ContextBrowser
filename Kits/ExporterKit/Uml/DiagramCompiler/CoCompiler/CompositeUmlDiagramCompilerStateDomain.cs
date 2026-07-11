@@ -67,7 +67,11 @@ public class CompositeUmlDiagramCompilerStateDomain : IUmlDiagramCompiler
 
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken).ConfigureAwait(false);
-        var domains = mapper.GetCols().Distinct();
+        var domains = mapper.GetCols()?.Distinct();
+        if (domains == null)
+        {
+            return new Dictionary<ILabeledValue, bool>();
+        }
 
         var renderedCache = new Dictionary<ILabeledValue, bool>();
         foreach (var domain in domains)

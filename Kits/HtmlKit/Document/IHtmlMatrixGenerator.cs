@@ -6,5 +6,5 @@ namespace HtmlKit.Document;
 
 public interface IHtmlMatrixGenerator
 {
-    Task<IHtmlMatrix> GenerateAsync(CancellationToken cancellationToken);
+    Task<IHtmlMatrix?> GenerateAsync(CancellationToken cancellationToken);
 }

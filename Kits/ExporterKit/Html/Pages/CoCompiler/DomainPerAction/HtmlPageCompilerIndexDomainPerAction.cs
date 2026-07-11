@@ -38,6 +38,10 @@ public class HtmlPageCompilerIndexDomainPerAction<TDataTensor> : IHtmlPageCompil
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
         var matrix = await _matrixGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
+        if (matrix == null)
+        {
+            return;
+        }
         var result = await _indexPageProducer.ProduceAsync(matrix, cancellationToken).ConfigureAwait(false);
 
         var outputFile = exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.index, "index.html");

@@ -67,7 +67,12 @@ public class CompositeUmlDiagramCompilerStateAction : IUmlDiagramCompiler
 
         var elements = dataset.GetAll().ToList();
         var mapper = await _mapperProvider.GetMapperAsync(GlobalMapperKeys.DomainPerAction, cancellationToken).ConfigureAwait(false);
-        var actions = mapper.GetRows().Distinct();
+        var actions = mapper.GetRows()?.Distinct();
+
+        if (actions == null)
+        {
+            return new Dictionary<ILabeledValue, bool>();
+        }
 
         var tasks = actions.Select(async action =>
         {

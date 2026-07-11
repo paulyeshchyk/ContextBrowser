@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextBrowserKit.Options.Export;
 using ContextKit.Model;
 using ContextKit.Model.Classifier;
 using HtmlKit.Document;
 using HtmlKit.Matrix;
+using LoggerKit;
 using TensorKit.Model;
 
 namespace ExporterKit.Html.Pages.CoCompiler.DomainPerAction;
@@ -19,15 +21,17 @@ public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
 {
     private readonly IContextInfo2DMap<ContextInfo, TTensor> _mapper;
     private readonly IAppOptionsStore _optionsStore;
+    private readonly IAppLogger<AppLevel> _logger;
 
-    public HtmlMatrixGenerator(IContextInfo2DMap<ContextInfo, TTensor> mapper, IAppOptionsStore optionsStore)
+    public HtmlMatrixGenerator(IContextInfo2DMap<ContextInfo, TTensor> mapper, IAppOptionsStore optionsStore, IAppLogger<AppLevel> logger)
     {
         _mapper = mapper;
         _optionsStore = optionsStore;
+        _logger = logger;
     }
 
     // context: build, htmlmatrix
-    public Task<IHtmlMatrix> GenerateAsync(CancellationToken cancellationToken)
+    public Task<IHtmlMatrix?> GenerateAsync(CancellationToken cancellationToken)
     {
         var matrixOptions = _optionsStore.GetOptions<ExportMatrixOptions>();
         var matrixOrientation = matrixOptions.HtmlTable.Orientation;
@@ -38,8 +42,13 @@ public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var rows = SortList(_mapper.GetRows().Distinct().ToList(), emptyDimensionClassifier.EmptyAction, priority);
-            var cols = SortList(_mapper.GetCols().Distinct().ToList(), emptyDimensionClassifier.EmptyDomain, priority);
+            var rows = SortList(_mapper.GetRows()?.Distinct().ToList(), emptyDimensionClassifier.EmptyAction, priority);
+            var cols = SortList(_mapper.GetCols()?.Distinct().ToList(), emptyDimensionClassifier.EmptyDomain, priority);
+
+            if (rows == null || cols == null)
+            {
+                return null;
+            }
 
             var resultMatrix = new HtmlMatrixDomainPerAction(rows, cols);
 
@@ -53,14 +62,14 @@ public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
     }
 
     // context: ContextInfoMatrix, htmlmatrix, read
-    internal static List<ILabeledValue> SortList(List<ILabeledValue> list, string emptyValue, UnclassifiedPriorityType priority)
+    internal static List<ILabeledValue>? SortList(List<ILabeledValue>? list, string emptyValue, UnclassifiedPriorityType priority)
     {
         return priority switch
         {
-            UnclassifiedPriorityType.Highest => list.OrderBy(v => !v.LabeledData.Equals(emptyValue)).ThenBy(v => v.LabeledData).ToList(),
-            UnclassifiedPriorityType.Lowest => list.OrderBy(v => v.LabeledData.Equals(emptyValue)).ThenBy(v => v.LabeledData).ToList(),
-            UnclassifiedPriorityType.None => list.OrderBy(v => v.LabeledData).ToList(),
-            _ => list.OrderBy(v => v.LabeledData).ToList()
+            UnclassifiedPriorityType.Highest => list?.OrderBy(v => !v.LabeledData.Equals(emptyValue)).ThenBy(v => v.LabeledData).ToList(),
+            UnclassifiedPriorityType.Lowest => list?.OrderBy(v => v.LabeledData.Equals(emptyValue)).ThenBy(v => v.LabeledData).ToList(),
+            UnclassifiedPriorityType.None => list?.OrderBy(v => v.LabeledData).ToList(),
+            _ => list?.OrderBy(v => v.LabeledData).ToList()
         };
     }
 }

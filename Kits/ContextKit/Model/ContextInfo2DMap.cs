@@ -21,10 +21,10 @@ public class ContextInfo2DMap<TTensor, TContext> : IContextInfo2DMap<TContext, T
     private readonly IFakeDimensionClassifier _fakeDimensionClassifier;
 
     // context: ContextInfoMatrix, read
-    public IEnumerable<ILabeledValue> GetCols() => _data!.Select(k => new StringColumnWrapper(k.Key.Domain, k.Key.Domain));
+    public IEnumerable<ILabeledValue>? GetCols() => _data?.Select(k => new StringColumnWrapper(k.Key.Domain, k.Key.Domain));
 
     // context: ContextInfoMatrix, read
-    public IEnumerable<ILabeledValue> GetRows() => _data!.Select(k => new StringColumnWrapper(k.Key.Action, k.Key.Action));
+    public IEnumerable<ILabeledValue>? GetRows() => _data?.Select(k => new StringColumnWrapper(k.Key.Action, k.Key.Action));
 
     public ContextInfo2DMap(ITensorFactory<TTensor> keyFactory, ITensorBuilder keyBuilder, IAppOptionsStore optionsStore)
     {
