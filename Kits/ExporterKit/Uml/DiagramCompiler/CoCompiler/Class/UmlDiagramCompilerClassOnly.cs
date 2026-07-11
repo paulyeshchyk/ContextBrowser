@@ -49,7 +49,7 @@ public class UmlDiagramCompilerClassOnly : IUmlDiagramCompiler
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassOnly");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile ClassOnly");
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 

@@ -32,7 +32,7 @@ public class UmlDiagramCompilerActionPerDomainPackageActionGroup : UmlDiagramCom
 
     public override async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ActionGroup");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile ActionGroup");
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         var actionContexts = dataset

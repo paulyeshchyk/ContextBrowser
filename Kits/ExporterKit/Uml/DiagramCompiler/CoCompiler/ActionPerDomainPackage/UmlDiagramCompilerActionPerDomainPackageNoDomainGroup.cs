@@ -32,7 +32,7 @@ public class UmlDiagramCompilerActionPerDomainPackageNoDomainGroup : UmlDiagramC
 
     public override async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile NoDomainGroup");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile NoDomainGroup");
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 
         var domainContexts = dataset

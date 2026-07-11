@@ -48,7 +48,7 @@ public class UmlDiagramCompilerNamespaceOnly<TDataTensor> : IUmlDiagramCompiler
     //context: uml, build
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile Namespaces only");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile Namespaces only");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 

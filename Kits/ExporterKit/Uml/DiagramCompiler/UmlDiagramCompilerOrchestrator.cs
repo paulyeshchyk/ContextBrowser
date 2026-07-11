@@ -23,12 +23,12 @@ public class UmlDiagramCompilerOrchestrator : IUmlDiagramCompilerOrchestrator
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _appLogger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile diagrams", LogLevelNode.Start);
+        _appLogger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile diagrams", LogLevelNode.Start);
 
         var tasks = _compilers.Select(async compiler => await compiler.CompileAsync(cancellationToken).ConfigureAwait(false));
 
         await Task.WhenAll(tasks);
 
-        _appLogger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+        _appLogger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, string.Empty, LogLevelNode.End);
     }
 }

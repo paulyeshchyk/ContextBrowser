@@ -54,7 +54,7 @@ public class CompositeUmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
     // context: uml, build
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile SequenceDomain");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile SequenceDomain");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
@@ -84,13 +84,13 @@ public class CompositeUmlDiagramCompilerSequenceDomain : IUmlDiagramCompiler
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling Sequence {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, $"Compiling Sequence {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
         var transitionBuilder = _diagramBuildersFactory.BuilderForType(DiagramBuilderKeys.Transition, diagramBuilderOptions, _logger, _contextInfoManager, _optionsStore);
 
         var diagramCompilerSequence = new UmlDiagramCompilerSequence(logger: _logger, exportOptions, diagramBuilderOptions, transitionBuilder, _namingProcessor, _renderer);
         var rendered = await diagramCompilerSequence.CompileAsync(options.MetaItem, options.FetchType, options.DiagramId, options.DiagramTitle, options.OutputFileName, allContexts, cancellationToken);
 
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, string.Empty, LogLevelNode.End);
         return rendered;
     }
 }

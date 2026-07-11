@@ -59,25 +59,25 @@ public abstract class UmlDiagramCompilerState
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile state for [{metaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, $"Compile state for [{metaItem}]", LogLevelNode.Start);
 
         // Используем фабрику для создания построителя диаграмм
         var transitions = _builder.Build(metaItem, fetchType: TypeOfFetch, allContexts);
         if (transitions == null || !transitions.HasTransitions())
         {
-            _logger.WriteLog(AppLevel.P_Rnd, LogLevel.Warn, $"No transitions provided for [{metaItem}]");
+            _logger.WriteLog(AppLevel.P_Uml, LogLevel.Warn, $"No transitions provided for [{metaItem}]");
             return false;
         }
 
-        _logger.WriteLog(AppLevel.P_Rnd, LogLevel.Dbg, $"Rendering Diagram transitions for [{metaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, $"Rendering Diagram transitions for [{metaItem}]", LogLevelNode.Start);
 
         var diagram = await _renderer.RenderAsync(transitions, cancellationToken).ConfigureAwait(false);
 
-        _logger.WriteLog(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
         if (diagram == null)
         {
-            _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+            _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, string.Empty, LogLevelNode.End);
             return false;
         }
 
@@ -90,7 +90,7 @@ public abstract class UmlDiagramCompilerState
         var path = _exportOptions.FilePaths.BuildAbsolutePath(ExportPathType.puml, diagramFileName);
         await diagram.WriteToFileAsync(path, writeOptons, cancellationToken);
 
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
         return true;
     }

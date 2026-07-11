@@ -47,7 +47,7 @@ public class UmlDiagramCompilerMindmapClassOnly : IUmlDiagramCompiler
     // context: build, uml
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap Action: Class only");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile Mindmap Action: Class only");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();

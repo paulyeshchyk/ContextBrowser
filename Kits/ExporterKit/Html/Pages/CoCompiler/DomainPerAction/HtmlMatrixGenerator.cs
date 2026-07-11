@@ -47,6 +47,7 @@ public class HtmlMatrixGenerator<TTensor> : IHtmlMatrixGenerator
 
             if (rows == null || cols == null)
             {
+                _logger.WriteLog(AppLevel.P_Html, LogLevel.Err, "rows or cols are not defined");
                 return null;
             }
 

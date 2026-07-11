@@ -44,7 +44,7 @@ public class UmlDiagramCompilerClassRelation : IUmlDiagramCompiler
     //context: build, uml, links
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassRelation");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile ClassRelation");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 

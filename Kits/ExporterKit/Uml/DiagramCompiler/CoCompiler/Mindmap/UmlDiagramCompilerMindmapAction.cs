@@ -47,7 +47,7 @@ public class UmlDiagramCompilerMindmapAction : IUmlDiagramCompiler
     // context: build, uml
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap Action");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile Mindmap Action");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 

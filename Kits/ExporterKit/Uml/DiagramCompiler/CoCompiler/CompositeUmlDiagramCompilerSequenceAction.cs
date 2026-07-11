@@ -63,7 +63,7 @@ public class CompositeUmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
     // context: uml, build
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile SequenceAction");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile SequenceAction");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
@@ -91,14 +91,14 @@ public class CompositeUmlDiagramCompilerSequenceAction : IUmlDiagramCompiler
     /// </summary>
     protected async Task<bool> GenerateSingleAsync(ExportOptions exportOptions, DiagramBuilderOptions diagramBuildingOptions, IDiagramCompileOptions compileOptions, List<ContextInfo> allContexts, CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling Sequence {compileOptions.FetchType} [{compileOptions.MetaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, $"Compiling Sequence {compileOptions.FetchType} [{compileOptions.MetaItem}]", LogLevelNode.Start);
 
         var bf = _diagramBuildersFactory.BuilderForType(DiagramBuilderKeys.Transition, diagramBuildingOptions, _logger, _contextInfoManager, _optionsStore);
 
         var diagramCompilerSequence = new UmlDiagramCompilerSequence(logger: _logger, exportOptions, diagramBuildingOptions, bf, _namingProcessor, _renderer);
         var rendered = await diagramCompilerSequence.CompileAsync(compileOptions.MetaItem, compileOptions.FetchType, compileOptions.DiagramId, compileOptions.DiagramTitle, compileOptions.OutputFileName, allContexts, cancellationToken).ConfigureAwait(false);
 
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, string.Empty, LogLevelNode.End);
         return rendered;
     }
 }

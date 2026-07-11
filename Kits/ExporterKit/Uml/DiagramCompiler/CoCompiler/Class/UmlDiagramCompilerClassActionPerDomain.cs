@@ -50,7 +50,7 @@ public class UmlDiagramCompilerClassActionPerDomain<TDataTensor> : IUmlDiagramCo
 
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassActionPerDomain");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile ClassActionPerDomain");
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 

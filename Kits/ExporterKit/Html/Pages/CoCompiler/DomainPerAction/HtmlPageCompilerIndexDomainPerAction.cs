@@ -33,13 +33,14 @@ public class HtmlPageCompilerIndexDomainPerAction<TDataTensor> : IHtmlPageCompil
     // context: html, build
     public async Task CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
+        _logger.WriteLog(AppLevel.P_Html, LogLevel.Cntx, "--- IndexHtmlBuilder.Build ---");
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 
         var matrix = await _matrixGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
         if (matrix == null)
         {
+            _logger.WriteLog(AppLevel.P_Html, LogLevel.Warn, "Matrix is empty");
             return;
         }
         var result = await _indexPageProducer.ProduceAsync(matrix, cancellationToken).ConfigureAwait(false);

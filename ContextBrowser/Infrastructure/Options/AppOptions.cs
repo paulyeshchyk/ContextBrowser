@@ -148,11 +148,11 @@ public class AppOptions
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Cntx, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Dll, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.R_Invocation, LogLevel = LogLevel.Err },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Bld, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Uml, LogLevel = LogLevel.Warn },
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Html, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Rnd, LogLevel = LogLevel.Warn },
             new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Cpl, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Tran, LogLevel = LogLevel.Warn },
-            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.Html, LogLevel = LogLevel.Err } };
+            new LogConfigEntry<AppLevel, LogLevel>() { AppLevel = AppLevel.P_Tran, LogLevel = LogLevel.Warn } };
         return new LogConfiguration<AppLevel, LogLevel>() { LogLevels = levels };
     }
 }

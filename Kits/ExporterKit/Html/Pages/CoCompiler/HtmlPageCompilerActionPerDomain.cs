@@ -41,7 +41,7 @@ public class HtmlPageCompilerActionPerDomain<TDataTensor> : IHtmlPageCompiler
     // context: html, build
     public async Task CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "--- ActionPerDomainPage.Build ---", LogLevelNode.None);
+        _logger.WriteLog(AppLevel.P_Html, LogLevel.Cntx, "--- ActionPerDomainPage.Build ---", LogLevelNode.None);
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 

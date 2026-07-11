@@ -47,7 +47,7 @@ public class UmlDiagramCompilerMindmapDomain : IUmlDiagramCompiler
     // context: build, uml
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Bld, LogLevel.Cntx, "Compile Mindmap Domain");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile Mindmap Domain");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();

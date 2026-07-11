@@ -50,7 +50,7 @@ public class UmlDiagramCompilerPackages : IUmlDiagramCompiler
     // context: build, uml
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile Packages");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile Packages");
 
         var contextInfoDataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
         var elements = contextInfoDataset.GetAll().ToList();

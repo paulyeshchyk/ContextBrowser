@@ -44,7 +44,7 @@ public class UmlDiagramCompilerClassMethodsList : IUmlDiagramCompiler
     // context: build, uml, links
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile ClassMethodList");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile ClassMethodList");
 
         var exportOptions = _optionsStore.GetOptions<ExportOptions>();
 

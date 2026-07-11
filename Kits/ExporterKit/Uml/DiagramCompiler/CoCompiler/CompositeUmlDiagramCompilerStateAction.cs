@@ -57,7 +57,7 @@ public class CompositeUmlDiagramCompilerStateAction : IUmlDiagramCompiler
     // context: uml, build
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile StateAction");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile StateAction");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken);
 

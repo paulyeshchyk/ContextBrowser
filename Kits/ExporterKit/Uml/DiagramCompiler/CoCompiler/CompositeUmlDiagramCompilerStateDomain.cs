@@ -57,7 +57,7 @@ public class CompositeUmlDiagramCompilerStateDomain : IUmlDiagramCompiler
     // context: uml, build
     public async Task<Dictionary<ILabeledValue, bool>> CompileAsync(CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, "Compile StateDomain");
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile StateDomain");
 
         var dataset = await _datasetProvider.GetDatasetAsync(cancellationToken).ConfigureAwait(false);
 
@@ -87,14 +87,14 @@ public class CompositeUmlDiagramCompilerStateDomain : IUmlDiagramCompiler
     /// </summary>
     protected Task<bool> GenerateSingle(IDiagramCompileOptions options, List<ContextInfo> allContexts, ITensorClassifierDomainPerActionContext<ContextInfo> contextClassifier, ExportOptions exportOptions, DiagramBuilderOptions diagramBuilderOptions, CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, $"Compiling State {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, $"Compiling State {options.FetchType} [{options.MetaItem}]", LogLevelNode.Start);
 
         var diagramBuilder = _diagramBuildersFactory.BuilderForType(diagramBuilderOptions.DiagramType, diagramBuilderOptions, _logger, _contextInfoManager, _optionsStore);
 
         var diagramCompilerState = new UmlDiagramCompilerStateDomain(diagramBuilderOptions, diagramBuilder, exportOptions, _renderer, _logger);
         var rendered = diagramCompilerState.CompileAsync(options.MetaItem, options.DiagramId, options.OutputFileName, allContexts, cancellationToken);
 
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Cntx, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, string.Empty, LogLevelNode.End);
         return rendered;
     }
 }

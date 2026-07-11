@@ -14,9 +14,9 @@ public enum AppLevel
     R_Invocation,
     R_Comments,
     P_Tran,
-    P_Bld,
+    P_Html,
+    P_Uml,
     P_Rnd,
     P_Cpl,
-    Html,
     file
 }

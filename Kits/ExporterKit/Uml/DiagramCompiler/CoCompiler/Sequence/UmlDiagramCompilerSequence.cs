@@ -67,25 +67,25 @@ public class UmlDiagramCompilerSequence
     /// <returns>Возвращает true, если рендеринг был успешным, иначе false.</returns>
     public async Task<bool> CompileAsync(string metaItem, FetchType fetchType, string diagramId, string title, string outputFileName, List<ContextInfo> contextItems, CancellationToken cancellationToken)
     {
-        _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, $"Compile sequence for [{metaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, $"Compile sequence for [{metaItem}]", LogLevelNode.Start);
 
         var transitions = _diagramBuilder.Build(metaItem, fetchType, contextItems);
 
         if (transitions == null || !transitions.HasTransitions())
         {
-            _logger.WriteLog(AppLevel.P_Rnd, LogLevel.Warn, $"No transitions provided for [{metaItem}]");
+            _logger.WriteLog(AppLevel.P_Uml, LogLevel.Warn, $"No transitions provided for [{metaItem}]");
             return false;
         }
 
-        _logger.WriteLog(AppLevel.P_Rnd, LogLevel.Dbg, $"Rendering Diagram transitions for [{metaItem}]", LogLevelNode.Start);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, $"Rendering Diagram transitions for [{metaItem}]", LogLevelNode.Start);
 
         var diagram = await _renderer.RenderAsync(transitions, cancellationToken).ConfigureAwait(false);
 
-        _logger.WriteLog(AppLevel.P_Rnd, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+        _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, string.Empty, LogLevelNode.End);
 
         if (diagram == null)
         {
-            _logger.WriteLog(AppLevel.P_Cpl, LogLevel.Dbg, string.Empty, LogLevelNode.End);
+            _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, string.Empty, LogLevelNode.End);
             return false;
         }
 
