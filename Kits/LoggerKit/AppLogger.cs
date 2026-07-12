@@ -16,6 +16,8 @@ public interface IAppLogger<T>
 
     // context: log, share
     void WriteLogObject(T appLevel, LogObject logObject);
+
+    void AddDependency(T parentAppLevel, T childAppLevel);
 }
 
 // context: log, share
@@ -79,5 +81,10 @@ public class AppLogger<T> : IAppLogger<T> where T : notnull
     {
         var formattedMessage = FormattedText(appLevel, logObject.LogLevel, logObject.Message ?? string.Empty);
         _writer.Write(formattedMessage);
+    }
+
+    public virtual void AddDependency(T parentAppLevel, T childAppLevel)
+    {
+        throw new System.NotImplementedException();
     }
 }

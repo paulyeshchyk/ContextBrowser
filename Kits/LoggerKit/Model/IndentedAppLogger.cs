@@ -37,6 +37,11 @@ public class IndentedAppLogger<T> : AppLogger<T>
         _dependencies = dependencies ?? new Dictionary<T, T>();
     }
 
+    public override void AddDependency(T appLevel, T parentAppLevel)
+    {
+        _dependencies[appLevel] = parentAppLevel;
+    }
+
     // context: log, share
     protected override void TheWriteFunc(T appLevel, LogObject logObject)
     {

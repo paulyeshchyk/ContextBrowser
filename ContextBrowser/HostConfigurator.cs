@@ -84,7 +84,11 @@ public class HostConfigurator
 
         services.AddSingleton<IAppLogger<AppLevel>, IndentedAppLogger<AppLevel>>(_ =>
         {
-            return AppLoggerFactory.DefaultIndentedLogger<AppLevel>();
+            var result = AppLoggerFactory.DefaultIndentedLogger<AppLevel>();
+            result.AddDependency(appLevel: AppLevel.P_Uml, parentAppLevel: AppLevel.App);
+            result.AddDependency(appLevel: AppLevel.P_Tran, parentAppLevel: AppLevel.P_Uml);
+            result.AddDependency(appLevel: AppLevel.P_Rnd, parentAppLevel: AppLevel.P_Tran);
+            return result;
         });
 
         services.AddSingleton<INamingProcessor, NamingProcessor>();
