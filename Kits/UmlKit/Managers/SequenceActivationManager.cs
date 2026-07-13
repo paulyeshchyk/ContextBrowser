@@ -53,8 +53,8 @@ public static partial class SequenceActivationManager
     internal static bool RenderDeactivateCallee<T>(RenderContext<T> ctx)
         where T : IUmlParticipant
     {
-        var from = ctx.RunContextOrCallee;
-        var to = ctx.Caller;
+        var from = ctx.RunContextOrCallee.AlphanumericOnly();
+        var to = ctx.Caller.AlphanumericOnly();
 
         if (ctx.Options.CalleeTransitionOptions.UseDone)
         {

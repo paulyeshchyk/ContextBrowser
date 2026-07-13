@@ -75,8 +75,10 @@ using UmlKit.Renderer;
 
 namespace ContextBrowser;
 
+// context: app, build
 public class HostConfigurator
 {
+    // context: app, build
     public static void ConfigureServices(IServiceCollection services)
     {
         // --- Общие службы и настройки приложения (Options) ---
