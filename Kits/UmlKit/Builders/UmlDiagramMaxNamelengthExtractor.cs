@@ -74,13 +74,13 @@ public static class UmlDiagramMaxNamelengthExtractor
         if (typesToConsider.Contains(UmlDiagramMaxNamelengthExtractorType.@property) && allElements.Any())
         {
             var l = allElements.Where(e => e.ElementType == ContextInfoElementType.property).ToList();
-            if (l.Any())
+            if (l.Count != 0)
             {
                 lengths.Add(l.Max(m => m.Name.Length));
             }
         }
 
-        return lengths.Any() ? lengths.Max() : 0;
+        return lengths.Count != 0 ? lengths.Max() : 0;
     }
 }
 

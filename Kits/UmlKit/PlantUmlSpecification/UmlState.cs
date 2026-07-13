@@ -53,5 +53,5 @@ public class UmlState : IUmlParticipant
 
 public static class UmlStateFactory
 {
-    public static UmlState AsterixState = new UmlState("[*]", null);
+    public static UmlState AsterixState() => new UmlState("[*]", null);
 }

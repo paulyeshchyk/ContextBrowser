@@ -49,7 +49,15 @@ dotnet_style_allow_multiple_blank_lines_experimental = false
 #### Core EditorConfig Options ####
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 
+dotnet_diagnostic.IDE0079.severity = suggestion
+
 dotnet_diagnostic.S1135.severity = suggestion
+
+dotnet_diagnostic.CA1016.severity = none
+
+dotnet_diagnostic.CRRSP11.severity = none
+dotnet_diagnostic.CRRSP08.severity = none
+dotnet_diagnostic.CRRSP09.severity = none
 
 ## diagnostics research
 dotnet_diagnostic.CS0436.severity = warning

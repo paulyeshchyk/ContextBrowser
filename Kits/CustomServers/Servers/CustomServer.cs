@@ -29,7 +29,7 @@ public abstract class CustomServer
 
     public abstract bool IsJvmPlantUmlProcessRunning(string jarFilename);
 
-    public System.Diagnostics.Process? StartServer(System.Diagnostics.ProcessStartInfo startInfo, string? userInfo = null, Action<System.Diagnostics.Process?, string?>? callback = null)
+    public static System.Diagnostics.Process? StartServer(System.Diagnostics.ProcessStartInfo startInfo, string? userInfo = null, Action<System.Diagnostics.Process?, string?>? callback = null)
     {
         try
         {

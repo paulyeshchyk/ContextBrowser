@@ -3,6 +3,6 @@
 // context: commandline, model
 public static class CommandLineDefaults
 {
-    public static string SArgumentPrefix = "--";
-    public static string SHelpKeyword = "help";
+    public const string SArgumentPrefix = "--";
+    public const string SHelpKeyword = "help";
 }

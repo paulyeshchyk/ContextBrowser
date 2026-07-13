@@ -131,7 +131,7 @@ public class IndentedAppLogger<T> : AppLogger<T>
                 currentIndentation = currentLevel;
             }
 
-            if (_dependencies.Any())
+            if (_dependencies.Count != 0)
             {
                 if (logKey is T appLevel)
                 {

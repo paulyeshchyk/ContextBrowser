@@ -28,7 +28,7 @@ public static class ContextInfoCsvExporter<TDataTensor>
     private static void BuildItem(List<string> lines, KeyValuePair<TDataTensor, List<string>> cell)
     {
         var cellInfo = cell.Key;
-        var items = cell.Value.Any()
+        var items = cell.Value.Count != 0
             ? string.Join(", ", cell.Value.Distinct())
             : string.Empty;
 

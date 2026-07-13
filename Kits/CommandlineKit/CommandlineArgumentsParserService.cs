@@ -18,7 +18,7 @@ public class CommandlineArgumentsParserService : ICommandlineArgumentsParserServ
     {
         var parser = new CommandLineParser();
 
-        if (!parser.TryParse<T>(args, out var options, out var errorMessage))
+        if (!CommandLineParser.TryParse<T>(args, out var options, out var errorMessage))
         {
             Console.WriteLine(errorMessage);
             return default;

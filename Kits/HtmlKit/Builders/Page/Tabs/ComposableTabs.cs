@@ -45,10 +45,8 @@ public static class TabRegistration
     {
         if (string.IsNullOrWhiteSpace(tabId))
             throw new ArgumentException("tabId required", nameof(tabId));
-        if (model == null)
-            throw new ArgumentNullException(nameof(model));
-        if (build == null)
-            throw new ArgumentNullException(nameof(build));
+        ArgumentNullException.ThrowIfNull(model);
+        ArgumentNullException.ThrowIfNull(build);
 
         var tabsheetTabInfo = new TabsheetTabInfo(tabId: tabId, caption: caption);
 

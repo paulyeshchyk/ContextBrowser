@@ -21,8 +21,7 @@ public static class DeepCloneExtension
 
     public static object DeepClone(this object self, DeepCloneRequest? request = null)
     {
-        if (self == null)
-            throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         var result = Activator.CreateInstance(self.GetType());
         if (result == null)
@@ -35,8 +34,7 @@ public static class DeepCloneExtension
     public static T DeepClone<T>(this object self, DeepCloneRequest? request = null)
     where T : notnull
     {
-        if (self == null)
-            throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         var result = Activator.CreateInstance(typeof(T));
         if (result == null)
@@ -48,10 +46,8 @@ public static class DeepCloneExtension
 
     private static void DeepCloneInternal(object self, object from, DeepCloneRequest request)
     {
-        if (self == null)
-            throw new ArgumentNullException(nameof(self));
-        if (from == null)
-            throw new ArgumentNullException(nameof(from));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(from);
 
         var settings = new JsonSerializerSettings
         {

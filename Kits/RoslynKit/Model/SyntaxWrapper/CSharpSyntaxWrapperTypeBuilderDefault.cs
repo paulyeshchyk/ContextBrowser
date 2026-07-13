@@ -45,7 +45,7 @@ public class CSharpSyntaxWrapperTypeBuilderSigned : ICSharpSyntaxWrapperTypeBuil
     /// <summary>
     /// Собирает аргументы для конструктора, используя уже доступную ISignature.
     /// </summary>
-    private CSharpSyntaxWrapperTypeArguments BuildArgumentsFromExistingSignature(ISyntaxWrapper syntaxWrapper, ISignature signature)
+    private static CSharpSyntaxWrapperTypeArguments BuildArgumentsFromExistingSignature(ISyntaxWrapper syntaxWrapper, ISignature signature)
     {
         var fullName = $"{signature.Namespace}.{signature.ClassName}";
 

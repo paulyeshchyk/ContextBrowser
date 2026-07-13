@@ -69,7 +69,7 @@ public class UmlDiagramCompilerSequence
     {
         _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, $"Compile sequence for [{metaItem}]", LogLevelNode.Start);
 
-        var transitions = _diagramBuilder.Build(metaItem, fetchType, contextItems);
+        var transitions = await _diagramBuilder.BuildAsync(metaItem, fetchType, contextItems);
 
         if (transitions == null || !transitions.HasTransitions())
         {

@@ -41,7 +41,7 @@ public class IncomingTransitionBuilder : ITransitionBuilder
     private void BuildCallee(GrouppedSortedTransitionList resultList, ContextInfo callee)
     {
         var invokedByList = callee.InvokedBy;
-        if (!invokedByList.Any())
+        if (invokedByList.Count == 0)
         {
             _logger.WriteLog(AppLevel.P_Tran, LogLevel.Dbg, $"[SKIP] No invoked by found for {callee.FullName}");
             return;

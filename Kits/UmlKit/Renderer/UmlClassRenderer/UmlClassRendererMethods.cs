@@ -24,7 +24,7 @@ public class UmlClassRendererMethods
         _contextInfoManager = contextInfoManager;
     }
 
-    public async Task<UmlRendererResult<UmlDiagramClass>> RenderAsync(List<ContextInfo> methods, CancellationToken cancellationToken)
+    public Task<UmlRendererResult<UmlDiagramClass>> RenderAsync(List<ContextInfo> methods, CancellationToken cancellationToken)
     {
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
@@ -51,6 +51,6 @@ public class UmlClassRendererMethods
             }
         }
         var result = new UmlRendererResult<UmlDiagramClass>(diagram, new UmlWriteOptions(alignMaxWidth: -1));
-        return result;
+        return Task.FromResult(result);
     }
 }

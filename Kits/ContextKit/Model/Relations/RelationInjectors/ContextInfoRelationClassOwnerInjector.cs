@@ -12,9 +12,9 @@ public class ContextInfoRelationClassOwnerInjector : IContextInfoRelationOwnerIn
     // context: relations, build
     public void Inject(ContextInfo context, ContextInfoSerializableModel contextInfoSerializableModel, Dictionary<string, ContextInfo> lookupDictionary)
     {
-        if (contextInfoSerializableModel.ClassOwnerFullName != null && lookupDictionary.ContainsKey(contextInfoSerializableModel.ClassOwnerFullName))
+        if (contextInfoSerializableModel.ClassOwnerFullName != null && lookupDictionary.TryGetValue(contextInfoSerializableModel.ClassOwnerFullName, out ContextInfo? value))
         {
-            context.ClassOwner = lookupDictionary[contextInfoSerializableModel.ClassOwnerFullName];
+            context.ClassOwner = value;
         }
     }
 }

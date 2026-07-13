@@ -59,9 +59,9 @@ public class CsvGenerator<TDataTensor> : ICsvGenerator<TDataTensor>
         var unclassified = _keyBuilder.BuildTensor(permutationType: TensorPermutationType.Standard, inputDimensions: [_emptyDimensionClassifier.EmptyAction, _emptyDimensionClassifier.EmptyDomain], createKey: _keyFactory.Create);
 
         // Добавим строку для нераспознанных, если нужно
-        if (includeUnclassified && matrix.ContainsKey(unclassified))
+        if (includeUnclassified && matrix.TryGetValue(unclassified, out List<object>? value))
         {
-            var unclassifiedCount = matrix[unclassified].Count;
+            var unclassifiedCount = value.Count;
             var rows = new List<string> { _emptyDimensionClassifier.EmptyAction };
 
             // Заполняем пустыми значениями для всех доменов

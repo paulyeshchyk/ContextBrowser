@@ -46,7 +46,7 @@ public class AppLogger<T> : IAppLogger<T> where T : notnull
     }
 
     // context: log, model
-    private bool CanWriteLog(LogLevel requested, LogLevel limitedByAppLevel)
+    private static bool CanWriteLog(LogLevel requested, LogLevel limitedByAppLevel)
     {
         if (requested == LogLevel.None)
         {

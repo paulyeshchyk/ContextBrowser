@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace ContextBrowserKit.Extensions;
 
-public static class StringExtensions
+public static partial class StringExtensions
 {
     public static string BeforeDot(this string input, int byGroupId = 1, int groupsCountToJoin = 1)
     {
@@ -33,8 +33,14 @@ public static class StringExtensions
     {
         if (input == null)
             return string.Empty;
-        return Regex.Replace(input, @"[^\p{L}\p{Nd}]", "_");
+        return AlphanumericUnderscoreRegex().Replace(input, "_");
     }
 
-    public static string AlphanumericOnly(this string s, string replaceBy = "_") => Regex.Replace(s, "[^a-zA-Z0-9]", replaceBy);
+    public static string AlphanumericOnly(this string s, string replaceBy = "_") => AlphanumericOnlyRegex().Replace(s, replaceBy);
+
+    [GeneratedRegex("[^a-zA-Z0-9]")]
+    private static partial Regex AlphanumericOnlyRegex();
+
+    [GeneratedRegex(@"[^\p{L}\p{Nd}]")]
+    private static partial Regex AlphanumericUnderscoreRegex();
 }

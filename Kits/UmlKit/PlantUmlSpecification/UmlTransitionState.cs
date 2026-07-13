@@ -35,14 +35,14 @@ public class UmlTransitionState<P> : IUmlTransition<P>
 
 public class UmlTransitionStateEnd : UmlTransitionState<UmlState>
 {
-    public UmlTransitionStateEnd(UmlState from, UmlArrow arrow, string? label = null) : base(from, UmlStateFactory.AsterixState, arrow, label)
+    public UmlTransitionStateEnd(UmlState from, UmlArrow arrow, string? label = null) : base(from, UmlStateFactory.AsterixState(), arrow, label)
     {
     }
 }
 
 public class UmlTransitionStateStart : UmlTransitionState<UmlState>
 {
-    public UmlTransitionStateStart(UmlArrow arrow, UmlState to, string? label = null) : base(UmlStateFactory.AsterixState, to, arrow, label)
+    public UmlTransitionStateStart(UmlArrow arrow, UmlState to, string? label = null) : base(UmlStateFactory.AsterixState(), to, arrow, label)
     {
     }
 }

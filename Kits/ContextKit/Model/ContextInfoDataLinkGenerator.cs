@@ -69,7 +69,7 @@ public class ContextInfoDataLinkGenerator
         return methodToCell;
     }
 
-    private string? GetMethodId(ContextInfo? method)
+    private static string? GetMethodId(ContextInfo? method)
     {
         if (method == null)
             return null;

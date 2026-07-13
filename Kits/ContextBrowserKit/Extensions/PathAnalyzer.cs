@@ -99,7 +99,7 @@ public class PathAnalyzer
         }
 
         // Добавляем точку и звёздочку для расширений файлов, например, "cs" -> "*.cs"
-        if (!pattern.StartsWith("."))
+        if (!pattern.StartsWith('.'))
         {
             pattern = "." + pattern;
         }

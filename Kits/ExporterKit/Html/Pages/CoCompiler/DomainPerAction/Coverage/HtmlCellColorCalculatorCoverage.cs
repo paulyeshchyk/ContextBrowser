@@ -27,7 +27,7 @@ public class HtmlCellColorCalculatorCoverage<TTensor> : IHtmlCellColorCalculator
                     : 0)
                 .ToList();
 
-            if (covs.Any())
+            if (covs.Count != 0)
                 return HeatmapColorBuilder.ToHeatmapColor(covs.Average());
         }
 

@@ -2,6 +2,7 @@
 
 namespace ContextSamples.ContextSamples.S3;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: create, S3
 public class FlowOrchestrator
 {
@@ -20,6 +21,7 @@ public class FlowOrchestrator
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: share, S3
 public class AnotherService
 {

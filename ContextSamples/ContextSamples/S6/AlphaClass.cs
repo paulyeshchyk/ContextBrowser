@@ -10,6 +10,7 @@ public enum TheType
     gamma
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: S6, build
 public class Alpha
 {
@@ -33,6 +34,7 @@ public class Alpha
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: S6.1, build
 public class Beta
 {
@@ -48,6 +50,7 @@ public class Beta
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: S6.2, build
 public class Gamma
 {

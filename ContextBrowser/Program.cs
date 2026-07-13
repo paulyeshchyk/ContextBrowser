@@ -22,7 +22,7 @@ public static class Program
         {
             AppExecutionMode.Console => ConsoleRunner.Run(args, appOptions),
             AppExecutionMode.WebApp => WebAppRunner.Run(args, appOptions),
-            _ => throw new ArgumentOutOfRangeException(nameof(appOptions.ExecutionMode))
+            _ => throw new ArgumentOutOfRangeException(nameof(args), appOptions.ExecutionMode, "Неподдерживаемый режим выполнения приложения.")
         };
 
         await runnerTask.ConfigureAwait(false);

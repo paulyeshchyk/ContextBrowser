@@ -1,5 +1,6 @@
 ﻿namespace ContextSamples.ContextSamples.S2;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: validate, S2.1, S2.2
 public class A
 {
@@ -11,6 +12,7 @@ public class A
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 //context: validate, S2
 public class B
 {

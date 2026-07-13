@@ -47,7 +47,7 @@ internal static class CSharpExpressionSyntaxExtensionConverter
             }
         }
 
-        if (!nameParts.Any())
+        if (nameParts.Count == 0)
         {
             return null;
         }

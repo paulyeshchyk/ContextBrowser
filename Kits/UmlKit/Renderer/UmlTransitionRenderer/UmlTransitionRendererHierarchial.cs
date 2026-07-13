@@ -49,7 +49,7 @@ public abstract class UmlTransitionRendererHierarchial<P> : IUmlTransitionRender
         return Task.FromResult((UmlDiagram<P>?)diagram);
     }
 
-    private IEnumerable<UmlTransitionDto> GetChildrenList(UmlTransitionDto? transition, GrouppedSortedTransitionList? allTransitions)
+    private static IEnumerable<UmlTransitionDto> GetChildrenList(UmlTransitionDto? transition, GrouppedSortedTransitionList? allTransitions)
     {
         return [];
     }

@@ -25,7 +25,7 @@ public class UmlDiagramCompilerOrchestrator : IUmlDiagramCompilerOrchestrator
 
         _appLogger.WriteLog(AppLevel.P_Uml, LogLevel.Cntx, "Compile diagrams", LogLevelNode.Start);
 
-        var tasks = _compilers.Select(async compiler => await compiler.CompileAsync(cancellationToken).ConfigureAwait(false));
+        var tasks = _compilers.Select(compiler => compiler.CompileAsync(cancellationToken));
 
         await Task.WhenAll(tasks);
 

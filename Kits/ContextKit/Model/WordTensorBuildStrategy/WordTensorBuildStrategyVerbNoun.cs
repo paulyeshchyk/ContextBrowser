@@ -28,6 +28,6 @@ public class WordTensorBuildStrategyVerbNoun<TTensor> : IWordTensorBuildStrategy
 
     public bool CanHandle(ContextElementGroups contextElementGroups, ExportMatrixOptions matrixOptions)
     {
-        return contextElementGroups.Verbs.Any() && contextElementGroups.Nouns.Any();
+        return contextElementGroups.Verbs.Count != 0 && contextElementGroups.Nouns.Count != 0;
     }
 }

@@ -10,7 +10,7 @@ public class UmlStyleDiagramMindmap : IUmlElement, IUmlElementCollection
 
     public void WriteTo(TextWriter writer, UmlWriteOptions writeOptions)
     {
-        if (!Elements.Any())
+        if (Elements.Count == 0)
         {
             return;
         }

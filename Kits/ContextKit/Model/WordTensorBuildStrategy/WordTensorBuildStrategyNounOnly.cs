@@ -32,6 +32,6 @@ public class WordTensorBuildStrategyNounOnly<TTensor> : IWordTensorBuildStrategy
     public bool CanHandle(ContextElementGroups contextElementGroups, ExportMatrixOptions matrixOptions)
     {
         bool includeUnclassified = matrixOptions.UnclassifiedPriority != UnclassifiedPriorityType.None;
-        return contextElementGroups.Nouns.Any() && !contextElementGroups.Verbs.Any() && includeUnclassified;
+        return contextElementGroups.Nouns.Count != 0 && contextElementGroups.Verbs.Count == 0 && includeUnclassified;
     }
 }

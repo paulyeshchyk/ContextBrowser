@@ -59,12 +59,12 @@ public class GrouppedSortedTransitionList
 
     public bool HasTransitions(string key)
     {
-        return _dataset.TryGetValue(key, out var list) && list.Any();
+        return _dataset.TryGetValue(key, out var list) && list.Count != 0;
     }
 
     public bool HasTransitions()
     {
-        return _dataset.Any(pair => pair.Value.Any());
+        return _dataset.Any(pair => pair.Value.Count != 0);
     }
 
     public void Merge(GrouppedSortedTransitionList sourceB)

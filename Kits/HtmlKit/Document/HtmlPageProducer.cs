@@ -51,7 +51,7 @@ public abstract class HtmlPageProducer
 
     protected abstract IEnumerable<string> GetAdditionalScripts();
 
-    protected IEnumerable<string> GetScripts()
+    protected static IEnumerable<string> GetScripts()
     {
         yield return Resources.HtmlProducerContentStyleScript;
     }

@@ -33,10 +33,7 @@ public static class AppLoggerLevelStoreConfigurationLoader
     {
         try
         {
-            var config = JsonSerializer.Deserialize<LogConfiguration<TAppLevel, TLogLevel>>(jsonContent, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var config = JsonSerializer.Deserialize<LogConfiguration<TAppLevel, TLogLevel>>(jsonContent, AppLoggerLevelStoreConfigurationLoader.caseInsensitiveOptions);
             return LoadConfiguration(defaultValue, config);
         }
         catch (Exception ex)
@@ -48,12 +45,17 @@ public static class AppLoggerLevelStoreConfigurationLoader
         }
     }
 
+    private static readonly JsonSerializerOptions caseInsensitiveOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     // context: log, build
     public static Dictionary<TAppLevel, TLogLevel> LoadConfiguration<TAppLevel, TLogLevel>(TLogLevel defaultValue, LogConfiguration<TAppLevel, TLogLevel>? config)
         where TAppLevel : notnull
         where TLogLevel : notnull
     {
-        if (config == null || !config.LogLevels.Any())
+        if (config == null || config.LogLevels.Count == 0)
         {
             var defaultConfig = new Dictionary<TAppLevel, TLogLevel>();
             SetDefaultLogLevels(defaultConfig, defaultValue);

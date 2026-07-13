@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ContextBrowserKit.Log.Options;
 using ContextBrowserKit.Options;
 using ContextKit.Model;
@@ -31,19 +32,19 @@ public class TransitionDiagramBuilder : IContextDiagramBuilder
     }
 
     // context: build, transition
-    public GrouppedSortedTransitionList? Build(string metaItem, FetchType fetchType, List<ContextInfo> allContexts)
+    public Task<GrouppedSortedTransitionList?> BuildAsync(string metaItem, FetchType fetchType, List<ContextInfo> allContexts)
     {
         if (allContexts.Count == 0)
         {
             _logger.WriteLog(AppLevel.P_Tran, LogLevel.Err, $"[CACHE]: No contexts provided for {metaItem}");
-            return null;
+            return Task.FromResult<GrouppedSortedTransitionList?>(null);
         }
 
         var resultFromCache = _cache.GetFromCache(metaItem);
         if (resultFromCache?.HasTransitions() ?? false)
         {
             _logger.WriteLog(AppLevel.P_Tran, LogLevel.Trace, $"[CACHE]: returning data for [{metaItem}]");
-            return resultFromCache;
+            return Task.FromResult<GrouppedSortedTransitionList?>(resultFromCache);
         }
 
         _logger.WriteLog(AppLevel.P_Tran, LogLevel.Cntx, $"Fetch transitions for {fetchType} [{metaItem}]", LogLevelNode.Start);
@@ -53,7 +54,7 @@ public class TransitionDiagramBuilder : IContextDiagramBuilder
         _cache.AddToCache(metaItem, result);
 
         _logger.WriteLog(AppLevel.P_Tran, LogLevel.Cntx, string.Empty, LogLevelNode.End);
-        return result;
+        return Task.FromResult<GrouppedSortedTransitionList?>(result);
     }
 
     /// <summary>

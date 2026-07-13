@@ -10,7 +10,7 @@ public class CommandLineParser
     private const string SPrefixValueError = "Ошибка: Аргумент '{0}' должен начинаться с '{1}'.";
 
     // context: commandline, build
-    public bool TryParse<T>(string[] args, out T? options, out string? errorMessage)
+    public static bool TryParse<T>(string[] args, out T? options, out string? errorMessage)
         where T : class
     {
         options = default;
@@ -35,7 +35,7 @@ public class CommandLineParser
     }
 
     // context: commandline, read
-    internal bool FindHelpParameter<T>(string[] args, out string? errorMessage)
+    internal static bool FindHelpParameter<T>(string[] args, out string? errorMessage)
         where T : class
     {
         errorMessage = null;
@@ -65,7 +65,7 @@ public class CommandLineParser
     }
 
     // context: commandline, build
-    internal T Parse<T>(string[] args)
+    internal static T Parse<T>(string[] args)
     {
         if (args.Any(a => a.Equals($"{CommandLineDefaults.SArgumentPrefix}{CommandLineDefaults.SHelpKeyword}", StringComparison.OrdinalIgnoreCase)))
         {

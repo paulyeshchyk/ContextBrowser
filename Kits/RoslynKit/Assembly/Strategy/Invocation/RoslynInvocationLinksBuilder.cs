@@ -106,7 +106,7 @@ public class RoslynInvocationLinksBuilder : IInvocationLinksBuilder<ContextInfo>
 
     // Класс: RoslynPhaseParserInvocationLinksBuilder<TContext>
     // context: syntax, read
-    internal async Task<ContextInfo?> FindOrCreateCalleeNodeAsync(ISyntaxWrapper symbolDto, SemanticOptions options, CancellationToken cancellationToken)
+    internal Task<ContextInfo?> FindOrCreateCalleeNodeAsync(ISyntaxWrapper symbolDto, SemanticOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -116,6 +116,6 @@ public class RoslynInvocationLinksBuilder : IInvocationLinksBuilder<ContextInfo>
         var chain = _symbolLookupChainFactory.BuildChain();
 
         //запускаем первый и последующие в цепочке обработчики
-        return await chain.HandleAsync(symbolDto, cancellationToken).ConfigureAwait(false);
+        return chain.HandleAsync(symbolDto, cancellationToken);
     }
 }

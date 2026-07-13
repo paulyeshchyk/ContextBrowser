@@ -253,7 +253,7 @@ public static class HelpGenerator
             .Where(p => p.GetCustomAttribute<CommandLineArgumentAttribute>() != null)
             .OrderByDescending(p => p.GetCustomAttribute<RequiredMemberAttribute>() != null);
 
-        if (properties == null || properties.Count() == 0)
+        if (properties == null || !properties.Any())
         {
             PrintNoHelpDefinedYet(indent);
             return;

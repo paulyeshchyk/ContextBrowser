@@ -47,8 +47,8 @@ public class UmlDiagramSequence : UmlDiagram<UmlParticipant>
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentNullException(nameof(name));
 
-        if (_participants.ContainsKey(name))
-            return _participants[name];
+        if (_participants.TryGetValue(name, out UmlParticipant? value))
+            return value;
 
         var result = new UmlParticipant(name, alias, url, keyword);
         _participants[name] = result;

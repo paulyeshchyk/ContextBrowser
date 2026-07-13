@@ -62,7 +62,7 @@ public abstract class UmlDiagramCompilerState
         _logger.WriteLog(AppLevel.P_Uml, LogLevel.Dbg, $"Compile state for [{metaItem}]", LogLevelNode.Start);
 
         // Используем фабрику для создания построителя диаграмм
-        var transitions = _builder.Build(metaItem, fetchType: TypeOfFetch, allContexts);
+        var transitions = await _builder.BuildAsync(metaItem, fetchType: TypeOfFetch, allContexts);
         if (transitions == null || !transitions.HasTransitions())
         {
             _logger.WriteLog(AppLevel.P_Uml, LogLevel.Warn, $"No transitions provided for [{metaItem}]");

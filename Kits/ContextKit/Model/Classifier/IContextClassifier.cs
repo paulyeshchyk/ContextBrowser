@@ -95,7 +95,7 @@ public record ContextClassifier : IContextClassifier<ContextInfo>
 
     public bool HasAllDimensionsFilled(ContextInfo info, IFakeDimensionClassifier fakeDimensionClassifier)
     {
-        if (!info.Contexts.Any())
+        if (info.Contexts.Count == 0)
             return false;
 
         var hasVerb = info.Contexts.Any(c => IsVerb(c, fakeDimensionClassifier));

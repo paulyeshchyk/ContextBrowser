@@ -28,7 +28,7 @@ public class UmlClassRendererActionPerDomainClass
         _umlUrlBuilder = umlUrlBuilder;
     }
 
-    public async Task<UmlRendererResult<UmlDiagramClass>> RenderAsync(List<ContextInfo> contextInfoList, CancellationToken cancellationToken)
+    public Task<UmlRendererResult<UmlDiagramClass>> RenderAsync(List<ContextInfo> contextInfoList, CancellationToken cancellationToken)
     {
         var diagramBuilderOptions = _optionsStore.GetOptions<DiagramBuilderOptions>();
 
@@ -61,7 +61,7 @@ public class UmlClassRendererActionPerDomainClass
         diagram.AddRelations(PumlBuilderSquaredLayout.Build(namespaces.Select(g => g.Key.AlphanumericOnly())));
 
         var result = new UmlRendererResult<UmlDiagramClass>(diagram, new UmlWriteOptions(alignMaxWidth: maxLength));
-        return await Task.FromResult(result);
+        return Task.FromResult(result);
     }
 }
 

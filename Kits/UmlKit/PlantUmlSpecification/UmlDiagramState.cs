@@ -93,7 +93,7 @@ public class UmlDiagramState : UmlDiagram<UmlState>
 
     public override void WriteBody(TextWriter writer, UmlWriteOptions writeOptions)
     {
-        if (!_states.Any() || !_transitions.Any() || !Meta.Any())
+        if (_states.Count == 0 || _transitions.Count == 0 || Meta.Count == 0)
         {
             //рисовать нечего
             return;

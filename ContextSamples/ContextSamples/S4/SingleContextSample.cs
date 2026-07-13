@@ -2,6 +2,7 @@
 
 namespace ContextSamples.ContextSamples.S4;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: create, S4
 public class TaskService
 {
@@ -35,6 +36,7 @@ public class TaskService
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: validate, S4
 public class TaskValidator
 {
@@ -44,6 +46,7 @@ public class TaskValidator
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: build, S4
 public class TaskDtoBuilder
 {
@@ -53,6 +56,7 @@ public class TaskDtoBuilder
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: share, S4.1
 public class Notifier
 {
@@ -63,6 +67,7 @@ public class Notifier
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: create, S4
 public class Repository
 {
@@ -72,12 +77,14 @@ public class Repository
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: model, S4
 public class TaskModel
 {
     public string Title { get; set; } = string.Empty;
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: model, S4
 public class TaskDto
 {

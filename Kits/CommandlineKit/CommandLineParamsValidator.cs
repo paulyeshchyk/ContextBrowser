@@ -39,7 +39,7 @@ public static class CommandLineParamsValidator
             missingMembers.Add(argName);
         }
 
-        if (missingMembers.Any())
+        if (missingMembers.Count != 0)
         {
             // Если есть незаполненные обязательные члены, выбрасываем исключение
             throw new ArgumentException($"Следующие обязательные параметры не были указаны: {string.Join(", ", missingMembers)}.");

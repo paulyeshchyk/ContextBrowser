@@ -48,11 +48,11 @@ public class ContextInfo2DMap<TTensor, TContext> : IContextInfo2DMap<TContext, T
     {
         // Извлекаем и подготавливаем действия
         var actions = context.Contexts.Where(ctx => wordClassifier.IsVerb(ctx, _fakeDimensionClassifier)).ToList();
-        var effectiveActions = actions.Any() ? actions : new List<string> { emptyClassifier.EmptyAction };
+        var effectiveActions = actions.Count != 0 ? actions : new List<string> { emptyClassifier.EmptyAction };
 
         // Извлекаем и подготавливаем домены
         var domains = context.Contexts.Where(ctx => wordClassifier.IsNoun(ctx, _fakeDimensionClassifier)).ToList();
-        var effectiveDomains = domains.Any() ? domains : new List<string> { emptyClassifier.EmptyDomain };
+        var effectiveDomains = domains.Count != 0 ? domains : new List<string> { emptyClassifier.EmptyDomain };
 
         // Декартово произведение (Action x Domain)
         return effectiveActions.SelectMany(action =>
@@ -69,7 +69,7 @@ public class ContextInfo2DMap<TTensor, TContext> : IContextInfo2DMap<TContext, T
             var emptyClassifier = _optionsStore.GetOptions<IEmptyDimensionClassifier>();
 
             _data = contextsList
-                .Where(c => !string.IsNullOrWhiteSpace(c.Name) && c.Contexts.Any())
+                .Where(c => !string.IsNullOrWhiteSpace(c.Name) && c.Contexts.Count != 0)
 
                 // 1. Разворачивание
                 .SelectMany(c => GetContextPairs(c, wordClassifier, emptyClassifier))

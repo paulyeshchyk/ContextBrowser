@@ -45,7 +45,6 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
     public bool IsUmlTagEnabled { get; set; } = true;
 
     // context: create, uml
-
     public abstract P AddParticipant(string name, string? alias = null, string? url = null, UmlParticipantKeyword keyword = UmlParticipantKeyword.Participant);
 
     // context: create, uml
@@ -56,8 +55,10 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
         Meta.Add(new UmlLayoutDirection(direction));
     }
 
+    // context: create, uml
     public abstract void AddCallbreakNote(string name);
 
+    // context: create, uml
     public abstract void AddSelfCallContinuation(string name, string methodName);
 
     // context: create, uml
@@ -72,7 +73,6 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
     }
 
     // context: create, uml
-    //public abstract IUmlElement AddTransition(string? from, string? to, bool isAsync = false, string? label = null);
     public virtual IUmlElement AddComment(string line)
     {
         var result = new UmlComment(line);
@@ -80,6 +80,7 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
         return result;
     }
 
+    // context: create, uml
     public abstract IUmlElement AddLine(string line);
 
     // context: share, uml
@@ -243,12 +244,26 @@ public abstract class UmlDiagram<P> : IUmlElementCollection, IUmlWritable
     // context: uml, share
     public void WriteToFile(string path, UmlWriteOptions writeOptions)
     {
-        File.WriteAllText(path, ToUmlString(writeOptions));
+        try
+        {
+            File.WriteAllText(path, ToUmlString(writeOptions));
+        }
+        catch 
+        {
+            //
+        }
     }
 
     // context: uml, share
     public Task WriteToFileAsync(string path, UmlWriteOptions writeOptions, CancellationToken cancellationToken)
     {
-        return File.WriteAllTextAsync(path, ToUmlString(writeOptions), cancellationToken);
+        try
+        {
+            return File.WriteAllTextAsync(path, ToUmlString(writeOptions), cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return Task.FromException(ex);
+        }
     }
 }

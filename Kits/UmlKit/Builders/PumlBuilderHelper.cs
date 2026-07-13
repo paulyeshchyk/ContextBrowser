@@ -16,7 +16,7 @@ using UmlKit.PlantUmlSpecification;
 
 namespace UmlKit.Builders;
 
-public static class PumlBuilderHelper
+public static partial class PumlBuilderHelper
 {
     private const string SParentheses = "()";
 
@@ -92,7 +92,7 @@ public static class PumlBuilderHelper
         if (string.IsNullOrEmpty(rawName))
             return rawName;
 
-        return Regex.Replace(rawName, @"<(.+?)>", "[$1]")
+        return CleanNameRegex().Replace(rawName, "[$1]")
                     .Replace("&", "&amp;")
                     .Replace("<", "&lt;")
                     .Replace(">", "&gt;");
@@ -170,6 +170,9 @@ public static class PumlBuilderHelper
             umlClass.Add(umlProperty);
         }
     }
+
+    [GeneratedRegex(@"<(.+?)>")]
+    private static partial Regex CleanNameRegex();
 }
 
 internal static class VisiblityConverter

@@ -2,6 +2,7 @@
 
 namespace ContextSamples.ContextSamples.S5;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Пометьте члены как статические", Justification = "<Ожидание>")]
 // context: create, build, S5.1
 public class BrokenOrchestra
 {
