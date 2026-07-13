@@ -63,7 +63,7 @@ public class UmlMindmapRendererDomain
     /// <param name="umlUrlBuilder"></param>
     /// <param name="filter"></param>
     /// <returns>Коллекция узлов UmlNode, представляющих дочерние домены.</returns>
-    private static IEnumerable<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, Func<ContextInfo, bool> filter)
+    private static List<UmlNode> GetChildrenForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, Func<ContextInfo, bool> filter)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain)).DistinctBy(e => e.Identifier);
 
@@ -86,7 +86,7 @@ public class UmlMindmapRendererDomain
     /// <param name="umlUrlBuilder"></param>
     /// <param name="filter"></param>
     /// <returns>Коллекция узлов UmlNode, представляющих родительские домены.</returns>
-    private static IEnumerable<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, Func<ContextInfo, bool> filter)
+    private static List<UmlNode> GetParentsForDomain(string domain, IContextInfoDataset<ContextInfo, DomainPerActionTensor> dataset, INamingProcessor namingProcessor, IUmlUrlBuilder umlUrlBuilder, Func<ContextInfo, bool> filter)
     {
         var startNodes = dataset.GetAll().Where(e => e.Domains.Contains(domain)).DistinctBy(e => e.Identifier);
 

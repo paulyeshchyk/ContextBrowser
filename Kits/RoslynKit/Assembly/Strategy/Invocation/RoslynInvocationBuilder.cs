@@ -21,7 +21,7 @@ public class RoslynInvocationBuilder<TContext> : IInvocationBuilder<TContext>
     protected readonly IContextFactory<TContext> _factory;
     private readonly IContextCollector<TContext> _collector;
     private readonly IInvocationLinker<TContext, InvocationExpressionSyntax> _invocationLinker;
-    private readonly IInvocationBuilderValidator<TContext, InvocationExpressionSyntax> _invocationBuilderValidator;
+    private readonly InvocationBuilderValidator<TContext, InvocationExpressionSyntax> _invocationBuilderValidator;
 
     public RoslynInvocationBuilder(
         IAppLogger<AppLevel> logger,
