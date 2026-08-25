@@ -7,6 +7,8 @@ using ContextBrowserKit.Options;
 using HtmlKit.Builders.Page.CoHtmlElementBuilders;
 using HtmlKit.Matrix;
 using HtmlBuilderFactory = HtmlKit.Builders.Page.HtmlBuilderFactory;
+using CoHtmlElementBuilders = HtmlKit.Builders.Page.CoHtmlElementBuilders;
+using static HtmlKit.Builders.Page.CoHtmlElementBuilders.HtmlBuilderFactory;
 
 namespace HtmlKit.Document;
 
@@ -48,6 +50,17 @@ public class HtmlPageProducerIndex<TTensor> : HtmlPageProducer, IHtmlPageIndexPr
     protected override async Task WriteContentAsync(TextWriter writer, IHtmlMatrix matrix, HtmlTableOptions options, CancellationToken cancellationToken)
     {
         long timeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        // 1. Рендерим Глобальную Панель Слоев
+
+        var container = HtmlBuilderFactory.Span;
+        await container.StartAsync(writer, cancellationToken:cancellationToken);
+            await HtmlBuilderFactory.A.CellAsync(writer, innerHtml: "Matrix", cancellationToken: cancellationToken);
+            await HtmlBuilderFactory.A.CellAsync(writer, innerHtml: "Find", cancellationToken: cancellationToken);
+            await HtmlBuilderFactory.A.CellAsync(writer, innerHtml: "Settings", cancellationToken: cancellationToken);
+        await container.EndAsync(writer, cancellationToken:cancellationToken);
+
+
         var navigationItem = new BreadcrumbNavigationItem($"..\\index.html?v={timeStamp}", "Контекстная матрица");
         await HtmlBuilderFactory.Breadcrumb(navigationItem).CellAsync(writer, cancellationToken: cancellationToken).ConfigureAwait(false);
 

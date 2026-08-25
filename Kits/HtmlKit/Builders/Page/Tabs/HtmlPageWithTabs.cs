@@ -61,6 +61,14 @@ public class HtmlTabbedPageBuilder<DTO>
             var navItem = new BreadcrumbNavigationItem(filename, title);
             await HtmlBuilderFactory.Body.WithAsync(writer, async (token) =>
             {
+                var container = HtmlBuilderFactory.Span;
+                await container.StartAsync(writer, cancellationToken: cancellationToken);
+                    await HtmlBuilderFactory.A.CellAsync(writer, innerHtml: "Matrix", cancellationToken: cancellationToken);
+                    await HtmlBuilderFactory.A.CellAsync(writer, innerHtml: "Find", cancellationToken: cancellationToken);
+                    await HtmlBuilderFactory.A.CellAsync(writer, innerHtml: "Settings", cancellationToken: cancellationToken);
+                await container.EndAsync(writer, cancellationToken: cancellationToken);
+
+
                 var attributesScrollToTop = new HtmlTagAttributes() { { "id", "scroll-to-top" } };
                 await HtmlBuilderFactory.Div.CellAsync(writer, attributes: attributesScrollToTop, innerHtml: "Вверх", isEncodable: false, cancellationToken: token).ConfigureAwait(false);
 
