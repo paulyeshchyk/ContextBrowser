@@ -72,7 +72,7 @@ mindmap
       SequenceDomain
       StateAction
       StateDomain
-    Mindmap
+    MindmapDiagram
       MindmapAction
       MindmapClassOnly
       MindmapDomain
