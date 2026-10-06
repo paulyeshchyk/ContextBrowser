@@ -1,129 +1,126 @@
+# ContextBrowser
 
-# Навигатор по контекстам, изложенным в описаниях классов и методов.
+> **Навигатор по контекстам кода.** Анализирует C#- и TypeScript-исходники,
+> извлекает семантические теги из комментариев (`// context: <action>, <domain>`),
+> строит граф связей и генерирует навигационные отчёты в HTML и PlantUML.
 
-## Основные функции
+[![.NET](https://img.shields.io/badge/.NET-8.0-purple)]()
+[![Roslyn](https://img.shields.io/badge/Roslyn-4.11-blue)]()
+[![PlantUML](https://img.shields.io/badge/PlantUML-picoweb-green)]()
 
-  * **Поиск файлов**: Ищет заданные по расширению файлы в указанной папке.
-  * **Парсинг текста файла**: По заданным шаблонам ищет наименования классов и методов с выделением из комментария класса либо метода контекстных форм.
-  * **Запись контекстных форм**: Наименование класса и его метод заносятся в хранилище с указанием найденных в них контекстных форм.
-  * **Классификация**: Контекстные формы классифицируются на действия и домены. Класс и его метод должен обладать как минимум парой контекстов: действием и доменом. Если пара не найдена, класс или метод не классифицируются. Классу может быть задано несколько доменов, но обязательно одно-единственное действие.
-  * **Отчётность**: Для навигации по контекстам создан генератор выходных форм в формате HTML. Все формы объединены с помощью индексной формы.
+---
 
-## Благодарности
+## Зачем это нужно
 
-Качество кода обеспечивалось сервисами
-- [Google Geminy](https:\\gemini.google.com)
-- [OpenAI Chat GPT](https:\\chatgpt.com)
+Кодовая база без семантической навигации умирает быстрее, чем её успевают
+поддерживать. `ContextBrowser` восстанавливает **семантический каркас** проекта,
+используя **комментарии самих авторов** как источник истины.
 
-## Установка
+### Цели проекта
 
-### .Net
+| # | Цель | Горизонт |
+|---|------|---------|
+| 1 | **Основная:** анализ кода на основе авторских комментариев (`// context:`), построение навигационных отчётов | сейчас |
+| 2 | **Киллер-фича:** автоматическое выявление паттернов программирования (Strategy, Factory, Visitor, …) на основе накопленного контекста | далёкое будущее |
 
-### Http server
+Подробнее см. [`docs/01-goals.md`](docs/01-goals.md).
 
-### PlantUml rednering
+---
 
-## Запуск
+## Что уже работает
 
-### Запуск приложения
+- ✅ Парсинг C# через Roslyn (`Kits/RoslynKit`)
+- ✅ Извлечение контекстов из комментариев (`Kits/ContextKit`)
+- ✅ Граф связей `References / InvokedBy / Owns / Properties`
+- ✅ Матрица `Action × Domain` (`Kits/TensorKit`)
+- ✅ Экспорт в PlantUML: class / sequence / state / mindmap / packages
+- ✅ Экспорт в HTML с heatmap по `coverage`
+- ✅ Локальный HTTP-сервер + PlantUML picoweb
+- ✅ Кэш результатов парсинга (in-memory + файл JSON)
 
-### Запуск отчёта
-  * В папке `output` найти `index.html`.
-  * Пути к исходникам прописываются в коде.
-  * Формат контекста:
-    ```
-    //context: loader, load, create
-    //context: extra
-    ```
+Планы см. [`docs/release/`](docs/release/).
 
-### Запуск Http сервера
-Выполнить команду
+---
+
+## Архитектура в двух словах
+
+Program.cs → AppOptionsResolver → ConsoleRunner | WebAppRunner
+└─ HostConfigurator (DI) → MainService
+├─ ParsingOrchestrator ──► RoslynKit + SemanticKit + ContextKit
+├─ UmlDiagramCompilerOrchestrator ──► ExporterKit.Uml → UmlKit
+└─ HtmlCompilerOrchestrator ──► ExporterKit.Html → HtmlKit
+
+
+Слои и правила зависимостей: [`docs/10-architecture/01-layers.md`](docs/10-architecture/01-layers.md),
+[`docs/10-architecture/02-dependencies.md`](docs/10-architecture/02-dependencies.md).
+
+---
+
+## Формат контекста
+
+```csharp
+// context: create, loader
+public class Loader { … }
+
+```
+Action — одно из предопределённых: create, read, update, delete, validate, share, build, model, execute, convert
+
+Domain — любое существительное-тег (roslyn, uml, html, graph, …)
+
+[Подробности](docs/20-domains/01-context-model.md)
+
+
+## Быстрый старт
+
+### 1. Собрать
+
 ```sh
-#! /usr/bin/env sh
-npx http-server -p 5500 --no-cache
+dotnet build ContextBrowser.sln -c Release
 ```
 
-### Запуск PlantUml транслятора
-Выполнить команду
+### 2. Запустить в консольном режиме
+
 ```sh
+ContextBrowser.exe --project ContextBrowser
+# или через явный конфиг
+ContextBrowser.exe --appOptionsFilePath .config/options.json --renewAppOptions true
+```
+
+### 3. Запустить в web-режиме
+
+```sh
+ContextBrowser.exe --executionMode WebApp
+```
+
+### 4. Локальные сервисы (опционально, для просмотра отчёта)
+
+```sh
+# HTTP-сервер для HTML
+npx http-server -p 5500 --no-cache
+
+# PlantUML picoweb для рендера диаграмм
 java -jar plantuml-1.2025.4.jar -picoweb
 ```
 
-### Запуск PlantUml транслятора (Docker)
+Docker-вариант PlantUML и детали [см. docs/00-overview.md](docs/00-overview.md.).
 
-#### Настройка рабочего окружения (Windows)
+## Документация
 
-Для запуска локального PlantUML сервера, способного обрабатывать большие диаграммы, необходимо использовать **Docker** на базе **WSL 2**.
+| Раздел | Для кого |
+| --- | --- |
+| docs/index.md | навигация по всей документации
+| docs/00-overview.md | быстрый тур по проекту
+| docs/01-goals.md | цели, приоритеты, roadmap
+| docs/10-architecture/ | слои, зависимости, pipeline
+| docs/20-domains/ | модель контекста, парсинг, экспорт
+| docs/30-components/ | описание Kit-ов и приложения
+| docs/40-contexts/ | карта контекстов, нумерованный mindmap
+| docs/release/ | DONE / in-progress / TODO / backlog
+| docs/managers/ | для менеджеров: зачем поддерживать проект
 
-***
+## Лицензия и поддержка
 
-##### 1. Установка WSL 2 (Подсистема Windows для Linux)
+Внутренний проект. Владелец: [см. docs/managers/index.md](docs/managers/index.md)
 
-1.  **Включите компоненты Windows:** Откройте PowerShell или Командную строку от имени Администратора и выполните следующие команды:
-
-    dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-    dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-
-2.  **Перезагрузите** компьютер.
-3.  **Установите WSL 2 как версию по умолчанию:**
-
-    wsl --set-default-version 2
-
-4.  **Установите дистрибутив Linux** (например, Ubuntu) из Microsoft Store.
-
-***
-
-##### 2. Установка Docker Desktop
-
-1.  Загрузите и установите **Docker Desktop** с официального сайта Docker.
-2.  Во время установки убедитесь, что включена опция **"Use WSL 2 instead of Hyper-V"**.
-3.  Запустите Docker Desktop и убедитесь, что он работает.
-
-##### 3. Запуск PlantUML-транслятора (Docker-сервер)
-
-Используйте эту команду для запуска Docker-контейнера. Параметры установлены для поддержки больших запросов (до 500 МБ), достаточного объема памяти и для обхода ошибок,
-связанных с размером URI (400 Bad Request: URI is too large) и CORS.
-
-1.Остановка и удаление старого контейнера (для чистоты)
-```sh
-docker stop plantuml-server docker rm plantuml-server
-```
-2. Запуск нового контейнера
-```sh
-docker run -d --name plantuml-server -p 8081:8080 -e JAVA_OPTS="-Xmx2048m -Dorg.eclipse.jetty.server.Request.maxFormContentSize=500000000 -Dorg.eclipse.jetty.server.HttpConfiguration.requestHeaderSize=65536" -e PLANTUML_LIMIT_SIZE=16384 plantuml/plantuml-server:jetty
-```
-или
-```sh
- docker run -p 8081:8080 plantuml/plantuml-server:jetty
-```
-3. Если порт занят
-mac
-```sh
-# найти PID
-lsof -i :8080
-# убить PID
- kill <PID>
-```
-
-
-windows
-```sh
-# найти PID
-netstat -ano | findstr :8080
-# убить PID
-taskkill /PID <PID> /F
-```
-| Параметр                     | Назначение                                                                                          |
-|------------------------------|-----------------------------------------------------------------------------------------------------|
-| -p 8080:8080                 | Проброс порта для доступа к серверу.                                                                |
-| maxFormContentSize=500000000 | Устанавливает лимит тела POST-запроса (до 500 МБ) для больших файлов.                               |
-| requestHeaderSize=65536      | Устанавливает лимит на размер заголовков/URI (до 64 КБ) для предотвращения ошибки URI is too large. |
-| -Xmx2048m                    | Увеличивает память Java до 2 ГБ для обработки больших диаграмм.                                     |
-| PLANTUML_LIMIT_SIZE=16384    | Увеличивает лимит на максимальный размер выходной диаграммы (в пикселях).                           |
-***
-
-#### Параметры запуска приложения
-
-### Запуск веб-приложения
-#### Установка сертификата
-dotnet dev-certs https --trust
+.
+При сомнениях — писать владельцу, а не «в общий чат».
