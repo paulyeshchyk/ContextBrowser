@@ -1,0 +1,473 @@
+---
+title: Нумерованный mindmap проекта
+sectionType: Page
+pureTitle: Нумерованный mindmap проекта
+sectionIndex: ""
+---
+
+# Нумерованный mindmap проекта
+
+## Правила нумерации
+
+- **Формат:** `<Parent>.<Child>.<Grandchild>…`
+- **Уникальность:** в пределах уровня. Уровень = количество точек + 1.
+- **Глубина:** не ограничена.
+- **Корень:** узел без номера (или `0`).
+- **Пример:** `1.2.3` — третий потомок второго потомка первого узла.
+
+Правило применяется во всех разделах документации — в `release/`,
+в описаниях компонентов, в обсуждениях. Номер узла однозначен.
+
+## Верхнеуровневая карта
+
+```
+   0 ContextBrowser
+   │
+   ├── 1 Kits                        (инфраструктура и семантика)
+   ├── 2 Semantic Core               (модель контекста + парсинг)
+   ├── 3 Export                      (UML / HTML / CSV)
+   ├── 4 Application                 (приложение + сервисы)
+   └── 5 Samples and Tests           (примеры + MSTest)
+```
+
+## Карта (mermaid)
+
+```mermaid
+mindmap
+  root((ContextBrowser))
+
+    1 Kits
+      1.1 LoggerKit
+        1.1.1 IAppLogger / AppLogger
+        1.1.2 IndentedAppLogger
+        1.1.3 AppLoggerLevelStore
+        1.1.4 ConsoleLogWriter
+      1.2 CommandlineKit
+        1.2.1 CommandLineParser
+        1.2.2 CommandLineHelpProducer
+        1.2.3 HelpGenerator
+        1.2.4 CommandLineNodeIterator
+        1.2.5 CommandlineArgumentsParserService
+      1.3 ContextBrowserKit
+        1.3.1 Extensions
+          1.3.1.1 FileUtils
+          1.3.1.2 DirectoryUtils
+          1.3.1.3 PathAnalyzer
+          1.3.1.4 PathFilter
+          1.3.1.5 StringExtensions
+          1.3.1.6 DeepClone
+        1.3.2 Options
+          1.3.2.1 ExportOptions / FilePaths / WebPaths
+          1.3.2.2 ImportOptions
+          1.3.2.3 HtmlTableOptions
+          1.3.2.4 IAppOptionsStore
+          1.3.2.5 AppLevel / AppExecutionMode
+        1.3.3 Log
+          1.3.3.1 LogObject
+          1.3.3.2 LogWriter
+          1.3.3.3 LogLevel / LogLevelNode
+        1.3.4 LRUCache
+      1.4 TensorKit
+        1.4.1 TensorBase / ITensor
+        1.4.2 DomainPerActionTensor
+        1.4.3 TensorBuilder
+        1.4.4 TensorFactory
+      1.5 GraphKit
+        1.5.1 Walker
+        1.5.2 DomainWalker
+        1.5.3 ItemWalker
+        1.5.4 DfsWalker_Traversal
+
+    2 Semantic Core
+      2.1 ContextKit
+        2.1.1 Model
+          2.1.1.1 ContextInfo
+          2.1.1.2 ContextInfoDto
+          2.1.1.3 ContextInfoElementType
+          2.1.1.4 IContextWithReferences
+        2.1.2 Classifier
+          2.1.2.1 IContextClassifier / ContextClassifier
+          2.1.2.2 IEmptyDimensionClassifier
+          2.1.2.3 IFakeDimensionClassifier
+          2.1.2.4 ITensorClassifierDomainPerActionContext
+        2.1.3 Comment strategies
+          2.1.3.1 ContextStrategy
+          2.1.3.2 CoverageStrategy
+          2.1.3.3 ContextValidationDecorator
+          2.1.3.4 CommentWithKeywordParser
+        2.1.4 Collector
+          2.1.4.1 ContextInfoCollector
+          2.1.4.2 ContextInfoReferenceCollector
+          2.1.4.3 ContextInfoFullNameIndexBuilder
+        2.1.5 Cache
+          2.1.5.1 IContextInfoCacheService
+          2.1.5.2 IFileCacheStrategy / ContextFileCacheStrategy
+          2.1.5.3 ContextInfoSerializableModel
+        2.1.6 Relations
+          2.1.6.1 IContextInfoRelationManager
+          2.1.6.2 ContextInfoRelationBuilder
+          2.1.6.3 ClassOwner / MethodOwner injectors
+          2.1.6.4 References / InvokedBy / Properties / Owns injectors
+        2.1.7 Tensor strategies
+          2.1.7.1 WordTensorBuildStrategyVerbNoun
+          2.1.7.2 WordTensorBuildStrategyVerbOnly
+          2.1.7.3 WordTensorBuildStrategyNounOnly
+          2.1.7.4 WordTensorBuildStrategyUnclassified
+        2.1.8 Dataset
+          2.1.8.1 ContextInfoDataset
+          2.1.8.2 ContextInfoDatasetBuilder
+          2.1.8.3 ContextInfoFiller
+          2.1.8.4 ContextInfoFillerEmptyData
+          2.1.8.5 ContextInfo2DMap
+          2.1.8.6 ContextInfoDataLinkGenerator
+        2.1.9 Naming
+          2.1.9.1 INamingProcessor
+          2.1.9.2 NamingProcessor
+
+      2.2 SemanticKit
+        2.2.1 Model
+          2.2.1.1 IContextInfoBuilder
+          2.2.1.2 ContextInfoBuilder
+          2.2.1.3 ContextInfoBuilderDispatcher
+          2.2.1.4 ISyntaxParser / SyntaxParser
+          2.2.1.5 SemanticSyntaxRouter
+          2.2.1.6 SemanticCompilationMap
+        2.2.2 Parsers
+          2.2.2.1 CodeParseService
+          2.2.2.2 FileParserPipeline
+          2.2.2.3 ParsingOrchestrator
+          2.2.2.4 DeclarationFileParser
+          2.2.2.5 InvocationFileParser
+          2.2.2.6 InvocationBuilderValidator
+        2.2.3 Signature
+          2.2.3.1 ISignature / SignatureDefault
+          2.2.3.2 ISignatureParser
+          2.2.3.3 SignatureChainFactory
+
+      2.3 RoslynKit
+        2.3.1 Assembly
+          2.3.1.1 RoslynAssemblyFetcher
+          2.3.1.2 RoslynSyntaxCompiler
+          2.3.1.3 RoslynCompilationBuilder
+          2.3.1.4 RoslynSyntaxTreeParser
+          2.3.1.5 RoslynCompilationMapBuilder
+          2.3.1.6 RoslynDiagnosticsInspector
+          2.3.1.7 RoslynCodeInjector
+          2.3.1.8 RoslynSymbolLoader
+        2.3.2 Syntax parsers
+          2.3.2.1 CSharpSyntaxParserTypeClass
+          2.3.2.2 CSharpSyntaxParserMethod
+          2.3.2.3 CSharpSyntaxParserTypeProperty
+          2.3.2.4 CSharpSyntaxParserInterface
+          2.3.2.5 CSharpSyntaxParserEnum
+          2.3.2.6 CSharpSyntaxParserRecord
+          2.3.2.7 CSharpSyntaxParserDelegate
+          2.3.2.8 CSharpSyntaxParserCommentTrivia
+          2.3.2.9 RoslynSemanticSyntaxRouterBuilder
+        2.3.3 ContextInfoBuilder
+          2.3.3.1 CSharpContextInfoBulderType
+          2.3.3.2 CSharpContextInfoBuilderMethod
+          2.3.3.3 CSharpContextInfoBuilderMethodArtifitial
+          2.3.3.4 CSharpContextInfoBuilderProperty
+          2.3.3.5 CSharpContextInfoBuilderEnum
+          2.3.3.6 CSharpContextInfoBuilderInterface
+          2.3.3.7 CSharpContextInfoBuilderRecord
+          2.3.3.8 CSharpContextInfoBuilderDelegate
+        2.3.4 Converters
+          2.3.4.1 CSharpInvocationSyntaxWrapperConverter
+          2.3.4.2 RoslynSymbolWrapperConverter
+          2.3.4.3 CSharpExpressionSyntaxExtensionConverter
+        2.3.5 Lookup
+          2.3.5.1 RoslynSymbolLookupHandlerFullname
+          2.3.5.2 RoslynSymbolLookupHandlerMethod
+          2.3.5.3 RoslynSymbolLookupHandlerInvocation
+          2.3.5.4 RoslynSymbolLookupHandlerChainFactory
+        2.3.6 Signature
+          2.3.6.1 CSharpSignatureParser
+          2.3.6.2 CSharpSignatureParserChain
+          2.3.6.3 CSharpSignatureRegexMatcher
+          2.3.6.4 CSharpSignatureBuilder
+          2.3.6.5 ISymbolExtensions
+        2.3.7 Invocation
+          2.3.7.1 RoslynInvocationBuilder
+          2.3.7.2 RoslynInvocationLinker
+          2.3.7.3 RoslynInvocationLinksBuilder
+          2.3.7.4 RoslynInvocationSyntaxResolver
+          2.3.7.5 RoslynInvocationParserFactory
+
+    3 Export
+      3.1 UmlKit
+        3.1.1 PlantUmlSpecification
+          3.1.1.1 UmlDiagram
+          3.1.1.2 UmlDiagramSequence
+          3.1.1.3 UmlDiagramState
+          3.1.1.4 UmlDiagramClass
+          3.1.1.5 UmlDiagramMindmap
+          3.1.1.6 UmlEntity / UmlMethod / UmlProperty
+          3.1.1.7 UmlPackage / UmlComponent / UmlComponentGroup
+          3.1.1.8 UmlTransitionState / UmlTransitionParticipant
+          3.1.1.9 UmlArrow / UmlJoin / UmlNote
+          3.1.1.10 UmlStyle
+          3.1.1.11 UmlNode
+        3.1.2 Builders
+          3.1.2.1 IContextDiagramBuilder
+          3.1.2.2 TransitionDiagramBuilder
+          3.1.2.3 ContextDiagramBuildersFactory
+          3.1.2.4 OutgoingTransitionBuilder
+          3.1.2.5 IncomingTransitionBuilder
+          3.1.2.6 BiDirectionalTransitionBuilder
+          3.1.2.7 UmlTransitionDtoBuilder
+          3.1.2.8 PumlBuilderHelper
+          3.1.2.9 PumlBuilderMindNode
+          3.1.2.10 PumlBuilderSquaredLayout
+        3.1.3 Renderers
+          3.1.3.1 UmlClassRendererActionPerDomainClass
+          3.1.3.2 UmlClassRendererActionPerDomainPackageMethod
+          3.1.3.3 UmlClassRendererClassOnly
+          3.1.3.4 UmlClassRendererMethods
+          3.1.3.5 UmlClassRendererLinks
+          3.1.3.6 UmlClassRendererNamespace
+          3.1.3.7 UmlClassRendererPackages
+          3.1.3.8 UmlMindmapRendererAction
+          3.1.3.9 UmlMindmapRendererClassOnly
+          3.1.3.10 UmlMindmapRendererDomain
+          3.1.3.11 UmlTransitionRendererFlat
+          3.1.3.12 UmlTransitionRendererFlatParticipant
+          3.1.3.13 UmlTransitionRendererFlatState
+          3.1.3.14 UmlTransitionRendererHierarchial
+        3.1.4 Managers
+          3.1.4.1 SequenceActivationStackManager
+          3.1.4.2 SequenceInvocationManager
+          3.1.4.3 SequenceParticipantsManager
+          3.1.4.4 SequenceTransitionManager
+          3.1.4.5 RenderContext / RenderContextActivationStack
+
+      3.2 HtmlKit
+        3.2.1 Builders
+          3.2.1.1 HtmlBuilder
+          3.2.1.2 HtmlBuilderFactory
+          3.2.1.3 HtmlBuilderPumlContent / PumlReference
+          3.2.1.4 HtmlBuilderBreadcrumb
+          3.2.1.5 HtmlBuilderButton
+          3.2.1.6 HtmlBuilderTableCell / TableRow
+          3.2.1.7 HtmlTagAttributes / XMLTagBuilder
+        3.2.2 Document
+          3.2.2.1 HtmlTensorWriter
+          3.2.2.2 HtmlPageProducer
+          3.2.2.3 HtmlPageProducerIndex
+          3.2.2.4 HtmlCellStyleBuilder
+          3.2.2.5 IHtmlDataCellBuilder / IHtmlCellDataProducer
+          3.2.2.6 IHtmlHrefManager / IHtmlFixedContentManager
+          3.2.2.7 IHtmlMatrixGenerator / IHtmlTensorWriter
+        3.2.3 Matrix
+          3.2.3.1 IHtmlMatrix
+          3.2.3.2 HtmlMatrixDomainPerAction
+          3.2.3.3 HtmlMatrixMethods
+          3.2.3.4 HtmlMatrixSummary
+        3.2.4 Tabsheet
+          3.2.4.1 IHtmlTabsheetDataProvider
+          3.2.4.2 BaseHtmlTabsheetDataProvider
+          3.2.4.3 HtmlTabsheetTabInfo
+          3.2.4.4 HtmlTabsheetTabInfoWithDataModelType
+        3.2.5 Pages
+          3.2.5.1 HtmlPageWithTabsBuilder
+          3.2.5.2 HtmlTabbedPageBuilder
+          3.2.5.3 HtmlTabsheetBuilder
+          3.2.5.4 HtmlPageWithTabsEntityListBuilder
+          3.2.5.5 HtmlPageWithTabsEntityBuilder
+          3.2.5.6 HtmlPageWithTabsNamespaceEntityBuilder
+          3.2.5.7 ComposableTabsheetDataProvider
+          3.2.5.8 TabRegistration
+        3.2.6 Helpers
+          3.2.6.1 HeatmapColorBuilder
+
+      3.3 ExporterKit
+        3.3.1 Html
+          3.3.1.1 IHtmlPageCompiler
+          3.3.1.2 IHtmlCompilerOrchestrator
+          3.3.1.3 HtmlPageCompilerIndexDomainPerAction
+          3.3.1.4 HtmlPageCompilerClassOnly
+          3.3.1.5 HtmlPageCompilerActionOnly
+          3.3.1.6 HtmlPageCompilerActionPerDomain
+          3.3.1.7 HtmlPageCompilerDomainOnly
+          3.3.1.8 HtmlPageCompilerNamespaceOnly
+          3.3.1.9 HtmlPageCompilerActionPerDomainSummary
+        3.3.2 Uml
+          3.3.2.1 IUmlDiagramCompiler / Orchestrator
+          3.3.2.2 UmlDiagramCompilerClassActionPerDomain
+          3.3.2.3 UmlDiagramCompilerClassMethodsList
+          3.3.2.4 UmlDiagramCompilerClassRelation
+          3.3.2.5 UmlDiagramCompilerClassOnly
+          3.3.2.6 UmlDiagramCompilerActionPerDomainPackage
+          3.3.2.7 UmlDiagramCompilerPackages
+          3.3.2.8 CompositeUmlDiagramCompilerSequenceAction / Domain
+          3.3.2.9 CompositeUmlDiagramCompilerStateAction / Domain
+          3.3.2.10 UmlDiagramCompilerMindmapAction / ClassOnly / Domain
+          3.3.2.11 UmlDiagramCompilerNamespaceOnly
+        3.3.3 CSV
+          3.3.3.1 ContextInfoCsvExporter
+          3.3.3.2 CsvGenerator
+        3.3.4 DiagramCompileOptions
+          3.3.4.1 IDiagramCompileOptionsFactory
+          3.3.4.2 ActionState / DomainState
+          3.3.4.3 ActionSequence / DomainSequence
+
+    4 Application
+      4.1 ContextBrowser
+        4.1.1 Program.cs
+        4.1.2 Infrastructure
+          4.1.2.1 ConsoleRunner
+          4.1.2.2 WebAppRunner
+          4.1.2.3 HostConfigurator
+          4.1.2.4 ContextInfoFlatMapperFactory
+          4.1.2.5 ContextInfoMapperFactory
+        4.1.3 Options
+          4.1.3.1 AppOptions
+          4.1.3.2 AppOptionsResolver
+          4.1.3.3 AppOptionsHelper
+          4.1.3.4 AppOptionsFactory
+          4.1.3.5 RunOptions
+          4.1.3.6 JsonConverters
+        4.1.4 Services
+          4.1.4.1 MainService
+          4.1.4.2 AppSettingsStore
+          4.1.4.3 CustomEnvironmentHostedService
+          4.1.4.4 ServerStartSignal
+          4.1.4.5 ContextInfoProvider
+          4.1.4.6 CommentParsingStrategyFactory
+          4.1.4.7 SemanticSyntaxRouterBuilderRegistry
+
+      4.2 CustomServers
+        4.2.1 CustomEnvironment
+        4.2.2 CustomServerDetector
+        4.2.3 WindowsServer
+        4.2.4 MacOsServer
+        4.2.5 ProcessInfoFactory
+
+    5 Samples and Tests
+      5.1 ContextSamples
+        5.1.1 S1 Actor → Transition
+        5.1.2 S2 A.Foo → B.Bar
+        5.1.3 S3 FlowOrchestrator ↔ AnotherService
+        5.1.4 S4 TaskService + Validator/Builder/Notifier/Repository
+        5.1.5 S5 BrokenOrchestra
+        5.1.6 S6 Alpha → Beta → Gamma
+      5.2 ContextBrowserTests
+        5.2.1 LRUCacheTests
+        5.2.2 ContextInfoTraversalTests
+        5.2.3 RoslynCodeParserTests
+        5.2.4 Test1 - заглушки
+```
+
+## Развёрнутая карта по разделам
+
+Для удобства — те же номера, но в виде плоских списков.
+
+### 1 Kits
+
+| ID    | Узел                              |
+| ----- | --------------------------------- |
+| 1.1   | LoggerKit                         |
+| 1.1.1 | IAppLogger / AppLogger            |
+| 1.1.2 | IndentedAppLogger                 |
+| 1.1.3 | AppLoggerLevelStore               |
+| 1.1.4 | ConsoleLogWriter                  |
+| 1.2   | CommandlineKit                    |
+| 1.2.1 | CommandLineParser                 |
+| 1.2.2 | CommandLineHelpProducer           |
+| 1.2.3 | HelpGenerator                     |
+| 1.2.4 | CommandLineNodeIterator           |
+| 1.2.5 | CommandlineArgumentsParserService |
+| 1.3   | ContextBrowserKit                 |
+| 1.3.1 | Extensions (1.3.1.1…1.3.1.6)      |
+| 1.3.2 | Options (1.3.2.1…1.3.2.5)         |
+| 1.3.3 | Log (1.3.3.1…1.3.3.3)             |
+| 1.3.4 | LRUCache                          |
+| 1.4   | TensorKit                         |
+| 1.5   | GraphKit                          |
+
+### 2 Semantic Core
+
+| ID    | Узел               |
+| ----- | ------------------ |
+| 2.1   | ContextKit         |
+| 2.1.1 | Model              |
+| 2.1.2 | Classifier         |
+| 2.1.3 | Comment strategies |
+| 2.1.4 | Collector          |
+| 2.1.5 | Cache              |
+| 2.1.6 | Relations          |
+| 2.1.7 | Tensor strategies  |
+| 2.1.8 | Dataset            |
+| 2.1.9 | Naming             |
+| 2.2   | SemanticKit        |
+| 2.3   | RoslynKit          |
+
+### 3 Export
+
+| ID    | Узел                  |
+| ----- | --------------------- |
+| 3.1   | UmlKit                |
+| 3.1.1 | PlantUmlSpecification |
+| 3.1.2 | Builders              |
+| 3.1.3 | Renderers             |
+| 3.1.4 | Managers              |
+| 3.2   | HtmlKit               |
+| 3.2.1 | Builders              |
+| 3.2.2 | Document              |
+| 3.2.3 | Matrix                |
+| 3.2.4 | Tabsheet              |
+| 3.2.5 | Pages                 |
+| 3.2.6 | Helpers               |
+| 3.3   | ExporterKit           |
+| 3.3.1 | Html                  |
+| 3.3.2 | Uml                   |
+| 3.3.3 | CSV                   |
+| 3.3.4 | DiagramCompileOptions |
+
+### 4 Application
+
+| ID    | Узел           |
+| ----- | -------------- |
+| 4.1   | ContextBrowser |
+| 4.1.1 | Program.cs     |
+| 4.1.2 | Infrastructure |
+| 4.1.3 | Options        |
+| 4.1.4 | Services       |
+| 4.2   | CustomServers  |
+
+### 5 Samples and Tests
+
+| ID    | Узел                                                   |
+| ----- | ------------------------------------------------------ |
+| 5.1   | ContextSamples                                         |
+| 5.1.1 | S1 Actor → Transition                                  |
+| 5.1.2 | S2 A.Foo → B.Bar                                       |
+| 5.1.3 | S3 FlowOrchestrator ↔ AnotherService                   |
+| 5.1.4 | S4 TaskService + Validator/Builder/Notifier/Repository |
+| 5.1.5 | S5 BrokenOrchestra                                     |
+| 5.1.6 | S6 Alpha → Beta → Gamma                                |
+| 5.2   | ContextBrowserTests                                    |
+| 5.2.1 | LRUCacheTests                                          |
+| 5.2.2 | ContextInfoTraversalTests                              |
+| 5.2.3 | RoslynCodeParserTests                                  |
+| 5.2.4 | Test1 (заглушки)                                       |
+
+## Как пользоваться
+
+- **Нашёл баг** → найди класс в mindmap → иди по номеру в исходники.
+- **Добавляешь фичу** → определи слой (1..5) → определи Kit → заведи номер.
+- **Обсуждаешь с коллегой** → называй узлы по номеру (`1.3.2.1 ExportOptions`),
+  это однозначно и коротко.
+- **В release-трекинге** → используй номера из этой карты в качестве `NodeID`.
+
+## Соглашения
+
+- **Пропуски.** Если узел удалён, номер **не переиспользуется**.
+  Вместо него — пометка `(removed)`.
+- **Перемещения.** Если узел переехал — старый номер помечается
+  `(moved → <new-id>)`, новый номер добавляется.
+- **Слияния.** Если два узла стали одним — оба старых номера помечаются
+  `(merged → <new-id>)`.
+- **Расширение.** Если узлу нужен дополнительный уровень — потомки
+  получают номер `<Parent>.<Child>.<NewLevel>`. Существующие не меняются.

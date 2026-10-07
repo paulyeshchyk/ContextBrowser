@@ -1,0 +1,72 @@
+href: index.yaml
+navigation:
+  logo:
+    url: https://github.com/paulyeshchyk/ContextBrowser
+    dark:
+      icon: _assets/images/Logo.png
+    light:
+      icon: _assets/images/Logo.png
+  header:
+    leftItems:
+      - text: ContextBrowser
+        type: link
+        url: index.html
+    rightItems:
+      - type: controls
+      - type: link
+        icon: _assets/images/mindmap.png
+        url: ru/contexts/index.html
+      - type: link
+        icon: _assets/images/info.png
+        url: ru/ОПрограмме/index.html
+items:
+  - name: Раздел 1. Архитектура
+    href: Раздел1.Архитектура/index.md
+    include:
+      path: Раздел1.Архитектура/toc.yaml
+      mode: link
+  - name: Раздел 2. Домены
+    href: Раздел2.Домены/index.md
+    include:
+      path: Раздел2.Домены/toc.yaml
+      mode: link
+  - name: Раздел 3. Компоненты
+    href: Раздел3.Компоненты/index.md
+    include:
+      path: Раздел3.Компоненты/toc.yaml
+      mode: link
+  - name: Раздел 4. Контексты
+    href: Раздел4.Контексты/index.md
+    include:
+      path: Раздел4.Контексты/toc.yaml
+      mode: link
+  - name: Раздел 100. Release
+    href: Раздел100.Release/index.md
+    include:
+      path: Раздел100.Release/toc.yaml
+      mode: link
+  - name: Overview
+    href: Overview/index.md
+    include:
+      path: Overview/toc.yaml
+      mode: link
+  - name: Goals
+    href: Goals/index.md
+    include:
+      path: Goals/toc.yaml
+      mode: link
+  - name: Glossary
+    href: Glossary/index.md
+    include:
+      path: Glossary/toc.yaml
+      mode: link
+  - name: Structure
+    href: Structure/index.md
+    include:
+      path: Structure/toc.yaml
+      mode: link
+  - name: Managers
+    href: Managers/index.md
+    include:
+      path: Managers/toc.yaml
+      mode: link

@@ -8,3 +8,6 @@ obj
 **/.svn
 Jira/build
 Jira/node_modules
+node_modules
+docs/build
+docs/docs/_assets/jar/plantuml.jar

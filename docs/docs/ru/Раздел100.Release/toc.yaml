@@ -1,0 +1,23 @@
+title: Раздел 100. Release
+href: index.yaml
+items:
+  - name: Backlog
+    href: Backlog/index.md
+    include:
+      path: Backlog/toc.yaml
+      mode: link
+  - name: Done
+    href: Done/index.md
+    include:
+      path: Done/toc.yaml
+      mode: link
+  - name: Todo
+    href: Todo/index.md
+    include:
+      path: Todo/toc.yaml
+      mode: link
+  - name: Inprogress
+    href: Inprogress/index.md
+    include:
+      path: Inprogress/toc.yaml
+      mode: link

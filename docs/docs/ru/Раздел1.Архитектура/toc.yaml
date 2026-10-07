@@ -1,0 +1,18 @@
+title: Раздел 1. Архитектура
+href: index.yaml
+items:
+  - name: Слои
+    href: Слои/index.md
+    include:
+      path: Слои/toc.yaml
+      mode: link
+  - name: Зависимости
+    href: Зависимости/index.md
+    include:
+      path: Зависимости/toc.yaml
+      mode: link
+  - name: Pipeline
+    href: Pipeline/index.md
+    include:
+      path: Pipeline/toc.yaml
+      mode: link

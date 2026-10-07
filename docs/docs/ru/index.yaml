@@ -1,0 +1,10 @@
+title: Трекер задач для ContextBrowser
+
+meta:
+  title: ContextBrowser
+  noIndex: true
+
+links:
+  - title: readme.md
+    description: Описание проекта
+    href: ./readmemd

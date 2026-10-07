@@ -1,0 +1,8 @@
+title: Раздел 4. Контексты
+href: index.yaml
+items:
+  - name: Нумерованный mindmap проекта
+    href: Нумерованныйmindmapпроекта/index.md
+    include:
+      path: Нумерованныйmindmapпроекта/toc.yaml
+      mode: link

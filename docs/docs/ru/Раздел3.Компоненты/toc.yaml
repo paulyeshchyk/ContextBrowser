@@ -1,0 +1,13 @@
+title: Раздел 3. Компоненты
+href: index.yaml
+items:
+  - name: App
+    href: App/index.md
+    include:
+      path: App/toc.yaml
+      mode: link
+  - name: Kits
+    href: Kits/index.md
+    include:
+      path: Kits/toc.yaml
+      mode: link
