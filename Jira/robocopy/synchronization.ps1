@@ -1,40 +1,40 @@
-# --- НАСТРОЙКИ (Укажи свои пути) ---
-$svnFolder = "D:\projects\ascon\GulfStream9\trunk\Документация\ГОЛЬФСТРИМ WEB"    # Папка, где работает SmartSVN
-$gitFolder = "D:\projects\ascon\GULF_Help"     # Твой локальный репозиторий Git
-$branchName = "main"                    # Название твоей ветки (main или master)
+# --- РќРђРЎРўР РћР™РљР (РЈРєР°Р¶Рё СЃРІРѕРё РїСѓС‚Рё) ---
+$svnFolder = "D:\projects\ascon\GulfStream9\trunk\Р”РѕРєСѓРјРµРЅС‚Р°С†РёСЏ\Р“РћР›Р¬Р¤РЎРўР РРњ WEB"    # РџР°РїРєР°, РіРґРµ СЂР°Р±РѕС‚Р°РµС‚ SmartSVN
+$gitFolder = "D:\projects\ascon\GULF_Help"     # РўРІРѕР№ Р»РѕРєР°Р»СЊРЅС‹Р№ СЂРµРїРѕР·РёС‚РѕСЂРёР№ Git
+$branchName = "main"                    # РќР°Р·РІР°РЅРёРµ С‚РІРѕРµР№ РІРµС‚РєРё (main РёР»Рё master)
 
-Write-Host "`n[1/3] Зеркалирование файлов..." -ForegroundColor Cyan
+Write-Host "`n[1/3] Р—РµСЂРєР°Р»РёСЂРѕРІР°РЅРёРµ С„Р°Р№Р»РѕРІ..." -ForegroundColor Cyan
 
-# Robocopy сделает идеальный слепок:
-# /MIR - зеркало (удалит в Git то, чего нет в SVN)
-# /XD .svn - проигнорирует папку .svn в корне и подпапках
-# /R:0 /W:0 - не ждать при ошибках
+# Robocopy СЃРґРµР»Р°РµС‚ РёРґРµР°Р»СЊРЅС‹Р№ СЃР»РµРїРѕРє:
+# /MIR - Р·РµСЂРєР°Р»Рѕ (СѓРґР°Р»РёС‚ РІ Git С‚Рѕ, С‡РµРіРѕ РЅРµС‚ РІ SVN)
+# /XD .svn - РїСЂРѕРёРіРЅРѕСЂРёСЂСѓРµС‚ РїР°РїРєСѓ .svn РІ РєРѕСЂРЅРµ Рё РїРѕРґРїР°РїРєР°С…
+# /R:0 /W:0 - РЅРµ Р¶РґР°С‚СЊ РїСЂРё РѕС€РёР±РєР°С…
 $excludeDirs = @(".svn", ".git", "robocopy", "build")
 robocopy $svnFolder $gitFolder /MIR /XD $excludeDirs /R:0 /W:0 /NFL /NDL /NJH /NJS
 
-Write-Host "[2/3] Анализ изменений в Git..." -ForegroundColor Cyan
+Write-Host "[2/3] РђРЅР°Р»РёР· РёР·РјРµРЅРµРЅРёР№ РІ Git..." -ForegroundColor Cyan
 Set-Location $gitFolder
 
-# Проверяем, есть ли изменения
+# РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё РёР·РјРµРЅРµРЅРёСЏ
 $gitStatus = git status --porcelain
 if ($gitStatus) {
-    Write-Host "Обнаружены изменения. Формирую коммит..." -ForegroundColor Green
+    Write-Host "РћР±РЅР°СЂСѓР¶РµРЅС‹ РёР·РјРµРЅРµРЅРёСЏ. Р¤РѕСЂРјРёСЂСѓСЋ РєРѕРјРјРёС‚..." -ForegroundColor Green
     
-    # Добавляем всё
+    # Р”РѕР±Р°РІР»СЏРµРј РІСЃС‘
     git add .
     
-    # Формируем сообщение с датой
+    # Р¤РѕСЂРјРёСЂСѓРµРј СЃРѕРѕР±С‰РµРЅРёРµ СЃ РґР°С‚РѕР№
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
     git commit -m "Sync from VVA ($timestamp)"
     
-    # Write-Host "[3/3] Отправка в удаленный репозиторий (10.9.20.9)..." -ForegroundColor Cyan
+    # Write-Host "[3/3] РћС‚РїСЂР°РІРєР° РІ СѓРґР°Р»РµРЅРЅС‹Р№ СЂРµРїРѕР·РёС‚РѕСЂРёР№ (10.9.20.9)..." -ForegroundColor Cyan
     # git push origin $branchName
     
-    Write-Host "`nУспешно синхронизировано!" -ForegroundColor Green
+    Write-Host "`nРЈСЃРїРµС€РЅРѕ СЃРёРЅС…СЂРѕРЅРёР·РёСЂРѕРІР°РЅРѕ!" -ForegroundColor Green
 } else {
-    Write-Host "`n[!] Изменений в SVN не обнаружено. Git-репозиторий актуален." -ForegroundColor Yellow
+    Write-Host "`n[!] РР·РјРµРЅРµРЅРёР№ РІ SVN РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅРѕ. Git-СЂРµРїРѕР·РёС‚РѕСЂРёР№ Р°РєС‚СѓР°Р»РµРЅ." -ForegroundColor Yellow
 }
 
-# Чтобы окно не закрылось сразу (для ручного запуска)
-Write-Host "`nНажми любую клавишу, чтобы выйти..."
+# Р§С‚РѕР±С‹ РѕРєРЅРѕ РЅРµ Р·Р°РєСЂС‹Р»РѕСЃСЊ СЃСЂР°Р·Сѓ (РґР»СЏ СЂСѓС‡РЅРѕРіРѕ Р·Р°РїСѓСЃРєР°)
+Write-Host "`nРќР°Р¶РјРё Р»СЋР±СѓСЋ РєР»Р°РІРёС€Сѓ, С‡С‚РѕР±С‹ РІС‹Р№С‚Рё..."
 $null = [Console]::ReadKey()

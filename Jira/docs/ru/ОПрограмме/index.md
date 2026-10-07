@@ -12,7 +12,7 @@ pureTitle: О Программе
 - **Автор-составитель:** {{about.author}}
 - **Дата запуска проекта:** {{about.start_date}}
 - **Дата выпуска текущей версии:**  {{stats.last_update}}
-- **git hash:** [{{stats.commit_hash}}](https://ctsteam/ASCON_CTS/Gulfstream/_git/GULF_Help/commit/{{stats.commit_hash}}/)
+- **git hash:** [{{stats.commit_hash}}](https://github.com/paulyeshchyk/ContextBrowser/commit/{{stats.commit_hash}}/)
 
 ---
 

@@ -1,7 +1,7 @@
 href: index.yaml
 navigation:
   logo:
-    url: https://ascon.ru/products/gulfstream/
+    url: https://github.com/paulyeshchyk/ContextBrowser
     dark:
       icon: _assets/images/Logo.png
     light:
