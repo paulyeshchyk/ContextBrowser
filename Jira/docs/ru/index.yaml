@@ -1,0 +1,22 @@
+title: Трекер задач для ContextBrowser
+
+meta:
+  title: Трекер задач для ContextBrowser
+  noIndex: true
+
+links:
+  - title: readme.md
+    description: Описание проекта
+    href: ./readmemd
+
+  - title: Backlog
+    description: Планы
+    href: ./backlog
+
+  - title: how to work with AI
+    description: Описание процесса общения с AI
+    href: ./howto
+
+  - title: Задачи
+    description: Список всех выполняемых задач
+    href: ./Часть1.Задачи

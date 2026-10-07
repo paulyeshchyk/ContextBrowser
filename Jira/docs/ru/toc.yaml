@@ -1,0 +1,53 @@
+href: index.yaml
+navigation:
+  logo:
+    url: https://ascon.ru/products/gulfstream/
+    dark:
+      icon: _assets/images/Logo.png
+    light:
+      icon: _assets/images/Logo.png
+  header:
+    leftItems:
+      - text: "ContextBrowser: Трекер"
+        type: link
+        url: index.html
+    rightItems:
+      - type: controls
+      - type: link
+        icon: _assets/images/mindmap.png
+        url: ru/contexts/index.html
+      - type: link
+        icon: _assets/images/info.png
+        url: ru/ОПрограмме/index.html
+items:
+  - name: Часть 1. Задачи
+    href: Часть1.Задачи/index.md
+    include:
+      path: Часть1.Задачи/toc.yaml
+      mode: link
+  - name: Контексты
+    href: contexts/index.md
+    hidden: true
+    include:
+      path: contexts/toc.yaml
+      mode: link
+  - name: backlog
+    href: backlog/index.md
+    include:
+      path: backlog/toc.yaml
+      mode: link
+  - name: how to
+    href: howto/index.md
+    include:
+      path: howto/toc.yaml
+      mode: link
+  - name: readme.md
+    href: readmemd/index.md
+    include:
+      path: readmemd/toc.yaml
+      mode: link
+  - name: О Программе
+    href: ОПрограмме/index.md
+    include:
+      path: ОПрограмме/toc.yaml
+      mode: link

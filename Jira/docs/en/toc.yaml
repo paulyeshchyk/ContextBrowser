@@ -1,0 +1,27 @@
+href: index.yaml
+navigation:
+  logo:
+    url: https://ascon.ru/products/gulfstream/
+    dark:
+      icon: _assets/images/Logo.png
+    light:
+      icon: _assets/images/Logo.png
+  header:
+    leftItems:
+      - text: ContextBrowser User Guide
+        type: link
+        url: index.html
+    rightItems:
+      - type: controls
+items:
+  - name: Intro
+    href: Intro/index.md
+    include:
+      path: Intro/toc.yaml
+      mode: link
+  - name: ""
+  - name: Contexts
+    href: contexts/index.md
+    include:
+      path: contexts/toc.yaml
+      mode: link

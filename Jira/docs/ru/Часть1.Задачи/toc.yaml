@@ -1,0 +1,8 @@
+title: Часть 1. Задачи
+href: index.yaml
+items:
+  - name: Jira.001
+    href: Jira001/index.md
+    include:
+      path: Jira001/toc.yaml
+      mode: link
